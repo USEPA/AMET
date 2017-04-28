@@ -14,7 +14,6 @@
 ##------------------------------------------------------##
 
 spec_num <- seq(1,50,1)
-
 ##########################
 ## IMPROVE Species List ##
 ##########################
@@ -138,43 +137,29 @@ species_AE6_CSN <- paste("
 ####################################
 
 if (year > 2010) {
-   CSN_OC_SPEC          <- "88370_val-blank"
-   CSN_EC_SPEC          <- "88380_val"
-   CSN_PM_FRM_SPEC      <- "88502_val"
-}
-
-if (year > 2013) {
-   CSN_OC_SPEC          <- "88370_val-blank"
-   CSN_EC_SPEC          <- "88380_val"
-   CSN_PM_FRM_SPEC      <- "PM25"
-}
-
-if (year > 2010) {
-   k <- 8
-   species_CSN <- paste(" 
-     setenv AERO_1 \"SO4f_val,ug/m3, ASO4IJ,,SO4\"                     # sulfate
-     setenv AERO_2 \"NO3f_val,ug/m3, ANO3IJ,,NO3\"                     # nitrate
-     setenv AERO_3 \"NH4f_val,ug/m3, ANH4IJ,,NH4\"                     # ammonium
-     setenv AERO_4 \"",CSN_PM_FRM_SPEC,",ug/m3,PMIJ,,PM_TOT\"          # PM2.5
-     setenv AERO_5 \"",CSN_PM_FRM_SPEC,",ug/m3,PMIJ_FRM,,PM_FRM\"      # FRM Equivalent PM2.5
-     setenv AERO_6 \"",CSN_OC_SPEC,",ug/m3, AOCIJ,,OC\"                   # Organic Carbon
-     setenv AERO_7 \"",CSN_EC_SPEC,",ug/m3, AECIJ,,EC\"                      # Elemental Carbon
-     setenv AERO_8 \"",CSN_OC_SPEC,"+",CSN_EC_SPEC,",ug/m3,AOCIJ+AECIJ,,TC\"    # Total Carbon
-   ",sep = "")
-
-   species_cutoff_CSN <- paste("
+   k <- 9 
+   species_CSN <- "
+     setenv AERO_1 \"SO4f_val,ug/m3, ASO4IJ,,SO4\"                           # sulfate
+     setenv AERO_2 \"NO3f_val,ug/m3, ANO3IJ,,NO3\"                           # nitrate
+     setenv AERO_3 \"NH4f_val,ug/m3, ANH4IJ,,NH4\"                           # ammonium
+     setenv AERO_4 \"88502_val,ug/m3,PMIJ,,PM_TOT\"                      # PM2.5
+     setenv AERO_5 \"88502_val,ug/m3,PMIJ_FRM,,PM_FRM\"            # FRM Equivalent PM2.5
+     setenv AERO_6 \"88370adj_val,ug/m3, AOCIJ,,OC\"                      # Organic Carbon
+     setenv AERO_7 \"88380_val,ug/m3, AECIJ,,EC\"                      # Elemental Carbon
+     setenv AERO_8 \"88370adj_val+88380_val,ug/m3,AOCIJ+AECIJ,,TC\"    # Total Carbon
+   "
+   species_cutoff_CSN <- "
    ## PM2.5 Sharp Cutoff Species
    ## Requires preprocessing using setenv AERODIAM file
      setenv AERO_9 \"SO4f_val,ug/m3, PM25_SO4,,PM25_SO4\"                    # sulfate (sharp cutoff)
      setenv AERO_10 \"NO3f_val,ug/m3, PM25_NO3,,PM25_NO3\"                   # nitrate (sharp cutoff)
      setenv AERO_11 \"NH4f_val,ug/m3, PM25_NH4,,PM25_NH4\"                   # ammonium (sharp cutoff)
-     setenv AERO_12 \"",CSN_OC_SPEC,",ug/m3, PM25_OC,,PM25_OC\"              # Organic Carbon (sharp cutoff)
-     setenv AERO_13 \"",CSN_EC_SPEC,",ug/m3, PM25_EC,,PM25_EC\"              # Elemental Carbon (sharp cutoff)
-     setenv AERO_14 \"",CSN_OC_SPEC,"+",CSN_EC_SPEC,",ug/m3,PM25_OC+PM25_EC,,PM25_TC\"    # Total Carbon (sharp cutoff)
-     setenv AERO_15 \"",CSN_PM_FRM_SPEC,",ug/m3,PM25_TOT,ug/m3,PM25_TOT\"      # Total PM2.5 (sharp cutoff)
-     setenv AERO_16 \"",CSN_PM_FRM_SPEC,",ug/m3,PM25_FRM,ug/m3,PM25_FRM\"      # FRM Equivalent PM2.5 (sharp cutoff)
-   ",sep = "")
-
+     setenv AERO_12 \"88370adj_val,ug/m3, PM25_OC,,PM25_OC\"              # Organic Carbon (sharp cutoff)
+     setenv AERO_13 \"88380_val,ug/m3, PM25_EC,,PM25_EC\"              # Elemental Carbon (sharp cutoff)
+     setenv AERO_14 \"88370adj_val+88380_val,ug/m3,PM25_OC+PM25_EC,,PM25_TC\"    # Total Carbon (sharp cutoff)
+     setenv AERO_15 \"88502_val,ug/m3,PM25_TOT,ug/m3,PM25_TOT\"      # Total PM2.5 (sharp cutoff)
+     setenv AERO_16 \"88502_val,ug/m3,PM25_FRM,ug/m3,PM25_FRM\"      # FRM Equivalent PM2.5 (sharp cutoff)
+   "
    if ((cutoff == "y") || (cutoff == "Y") || (cutoff == "t") || (cutoff == "T")) { k <- 17 }
    species_AE6_CSN <- paste("
    # setenv AERO6 species
@@ -192,9 +177,9 @@ if (year > 2010) {
       setenv AERO_",spec_num[k+9]," \"MNf_val,ug/m3,AMNJ,,Mn\"          # manganese
       setenv AERO_",spec_num[k+10]," \"2.2*ALf_val+2.49*SIf_val+1.63*CAf_val+2.42*FEf_val+1.94*TIf_val,ug/m3,ASOILJ,,soil\" # SOIL_OLD
       setenv AERO_",spec_num[k+11]," \"NAf_val + CLf_val, ug/m3, ANAIJ+ACLIJ,,NaCl\"                                   # NaCl
-      setenv AERO_",spec_num[k+12]," \"",CSN_PM_FRM_SPEC,"-SO4f_val-NO3f_val-NH4f_val-",CSN_OC_SPEC,"-",CSN_EC_SPEC,"-[NAf_val]-[CLf_val]-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val , ug/m3, AUNSPEC1IJ,,OTHER\"        # PM Other
-      setenv AERO_",spec_num[k+13]," \"0.8*",CSN_OC_SPEC,",ug/m3, ANCOMIJ,,NCOM\"    # PM Other
-      setenv AERO_",spec_num[k+14]," \"",CSN_PM_FRM_SPEC,"-SO4f_val-NO3f_val-NH4f_val-",CSN_OC_SPEC,"-",CSN_EC_SPEC,"-[NAf_val]-[CLf_val]-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val-0.8*88370_val-blank,ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other no NCOM
+      setenv AERO_",spec_num[k+12]," \"88502_val-SO4f_val-NO3f_val-NH4f_val-88370adj_val-88380_val-[NAf_val]-[CLf_val]-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val , ug/m3, AUNSPEC1IJ,,OTHER\"        # PM Other
+      setenv AERO_",spec_num[k+13]," \"0.8*88370adj_val,ug/m3, ANCOMIJ,,NCOM\"    # PM Other
+      setenv AERO_",spec_num[k+14]," \"88502_val-SO4f_val-NO3f_val-NH4f_val-88370adj_val-88380_val-[NAf_val]-[CLf_val]-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val-0.8*88370adj_val,ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other no NCOM
    ",sep = "")
 }
 
@@ -371,6 +356,45 @@ species_AE6_NADP <- "
 #############################
 ### End NADP Species List ###
 #############################
+
+##############################
+### Start MDN Species List ###
+##############################
+
+species_MDN <- paste("
+  setenv CHAR_1 \"Valcode\"
+  setenv CHAR_2 \"Invalcode\"
+
+# Wet Concentration Variables (1-10) - compute volume-weighted average (VWAVG) in mg/l
+# Observed values are already volume-weighted averages for the collection
+# period.  Original model output is hourly wet deposition. To calculate
+# VWAVG, the modeled wet deposition is accumulated for the collection time
+# period, divided by the total precipitation (mm), and * 100. Resulting
+# units are mg/l.
+
+  setenv WETCON_1 \"HGconc,ng/l,10*TWDEP_HG,ng/l,HG_conc\"
+
+# Wet Deposition Variables (1-10) - compute accumulated wet deposition in kg/ha
+# Observed values are volume-weighted average wet concentrations for thei
+# collection period (mg/l). To convert to wet deposition, multiply the wet
+# concentration values by the total observed precip (Sub Ppt in mm), and then
+# divide by 100. Original model output is hourly wet deposition. The modeled
+# wet deposition is accumulated for the collection time period.
+
+  setenv WETDEP_1 \"0.1*HGdep,ug/ha,TWDEP_GH,ug/ha,HG_dep\" # Ammonium wet deposition
+
+# Precipitation Variables (1-10) - compute accumulated precipitation
+
+  setenv PREC_1 \"Sub Ppt,mm,",precip_convert,"*RT,mm,Precip\"
+
+",sep = "")
+
+  species_cutoff_MDN <- ""
+  species_AE6_MDN <- ""
+
+############################
+### End MDN Species List ###
+############################
 
 #################################
 ### Start AIRMON Species List ###
@@ -766,32 +790,6 @@ species_AERONET <- "
 species_cutoff_AERONET <- ""
 species_AE6_AERONET <- ""
 
-################################
-### End AERONET Species List ###
-################################
-
-##################################
-### Start FLUXNET Species List ###
-##################################
-
-species_FLUXNET <- "
-   setenv AERO_1 \"USTAR,m/s,UST,m/s,USTAR\"
-   setenv AERO_2 \"G,W/m2,G,W/m2,Soil_Heat_Flx\"
-   setenv AERO_3 \"H,W/m2,H,W/m2,Sens_Heat_Flx\"
-   setenv AERO_4 \"LE,W/m2,LE,W/m2,Ltnt_Heat_Flx\"
-   setenv AERO_5 \"SWC_1,%,SWC_1,%,Soil_H2O_Cntn\"
-   setenv AERO_6 \"TS_1,C,TS_1-273.15,C,Soil_Tmp\"
-   setenv AERO_7 \"TA,C,SFC_TMP,C,SFC_TMP\"
-   setenv AERO_8 \"WS,m/2,WSPD10,m/2,WSPD10\"
-"
-species_cutoff_FLUXNET <- ""
-species_AE6_FLUXNET <- ""
-
-################################
-### End FLUXNET Species List ###
-################################
-
-
 #################################################
 ### Start NAPS (Canadian) Hourly Species List ###
 #################################################
@@ -855,9 +853,9 @@ species_AE6_EMEP_Daily <- ""
 ### End EMEP Daily Species List ###
 ###################################
 
-species_list <- list(IMPROVE=species_IMPROVE,CSN=species_CSN,CASTNET=species_CASTNET,CASTNET_Hourly=species_CASTNET_Hourly,CASTNET_Daily=species_CASTNET_Daily_O3,CASTNET_Drydep=species_CASTNET_Drydep,NADP=species_NADP,AQS_Daily=species_AQS_Daily,AQS_Hourly=species_AQS_Hourly,AQS_Daily_O3=species_AQS_Daily_O3,SEARCH_Hourly=species_SEARCH_Hourly,SEARCH_Daily=species_SEARCH_Daily,AERONET=species_AERONET,NAPS=species_NAPS,AMON=species_AMON,FLUXNET=species_FLUXNET)
+species_list <- list(IMPROVE=species_IMPROVE,CSN=species_CSN,CASTNET=species_CASTNET,CASTNET_Hourly=species_CASTNET_Hourly,CASTNET_Daily=species_CASTNET_Daily_O3,CASTNET_Drydep=species_CASTNET_Drydep,NADP=species_NADP,MDN=species_MDN,AQS_Daily=species_AQS_Daily,AQS_Hourly=species_AQS_Hourly,AQS_Daily_O3=species_AQS_Daily_O3,SEARCH_Hourly=species_SEARCH_Hourly,SEARCH_Daily=species_SEARCH_Daily,AERONET=species_AERONET,NAPS=species_NAPS,AMON=species_AMON)
 
-species_list_cutoff <- list(IMPROVE=species_cutoff_IMPROVE,CSN=species_cutoff_CSN,CASTNET=species_cutoff_CASTNET,CASTNET_Hourly=species_cutoff_CASTNET_Hourly,CASTNET_Daily=species_cutoff_CASTNET_Daily_O3,CASTNET_Drydep=species_cutoff_CASTNET_Drydep,NADP=species_cutoff_NADP,AQS_Daily=species_cutoff_AQS_Daily,AQS_Hourly=species_cutoff_AQS_Hourly,AQS_Daily_O3=species_cutoff_AQS_Daily_O3,SEARCH_Hourly=species_cutoff_SEARCH_Hourly,SEARCH_Daily=species_cutoff_SEARCH_Daily,AERONET=species_cutoff_AERONET,NAPS=species_cutoff_NAPS,AMON=species_cutoff_AMON,FLUXNET=species_cutoff_FLUXNET)
+species_list_cutoff <- list(IMPROVE=species_cutoff_IMPROVE,CSN=species_cutoff_CSN,CASTNET=species_cutoff_CASTNET,CASTNET_Hourly=species_cutoff_CASTNET_Hourly,CASTNET_Daily=species_cutoff_CASTNET_Daily_O3,CASTNET_Drydep=species_cutoff_CASTNET_Drydep,NADP=species_cutoff_NADP,MDN=species_cutoff_MDN,AQS_Daily=species_cutoff_AQS_Daily,AQS_Hourly=species_cutoff_AQS_Hourly,AQS_Daily_O3=species_cutoff_AQS_Daily_O3,SEARCH_Hourly=species_cutoff_SEARCH_Hourly,SEARCH_Daily=species_cutoff_SEARCH_Daily,AERONET=species_cutoff_AERONET,NAPS=species_cutoff_NAPS,AMON=species_cutoff_AMON)
 
-species_list_AE6 <- list(IMPROVE=species_AE6_IMPROVE,CSN=species_AE6_CSN,CASTNET=species_AE6_CASTNET,CASTNET_Hourly=species_AE6_CASTNET_Hourly,CASTNET_Daily=species_AE6_CASTNET_Daily_O3,CASTNET_Drydep=species_AE6_CASTNET_Drydep,NADP=species_AE6_NADP,AQS_Daily=species_AE6_AQS_Daily,AQS_Hourly=species_AE6_AQS_Hourly,AQS_Daily_O3=species_AE6_AQS_Daily_O3,SEARCH_Hourly=species_AE6_SEARCH_Hourly,SEARCH_Daily=species_AE6_SEARCH_Daily,AERONET=species_AE6_AERONET,NAPS=species_AE6_NAPS,AMON=species_AE6_AMON,FLUXNET=species_AE6_FLUXNET)
+species_list_AE6 <- list(IMPROVE=species_AE6_IMPROVE,CSN=species_AE6_CSN,CASTNET=species_AE6_CASTNET,CASTNET_Hourly=species_AE6_CASTNET_Hourly,CASTNET_Daily=species_AE6_CASTNET_Daily_O3,CASTNET_Drydep=species_AE6_CASTNET_Drydep,NADP=species_AE6_NADP,MDN=species_AE6_MDN,AQS_Daily=species_AE6_AQS_Daily,AQS_Hourly=species_AE6_AQS_Hourly,AQS_Daily_O3=species_AE6_AQS_Daily_O3,SEARCH_Hourly=species_AE6_SEARCH_Hourly,SEARCH_Daily=species_AE6_SEARCH_Daily,AERONET=species_AE6_AERONET,NAPS=species_AE6_NAPS,AMON=species_AE6_AMON)
 

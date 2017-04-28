@@ -1,0 +1,155 @@
+#######################################################
+### This file is used essentially as a namelist for ###
+### each of the AMET R scripts.  The information in ###
+### this script must be updated in order for the    ###
+### AMET scripts to run properly.  		    ###
+###						    ###
+### These variables can be hardcoded or taken from  ###
+### environmental variables.			    ###
+#######################################################
+
+##################################
+### Main Database Query String ###
+##################################
+start_date <- Sys.getenv("AMET_SDATE")	# yyyymmdd
+end_date   <- Sys.getenv("AMET_EDATE")	# yyyymmdd
+start_hour <- 00	# hh
+end_hour   <- 23	# hh
+
+#add_query <- "and d.lon between -125 and -60 "
+#add_query <-  "and (s.state='CT' or s.state='DE' or s.state='DC' or s.state='ME' or s.state='MD' or s.state='MA' or s.state='NH' or s.state='NJ' or s.state='NY' or s.state='PA' or s.state='RI' or s.state='VT') "
+#add_query <- ""
+add_query <- Sys.getenv("AMET_ADD_QUERY")
+
+query <- paste(" and s.stat_id=d.stat_id and d.ob_dates BETWEEN",start_date,"and",end_date,"and d.ob_datee BETWEEN",start_date,"and",end_date,"and ob_hour between",start_hour,"and",end_hour,add_query,sep=" ")
+
+#########################
+### Process ID number ###
+#########################
+
+### This can be set to anything, and is used as part of the name of output file(s) ###
+
+pid<-Sys.getenv("AMET_PID")
+
+
+#########################
+### Project ID Name 1 ###
+#########################
+run_name1<-Sys.getenv("AMET_PROJECT")
+
+
+###############################################################
+### Project ID Name 2 (used for model-to-model comparisons) ###
+###############################################################
+run_name2<-""
+run_name3<-""
+run_name4<-""
+run_name5<-""
+run_name6<-""
+
+#######################
+### Species to Plot ###
+#######################
+### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM25,EC,OC,TC,O3,SO2,CO,NO,SO4_dep,SO4_conc,NO3_dep,NO3_conc,NH4_dep,NH4_conc,precip,NOy ###
+
+species<-Sys.getenv("AMET_AQSPECIES")
+
+######################
+###  Title Options ###
+######################
+custom_title<-Sys.getenv("AMET_TITLE")
+
+######################
+###  Output dir    ###
+######################
+figdir <- Sys.getenv("AMET_OUT")
+#figdir <- "~/AMET/output/aqExample"
+
+########################################
+### Flags for Time Averaging Options ###
+########################################
+averaging<-"n"
+remove_negatives<- "y"
+use_avg_stats<-"n"
+
+##########################################
+###     ADDITIONAL PLOTTING TEXT       ###
+### used in conjunction with add_query ###
+##########################################
+site<-"All"  # Sites used in the study
+state<-"All" # States included in study
+
+###################################################
+### Subset by Regional Planning Organization    ###
+### Acceptable regions: VISTAS, CENRAP, MANE-VU ###
+###                     LADCO, WRAP or None     ###
+###################################################
+rpo<-"None"
+
+##########################################
+###     ADDITIONAL PLOTTING TEXT       ###
+### used in conjunction with add_query ###
+##########################################
+site<-"All"  # Sites used in the study
+state<-Sys.getenv("AMET_STATELABEL") # States included in study
+
+#######################################################
+### Flag to Include Zero Precipitation Observations ###
+#######################################################
+zeroprecip<-"n"
+
+#################################################
+### Numerical Limit (%) for Data Completeness ###
+#################################################
+coverage_limit<-75
+
+######################################################
+### Flag to remove mean (plot deviation from mean) ###
+######################################################
+use_var_mean<-"n"
+
+##########################################
+### Set minimum obs per day to include ###
+##########################################
+obs_per_day_limit<-10
+
+#######################################
+### Scatterplot x and y axes limits ###
+#######################################
+x_axis_min<-NULL
+y_axis_min<-NULL
+x_axis_max<-NULL
+y_axis_max<-NULL
+bias_y_axis_min<-NULL
+bias_y_axis_max<-NULL
+
+########################################################################
+### File containing list of stations created dynamically by the user ###
+########################################################################
+stat_file<-""
+
+##############################################
+### Flag to include run info text on plots ###
+##############################################
+run_info_text<-"y"
+
+######################################
+### Set Scatter Plot symbol colors ###
+######################################
+plot_colors     <- c("grey60","red","blue","green4","yellow3","orange2","brown","purple")
+
+##################################
+### Path of Network Input file ###
+##################################
+ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
+source(ametNetworkInput) # Network related input
+
+### Regional Planning Organizations to Include ###
+rpo<-"None"
+### Priciple Component Analysis (PCA) Region ###
+pca<-"None"
+
+inc_legend<-"y"
+inc_points<-"y"
+avg_func<-"mean"
+line_width<-"1"

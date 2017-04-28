@@ -1,0 +1,174 @@
+Database Name		Descriptive name
+-------------           ----------------
+
+#############
+### GASES ###
+#############
+O3                 	Ozone (hourly or daily)
+O3_1hrmax          	Ozone 1-hrmax(daily)
+O3_8hrmax          	Ozone 8-hrmax(daily)
+O3_1hrmax_9cell    	Ozone 1-hrmax 9-cell avg(daily)
+O3_8hrmax_9cell    	Ozone 8-hrmax 9-cell avg(daily)
+O3_1hrmax_time     	Ozone 1-hrmax hour(daily)
+O3_8hrmax_time     	Ozone 8-hrmax hour(daily)
+W126               	W126 12H Value(daily)
+MDA8               	MDA8(daily)
+MDA8_9_best        	MDA8 9-cell best match
+MDA8_9_max         	MDA8 9-cell max value
+SO2                	SO2
+NH3                	NH3
+HNO3               	HNO3
+TNO3               	TNO3(NO3+HNO3)
+CO                 	CO
+NO    		   	NO
+NO2    		   	NO2
+NOX    		   	NOX
+NOY      	   	NOY
+H2O2    	   	H2O2
+HOx                	HOx
+Acetaldehyde       	Acetaldehyde
+Formaldehyde    	Formaldehyde
+Benzene    		Benzene
+Ethane    		Ethane
+Ethylene    		Ethylene
+Isoprene    		Isoprene
+Toluene    		Toluene
+
+######################
+### Meteorological ###
+######################
+SFC_TMP    		Surface Temperature
+Dewpoint    		Dewpoint Temperature
+precip    		Precipitation
+WSPD10    		10m Wind Speed
+WDIR10    		10m Wind Direction
+RH    			Relative Humidity
+Solar_Rad    		Solar Radiation
+SRAD_ETA_CLR    	Clear Sky ETASolRad
+SRAD_ETA_ADJ    	Adjusted ETASolRad
+SRAD_BEIS_CLR    	ClearSky BEISSolRad
+SRAD_BEIS_ADJ    	Adjusted BEISSolRad
+CLDTRANS    		Cloud Transmisivity
+AOD_340    		AOD340
+AOD_380    		AOD380
+AOD_440    		AOD440
+AOD_500    		AOD500
+AOD_675    		AOD675
+AOD_870    		AOD870
+AOD_1020    		AOD1020
+AOD_1640    		AOD1640
+H2OCOL    		Column H2O
+
+#################
+### Particles ###
+#################
+SO4    			SO4
+NO3    			NO3
+NH4    			NH4
+EC    			EC
+OC    			OC
+TC    			TC
+other    		PMOther
+ncom    		NCOM
+Cl    			Cl Ion
+Na    			Na Ion
+PM_TOT    		PM2.5 Mass(I+J)
+PM_FRM    		PM2.5 FRM Equiv.(I+J)
+PM25_SO4    		PM2.5 SO4
+PM25_NO3   		PM_2.5 NO3
+PM25_NH4    		PM_2.5 NH4
+PM25_TOT    		PM_2.5 Total Mass
+PM25_FRM    		PM_2.5 FRM Equiv.
+PM25_EC    		PM_2.5 EC
+PM25_OC    		PM_2.5 OC
+PM25_TC    		PM_2.5 TC
+PM25_Cl    		PM_2.5 Cl Ion
+PM25_Na    		PM_2.5 Na Ion
+PMC_SO4    		PM_Coarse SO4
+PMC_NO3    		PM_Coarse NO3
+PMC_NH4    		PM_Coarse NH4
+PMC_TOT    		PM_Coarse Total Mass
+PMC_Cl    		PM_Coarse Cl Ion
+PMC_Na    		PM_Coarse Na Ion
+PM10    		PM10 Mass
+Na    			Sodium(Na)
+Cl    			Chlorine(Cl)
+Fe    			Iron(Fe)
+Al    			Aluminium(Al)
+Si    			Silicon(Si)
+Ti    			Titanium(Ti)
+Ca    			Calcium(Ca)
+Mg    			Magnesium(Mg)
+K    			Potassium(K)
+Mn    			Mangenese(Mn)
+soil    		Soil(IMPROVE Eqn.)
+
+##########################
+### Wet/Dry Deposition ###
+##########################
+SO4_dep    		SO4(wetdep)
+SO4_conc    		SO4(wetconc)
+NO3_dep    		NO3(wetdep)
+NO3_conc    		NO3(wetconc)
+NH4_dep    		NH4(wetdep)
+NH4_conc    		NH4(wetconc)
+Cl_dep    		Cl Ion(wetdep)
+Cl_conc    		Cl Ion(wetconc)
+CA_dep    		Ca(wetdep)
+CA_conc    		Ca(wetconc)
+MG_dep    		Mg(wetdep)
+MG_conc    		Mg(wetconc)
+K_dep    		K(wetdep)
+K_conc    		K(wetconc)
+NA_dep    		Na(wetdep)
+NA_conc    		Na(wetconc)
+HGconc    		Hg(wetconc)
+HGdep    		Hg(wetdep)
+SO4_ddep    		SO4(drydep)
+NO3_ddep    		NO3(drydep)
+NH4_ddep    		NH4(drydep)
+HNO3_ddep    		HNO3(drydep)
+TNO3_ddep    		TNO3(drydep)
+O3_ddep    		O3(drydep)
+SO2_ddep    		SO2(drydep)
+
+##############
+### Toxics ###
+##############
+Acrolein    		Acrolein
+Acrylonitrile    	Acrylonitrile
+Acetaldehyde   	        Acetaldehyde
+Benzene    		Benzene
+BR2_C2_12    		BR2_C2_12
+Butadiene    		13Butadiene13
+Cadmium_PM10    	Cadmium_PM10
+Cadmium_PM25    	Cadmium_PM25
+Carbontet    		Carbontet
+Chromium_PM10    	Chromium_PM10
+Chromium_PM25    	Chromium_PM25
+CHCL3    		CHCL3
+CL_ETHE    		CL_ETHE
+CL2    			CL2
+CL2_C2_12    		CL2_C2_12
+CL2_ME    		CL2_ME
+CL3_ETHE    		CL3_ETHE
+CL4_ETHE    		CL4_ETHE
+CL4_Ethane1122    	CL4_Ethane1122
+CR_III_PM10    		CR_III_PM10
+CR_III_PM25    		CR_III_PM25
+CR_VI_PM10    		CR_VI_PM10
+CR_VI_PM25    		CR_VI_PM25
+Dichlorobenzene    	Dichlorobenzene
+Formaldehyde    	Formaldehyde
+Lead_PM10    		Lead_PM10
+Lead_PM25    		Lead_PM25
+Manganese_PM10    	Manganese_PM10
+Manganese_PM25    	Manganese_PM25
+MEOH    		MEOH
+MXYL    		MXYL
+Nickel_PM10    		Nickel_PM10
+Nickel_PM25    		Nickel_PM25
+OXYL    		OXYL
+Propdichloride    	Propdichloride
+PXYL    		PXYL
+Toluene    		Toluene
