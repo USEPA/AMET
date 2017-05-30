@@ -1,0 +1,105 @@
+#########################################################################
+#------		INPUT FILE	INPUT FILE	INPUT FILE
+#-----------------------------------------------------------------------#
+#
+#		PLOTS Model and Wind Profile wind vectors
+#
+#	Version: 	1.1
+#	Date:		Jan 22, 2008
+#	Contributors:	Robert Gilliam
+#
+#	Developed by and for NOAA, ARL, ASMD on assignment to US EPA
+#-----------------------------------------------------------------------#
+# Change LOG
+#  (06/15/2004)
+#	 Initial deveopment: The program currently reads a configuration file
+#	 that is placed in the directory where MET_wind_vec_prof.R is executed, or in the
+#	 instance of web use, the input file is modified with web specs. 
+#------------------------------------------------------------------------
+#  (01/22/2008)
+#   Modified file names to be better descriptive of purpose and fit into the
+#   contex of the new distribution.
+#------------------------------------------------------------------------
+# Version 1.2, May 6, 2013, Rob Gilliam
+#  - better formatting
+#########################################################################
+
+#########################################################################
+#       Configurable DATE Definitions
+#########################################################################
+ hs <-0
+ he <-23
+ ds <-as.numeric(Sys.getenv("AMET_DD"))
+ de <-as.numeric(Sys.getenv("AMET_DD"))
+ ms <-as.numeric(Sys.getenv("AMET_MM"))
+ me <-as.numeric(Sys.getenv("AMET_MM"))
+ ys <-as.numeric(Sys.getenv("AMET_YY"))
+ ye <-as.numeric(Sys.getenv("AMET_YY"))
+
+ initutc <-as.numeric(Sys.getenv("AMET_INITUTC"))
+ fcasthr <-c(as.numeric(unlist(strsplit(Sys.getenv("AMET_ZLIM")," ")))[1],
+             as.numeric(unlist(strsplit(Sys.getenv("AMET_ZLIM")," ")))[2])
+
+#########################################################################
+#	Database/Tables/Query Specifications
+#########################################################################
+ project    <-Sys.getenv("AMET_PROJECT")
+ statid     <-unlist(strsplit(Sys.getenv("AMET_SITEID")," "))
+ figdir     <-Sys.getenv("AMET_OUT")
+ savefile   <-FALSE
+ processprof<-TRUE
+ plotprof   <-TRUE
+
+ zlims <-c(as.numeric(unlist(strsplit(Sys.getenv("AMET_ZLIM")," ")))[1],
+           as.numeric(unlist(strsplit(Sys.getenv("AMET_ZLIM")," ")))[2])
+
+#########################################################################
+#	Plot/Output Format
+#########################################################################
+ plotfmt  <-Sys.getenv("AMET_PTYPE")
+ plotsize	<-1.4						# Plot size magnification (1 is default)
+ pwidth   <-1000					# Width of plot in pixels
+ pheight  <-754						# Height of plot in pixels
+ symb     <-15						# Plot symbol (15-square,19-circle)
+ symbsiz  <-0.7*plotsize  # Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+
+ plotopts <-list(plotsize=plotsize, plotfmt=plotfmt,symb=symb,symbsiz=symbsiz,pheight=pheight,pwidth=pwidth)
+
+#########################################################################
+#	Query Definitions and Prep.
+#########################################################################
+
+ varxtrac<-" slevel, hlevel , U_mod,U_ob, V_mod,V_ob "
+ Hloc<-4
+ Uloc<-5
+ Vloc<-7
+
+ otime	<-0:23
+ extra<-"  "
+
+#########################################################################
+ ##  Query String Generation, Do not modify
+ varxtrac   <-paste(" DATE_FORMAT(ob_date,'%Y%m%d'), ob_time, ",varxtrac)
+ statstr    <-paste(" stat_id ='",statid,"' ",sep="")
+ if(statid[1] == "ALL"){
+  statstr <-paste(" stat_id !='",statid,"' ",sep="")
+ }
+ levstr     <-paste(" AND hlevel BETWEEN",zlims[1],"AND",zlims[2],"AND init_utc=",initutc," AND fcast_hr BETWEEN ",fcasthr[1]," AND ",fcasthr[2])
+ if(initutc == -1){
+   levstr     <-paste(" AND hlevel BETWEEN",zlims[1],"AND",zlims[2])
+ }
+ table  <-paste(project,"_profiler",sep="")
+ otime  <-ifelse(otime<10,paste("0",otime,":00:00",sep=""),paste(otime,":00:00",sep=""))
+ var    <-c("Temperature","Wind Speed","Wind Direction","Signal Noise Ratio","PBL Height")
+ varid  <-c("T","WS","WD","SNR","PBLH")
+ nvar   <-length(var)
+
+#########################################################################
+#	Auto-Realtime Options
+#########################################################################
+ realtime   <-FALSE		# Option to run script in real-time automated mode
+ tserieslen <-10			# Option used in real-time mode to lag stats by "n" days
+
+#########################################################################
+#----- 			END OF INPUT FILE	------------------------#
+#########################################################################

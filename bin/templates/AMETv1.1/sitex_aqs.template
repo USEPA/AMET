@@ -1,0 +1,66 @@
+#!/bin/sh
+
+#
+# script for running the cmp_airs site-extract program on Unix
+#
+
+EXEC=  
+
+## define time window
+  START_DATE=;  export START_DATE
+  START_TIME=0;        export START_TIME
+
+  END_DATE=;    export END_DATE
+  END_TIME=230000;     export END_TIME
+
+## flag to indicate to compute maximun hourly daily values
+## else output hourly values
+  COMPUTE_MAX=N; export COMPUTE_MAX
+
+## adjust for daylight savings 
+  APPLY_DLS=N; export APPLY_DLS 
+
+## define ozone species 
+  OZONE="O3,ppm"; export OZONE
+
+## define missing values string
+  MISSING="-999"; export MISSING
+
+## define partial day settings (from_hour, to_hour)
+#  PARTIAL_DAY="11,17"; export PARTIAL_DAY
+
+## Projection sphere type (use type #19 to match CMAQ)
+  IOAPI_ISPH=19; export IOAPI_ISPH
+
+#############################################################
+#  Input files
+#############################################################
+
+# ioapi input files containing VNAMES (max of 10)
+ M3_FILE_1=;  export M3_FILE_1
+
+
+
+
+
+
+#  SITE FILE containing site-id, longitude, latitude
+SITE_FILE=; export SITE_FILE
+
+# : input data file                        
+#IN_TABLE=obs_data/airs01.txt; export IN_TABLE
+IN_TABLE=; export IN_TABLE
+
+
+#############################################################
+#  Output files
+#############################################################
+
+#  output table 
+  OUT_TABLE=; export OUT_TABLE
+
+  AVG_TABLE=; export AVG_TABLE
+ ${EXEC}
+
+ echo run completed, output file = ${OUT_TABLE}
+

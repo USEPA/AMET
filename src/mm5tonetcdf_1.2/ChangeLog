@@ -1,0 +1,18 @@
+Fri Feb  8 18:33:12 GMT 2003 Graziano <graziano.giuliani@aquila.infn.it>
+
+	* Version 1.2
+	* Bug corrected in fprintf format for MRF values in MM5_header.c
+	  in function MM5_print_headinfo.
+	* Updated README file for examiner description and non-standard
+	  zlib or netcdflib position.
+	* Extracted INSTITUTION definition from archiver.c and created
+	  local.h to allow easier modification to the value.
+	* Added some more description in README file.
+
+Sat Feb  1 12:41:40 GMT 2003 Graziano <graziano.giuliani@aquila.infn.it>
+
+	* Version 1.1
+	* Added examiner program to have a look at MM5 ouput content
+	* Added example usage in README and archiver.c
+	* Modified archiver for missing gethostbyname or getpwuid
+	* Check for header presence in configure.in and all C files

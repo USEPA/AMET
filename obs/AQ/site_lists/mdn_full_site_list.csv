@@ -1,0 +1,120 @@
+stat_id	num_stat_id	stat_name	network	state	city	start_date	end_date	lat	lon	elevation
+AB08	1	Esther	mdn	AB		3/5/2000	5/29/2001	51.6667	-110.2	707
+AB13	2	Henry Kroeger	mdn	AB		9/21/2004		51.4242	-110.8325	779
+AB14	3	Genesee	mdn	AB		7/25/2006		53.3016	-114.2016	761
+AK99	4	Ambler	mdn	AK		5/12/2004	8/9/2005	67.0931	-157.8689	88
+AL02	5	Delta Elementary	mdn	AL		6/5/2001		30.7905	-87.8497	46
+AL03	6	Centreville	mdn	AL		6/20/2000		32.9035	-87.2499	135
+AL24	7	Bay Road	mdn	AL		5/22/2001		30.4746	-88.1411	6
+AZ02	8	Sycamore Canyon	mdn	AZ		2/28/2006		35.1406	-111.9692	2046
+BC06	9	Reifel Island	mdn	BC		3/28/2000	2/18/2004	49.1	-123.17	1
+CA20	10	Yurok Tribe-Requa	mdn	CA		8/17/2006		41.5588	-124.0916	110
+CA72	11	San Jose	mdn	CA		1/11/2000		37.415	-122.0483	1
+CA75	12	Sequoia National Park-Giant Forest	mdn	CA		7/22/2003		36.5669	-118.7772	1902
+CA94	13	Converse Flats	mdn	CA		4/20/2006		34.1938	-116.9117	1837
+CA97	14	Covelo	mdn	CA		12/16/1997	12/1/2000	39.8237	-123.2382	418
+CO97	15	Buffalo Pass - Summit Lake	mdn	CO		9/29/1998		40.5378	-106.6764	3234
+CO99	16	Mesa Verde National Park-Chapin Mesa	mdn	CO		12/26/2001		37.1981	-108.4903	2172
+DE02	17	Lewes	mdn	DE		3/6/1996	10/8/1996	38.7722	-75.0992	2
+FL04	18	Andytown	mdn	FL		1/6/1998		26.1667	-80.5	5
+FL05	19	Chassahowitzka National Wildlife Refuge	mdn	FL		7/1/1997		28.7494	-82.5542	3
+FL11	20	Everglades National Park-Research Center	mdn	FL		3/5/1996		25.39	-80.68	2
+FL32	21	Orlando	mdn	FL		9/5/2003		28.5923	-81.1903	21
+FL34	22	Everglades Nutrient Removal Project	mdn	FL		7/8/1997		26.6556	-80.3972	10
+GA09	23	Okefenokee National Wildlife Refuge	mdn	GA		7/29/1997		30.7403	-82.1286	47
+GA22	24	Jefferson Street	mdn	GA		6/11/2002	6/29/2004	33.7769	-84.4139	265
+GA40	25	Yorkville	mdn	GA		6/13/2000		33.9311	-85.0461	395
+HD01	26	Huejutla	mdn	HD		10/26/2004	2/28/2006	21.1583	-98.3706	180
+IL11	27	Bondville	mdn	IL		1/6/1999		40.0533	-88.3719	212
+IN20	28	Roush Lake	mdn	IN		10/26/2000		40.84	-85.4639	244
+IN21	29	Clifty Falls State Park	mdn	IN		1/12/2001		38.7622	-85.4202	256
+IN26	30	Fort Harrison State Park	mdn	IN		4/4/2003		39.8583	-86.0208	260
+IN28	31	Bloomington	mdn	IN		12/15/2000		39.1464	-86.6133	256
+IN34	32	Indiana Dunes National Lakeshore	mdn	IN		10/27/2000		41.6325	-87.0878	208
+KY10	33	Mammoth Cave National Park-Houchin Meadow	mdn	KY		8/27/2002		37.1317	-86.148	236
+LA05	34	Lake Charles	mdn	LA		10/9/1998		30.1772	-93.2144	5
+LA10	35	Chase	mdn	LA		10/8/1998		32.0983	-91.7108	20
+LA23	36	Alexandria	mdn	LA		2/1/2001		31.1744	-92.4128	1
+LA28	37	Hammond	mdn	LA		10/7/1998		30.5031	-90.3769	9
+MA01	38	North Atlantic Coastal Lab	mdn	MA		7/29/2003		41.9758	-70.0247	41
+MD08	39	Piney Reservoir	mdn	MD		6/29/2004		39.7053	-79.0122	769
+MD99	40	Beltsville	mdn	MD		6/1/2004		39.028	-76.8171	46
+ME02	41	Bridgton	mdn	ME		6/3/1997		44.1075	-70.7289	222
+ME09	42	Greenville Station	mdn	ME		9/3/1996		45.4897	-69.6644	322
+ME95	43	Wolapomomqot Ciw Wocuk	mdn	ME		10/4/2005		45.3453	-67.9983	258
+ME96	44	Casco Bay-Wolfe’s Neck Farm	mdn	ME		1/6/1998		43.8319	-70.0628	15
+ME98	45	Acadia National Park-McFarland Hill	mdn	ME		3/5/1996		44.3739	-68.2606	129
+MI31	46	Sterling Heights	mdn	MI		9/27/2005		42.597	-83.0076	187
+MI48	47	Seney National Wildlife Refuge-Headquarters	mdn	MI		11/11/2003		46.2875	-85.9541	216
+MN16	48	Marcell Experimental Forest	mdn	MN		2/27/1996		47.5311	-93.4686	431
+MN18	49	Fernberg	mdn	MN		3/5/1996		47.9464	-91.4961	524
+MN22	50	Mille Lacs Band of Ojibwe	mdn	MN		4/9/2002		46.2053	-93.7589	384
+MN23	51	Camp Ripley	mdn	MN		7/2/1996		46.2494	-94.4972	410
+MN27	52	Lamberton	mdn	MN		7/2/1996		44.2372	-95.3006	343
+MO46	53	Mingo National Wildlife Refuge	mdn	MO		3/26/2002		36.9716	-90.1433	105
+MS22	54	Oak Grove	mdn	MS		6/16/2000		30.985	-88.9319	100
+MT05	55	Glacier National Park-Fire Weather Station	mdn	MT		10/28/2003		48.5103	-113.9958	980
+NB02	56	St. Andrews	mdn	NB		7/2/1996	12/9/2003	45.0833	-67.0833	10
+NC08	57	Waccamaw State Park	mdn	NC		2/27/1996		34.2592	-78.4777	10
+NC26	58	Candor	mdn	NC		11/8/2005		35.2632	-79.8365	198
+NC42	59	Pettigrew State Park	mdn	NC		2/28/1996		35.7373	-76.5149	2
+ND01	60	Lostwood National Wildlife Refuge	mdn	ND		11/25/2003		48.6424	-102.4022	692
+NF09	61	Cormak	mdn	NF		5/25/2000		49.3167	-57.3833	168
+NH00	62	Laconia	mdn	NH		5/1/2001	9/30/2003	43.5	-71.5	
+NH02	63	Hubbard Brook	mdn	NH		2/3/2004	2/8/2005	43.9431	-71.7033	250
+NH05	64	New Castle	mdn	NH		4/1/2001	6/30/2002	43.1667	-70.8667	10
+NJ30	65	New Brunswick	mdn	NJ		1/17/2006		40.4728	-74.4226	21
+NM10	66	Caballo	mdn	NM		5/13/1997		33.0625	-107.2917	1280
+NS01	67	Kejimkujik National Park	mdn	NS		7/2/1996		44.4328	-65.2056	155
+NV02	68	Lesperance Ranch	mdn	NV		1/30/2003	1/25/2005	41.5033	-117.4989	1388
+NV98	69	Reno	mdn	NV		10/17/2006		39.5111	-119.7186	1340
+NV99	70	Gibb's Ranch	mdn	NV		2/13/2003	1/27/2005	41.5516	-115.2132	
+NY20	71	Huntington Wildlife	mdn	NY		12/10/1999		43.9731	-74.2231	500
+NY68	72	Biscuit Brook	mdn	NY		3/9/2004		41.9942	-74.5036	634
+NY99	73	West Point	mdn	NY		10/31/2006		41.3508	-74.0486	201
+OA02	74	Puerto A'ngel	mdn	OA		9/28/2004	2/28/2006	15.65	-96.4833	110
+OH02	75	Athens Super Site	mdn	OH		12/28/2004		39.3078	-82.1182	
+OK01	76	McGee Creek	mdn	OK		10/31/2006		34.3154	-95.8893	195
+OK15	77	Newkirk	mdn	OK		3/1/2005		36.9564	-97.0335	349
+OK31	78	Copan	mdn	OK		10/31/2006		36.9081	-95.8823	255
+OK99	79	Stilwell	mdn	OK		4/29/2003		35.7514	-94.6717	304
+ON03	80	"Dorset, Ontario"	mdn	ON		1/21/1997	12/29/1998	45.2239	-78.9311	320
+ON07	81	Egbert	mdn	ON		3/7/2000		44.2333	-79.7833	251
+ON10	82	Burnt Island	mdn	ON		11/27/2001	4/1/2003	45.8083	-82.95	184
+ON11	83	Point Petre	mdn	ON		11/27/2001	4/1/2003	43.8428	-77.1536	78
+OR01	84	Beaverton	mdn	OR		4/15/2003		45.4704	-122.8151	81
+OR10	85	H. J. Andrews Experimental Forest	mdn	OR		12/13/2002		44.2133	-122.2533	436
+PA00	86	Arendtsville	mdn	PA		11/14/2000		39.9231	-77.3078	269
+PA13	87	Allegheny Portage Railroad National Historic Site	mdn	PA		1/7/1997		40.457	-78.56	739
+PA19	88	Centralia	mdn	PA		5/23/2006		40.7987	-76.3381	485
+PA30	89	Erie	mdn	PA		6/20/2000		42.1558	-80.1134	177
+PA37	90	Holbrook	mdn	PA		5/27/1999		39.8161	-80.285	347
+PA47	91	Millersville	mdn	PA		11/26/2002		39.99	-76.3862	85
+PA60	92	Valley Forge	mdn	PA		11/23/1999		40.1166	-75.8833	46
+PA72	93	Milford	mdn	PA		9/14/2000		41.3275	-74.8203	212
+PA90	94	Hills Creek State Park	mdn	PA		1/7/1997		41.8043	-77.1903	476
+PQ04	95	St. Anicet	mdn	PQ		4/14/1998		45.2	-74.0333	49
+PQ05	96	Mingan	mdn	PQ		4/15/1998		50.2667	-64.2333	11
+SC03	97	Savannah River	mdn	SC		10/24/2006		33.245	-81.6505	90
+SC05	98	Cape Romain National Wildlife Refuge	mdn	SC		3/2/2004		32.9419	-79.6591	
+SC09	99	Alibi Hunt Club	mdn	SC		11/8/2005		33.2307	-80.3602	16
+SC19	100	Congaree Swamp	mdn	SC		3/5/1996		33.8145	-80.7809	145
+SK12	101	Bratt's Lake BSRN	mdn	SK		5/31/2001		50.2	-104.7167	
+TN11	102	Great Smoky Mountains National Park-Elkmont	mdn	TN		1/30/2002		35.6645	-83.5903	640
+TX21	103	Longview	mdn	TX		3/12/1996		32.3786	-94.7117	103
+TX50	104	Fort Worth	mdn	TX		8/28/2001	5/16/2006	32.6932	-97.2496	212
+VA08	105	Culpeper	mdn	VA		11/19/2002		38.4222	-78.1044	163
+VA28	106	Shenandoah National Park-Big Meadows	mdn	VA		10/22/2002		38.5225	-78.4358	1074
+VA98	107	Harcum	mdn	VA		12/17/2004		37.5312	-76.4928	13
+VT99	108	Underhill	mdn	VT		7/27/2004		44.5283	-72.8689	399
+WA18	109	Seattle/NOAA	mdn	WA		3/19/1996		47.685	-122.258	25
+WI08	110	Brule River	mdn	WI		3/5/1996		46.7466	-91.6055	207
+WI09	111	Popple River	mdn	WI		3/5/1996		45.7964	-88.3994	421
+WI10	112	Potawatomi	mdn	WI		6/7/2005		45.5633	-88.8082	563
+WI22	113	Milwaukee	mdn	WI		10/3/2002		43.0751	-87.8835	222
+WI31	114	Devil's Lake	mdn	WI		1/11/2001		43.4352	-89.6801	389
+WI32	115	Middle Village	mdn	WI		1/22/2002		44.9308	-88.755	319
+WI36	116	Trout Lake	mdn	WI		3/5/1996		46.0528	-89.6531	501
+WI99	117	Lake Geneva	mdn	WI		1/7/1997		42.5792	-88.5006	288
+WY07	118	Yellowstone National Park - Yellowstone Lake	mdn	WY		2/5/2002	10/20/2004	44.5654	-110.4003	2468
+WY08	119	Yellowstone National Park-Tower Falls	mdn	WY		10/21/2004		44.9172	-110.4203	1912

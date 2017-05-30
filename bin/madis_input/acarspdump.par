@@ -1,0 +1,82 @@
+---------------------------------------------------------------------------------
+              Database                                    FIXED LENGTH SECTION
+              --------
+FSL           'FSL' or 'AWIPS'
+---------------------------------------------------------------------------------
+              Time Window (use 0,0,0 for default)         FIXED LENGTH SECTION
+              -----------
+-30             Number of minutes relative to nominal time at which to start window
+30             Number of minutes relative to nominal time at which to end window
+1             0 - return all records within the file containing nominal time
+              1 - return one record per fixed station, closest to nominal time
+              2 - return one record per fixed station, closest to start of window
+              3 - return one record per fixed station, closest to end of window
+              4 - return all records within *window*
+---------------------------------------------------------------------------------
+              Domain Filter                               FIXED LENGTH SECTION
+              -------------
+3             0 - don't filter
+              1 - return stations within latitude/longitude corners
+              2 - return stations within specified Polar Stereographic grid
+              3 - return stations within specified Lambert Conformal Conic grid
+
+              Latitude/Longitude Corners (lines skipped if not Domain Filter 1)
+              --------------------------
+37.0          SW corner latitude (north)   
+-109.0        SW corner longitude (east)
+41.0          NE corner latitude (north)
+-102.0        NE corner longitude (east)
+
+              Polar Stereo Specification (lines skipped if not Domain Filter 2)
+              --------------------------
+190500.0      Grid box size (meters)
+7.838         Latitude (north) of 1st grid point (lower left = SW)
+-141.028      Longitude (east) of 1st grid point (lower left = SW)
+-95.0         Orientation longitude (east)                 
+33.0          I-coordinate of pole
+45.0          J-coordinate of pole
+60.0          Lat (north) at which X-Y scale is true
+65            Number of grid points in X-direction (I dimension)
+43            Number of grid points in Y-direction (J dimension)
+
+              Lambert Conformal Conic Specification (lines skipped if not Domain Filter 3)
+              -------------------------------------
+R-DX      Grid box size (meters)
+R-LAT1         Latitude (north) of 1st grid point (lower left = SW)
+R-LON1      Longitude (east) of 1st grid point (lower left = SW)
+R-CLON        Orientation longitude (east)
+R-TAN1          Latitude (north) of first Lambert Conformal tangent
+R-TAN2          Latitude (north) of second Lambert Conformal tangent
+R-NX           Number of grid points in X-direction (I dimension)
+R-NY           Number of grid points in Y-direction (J dimension)
+---------------------------------------------------------------------------------
+              QC Filter                                   FIXED LENGTH SECTION    
+              ---------
+99              0 - none
+               1 - coarse
+               2 - screened
+              99 - highest possible
+---------------------------------------------------------------------------------
+	      Time Selection                              FIXED LENGTH SECTION
+              --------------
+1             0 - Julian format (YYJJJHHMM)
+              1 - Month/Day format (YYYYMMDD_HHMM)
+0             0 - Use the nominal time line below
+              1 - Use the current time as the nominal time
+R-DATE        Nominal time (in selected format)
+---------------------------------------------------------------------------------
+	      Station Selection                           FIXED LENGTH SECTION
+              -----------------
+0             0 - Get all stations
+              1 - Get only the station whose name is on the next line
+DEN           Single station name
+---------------------------------------------------------------------------------
+              Variables (1-4 per line, until end of file) VARIABLE LENGTH SECTION
+              --------- (see doc/acarsp_variable_list.txt)
+HT
+P         
+U         
+V         
+T         
+LAT       
+LON       

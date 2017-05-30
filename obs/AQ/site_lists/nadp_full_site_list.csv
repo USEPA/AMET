@@ -1,0 +1,325 @@
+stat_id,num_stat_id,stat_name,network,state,city,start_date,end_date,lat,lon,elevation
+AK01,1,Poker Creek,nadp,AK,Fairbanks North Star,12/29/1992, ,65.155,-147.491,230
+AK02,2,Juneau,nadp,AK,Juneau,6/22/2004, ,58.5139,-134.7843,25
+AK03,3,Denali National Park-Mt. McKinley,nadp,AK,Denali,6/17/1980, ,63.7232,-148.9676,661
+AK06,4,Gates of the Arctic National Park - Bettles,nadp,AK,Yukon-Koyukuk,11/4/2008, ,66.906,-151.683,630
+AK97,5,Katmai National Park - King Salmon,nadp,AK,Bristol Bay, , ,58.6794,-156.6664, 
+AK99,6,Ambler,nadp,AK,Northwest Arctic,5/12/2004,8/9/2005,67.0931,-157.8689,88
+AL02,7,Delta Elementary,nadp,AL,Baldwin,6/5/2001, ,30.7905,-87.8497,46
+AL10,8,Black Belt Research & Extension Center,nadp,AL,Dallas,8/31/1983, ,32.4583,-87.2422,58
+AL24,9,Bay Road,nadp,AL,Mobile,5/29/2001, ,30.4746,-88.1411,6
+AL99,10,Sand Mountain Research & Extension Center,nadp,AL,De Kalb,10/2/1984, ,34.2886,-85.9699,349
+AR02,11,Warren 2WSW,nadp,AR,Bradley,5/25/1982, ,33.605,-92.0972,76
+AR03,12,Caddo Valley,nadp,AR,Clark,12/30/1983, ,34.1795,-93.0992,71
+AR16,13,Buffalo National River-Buffalo Point,nadp,AR,Marion,7/13/1982, ,36.0839,-92.5869,308
+AR27,14,Fayetteville,nadp,AR,Washington,5/13/1980, ,36.1006,-94.1733,391
+AS01,15,Samoa,nadp,AS, ,5/20/1980,10/13/1992,-14.2525,-170.5633,82
+AZ01,16,Tombstone,nadp,AZ,Cochise,3/27/1979,9/1/1981,31.7089,-110.0572,1398
+AZ03,17,Grand Canyon National Park-Hopi Point,nadp,AZ,Coconino,8/11/1981, ,36.0717,-112.155,2152
+AZ06,18,Organ Pipe Cactus National Monument,nadp,AZ,Pima,4/15/1980, ,31.9506,-112.8,506
+AZ97,19,Petrified Forest National Park-Rainbow Forest,nadp,AZ,Apache,12/3/2002, ,34.8224,-109.8925,1707
+AZ98,20,Chiricahua,nadp,AZ,Cochise,2/23/1999, ,32.0097,-109.3889,1570
+AZ99,21,Oliver Knoll,nadp,AZ,Graham,8/25/1981, ,33.0714,-109.8647,1173
+CA28,22,Kings River Experimental Watershed,nadp,CA,Fresno,4/24/2007, ,37.0592,-119.1822,2000
+CA34,23,Bishop,nadp,CA,Inyo,4/15/1980,6/22/1982,37.3708,-118.3664,1252
+CA42,24,Tanbark Flat,nadp,CA,Los Angeles,1/12/1982, ,34.2071,-117.7618,853
+CA45,25,Hopland,nadp,CA,Mendocino,10/3/1979, ,39.0045,-123.086,253
+CA50,26,Sagehen Creek,nadp,CA,Nevada,11/6/2001, ,39.4315,-120.2397,1931
+CA66,27,Pinnacles National Monument-Bear Valley,nadp,CA,San Benito,11/2/1999, ,36.4834,-121.157,317
+CA67,28,Joshua Tree National Park-Black Rock,nadp,CA,San Bernardino,9/19/2000, ,34.0695,-116.3889,1239
+CA68,29,Palomar Mountain,nadp,CA,San Diego,3/15/1983,1/12/1988,33.3089,-116.8539,1695
+CA75,30,Sequoia National Park-Giant Forest,nadp,CA,Tulare,7/8/1980, ,36.5661,-118.7776,1902
+CA76,31,Montague,nadp,CA,Siskiyou,6/25/1985, ,41.7662,-122.4798,799
+CA85,32,Channel Islands National Park,nadp,CA,Ventura,7/22/1980,2/19/1982,34.0158,-119.3619,49
+CA88,33,Davis,nadp,CA,Yolo,9/4/1978, ,38.5357,-121.7762,18
+CA94,34,Converse Flats,nadp,CA,San Bernardino,5/9/2006, ,34.1938,-116.9131,1724
+CA95,35,Death Valley National Park-Cow Creek,nadp,CA,Inyo,2/8/2000,5/31/2005,36.589,-116.978,125
+CA96,36,Lassen Volcanic National Park-Manzanita Lake,nadp,CA,Shasta,6/13/2000, ,40.539,-121.5772,1754
+CA98,37,Chuchupate Ranger Station,nadp,CA,Ventura,8/2/1983,1/23/1996,34.8061,-119.0114,1614
+CA99,38,Yosemite National Park-Hodgdon Meadow,nadp,CA,Tuolumne,12/8/1981, ,37.7961,-119.8581,1393
+CO00,39,Alamosa,nadp,CO,Alamosa,4/22/1980, ,37.4414,-105.8653,2298
+CO01,40,Las Animas Fish Hatchery,nadp,CO,Bent,10/4/1983, ,38.1178,-103.3161,1213
+CO02,41,Niwot Saddle,nadp,CO,Boulder,6/5/1984, ,40.0547,-105.5891,3520
+CO08,42,Four Mile Park,nadp,CO,Garfield,12/29/1987, ,39.4025,-107.3454,2502
+CO10,43,Gothic,nadp,CO,Gunnison,2/2/1999, ,38.9581,-106.985,2926
+CO15,44,Sand Spring,nadp,CO,Moffat,3/20/1979, ,40.5077,-107.7025,1998
+CO18,45,Ripple Creek Pass,nadp,CO,Rio Blanco,5/13/2003,1/13/2009,40.0851,-107.3118,2929
+CO19,46,Rocky Mountain National Park-Beaver Meadows,nadp,CO,Larimer,5/29/1980, ,40.3639,-105.5806,2490
+CO21,47,Manitou,nadp,CO,Teller,10/17/1978, ,39.1008,-105.0933,2362
+CO22,48,Pawnee,nadp,CO,Weld,5/22/1979, ,40.8055,-104.7547,1641
+CO90,49,Niwot Ridge-Southeast,nadp,CO,Boulder,1/24/2006, ,40.0358,-105.5358,3022
+CO91,50,Wolf Creek Pass,nadp,CO,Mineral,5/26/1992, ,37.4686,-106.7903,3292
+CO92,51,Sunlight Peak,nadp,CO,Garfield,1/13/1988, ,39.4264,-107.3799,3218
+CO93,52,Buffalo Pass - Dry Lake,nadp,CO,Routt,10/14/1986, ,40.5347,-106.7811,2538
+CO94,53,Sugarloaf,nadp,CO,Boulder,11/4/1986, ,39.9939,-105.48,2524
+CO95,54,Engineer Mountain Guard Station,nadp,CO,San Juan,7/29/1986,1/2/1990,37.6597,-107.7992,2758
+CO96,55,Molas Pass,nadp,CO,San Juan,7/29/1986, ,37.7514,-107.6853,3249
+CO97,56,Buffalo Pass - Summit Lake,nadp,CO,Routt,2/7/1984, ,40.5383,-106.6766,3234
+CO98,57,Rocky Mountain National Park-Loch Vale,nadp,CO,Larimer,8/16/1983, ,40.2878,-105.6628,3159
+CO99,58,Mesa Verde National Park-Chapin Mesa,nadp,CO,Montezuma,4/28/1981, ,37.1981,-108.4903,2172
+CT15,59,Abington,nadp,CT,Windham,1/26/1999, ,41.84,-72.0101,209
+DE99,60,Trap Pond State Park,nadp,DE,Sussex,5/27/2003,9/23/2008,38.4994,-75.4482,12
+FL00,61,Austin-Cary Forest,nadp,FL,Alachua,10/10/1978,7/14/1981,29.7603,-82.1989,46
+FL03,62,Bradford Forest,nadp,FL,Bradford,10/10/1978, ,29.9748,-82.1978,44
+FL05,63,Chassahowitzka National Wildlife Refuge,nadp,FL,Citrus,8/27/1996, ,28.7486,-82.5551,3
+FL11,64,Everglades National Park-Research Center,nadp,FL,Dade,6/17/1980, ,25.39,-80.68,2
+FL14,65,Quincy,nadp,FL,Gadsden,3/13/1984, ,30.5486,-84.6004,60
+FL23,66,Sumatra,nadp,FL,Liberty,1/26/1999, ,30.1106,-84.9902,14
+FL32,67,Orlando,nadp,FL,Orange,12/14/2005, ,28.5926,-81.1904,21
+FL41,68,Verna Well Field,nadp,FL,Sarasota,8/25/1983, ,27.3801,-82.2831,25
+FL99,69,Kennedy Space Center,nadp,FL,Brevard,8/2/1983, ,28.5428,-80.644,2
+GA09,70,Okefenokee National Wildlife Refuge,nadp,GA,Charlton,6/3/1997, ,30.7403,-82.1286,47
+GA20,71,Bellville,nadp,GA,Evans,4/26/1983, ,32.1411,-81.9714,62
+GA23,72,Fort Frederica National Monument,nadp,GA,Glynn,9/3/1985,9/27/1988,31.2253,-81.3922,2
+GA33,73,Sapelo Island,nadp,GA,McIntosh,11/26/2002, ,31.3961,-81.2811,3
+GA41,74,Georgia Station,nadp,GA,Pike,10/3/1978, ,33.1778,-84.4061,270
+GA50,75,Tifton ARS,nadp,GA,Tift,10/4/1983,2/10/1994,31.4731,-83.5331,104
+GA98,76,Skidaway,nadp,GA,Chatham,6/18/2002,5/24/2005,31.9958,-81.0185,3
+GA99,77,Chula,nadp,GA,Tift,2/10/1994, ,31.5183,-83.5483,107
+HI00,78,Mauna Loa,nadp,HI,Hawaii,6/10/1980,9/28/1993,19.5392,-155.5792,3399
+HI99,79,Hawaii Volcanoes National Park-Thurston,nadp,HI,Hawaii,11/21/2000,2/15/2005,19.4194,-155.2403,1195
+IA08,80,Big Springs Fish Hatchery,nadp,IA,Clayton,8/14/1984, ,42.9097,-91.47,229
+IA23,81,McNay Research Center,nadp,IA,Lucas,9/11/1984, ,40.9631,-93.3925,320
+ID02,82,Priest River Experimental Forest,nadp,ID,Bonner,12/31/2002, ,48.3518,-116.8397,726
+ID03,83,Craters of the Moon National Monument,nadp,ID,Butte,8/22/1980, ,43.4605,-113.5551,1807
+ID04,84,Headquarters,nadp,ID,Clearwater,7/20/1982,9/25/1991,46.6278,-115.8194,969
+ID11,85,Reynolds Creek,nadp,ID,Owyhee,11/22/1983, ,43.2053,-116.7492,1198
+ID15,86,Smiths Ferry,nadp,ID,Valley,10/9/1984,9/27/2006,44.2978,-116.0636,1442
+IL11,87,Bondville,nadp,IL,Champaign,2/27/1979, ,40.0528,-88.3719,212
+IL18,88,Shabbona,nadp,IL,De Kalb,5/26/1981, ,41.8414,-88.8511,265
+IL19,89,Argonne,nadp,IL,Du Page,3/11/1980,9/28/2004,41.7011,-87.9953,229
+IL35,90,Southern Illinois University,nadp,IL,Jackson,7/31/1979,1/4/1994,37.71,-89.2689,146
+IL46,91,Alhambra,nadp,IL,Madison,1/26/1999, ,38.8689,-89.6219,164
+IL47,92,Salem,nadp,IL,Marion,4/15/1980,11/22/1988,38.6433,-88.9669,173
+IL63,93,Dixon Springs Agricultural Center,nadp,IL,Pope,1/30/1979, ,37.4356,-88.6719,161
+IL78,94,Monmouth,nadp,IL,Warren,1/8/1985, ,40.9333,-90.7231,229
+IL96,95,Bondville N-Con,nadp,IL,Champaign, , ,,, 
+IL99,96,Omega,nadp,IL,Marion,9/26/1989,9/28/1993,38.71,-88.7492,153
+IN20,97,Roush Lake,nadp,IN,Huntington,8/22/1983, ,40.8401,-85.4639,244
+IN22,98,Southwest Purdue Agriculture Center,nadp,IN,Knox,9/25/1984, ,38.7408,-87.4855,134
+IN34,99,Indiana Dunes National Lakeshore,nadp,IN,Porter,7/15/1980, ,41.6318,-87.0881,208
+IN41,100,Agronomy Center for Research and Extension,nadp,IN,Tippecanoe,7/13/1982, ,40.4749,-86.9924,215
+KS07,101,Farlington Fish Hatchery,nadp,KS,Crawford,3/27/1984, ,37.6511,-94.8036,281
+KS31,102,Konza Prairie,nadp,KS,Riley,8/17/1982, ,39.1022,-96.6092,350
+KS32,103,Lake Scott State Park,nadp,KS,Scott,3/27/1984, ,38.6717,-100.9164,863
+KY03,104,Mackville,nadp,KY,Washington,11/29/1983, ,37.7047,-85.0489,293
+KY10,105,Mammoth Cave National Park-Houchin Meadow,nadp,KY,Edmonson,8/27/2002, ,37.1317,-86.148,236
+KY19,106,Seneca Park,nadp,KY,Jefferson,10/7/2003, ,38.2314,-85.6717,184
+KY22,107,Lilley Cornett Woods,nadp,KY,Letcher,9/6/1983, ,37.0778,-82.9936,335
+KY35,108,Clark State Fish Hatchery,nadp,KY,Rowan,8/30/1983, ,38.1183,-83.5469,204
+KY38,109,Land Between the Lakes,nadp,KY,Trigg,10/2/1984,4/16/1996,36.7906,-88.0672,181
+KY99,110,Mulberry Flat,nadp,KY,Trigg,12/27/1994, ,36.9028,-88.0119,122
+LA06,111,Hill Farm Research Station,nadp,LA,Claiborne,11/16/1982,1/26/1988,32.7514,-93.0506,88
+LA12,112,Iberia Research Station,nadp,LA,Iberia,11/16/1982, ,29.931,-91.7165,6
+LA30,113,Southeast Research Station,nadp,LA,Washington,1/18/1983, ,30.7819,-90.2021,77
+MA01,114,North Atlantic Coastal Lab,nadp,MA,Barnstable,12/15/1981, ,41.9758,-70.0247,41
+MA08,115,Quabbin Reservoir,nadp,MA,Franklin,3/5/1982, ,42.3925,-72.3444,306
+MA13,116,East,nadp,MA,Middlesex,2/2/1982, ,42.3839,-71.2147,18
+MD03,117,White Rock Substation,nadp,MD,Carroll,10/3/1984,3/4/2002,39.4089,-76.9953,172
+MD07,118,Catoctin Mountain Park,nadp,MD,Frederick,5/27/2003, ,39.6405,-77.4933,464
+MD08,119,Piney Reservoir,nadp,MD,Garrett,6/29/2004, ,39.7053,-79.0122,769
+MD13,120,Wye,nadp,MD,Queen Annes,3/8/1983, ,38.9131,-76.1525,6
+MD15,121,Smith Island,nadp,MD,Somerset,6/1/2004, ,37.9925,-76.0345,2
+MD18,122,Assateague Island National Seashore-Woodcock,nadp,MD,Worcester,9/5/2000, ,38.2528,-75.1529,2
+MD99,123,Beltsville,nadp,MD,Prince Georges,6/1/2004, ,39.028,-76.8171,46
+ME00,124,Caribou,nadp,ME,Aroostook,4/14/1980, ,46.8675,-68.0134,191
+ME02,125,Bridgton,nadp,ME,Cumberland,9/30/1980, ,44.1075,-70.7289,222
+ME04,126,Carrabassett Valley,nadp,ME,Franklin,3/12/2002, ,45.0803,-70.2119,270
+ME08,127,Gilead,nadp,ME,Oxford,9/28/1999, ,44.4003,-71.0098,212
+ME09,128,Greenville Station,nadp,ME,Piscataquis,11/20/1979, ,45.4891,-69.6647,322
+ME95,129,Wolapomomqot Ciw Wocuk,nadp,ME,Penobscot,6/12/2002,12/12/2006,45.3406,-67.9876,182
+ME96,130,Casco Bay-Wolfe’s Neck Farm,nadp,ME,Cumberland,1/6/1998, ,43.8325,-70.0645,15
+ME97,131,Presque Isle,nadp,ME,Aroostook,6/5/1984,9/27/1988,46.6547,-68.0089,186
+ME98,132,Acadia National Park-McFarland Hill,nadp,ME,Hancock,11/3/1981, ,44.3772,-68.2608,150
+ME99,133,Acadia National Park-Paradise Hill,nadp,ME,Hancock,11/18/1980,11/3/1981,44.4083,-68.2461,37
+MI09,134,Douglas Lake,nadp,MI,Cheboygan,7/3/1979, ,45.5608,-84.6783,238
+MI22,135,Houghton,nadp,MI,Houghton,10/26/1980,2/15/1983,47.2269,-88.6308,193
+MI25,136,Isle Royale National Park-Windigo,nadp,MI,Keweenaw,8/12/1980,10/22/1984,47.9153,-89.1525,216
+MI26,137,Kellogg Biological Station,nadp,MI,Kalamazoo,6/26/1979, ,42.4103,-85.3928,288
+MI29,138,Peshawbestown,nadp,MI,Leelanau,1/22/2002,3/31/2009,45.0289,-85.6292,209
+MI48,139,Seney National Wildlife Refuge-Headquarters,nadp,MI,Schoolcraft,11/28/2000, ,46.2875,-85.9541,216
+MI51,140,Unionville,nadp,MI,Tuscola,1/26/1999, ,43.6135,-83.3599,201
+MI52,141,Ann Arbor,nadp,MI,Washtenaw,1/26/1999, ,42.4164,-83.9019,267
+MI53,142,Wellston,nadp,MI,Wexford,10/10/1978, ,44.2242,-85.8186,292
+MI97,143,Isle Royale National Park-Wallace Lake,nadp,MI,Keweenaw,5/22/1985,10/10/2006,48.0575,-88.6342,201
+MI98,144,Raco,nadp,MI,Chippewa,5/1/1984, ,46.3722,-84.7434,262
+MI99,145,Chassell,nadp,MI,Houghton,2/15/1983, ,47.1047,-88.5514,277
+MN01,146,Cedar Creek,nadp,MN,Anoka,12/31/1996, ,45.4017,-93.2031,280
+MN05,147,Fond du Lac,nadp,MN,Carlton,11/19/1996,3/22/2005,46.7131,-92.5108,390
+MN08,148,Hovland,nadp,MN,Cook,12/31/1996, ,47.8472,-89.9625,224
+MN16,149,Marcell Experimental Forest,nadp,MN,Itasca,7/6/1978, ,47.5311,-93.4686,431
+MN18,150,Fernberg,nadp,MN,Lake,11/18/1980, ,47.9464,-91.4961,524
+MN23,151,Camp Ripley,nadp,MN,Morrison,10/18/1983, ,46.2494,-94.4972,410
+MN27,152,Lamberton,nadp,MN,Redwood,1/2/1979, ,44.2369,-95.301,343
+MN28,153,Grindstone Lake,nadp,MN,Pine,12/31/1996, ,46.1208,-93.0042,337
+MN32,154,Voyageurs National Park-Sullivan Bay,nadp,MN,St. Louis,5/30/2000, ,48.4128,-92.8292,429
+MN99,155,Wolf Ridge,nadp,MN,Lake,12/31/1996, ,47.3875,-91.1958,351
+MO03,156,Ashland Wildlife Area,nadp,MO,Boone,10/20/1981, ,38.7536,-92.1989,239
+MO05,157,University Forest,nadp,MO,Butler,10/27/1981, ,36.9108,-90.3186,154
+MO43,158,Tyson Research Center,nadp,MO,St. Louis,8/28/2001,5/7/2008,38.5185,-90.5652,174
+MO50,159,Baker Observatory,nadp,MO,Webster,10/14/1986,5/10/1988,37.3986,-93.0425,415
+MS10,160,Clinton,nadp,MS,Hinds,7/10/1984, ,32.3069,-90.3186,86
+MS14,161,Meridian,nadp,MS,Lauderdale,4/15/1980,1/2/1990,32.3344,-88.745,89
+MS19,162,Newton,nadp,MS,Newton,11/11/1986, ,32.3269,-89.2086,115
+MS30,163,Coffeeville,nadp,MS,Yalobusha,7/17/1984, ,34.0025,-89.7993,134
+MT00,164,Little Bighorn Battlefield National Monument,nadp,MT,Big Horn,7/13/1984, ,45.5686,-107.4375,957
+MT05,165,Glacier National Park-Fire Weather Station,nadp,MT,Flathead,6/3/1980, ,48.5103,-113.9958,980
+MT07,166,Clancy,nadp,MT,Jefferson,1/24/1984, ,46.485,-112.0647,1448
+MT13,167,Give Out Morgan,nadp,MT,Roosevelt,9/14/1982,12/15/1998,48.4886,-105.2083,806
+MT96,168,Poplar River,nadp,MT,Roosevelt,12/21/1999, ,48.31,-105.1,634
+MT97,169,Lost Trail Pass,nadp,MT,Ravalli,9/25/1990, ,45.6917,-113.9656,2414
+MT98,170,Havre - Northern Agricultural Research Center,nadp,MT,Hill,7/30/1985, ,48.4992,-109.7975,815
+MT99,171,Glacier National Park-St Mary Ranger Station,nadp,MT,Glacier,1/25/1983,11/28/1989,48.7411,-113.43,1391
+NC03,172,Lewiston,nadp,NC,Bertie,10/31/1978, ,36.1325,-77.1708,22
+NC06,173,Beaufort,nadp,NC,Carteret,1/26/1999, ,34.8846,-76.6207,2
+NC11,174,Research Triangle Institute,nadp,NC,Durham,10/14/1980,1/4/1983,35.9025,-78.87,99
+NC25,175,Coweeta,nadp,NC,Macon,7/5/1978, ,35.0605,-83.4305,686
+NC29,176,Hofmann Forest,nadp,NC,Onslow,7/2/2002, ,34.825,-77.3228,14
+NC33,177,Research Triangle Park,nadp,NC,Durham,4/15/1980,3/1/1983,35.8964,-78.8606,94
+NC34,178,Piedmont Research Station,nadp,NC,Rowan,10/17/1978, ,35.697,-80.6225,219
+NC35,179,Clinton Crops Research Station,nadp,NC,Sampson,10/24/1978, ,35.0258,-78.2783,41
+NC36,180,Jordan Creek,nadp,NC,Scotland,10/18/1983, ,34.9705,-79.5281,132
+NC41,181,Finley Farm,nadp,NC,Wake,10/3/1978, ,35.7288,-78.6802,120
+NC45,182,Mt. Mitchell,nadp,NC,Yancey,11/26/1985, ,35.7353,-82.2861,1987
+ND00,183,Theodore Roosevelt National Park-Painted Canyon,nadp,ND,Billings,1/30/2001, ,46.8947,-103.3777,841
+ND07,184,Theodore Roosevelt National Park-North Unit Headquarters,nadp,ND,McKenzie,5/5/1981,12/12/2000,47.6014,-103.2642,611
+ND08,185,Icelandic State Park,nadp,ND,Pembina,10/25/1983, ,48.782,-97.7546,306
+ND11,186,Woodworth,nadp,ND,Stutsman,11/29/1983, ,47.1247,-99.2381,578
+NE15,187,Mead,nadp,NE,Saunders,7/25/1978, ,41.1528,-96.4912,352
+NE99,188,North Platte Agricultural Experiment Station,nadp,NE,Lincoln,9/24/1985, ,41.0592,-100.7464,919
+NH02,189,Hubbard Brook,nadp,NH,Grafton,7/25/1978, ,43.9433,-71.7029,250
+NJ00,190,Edwin B. Forsythe National Wildlife Refuge,nadp,NJ,Atlantic,10/13/1998, ,39.4728,-74.4369,2
+NJ29,191,Princeton,nadp,NJ,Mercer,8/6/1980,7/7/1981,40.3456,-74.6169,37
+NJ99,192,Washington Crossing,nadp,NJ,Mercer,8/4/1981, ,40.3154,-74.8536,72
+NM01,193,Gila Cliff Dwellings National Monument,nadp,NM,Catron,7/29/1985, ,33.2203,-108.2347,1772
+NM07,194,Bandelier National Monument,nadp,NM,Los Alamos,6/22/1982, ,35.7817,-106.2675,1998
+NM08,195,Mayhill,nadp,NM,Otero,1/24/1984, ,32.9094,-105.4706,2009
+NM09,196,Cuba,nadp,NM,Sandoval,2/3/1982,4/4/2000,36.0408,-106.9714,2124
+NM12,197,Capulin Volcano National Monument,nadp,NM,Union,11/15/1984, ,36.779,-103.9809,2205
+NV00,198,Red Rock Canyon,nadp,NV,Clark,1/22/1985,12/10/2002,36.1358,-115.4256,1137
+NV01,199,Saval Ranch,nadp,NV,Elko,7/18/1984,3/25/1997,41.2853,-115.8522,1872
+NV03,200,Smith Valley,nadp,NV,Lyon,8/7/1985, ,38.7992,-119.2567,1501
+NV05,201,Great Basin National Park-Lehman Caves,nadp,NV,White Pine,1/15/1985, ,39.005,-114.2158,2067
+NY01,202,Alfred,nadp,NY,Allegany,8/17/2004, ,42.228,-77.8018,663
+NY08,203,Aurora Research Farm,nadp,NY,Cayuga,4/17/1979, ,42.7339,-76.6597,249
+NY10,204,Chautauqua,nadp,NY,Chautauqua,6/10/1980, ,42.2994,-79.3964,488
+NY12,205,Knobit,nadp,NY,Columbia,1/2/1980,8/6/1985,42.3783,-73.5028,406
+NY20,206,Huntington Wildlife,nadp,NY,Essex,10/31/1978, ,43.9731,-74.2231,500
+NY22,207,Akwesasne Mohawk-Fort Covington,nadp,NY,Franklin,8/18/1999, ,44.9236,-74.4744,66
+NY29,208,Moss Lake,nadp,NY,Herkimer,7/29/2003, ,43.7888,-74.8492,558
+NY51,209,Stilwell Lake,nadp,NY,Orange,6/26/1979,10/2/1984,41.35,-74.0394,186
+NY52,210,Bennett Bridge,nadp,NY,Oswego,6/10/1980, ,43.5261,-75.9472,245
+NY65,211,Jasper,nadp,NY,Steuben,2/19/1980,6/15/2004,42.1064,-77.5358,634
+NY68,212,Biscuit Brook,nadp,NY,Ulster,10/11/1983, ,41.9936,-74.5031,634
+NY96,213,Cedar Beach - Southold,nadp,NY,Suffolk,11/25/2003, ,41.0347,-72.3891,1
+NY98,214,Whiteface Mountain,nadp,NY,Essex,7/3/1984, ,44.3933,-73.8594,610
+NY99,215,West Point,nadp,NY,Orange,9/13/1983, ,41.3511,-74.0484,201
+OH09,216,Oxford,nadp,OH,Butler,8/14/1984, ,39.5309,-84.7238,284
+OH15,217,Lykens,nadp,OH,Crawford,1/26/1999, ,40.5502,-82.9982,303
+OH17,218,Delaware,nadp,OH,Delaware,10/3/1978, ,40.3555,-83.0661,285
+OH49,219,Caldwell,nadp,OH,Noble,9/26/1978, ,39.7928,-81.5311,276
+OH54,220,Deer Creek State Park,nadp,OH,Pickaway,1/26/1999, ,39.6359,-83.2606,267
+OH71,221,Wooster,nadp,OH,Wayne,9/26/1978, ,40.7822,-81.92,308
+OK00,222,Salt Plains National Wildlife Refuge,nadp,OK,Alfalfa,12/13/1983, ,36.8053,-98.2006,345
+OK08,223,Lake Eucha,nadp,OK,Delaware,2/1/2000,1/28/2004,36.3481,-94.8239,243
+OK17,224,Kessler Farm Field Laboratory,nadp,OK,McClain,3/29/1983, ,34.98,-97.5214,331
+OK25,225,Clayton Lake,nadp,OK,Pushmataha,2/1/1983,8/12/1986,34.5297,-95.3531,349
+OK29,226,Goodwell Research Station,nadp,OK,Texas,1/8/1985, ,36.5908,-101.6175,999
+OK99,227,Stilwell,nadp,OK,Adair,5/22/2007, ,35.7514,-94.6717,304
+OR02,228,Alsea Guard Ranger Station,nadp,OR,Benton,12/27/1979,12/26/2007,44.3856,-123.6153,104
+OR08,229,Lost Creek Dam,nadp,OR,Jackson,10/21/1980,12/6/1983,42.6678,-122.6831,475
+OR09,230,Silver Lake Ranger Station,nadp,OR,Lake,8/23/1983, ,43.1217,-121.0578,1336
+OR10,231,H. J. Andrews Experimental Forest,nadp,OR,Lane,5/13/1980, ,44.2133,-122.2533,436
+OR11,232,Vines Hill,nadp,OR,Malheur,7/15/1980,3/30/1993,43.8994,-117.4269,904
+OR17,233,Pendleton,nadp,OR,Umatilla,4/15/1980,6/15/1982,45.69,-118.8378,452
+OR18,234,Starkey Experimental Forest,nadp,OR,Union,3/6/1984, ,45.2244,-118.5114,1253
+OR97,235,Hyslop Farm,nadp,OR,Benton,4/26/1983, ,44.6347,-123.19,69
+OR98,236,Bull Run,nadp,OR,Clackamas,7/13/1982,10/6/2003,45.4492,-122.1533,267
+OR99,237,Schmidt Farm,nadp,OR,Benton,12/26/1979,4/26/1983,44.6264,-123.2139,69
+PA00,238,Arendtsville,nadp,PA,Adams,1/26/1999, ,39.9231,-77.3078,269
+PA15,239,Penn State,nadp,PA,Centre,6/7/1983, ,40.7883,-77.9458,393
+PA18,240,Young Woman's Creek,nadp,PA,Clinton,4/20/1999, ,41.4133,-77.6939,273
+PA29,241,Kane Experimental Forest,nadp,PA,Elk,7/18/1978, ,41.5978,-78.7675,618
+PA42,242,Leading Ridge,nadp,PA,Huntingdon,4/25/1979, ,40.6575,-77.9397,287
+PA47,243,Millersville,nadp,PA,Lancaster,11/21/2002, ,39.99,-76.3862,85
+PA72,244,Milford,nadp,PA,Pike,12/27/1983, ,41.3273,-74.8199,212
+PR20,245,El Verde,nadp,PR,Rio Grande,2/12/1985, ,18.3206,-65.82,380
+SC05,246,Cape Romain National Wildlife Refuge,nadp,SC,Charleston,11/21/2000, ,32.9419,-79.6591,3
+SC06,247,Santee National Wildlife Refuge,nadp,SC,Clarendon,7/19/1984, ,33.5394,-80.435,24
+SC07,248,ACE Basin National Estuarine Research Reserve,nadp,SC,Colleton,12/31/2001,12/25/2007,32.5993,-80.4554,1
+SC11,249,North Inlet-Winyah Bay National Estuarine Research Reserve,nadp,SC,Georgetown,1/8/2002,1/8/2009,33.3494,-79.1927,1
+SC18,250,Clemson,nadp,SC,Pickens,3/27/1979,6/17/1986,34.6239,-82.7342,256
+SC99,251,Fort Johnson,nadp,SC,Charleston,3/19/2002,3/20/2007,32.7508,-79.8975,2
+SD00,252,Huron,nadp,SD,Beadle,4/30/1980,9/20/1983,44.3842,-98.2206,390
+SD04,253,Wind Cave National Park-Elk Mountain,nadp,SD,Custer,11/5/2002, ,43.5577,-103.4835,1311
+SD08,254,Cottonwood,nadp,SD,Jackson,10/11/1983, ,43.9461,-101.8552,733
+SD99,255,Huron Well Field,nadp,SD,Beadle,11/29/1983, ,44.355,-98.2917,398
+TN00,256,Walker Branch Watershed,nadp,TN,Anderson,3/11/1980, ,35.9614,-84.2872,341
+TN04,257,Speedwell,nadp,TN,Claiborne,1/26/1999, ,36.4692,-83.8272,361
+TN11,258,Great Smoky Mountains National Park-Elkmont,nadp,TN,Sevier,8/12/1980, ,35.6645,-83.5903,640
+TN14,259,Hatchie National Wildlife Refuge,nadp,TN,Haywood,10/2/1984, ,35.4678,-89.1586,107
+TN98,260,Wilburn Chapel,nadp,TN,Giles,1/2/1990,5/7/1996,35.1825,-87.1964,302
+TN99,261,Giles County,nadp,TN,Giles,10/2/1984,1/2/1990,35.2847,-86.9033,244
+TX02,262,Muleshoe National Wildlife Refuge,nadp,TX,Bailey,6/18/1985, ,33.9578,-102.7761,1143
+TX03,263,Beeville,nadp,TX,Bee,2/7/1984, ,28.4667,-97.7069,82
+TX04,264,Big Bend National Park-K-Bar,nadp,TX,Brewster,4/10/1980, ,29.3022,-103.1772,1056
+TX10,265,Attwater Prairie Chicken National Wildlife Refuge,nadp,TX,Colorado,7/3/1984, ,29.6614,-96.2594,54
+TX16,266,Sonora,nadp,TX,Edwards,6/26/1984, ,30.2614,-100.555,690
+TX18,267,Y Experimental Ranch,nadp,TX,Foard,6/30/1992,1/2/1996,33.9242,-100.0469,489
+TX21,268,Longview,nadp,TX,Gregg,6/29/1982, ,32.3786,-94.7117,103
+TX22,269,Guadalupe Mountains National Park Frijole Ranger Station,nadp,TX,Culberson,6/5/1984, ,31.9083,-104.8028,1734
+TX38,270,Forest Seed Center,nadp,TX,Nacogdoches,8/18/1981,7/10/2001,31.5605,-94.8608,84
+TX39,271,Texas A&M University-Corpus Christi,nadp,TX,Nueces,1/2/2002,12/26/2006,27.7125,-97.3291,5
+TX43,272,Cañónceta,nadp,TX,Randall,7/24/2007, ,34.88,-101.665,1057
+TX51,273,Throckmorton,nadp,TX,Throckmorton,5/29/1984,5/19/1992,33.2733,-99.2153,425
+TX53,274,Victoria,nadp,TX,Victoria,4/15/1980,9/27/1988,28.8453,-96.9203,31
+TX56,275,L.B.J. National Grasslands,nadp,TX,Wise,9/20/1983, ,33.3917,-97.6397,312
+UT01,276,Logan,nadp,UT,Cache,12/6/1983, ,41.6661,-111.8914,1370
+UT02,277,Cedar Mountain,nadp,UT,Emery,5/11/1981,1/17/1984,39.1711,-110.6183,2331
+UT08,278,Murphy Ridge,nadp,UT,Rich,3/25/1986, ,41.3586,-111.048,2146
+UT09,279,Canyonlands National Park-Island in the Sky,nadp,UT,San Juan,11/11/1997, ,38.455,-109.8217,1813
+UT98,280,Green River,nadp,UT,Emery,4/25/1985, ,38.9983,-110.1653,1244
+UT99,281,Bryce Canyon National Park-Repeater Hill,nadp,UT,Garfield,1/29/1985, ,37.6186,-112.1728,2477
+VA00,282,Charlottesville,nadp,VA,Albemarle,10/2/1984, ,38.0402,-78.5427,172
+VA10,283,Mason Neck,nadp,VA,Fairfax,8/12/2003, ,38.6294,-77.2047,6
+VA13,284,Horton's Station,nadp,VA,Giles,7/25/1978, ,37.3294,-80.5579,916
+VA24,285,Prince Edward,nadp,VA,Prince Edward,1/26/1999, ,37.1652,-78.3073,150
+VA27,286,James Madison University Farm,nadp,VA,Rockingham,7/9/2002,6/30/2009,38.3034,-78.8178,336
+VA28,287,Shenandoah National Park-Big Meadows,nadp,VA,Madison,5/12/1981, ,38.5225,-78.4358,1074
+VA29,288,Whitetop Mountain,nadp,VA,Smyth,9/30/1986,9/18/1990,36.6389,-81.6058,1686
+VA33,289,Love's Mill,nadp,VA,Washington,10/2/1984,7/2/1985,36.7367,-81.6869,663
+VA98,290,Harcum,nadp,VA,Gloucester,8/31/2004, ,37.5312,-76.4928,13
+VA99,291,Natural Bridge Station,nadp,VA,Rockbridge,7/2/2002, ,37.6265,-79.5126,282
+VI01,292,Virgin Islands National Park-Lind Point,nadp,VI,St. John,4/14/1998, ,18.3362,-64.7962,56
+VT01,293,Bennington,nadp,VT,Bennington,4/28/1981, ,42.8761,-73.1633,305
+VT99,294,Underhill,nadp,VT,Chittenden,6/12/1984, ,44.5283,-72.8684,399
+WA14,295,Olympic National Park-Hoh Ranger Station,nadp,WA,Jefferson,5/20/1980, ,47.8597,-123.9325,182
+WA15,296,Sullivan Lake,nadp,WA,Pend Oreille,5/8/1984,11/24/1987,48.8433,-117.2839,796
+WA19,297,North Cascades National Park-Marblemount Ranger Station,nadp,WA,Skagit,2/7/1984, ,48.5403,-121.4628,414
+WA21,298,La Grande,nadp,WA,Pierce,4/24/1984, ,46.8353,-122.2867,617
+WA24,299,Palouse Conservation Farm,nadp,WA,Whitman,8/20/1985, ,46.7606,-117.1847,766
+WA98,300,Columbia River Gorge,nadp,WA,Skamania,5/7/2002, ,45.5639,-122.2089,238
+WA99,301,Mount Rainier National Park-Tahoma Woods,nadp,WA,Pierce,10/26/1999, ,46.7582,-122.1243,424
+WI09,302,Popple River,nadp,WI,Florence,12/30/1986,3/3/2009,45.7964,-88.3994,421
+WI10,303,Potawatomi,nadp,WI,Forest,6/7/2005, ,45.5633,-88.8082,563
+WI25,304,Suring,nadp,WI,Oconto,1/23/1985, ,45.0533,-88.3728,247
+WI28,305,Lake Dubay,nadp,WI,Portage,6/29/1982, ,44.7073,-89.7716,385
+WI32,306,Middle Village,nadp,WI,Shawano,1/22/2002,3/28/2006,44.9308,-88.755,319
+WI35,307,Perkinstown,nadp,WI,Taylor,1/26/1999, ,45.2064,-90.5978,472
+WI36,308,Trout Lake,nadp,WI,Vilas,1/22/1980, ,46.0528,-89.6531,501
+WI37,309,Spooner,nadp,WI,Washburn,6/3/1980, ,45.8228,-91.8744,331
+WI97,310,Lac Courte Oreilles Reservation,nadp,WI,Sawyer,11/27/2001,3/22/2005,45.9944,-91.3711,418
+WI98,311,Wildcat Mountain,nadp,WI,Vernon,8/1/1989, ,43.7023,-90.5685,386
+WI99,312,Lake Geneva,nadp,WI,Walworth,6/5/1984, ,42.5792,-88.5006,288
+WV04,313,Babcock State Park,nadp,WV,Fayette,9/6/1983, ,37.9796,-80.9525,753
+WV05,314,Cedar Creek State Park,nadp,WV,Gilmer,1/26/1999, ,38.8794,-80.8478,234
+WV18,315,Parsons,nadp,WV,Tucker,7/5/1978, ,39.0897,-79.6622,505
+WY00,316,Snowy Range,nadp,WY,Albany,4/22/1986, ,41.3761,-106.2594,3286
+WY02,317,Sinks Canyon,nadp,WY,Fremont,8/21/1984, ,42.7336,-108.8498,2164
+WY06,318,Pinedale,nadp,WY,Sublette,1/26/1982, ,42.929,-109.7875,2388
+WY08,319,Yellowstone National Park-Tower Falls,nadp,WY,Park,6/5/1980, ,44.9166,-110.4203,1912
+WY95,320,Brooklyn Lake,nadp,WY,Albany,9/22/1992, ,41.3647,-106.2408,3181
+WY96,321,Nash Fork,nadp,WY,Albany,11/18/1986,9/17/1992,41.3403,-106.1908,2856
+WY97,322,South Pass City,nadp,WY,Fremont,4/30/1985, ,42.4944,-108.832,2524
+WY98,323,Gypsum Creek,nadp,WY,Sublette,12/26/1984, ,43.2227,-109.9917,2428
+WY99,324,Newcastle,nadp,WY,Weston,8/11/1981, ,43.873,-104.1917,1466

@@ -1,0 +1,84 @@
+#!/bin/sh
+
+#
+# script for running the site compare program on Unix
+#
+
+EXEC=/project/model_evalb/extract_util/bin/sitecmp.exe
+
+# Set TABLE TYPE
+TABLE_TYPE=CASTNET; export TABLE_TYPE
+
+# Specify the variable names used in your observation inputs
+# and model output files for each of the species you are analyzing below.
+# 
+# variable format:
+#    Obs_expression, Obs_units, [Mod_expression], [Mod_unit], [Variable_name]
+#
+# The expression is in the form:
+#       [factor1]*Obs_name1 [+][-] [factor2]*Obs_name2 ... 
+#
+# If you do not need one of the species listed, comment out the first column.
+
+# Dry Deposition Variables (1-10)  - compute average over time
+
+   PREC_1="OZONE_FLUX,kg/ha,DDEP_O3,,O3_ddep";			export PREC_1   # sulfate
+   PREC_2="SO2_FLUX,kg/ha,DDEP_SO2,,SO2_ddep";			export PREC_2   # nitrate
+   PREC_3="HNO3_FLUX,kg/ha,DDEP_HNO3,,HNO3_ddep";		export PREC_3   # ammonium
+   PREC_4="HNO3_FLUX+NO3_FLUX,kg/ha,DDEP_TNO3,,TNO3_ddep";	export PREC_4   # ammonium
+   PREC_5="SO4_FLUX,kg/ha,DDEP_ASO4F,,SO4_ddep";		export PREC_5	# total nitrate
+   PREC_6="NO3_FLUX,kg/ha,DDEP_ANO3F,,NO3_ddep";		export PREC_6	# sulfate using sharp cutoff
+   PREC_7="NH4_FLUX,kg/ha,DDEP_NHX,,NH4_ddep";			export PREC_7   # nitrate using sharp cutoff
+
+## define time window
+  START_DATE=;  export START_DATE
+  END_DATE=;    export END_DATE
+
+  START_TIME=0;        export START_TIME
+  END_TIME=230000;     export END_TIME
+
+## adjust for daylight savings 
+  APPLY_DLS=N; export APPLY_DLS 
+
+## set missing value string
+  MISSING="-999"; export MISSING
+
+## Projection sphere type (use type #19 to match CMAQ)
+  IOAPI_ISPH=20; export IOAPI_ISPH
+
+## Time Shift for dealing with aconc files ## 
+  TIME_SHIFT=1; export TIME_SHIFT
+                                                                                  
+#############################################################
+#  Input files
+#############################################################
+# ioapi input files containing VNAMES (max of 10)
+  M3_FILE_1=;  export M3_FILE_1
+  M3_FILE_2=;  export M3_FILE_2
+
+
+
+
+
+
+
+
+#  SITE FILE containing site-id, longitude, latitude (tab delimited)
+SITE_FILE=/project/amet_aq/obs_data/castnet_sites.txt; export SITE_FILE
+
+# : input table (exported file from Excel) 
+#   containing site-id, time-period, and data fields
+IN_TABLE=/project/amet_aq/obs_data/castnet_weekly_drydep.csv; export IN_TABLE
+
+#############################################################
+#  Output files
+#############################################################
+
+#  output table (tab delimited text file importable to Excel)
+  OUT_TABLE=CASTNet_drydep.csv; export OUT_TABLE
+
+ ${EXEC}
+
+ echo run completed, output file = ${OUT_TABLE}
+
+

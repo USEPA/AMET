@@ -1,0 +1,89 @@
+### Set the start date (Julian day) to begin Site Compare extraction ###
+$start_date=
+### Set the end date (Julian day) to end Site Compare extraction ###
+$end_date=
+### 1st CMAQ concentration file to use ###
+$m3_file[1]=
+### 2nd CMAQ concentration to use (can be left empty) ###
+$m3_file[2]=
+### 3rd CMAQ concentration to use (can be left empty) ###
+$m3_file[3]=
+### 4th CMAQ concentration to use (can be left empty) ###
+$m3_file[4]=
+### 5th CMAQ concentration to use (can be left empty) ###
+$m3_file[5]=
+### 6th CMAQ concentration to use (can be left empty) ###
+$m3_file[6]=
+### 1st CMAQ deposition file to use ###
+$m3_dep_file[1]=
+### 2nd CMAQ deposition file to use (can be left empty) ###
+$m3_dep_file[2]=
+### 3rd CMAQ deposition file to use (can be left empty) ###
+$m3_dep_file[3]=
+### 4th CMAQ deposition file to use (can be left empty) ###
+$m3_dep_file[4]=
+### 5th CMAQ deposition file to use (can be left empty) ###
+$m3_dep_file[5]=
+### 6th CMAQ deposition file to use (can be left empty) ###
+$m3_dep_file[6]=
+### project id (run name) for the current analysis ###
+$project_id=
+### Flag (y or n) set by user to include CASTNet data in the analysis ###
+$castnet_flag=
+### Flag (y or n) set by user to include CASTNet hourly data in the analysis ###
+$castnet_hourly=
+### Flag (y or n) set by user to include IMPROVE data in the analysis ###
+$improve_flag=
+### Flag (y or n) set by user to include NADP concentration data in the analysis ###
+$nadpconc_flag=
+### Flag (y or n) set by user to include NADP deposition data in the analysis ###
+$nadpdep_flag=
+### Flag (y or n) set by user to include STN data in the analysis ###
+$stn_flag=
+### Flag (y or n) set by user to include AQS hourly data in the analysis ###
+$aqs_flag=
+### Flag (y or n) set by user to include AQS 1hr and 8hr max data in the analysis ###
+$aqs_max=
+### Flag (y or n) set by user to include SEARCH data in the analysis ###
+$search_flag=
+### Flag (y or n) set by user to include MDN data in the analysis ###
+$mdn_flag=
+### Indicate whether ozone is in ppm or ppb ###
+$O3_units=
+### Indicate whether precipitation is in cm or mm ###
+$precip_units=
+### Include Relative Humidity in Site Compare output ###
+$inc_rh=
+### User defined species to include ###
+$user_def_spec=
+$ozone=
+$sulfate=
+$nitrate=
+$ammonium=
+$nitric_acid=
+$total_nitrate=
+$sulfur_dioxide=
+$e_carbon=
+$o_carbon=
+$t_carbon=
+$pm25=
+$sulfur_dioxide_gas=
+$nitrogen_oxide=
+$carbon_monoxide=
+$nitric_acid_gas=
+### User defined names to use for each species ###
+$O3_conc_name=
+$SO4_conc_name=
+$NO3_conc_name=
+$NH4_conc_name=
+$HNO3_conc_name=
+$TNO3_conc_name=
+$SO2_conc_name=
+$EC_conc_name=
+$OC_conc_name=
+$TC_conc_name=
+$PM25_conc_name=
+$SO2_gas_name=
+$NO_gas_name=
+$CO_gas_name=
+$HNO3_gas_name=

@@ -1,0 +1,132 @@
+#########################################################################
+#------         INPUT FILE      INPUT FILE      INPUT FILE         -----#
+#-----------------------------------------------------------------------#
+#                                                                       #
+#               PLOT RAOB Profiles and  Statistics	                    #
+#                                                                       #
+#       Version:        1.1                                             #
+#       Date:           August 08, 2005	                                #
+#       Contributors:   Robert Gilliam                                  #
+#                                                                       #
+#-----------------------------------------------------------------------#
+# Change LOG
+# Version 1.1 (08/08/2005)
+#       Initial deveopment: The program currently reads a configuration file
+#       that is placed in the directory where run_plot_raob is executed, or in the
+#       instance of web use, the input file is modified with web specs. 
+#
+# Version 1.2, May 6, 2013, Rob Gilliam
+#  - better formatting of all parts of plot_raob
+#-----------------------------------------------------------------------#
+#########################################################################
+
+#########################################################################
+#	Configurable DATE Definitions
+#########################################################################
+ hs <-as.numeric(unlist(strsplit(Sys.getenv("AMET_HH")," ")))[1]
+ he <-as.numeric(unlist(strsplit(Sys.getenv("AMET_HH")," ")))[2]
+ ds <-as.numeric(unlist(strsplit(Sys.getenv("AMET_DD")," ")))[1]
+ de <-as.numeric(unlist(strsplit(Sys.getenv("AMET_DD")," ")))[2]
+ ms <-as.numeric(unlist(strsplit(Sys.getenv("AMET_MM")," ")))[1]
+ me <-as.numeric(unlist(strsplit(Sys.getenv("AMET_MM")," ")))[2]
+ ys <-as.numeric(unlist(strsplit(Sys.getenv("AMET_YY")," ")))[1]
+ ye <-as.numeric(unlist(strsplit(Sys.getenv("AMET_YY")," ")))[2]
+
+	
+ fcasthr	<-c(0,24)	# Forecast hour range to analyze (e.g., c(24,48) would be between 24 and 48 hour forecast)
+
+#########################################################################
+#	Script Mode options: Spatial-P-layer Stats "player"
+#		             Station profile comparisons "prof"
+#########################################################################
+ player	<-T
+ layerlab<-"Height"
+ layervar<-"hlevel"	# layer variable plevel (pressure), hlevel (physical height) or slevel (sigma)
+ layer	<-c(as.numeric(unlist(strsplit(Sys.getenv("AMET_LAYER")," ")))[1],
+	            as.numeric(unlist(strsplit(Sys.getenv("AMET_LAYER")," ")))[2])
+ layerunit<-"m"
+ ####################  Profile Options (plots 1 site only)
+ prof	<-T
+ proflim	<-c(as.numeric(unlist(strsplit(Sys.getenv("AMET_ZLIM")," ")))[1],
+	            as.numeric(unlist(strsplit(Sys.getenv("AMET_ZLIM")," ")))[2])
+
+#########################################################################
+#	Database/Tables/Query Specifications
+#########################################################################
+ statid   <-unlist(strsplit(Sys.getenv("AMET_SITEID")," ")) # only used for profile plot
+ project  <-Sys.getenv("AMET_PROJECT")
+ figdir   <-Sys.getenv("AMET_OUT")
+	
+ savefile <-FALSE
+ textstats<-T
+
+#########################################################################
+#	Plot/Output Format
+#########################################################################
+ plotfmt	<-Sys.getenv("AMET_PTYPE")			# Plot format (png,pdf,jpg,eps)
+ plotsize	<-1.4						# Plot size magnification (1 is default)
+ pwidth	<-1000						# Width of plot in pixels
+ pheight	<-754						# Height of plot in pixels
+ symb	<-19						# Plot symbol (15-square,19-circle)
+ symbo	<-21
+ symbsiz	<-1.5*plotsize					# Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+ uniquepnum	<-1234						# Unique plot number (mostly for web use)
+ plotopts<-list(plotsize=plotsize, plotfmt=plotfmt,symb=symb,symbsiz=symbsiz,pheight=pheight,pwidth=pwidth)
+
+#########################################################################
+#	Query Definitions and Prep.
+#########################################################################
+ extra<-"  "						# additional query syntax
+ table	<-paste(project,"_raob",sep="")
+	
+ # Universal query strings
+ varxtrac1<-paste(" stat_id, lat, lon, v1_ob, v1_mod, v2_ob, v2_mod ")
+ varxtrac2<-paste(" stat_id, ",layervar,", slevel, v1_ob, v1_mod, v2_ob, v2_mod ")
+ varcri1	<-" (v1_id='T' OR v2_id='RH') "
+ varcri2	<-" (v1_id='UMAN' OR v2_id='VMAN') "
+ otime	<-paste(c(hs,he),":00:00",sep="")
+ fcasthrstr<-paste("AND fcast_hr BETWEEN",fcasthr[1],"AND",fcasthr[2])
+ # Plot Mode Specific query strings
+ mainstr1	<-paste(" AND ",layervar," BETWEEN",layer[1],"AND",layer[2],"AND slevel >= 0.125")
+
+ mainstr2	<-paste(" AND stat_id ='",statid,"' ",sep="")
+
+#########################################################################
+##  Color Scale for Variable Biases. This is a static color scale, but if the current 
+##  scale is not desired, it can be changed below.
+#########################################################################
+ levsT<-c(-15,-8,-6,-3,-1.5,0,1.5,3,6,8,15)
+ colp<-rainbow(11)
+ colp[11]<-"pink2";colp[8]<-"blue";colp[5]<-"green1";colp[4]<-"green4";colp[3]<-"yellow";
+ colpT<-rev(ifelse(levsT == 0, "gray",colp))
+     
+ levsRH<-c(-60,-40,-20,-10,-5,0,5,10,20,40,60)
+ colp<-c("wheat","wheat1","wheat2","wheat3","wheat4","gray","green","green1","green2","green3","green4")
+ colpRH<-ifelse(levsRH == 0, "gray",colp)
+
+ levsWS<-c(-10,-8,-6,-3,-1.5,0,1.5,3,6,8,10)
+ colp<-rainbow(11)
+ colp[11]<-"pink2";colp[8]<-"blue";colp[5]<-"green1";colp[4]<-"green4";colp[3]<-"yellow";
+ colpWS<-rev(ifelse(levsWS == 0, "gray",colp))
+
+#########################################################################
+##  Plot Lables 
+#########################################################################
+ infolab	<-paste("Date Range ",ys,dform(ms),dform(ds)," to ",ye,dform(me),dform(de),
+                        " * ",
+                        "Hour Range ",dform(hs)," to ",dform(he)," UTC",
+                        " * ",
+                        "Layer (",layerlab,") ",layer[1]," to ",layer[2]," ",layerunit,sep="")
+ infolabProf1<-paste("Rawinsonde Site ID:",statid)
+ infolabProf2<-paste("Date: ",ys,dform(ms),dform(ds)," to ",ye,dform(me),dform(de),sep="")
+ infolabProf3<-paste("Time: ",dform(hs)," to ",dform(he)," UTC",sep="")
+
+#########################################################################
+#	Auto-Realtime Options
+#########################################################################
+ realtime   <-FALSE		# Option to run script in real-time automated mode
+ tserieslen <-10			# Option used in real-time mode to lag stats by "n" days
+
+#########################################################################
+#----- 			END OF INPUT FILE	------------------------#
+#########################################################################

@@ -1,0 +1,99 @@
+#!/bin/sh
+
+#
+# script for running the site compare program on Unix
+#
+
+EXEC=
+
+# Set TABLE TYPE
+TABLE_TYPE=IMPROVE; export TABLE_TYPE
+
+# Specify the variable names used in your observation inputs
+# and model output files for each of the species you are analyzing below.
+# 
+# variable format:
+#    Obs_expression, Obs_units, [Mod_expression], [Mod_unit], [Variable_name]
+#
+# The expression is in the form:
+#       [factor1]*Obs_name1 [+][-] [factor2]*Obs_name2 ... 
+#
+# If you do not need one of the species listed, comment out the first column.
+# AEROSOL Variables (1-10)  - compute average over time
+
+   AERO_1="SO4f_val,ug/m3,ASO4IJ,,SO4";  				export AERO_1   # sulfate
+   AERO_2="NO3f_val,ug/m3,ANO3IJ,,NO3";  				export AERO_2   # nitrate
+   AERO_3="NH4f_val,ug/m3,ANH4IJ,,NH4";  				export AERO_3   # ammonium
+   AERO_4="MF_val,ug/m3,PMIJ,ug/m3,PM_TOT";  				export AERO_4   # Total PM2.5 mass 
+   AERO_5="OCf_val,ug/m3,AOCIJ,,OC"; 					export AERO_5   # Organic Carbon
+   AERO_6="ECf_val,ug/m3,AECIJ,,EC";  					export AERO_6	# Elemental Carbon
+   AERO_7="OCf_val+ECf_val,ug/m3,AOCIJ+AECIJ,,TC";  			export AERO_7	# Total Carbon
+   AERO_8="CHLf_val,ug/m3,ACLIJ,ug/m3,Cl";				export AERO_8	# CL Ion
+   AERO_9="MT_val,ug/m3,PM10,ug/m3,PM10";                              export AERO_9  # PM10
+   AERO_10="CM_calculated_val,ug/m3,PMC_TOT,ug/m3,PMC_TOT";             export AERO_10  # PM Course
+# new AE6 species
+## note: we use XRF sodium because there is not IC sodium mesaurement
+## we use IC measurement for chlorid (CHLf_val) instead of XRF chlroine (CLf_Val)
+   AERO_11="NAf_val,ug/m3, ANAIJ,,Na";                     		export AERO_11  # sodium
+   AERO_12="NAf_val + CHLf_val,ug/m3,ACLIJ + ANAIJ,,NaCl";     		export AERO_12  # sodium chloride
+   AERO_13="FEf_val,ug/m3, AFEJ,,Fe";	                      		export AERO_13  # iron
+   AERO_14="ALf_val,ug/m3,AALJ,,Al";	                              	export AERO_14  # aluminum 
+   AERO_15="SIf_val,ug/m3, ASIJ,,Si";	               			export AERO_15  # silicon
+   AERO_16="TIf_val,ug/m3, ATIJ,,Ti";                 			export AERO_16  # titanium
+   AERO_17="CAf_val,ug/m3,ACAJ,,Ca";                           		export AERO_17 	# calcium
+   AERO_18="MGf_val,ug/m3,AMGJ,,Mg";	                               	export AERO_18 	# magnesium
+   AERO_19="Kf_val,ug/m3,AKJ,,K";	                              	export AERO_19 	# potassium
+   AERO_20="MNf_val,ug/m3,AMNJ,,Mn";                          		export AERO_20 	# manganese
+   AERO_21="2.20*ALf_val+2.49*SIf_val+1.63*CAf_val+2.42*FEf_val+1.94*TIf_val,ug/m3,ASOILJ,,soil";	export AERO_21 	# IMPROVE soil eqn.
+
+## define time window
+  START_DATE=;  export START_DATE
+  END_DATE=;    export END_DATE
+
+  START_TIME=0;        export START_TIME
+  END_TIME=230000;     export END_TIME
+
+## adjust for daylight savings 
+  APPLY_DLS=N; export APPLY_DLS 
+
+## set missing value string
+  MISSING="-999"; export MISSING
+
+## Projection sphere type (use type #19 to match CMAQ)
+  IOAPI_ISPH=20; export IOAPI_ISPH
+
+## Time Shift for dealing with aconc files ## 
+  TIME_SHIFT=1; export TIME_SHIFT
+
+#############################################################
+#  Input files
+#############################################################
+# ioapi input files containing VNAMES (max of 10)
+  M3_FILE_1=;  export M3_FILE_1
+
+
+
+
+
+
+
+
+
+#  SITE FILE containing site-id, longitude, latitude (tab delimited)
+SITE_FILE=; export SITE_FILE
+
+# : input table (exported file from Excel) 
+#   containing site-id, time-period, and data fields
+IN_TABLE=; export IN_TABLE
+
+#############################################################
+#  Output files
+#############################################################
+
+#  output table (tab delimited text file importable to Excel)
+  OUT_TABLE=; export OUT_TABLE
+
+ ${EXEC}
+
+ echo run completed, output file = ${OUT_TABLE}
+

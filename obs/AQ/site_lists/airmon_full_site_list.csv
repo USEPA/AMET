@@ -1,0 +1,13 @@
+stat_id,num_stat_id,stat_name,network,state,city,start_date,end_date,lat,lon,elevation,county,region
+DE02,1,Lewes,airmon,DE,,Sep-92,,38.7722,-74.0992,2,,
+DE99,2,Trap Pond,airmon,DE,,May-01,May-03,38.4994,-75.4482,12,,
+FL18,3,Tampa Bay,airmon,FL,,Aug-96,,27.8333,-82.5,2,,
+FL98,4,South Lido,airmon,FL,,Sep-98,,27.31,-82.57,1,,
+IL11,5,Bondville,airmon,IL,,Oct-92,,40.0533,-88.3719,212,,
+MD15,6,Smith Island,airmon,MD,,Nov-95,Jun-04,37.9925,-76.0345,2,,
+NH67,7,Ithaca,airmon,NH,,Sep-92,,42.4015,-76.6589,503,,
+OH09,8,Oxford,airmon,OH,,Oct-92,,39.5314,-84.7242,284,,
+PA15,9,Penn State,airmon,PA,,Oct-92,,40.7883,-77.9458,393,,
+TN00,10,Walker Branch Watershed,airmon,TN,,Sep-92,,35.9614,-84.2872,341,,
+VT99,11,Underhill,airmon,VT,,Jan-93,,44.5283,-72.8689,399,,
+WV99,12,Caanan Valley Institute,airmon,WV,,Jun-00,,39.0636,-79.4222,988,,
