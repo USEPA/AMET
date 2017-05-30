@@ -1,0 +1,83 @@
+#########################################################################
+#------		INPUT FILE	INPUT FILE	INPUT FILE	   ---------------------#
+#-----------------------------------------------------------------------#
+#						 			
+#	SUMMARY STATISTIC TOOL				
+#									
+#	Version: 	1.1					 
+#	Date:		July 14, 2004					
+#	Contributors:	Robert Gilliam					
+#						 			
+#	Developed by and for NOAA, ARL, ASMD on assignment to US EPA	
+#-----------------------------------------------------------------------#
+# Change LOG
+# web_query (06/15/2004)	
+#	Initial deveopment: The program currently reads a configuration file
+#	that is placed in
+#
+# Changed to summary (Oct, 2007)
+#       Integrated w/ combined AQ/MET, Alexis Zubrow (IE UNC)
+#
+# Version 1.2, May 6, 2013, Rob Gilliam
+#  - better formatting, no real changes
+#########################################################################
+
+#########################################################################
+#	Configurable DATE Definitions
+#########################################################################
+  querystr	<-Sys.getenv("AMET_CRITERIA")	
+  pid       <-Sys.getenv("AMET_RUNID")		# Subset id; This is used to differentiate different subsets of data for the same project (i.e., regional, seasonal or annual). The id is used in the plot and text output names. 
+  project	  <-Sys.getenv("AMET_PROJECT") 		# Project id or model run id.	
+  queryID  <-pid
+  statid   <-"NULL"
+  obnetwork<-"ALL"
+  lat      <-"ALL"
+  lon	     <-"ALL"
+  elev     <-"NULL"
+  landuse  <-"NULL"
+  dates    <-"ALL"
+  datee    <-"ALL"
+  obtime   <-"ALL"
+  fcasthr  <-"ALL"
+  level    <-"surface"
+  syncond  <-"NULL"
+  figure   <-"NULL"
+
+#########################################################################
+#	Database/Tables/Directory Information
+#########################################################################
+  model    <-project                # Surface data table in evaluation database
+  saveid   <-project                # Id used to name the R save file
+  figdir   <-Sys.getenv("AMET_OUT") # Figure directory
+  savedir  <-Sys.getenv("AMET_OUT") # R output data file save directory
+  wantsave <-F                      # Flag to save station statistics data
+  ametp    <-T                      # Flag to generate figures
+  diurnal  <-T                      # Flag to generate figures
+  textstats<-T                      # Text Output
+  writeLines(paste("Figure directory is set to:",figdir))
+#########################################################################
+
+#########################################################################
+#	Statistics Index location from query		  
+#########################################################################
+  dstatloc	<-c(16,17,18)
+
+#########################################################################
+#	Plot Ouput Format
+#########################################################################
+  plotfmt  <-Sys.getenv("AMET_PTYPE")						# Plot format (png,pdf,jpg,eps)
+  plotsize <-1.50						# Scale factor to increase or decrease the size of a 541x700 (png) or 8.5x11 (pdf) plot
+  symb     <-15						#* Plot symbol (15-square,19-circle)
+  symbsiz	 <-0.90						#* Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+
+  plotopts	<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+
+#---------------------------------------------------##
+#	Auto-Realtime Options
+#---------------------------------------------------##
+    realtime	<-FALSE			#* Option to run script in real-time automated mode
+    daydelay 	<-2			#* Option used in real-time mode to lag stats by "n" days
+#########################################################################
+#----- 			END OF INPUT FILE	------------------------#
+#########################################################################
+

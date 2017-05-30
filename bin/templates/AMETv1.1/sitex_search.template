@@ -1,0 +1,92 @@
+#!/bin/sh
+
+#
+# script for running the site compare program on Unix
+#
+
+EXEC=
+
+# Set TABLE TYPE
+TABLE_TYPE=CASTNET; export TABLE_TYPE
+
+# Specify the variable names used in your observation inputs
+# and model output files for each of the species you are analyzing below.
+# 
+# variable format:
+#    Obs_expression, Obs_units, [Mod_expression], [Mod_unit], [Variable_name]
+#
+# The expression is in the form:
+#       [factor1]*Obs_name1 [+][-] [factor2]*Obs_name2 ... 
+#
+# If you do not need one of the species listed, comment out the first column.
+
+# AEROSOL Variables (1-10)  - compute average over time
+
+   AERO_1="o3,ppb,O3,,O3";  export AERO_1
+   AERO_2="co,ppb,CO,,CO";  export AERO_2
+   AERO_3="so2,ppb,SO2,,SO2";  export AERO_3
+   AERO_4="no,ppb,NO,,NO";  export AERO_4
+   AERO_5="hno3,ppb,HNO3,,HNO3";  export AERO_5
+   AERO_6="teom,ug/m3,PM25,,PM25";  export AERO_6
+   AERO_7="no3,ug/m3,ANO3T,,NO3";  export AERO_7
+   AERO_8="so4,ug/m3,ASO4T,,SO4";  export AERO_8
+   AERO_9="nh4,ug/m3,ANH4T,,NH4";  export AERO_9
+   AERO_10="noy,ppb,NOY,ppb,NOy";  export AERO_10
+   AERO_11="aeth bc,ug/m3,AECT,,EC";    export AERO_11
+   AERO_12="5400 tc,ug/m3,PM_OC,,OC";   export AERO_12
+
+# GAS Variables (1-10)  - compute average over time
+# Model output was originally in ppm, but conversions were already
+# made in the combine extract to convert to ug/m3.
+
+##   GAS_1="wso2,ug/m3,SO2_UGM3,,sulfur dioxide"; export GAS_1 ! sulfur dioxide
+##   GAS_2="nhno3,ug/m3,HNO3_UGM3,,nitric acid";  export GAS_2 ! nitric acid
+
+## define time window
+  START_DATE=;  export START_DATE
+  END_DATE=;   export END_DATE
+
+  START_TIME=0;        export START_TIME
+  END_TIME=230000;     export END_TIME
+
+## adjust for daylight savings 
+  APPLY_DLS=N; export APPLY_DLS 
+
+## set missing value string
+  MISSING="-999"; export MISSING
+
+
+## Projection sphere type (use type #19 to match CMAQ)
+  IOAPI_ISPH=19; export IOAPI_ISPH
+
+#############################################################
+#  Input files
+#############################################################
+# ioapi input files containing VNAMES (max of 10)
+  M3_FILE_1=;  export M3_FILE_1
+
+
+
+
+
+
+
+
+
+#  SITE FILE containing site-id, longitude, latitude (tab delimited)
+SITE_FILE=; export SITE_FILE
+
+# : input table (exported file from Excel) 
+#   containing site-id, time-period, and data fields
+IN_TABLE=; export IN_TABLE
+
+#############################################################
+#  Output files
+#############################################################
+
+#  output table (tab delimited text file importable to Excel)
+  OUT_TABLE=; export OUT_TABLE
+
+ ${EXEC}
+
+ echo run completed, output file = ${OUT_TABLE}

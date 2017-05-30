@@ -1,0 +1,55 @@
+<html>
+<head><title>COMBINE (Input Requirements)</title></head>
+<body><FONT SIZE=5 COLOR="#000000">
+
+<h1>Environment variables used for combine</h1>
+<FONT SIZE=3 COLOR="blue">
+<UL>
+  <LI>SPECIES_DEF <FONT COLOR="#000000">(name of species definition file)</FONT>
+  <LI>INFILE# <FONT COLOR="#000000">(names of IOAPI input files, maximum of 9)</FONT>
+  <LI>OUTFILE <FONT COLOR="#000000">(name of IOAPI output file)</FONT>
+  <LI>GENSPEC <FONT COLOR="#000000">(switch to generate a new species definition file from file 'INFILE1')</FONT>
+</UL></FONT>
+
+
+<HR>
+<h1>Example Run Script</h1>
+<pre>
+
+#!/bin/sh
+#
+# script for running the combine program on Unix
+#
+#  generates a new concentration file from output from the CMAQ model run 
+#
+
+BASE=/project/model_evalb/extract_util
+
+EXECUTION_ID=combine.exe; export EXECUTION_ID
+
+EXEC=/share/linux/tools/bin/${EXECUTION_ID}.exe
+
+## use GENSPEC switch to generate a new specdef file (does not generate output file)
+#  GENSPEC=Y; export GENSPEC
+
+## define name of species definition file
+   SPECIES_DEF=spec.def; export SPECIES_DEF
+
+## define name of input files
+   INFILE1=${BASE}/cmaq_data/CCTM_I2a.std.200101.conc; export INFILE1
+   INFILE2=${BASE}/cmaq_data/CCTM_I2a.ext.200101.conc; export INFILE2
+ 
+## define name of output file 
+   OUTFILE=out.conc; export OUTFILE
+
+${EXEC}
+
+echo runs competed with output file = $OUTFILE
+
+</pre>
+<HR>
+
+<A HREF="input.html"><CENTER>BACK</CENTER></A> 
+
+</FONT></body>
+</html>

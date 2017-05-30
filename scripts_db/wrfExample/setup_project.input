@@ -1,0 +1,23 @@
+########################################################
+## 
+##  Configuration file for a new project
+##
+########################################################
+
+## New project id (1 word, must be unique)
+## Getting it from the env variable $AMET_PROJECT
+$run_id = $ENV{"AMET_PROJECT"};
+
+## MET model (e.g wrf or mm5)
+$model = "wrf";
+
+## login to db (e.g. ametsecure), chomp gets rid of newline
+chomp($login = `whoami`);
+
+## users email (NOTE: need to use "\" before "@")
+$email = "azubrow\@unc.edu";
+
+## Project description
+$description = $ENV{"AMET_PROJ_DESC"};
+
+

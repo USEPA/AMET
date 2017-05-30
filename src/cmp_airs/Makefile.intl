@@ -1,0 +1,43 @@
+# make file to build extract program
+
+PROGRAM = cmp_airs
+
+# Include file subsitution definitions
+INCLUDES = -DSUBST_GRID_ID= \
+ -DSUBST_IOPARMS=\'/share/linux/ioapi_pg/include/PARMS3.EXT\' \
+ -DSUBST_IOFDESC=\'/share/linux/ioapi_pg/include/FDESC3.EXT\' \
+ -DSUBST_IODECL=\'/share/linux/ioapi_pg/include/IODECL3.EXT\'
+
+FPP = fpp
+FPP_FLAGS = -e -fixed $(INCLUDES)
+
+FC = ifort
+FC_FLAGS = -c -Vaxlib -O2 -132 -FI  -w
+
+LIBRARIES = -L /share/linux9.0/ioapi30_ifc/lib -lioapi \
+            -L /share/linux9.0/netcdf_3.5/lib -lnetcdf 
+
+OBJS=	\
+ module_envvar.o \
+ module_file.o \
+ module_grid.o \
+ module_sites.o \
+ module_tstep.o \
+ module_spec.o \
+ ck_ctms.o \
+ get_gridval.o \
+ parser.o \
+ get_units.o \
+ process1.o \
+ process2.o \
+ process3.o \
+ cmp_airs.o
+
+$(PROGRAM):  $(OBJS)
+	$(FC) -Vaxlib $(OBJS) $(LIBRARIES) -o $(PROGRAM)
+
+.F.o:
+	$(FPP) $(FPP_FLAGS) $< $*.for
+	$(FC) $(FC_FLAGS) $*.for
+
+

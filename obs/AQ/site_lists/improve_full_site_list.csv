@@ -1,0 +1,211 @@
+stat_id,num_stat_id,stat_name,network,state,city,state_date,end_date,lat,long,elevation
+ACAD1,1,Acadia National Park,improve,ME,,3/2/1988,,44.3771,-68.2612,150
+ADPI1,2,Addison Pinnacle,improve,NY,,4/7/2001,,42.0911,-77.2098,528
+AGTI1,3,Agua Tibia,improve,CA,,11/15/2000,,33.4637,-116.9706,507
+AMBL1,4,Ambler,improve,AK,,,,67.0993,-157.8628,78
+ARCH1,5,Arches National Park,improve,UT,,3/2/1988,5/1/1992,38.7833,-109.5833,1722
+AREN1,6,Arendtsville,improve,PA,,4/13/2001,,39.9231,-77.3078,268
+ATLA1,7,Atlanta,improve,GA,,,,33.687,-84.2904,252
+BADL1,8,Badlands National Park,improve,SD,,3/2/1988,,43.7435,-101.9412,736
+BALD1,9,Mount Baldy,improve,AZ,,2/29/2000,,34.0584,-109.4405,2513
+BALT1,10,Baltimore,improve,MD,,,,39.2438,-76.7091,80
+BAND1,11,Bandelier National Monument,improve,NM,,3/2/1988,,35.7797,-106.2664,1987
+BIBE1,12,Big Bend National Park,improve,TX,,3/2/1988,,29.3028,-103.178,1075
+BIRM1,13,Birmingham,improve,AL,,,,33.5531,-86.8149,176
+BLIS1,14,Bliss State Park (TRPA),improve,CA,,11/17/1990,,38.9756,-120.1018,2116
+BLMO1,15,Blue Mounds,improve,MN,,,,43.7158,-96.1913,474
+BOAP1,16,Bosque del Apache,improve,NM,,4/5/2000,,33.8695,-106.852,1383
+BOND1,17,Bondville,improve,IL,,3/5/2001,,40.0514,-88.3719,211
+BOWA1,18,Boundary Waters Canoe Area,improve,MN,,8/14/1991,,47.9464,-91.4961,524
+BRCA1,19,Bryce Canyon National Park,improve,UT,,3/2/1988,,37.6184,-112.1736,2477
+BRET1,20,Breton,improve,LA,,6/18/2000,,29.1186,-89.2065,2
+BRID1,21,Bridger Wilderness,improve,WY,,3/2/1988,,42.9749,-109.757,2607
+BRIG1,22,Brigantine National Wildlife Refuge,improve,NJ,,9/18/1991,,39.465,-74.4492,5
+BRIS1,23,BRIS1,improve,LA,,1/25/2008,,30.10863,-89.76168,-7
+BRISX,24,BRISX,improve,LA,,1/25/2008,,30.10863,-89.76168,-7
+BRLA1,25,Brooklyn Lake,improve,WY,,7/31/1993,,41.3662,-106.2418,3196
+BRMA1,26,Bridgton,improve,ME,,3/20/2001,,44.1074,-70.7293,242
+CABA1,27,Casco Bay,improve,ME,,3/20/2001,,43.8325,-70.0643,15
+CABI1,28,Cabinet Mountains,improve,MT,,7/24/2000,,47.955,-115.6709,1434
+CACO1,29,Cape Cod,improve,MA,,4/1/2001,,41.9758,-70.0247,41
+CACR1,30,Caney Creek,improve,AR,,6/22/2000,,34.4543,-94.1429,690
+CADI1,31,Cadiz,improve,KY,,3/4/2001,,36.7854,-87.8504,188
+CANY1,32,Canyonlands National Park,improve,UT,,3/2/1988,,38.4587,-109.8209,1799
+CAPI1,33,Capitol Reef (CAPI1),improve,UT,,3/28/2000,,38.3022,-111.2926,1890
+CEBL1,34,Cedar Bluff,improve,KS,,,,38.7,-99.9,671
+CHAS1,35,Chassahowitzka National Wildlife,improve,FL,,4/3/1993,,28.7485,-82.5549,2
+CHER1,36,Cherokee Nation,improve,OK,,,,36.9333,-97.0167,335
+CHIC1,37,Chicago,improve,IL,,,,41.7515,-87.7135,191
+CHIR1,38,Chiricahua National Monument,improve,AZ,,3/2/1988,,32.0089,-109.3891,1570
+CLPE1,39,Cloud Peak,improve,WY,,,,44.3335,-106.9565,2469
+COGO1,40,Columbia Gorge,improve,WA,,9/16/1996,5/30/1998,45.5695,-122.2115,225
+COHI1,41,Connecticut Hill,improve,NY,,4/11/2001,,42.4009,-76.6535,505
+COHU1,42,Cohutta,improve,GA,,5/24/2000,,34.7852,-84.6263,743
+CORI1,43,Columbia River Gorge,improve,WA,,6/26/1993,,45.6678,-121.0233,201
+CRES1,44,Crescent Lake,improve,NE,,,,41.7627,-102.4336,1204
+CRLA1,45,Crater Lake National Park,improve,OR,,3/2/1988,,42.8962,-122.1359,1963
+CRMO1,46,Craters of the Moon NM(US DOE),improve,ID,,5/13/1992,,43.4606,-113.5551,1817
+DENA1,47,Denali National Park,improve,AK,,3/2/1988,,63.7233,-148.9675,658
+DETR1,48,Detroit,improve,MI,,,,42.2286,-83.2085,180
+DEVA1,49,Death Valley Monument,improve,CA,,10/20/1993,,36.5088,-116.8469,125
+DOLA1,50,Dome Lands Wilderness,improve,CA,,8/10/1994,10/3/1998,35.6987,-118.2021,914
+DOME1,51,Dome Lands Wilderness,improve,CA,,2/1/2000,,35.7279,-118.1377,925
+DOSO1,52,Dolly Sods /Otter Creek Wilderness,improve,WV,,9/25/1991,,39.107,-79.4263,1158
+DOUG1,53,Douglas,improve,AZ,,,,31.3492,-109.5397,1233
+EGBE1,54,Egbert,improve,ON,,5/1/2005,,44.23115,-79.78322,251
+ELDO1,55,El Dorado Springs,improve,MO,,,,37.69,-94.035,293
+ELLI1,56,Ellis,improve,OK,,,,36.0852,-99.9349,701
+EVER1,57,Everglades National Park,improve,FL,,9/28/1988,,25.391,-80.6807,3
+FLAT1,58,Flathead,improve,MT,,,,47.7734,-114.2691,1576
+FOPE1,59,Fort Peck,improve,MT,,,,48.308,-105.1021,885
+FRES1,60,Fresno,improve,CA,,9/3/2004,,36.7818,-119.7732,100
+FRRE1,60,Frostburg,improve,MD,,,,39.7059,-79.0121,772
+GAMO1,61,Gates of the Mountains,improve,MT,,7/25/2000,,46.8263,-111.7108,2392
+GICL1,62,Gila Wilderness,improve,NM,,4/6/1994,,33.2204,-108.2351,1776
+GLAC1,63,Glacier National Park,improve,MT,,3/2/1988,,48.5105,-113.9967,979
+GRBA1,64,Great Basin National Park,improve,NV,,5/27/1992,,39.0052,-114.2161,2068
+GRCA1,65,Hopi Point #1,improve,AZ,,3/2/1988,8/29/1998,36.0658,-112.1539,2164
+GRCA2,66,Hance Camp at Grand Canyon NP,improve,AZ,,9/24/1997,,35.9731,-111.9841,2267
+GRGU1,67,Great Gulf Wilderness,improve,NH,,6/10/1995,,44.3082,-71.2177,445
+GRRI1,68,Great River Bluffs,improve,MN,,,,43.9374,-91.4052,380
+GRSA1,69,Great Sand Dunes National Monument,improve,CO,,5/4/1988,,37.7249,-105.5186,2504
+GRSM1,70,Great Smoky Mountains National Park,improve,TN,,3/2/1988,,35.6334,-83.9417,815
+GUMO1,71,Guadalupe Mountains National Park,improve,TX,,3/2/1988,,31.833,-104.8094,1674
+HACR1,72,Haleakala Crater,improve,HI,,1/23/2007,,20.7585,-156.2479,2158
+HALE1,73,Haleakala National Park,improve,HI,,2/16/1991,,20.8086,-156.2823,1158
+HAVO1,74,Hawaii Volcanoes National Park,improve,HI,,3/23/1988,,19.4309,-155.258,1204
+HECA1,75,Hells Canyon,improve,OR,,8/1/2000,,44.9932,-116.8395,625
+HEGL1,76,Hercules-Glades,improve,MO,,3/2/2001,,36.6713,-92.8781,425
+HILL1,77,Hillside,improve,AZ,,4/16/2001,,34.4289,-112.9628,1510
+HOOV1,78,Hoover,improve,CA,,7/1/2001,,38.0887,-119.1759,2566
+HOUS1,79,Houston,improve,TX,,,,29.6698,-95.1285,7
+IKBA1,80,Ike's Backbone,improve,AZ,,4/2/2000,,34.3403,-111.6824,1303
+INGA1,81,Indian Gardens,improve,AZ,,10/4/1989,,36.0776,-112.129,1166
+ISLE1,82,Isle Royale National Park (New),improve,MI,,11/16/1999,,47.4607,-88.1458,186
+ISRO1,83,Isle Royale National Park,improve,MI,,6/1/1988,7/27/1991,47.9167,-89.15,213
+JARB1,84,Jarbidge Wilderness,improve,NV,,3/2/1988,,41.8926,-115.4261,1882
+JARI1,85,James River Face,improve,VA,,6/3/2000,,37.6266,-79.5125,299
+JEFF1,86,Jefferson/James River Face Wilderness,improve,VA,,9/3/1994,5/20/2000,37.6167,-79.4833,219
+JOSH1,87,Joshua Tree,improve,CA,,2/22/2000,,34.0695,-116.3889,1228
+JOTR1,88,Joshua Tree National Monument,improve,CA,,9/4/1991,7/8/1992,34.0695,-116.3889,1228
+KAIS1,89,Kaiser,improve,CA,,1/26/2000,,37.2181,-119.1558,2573
+KALM1,90,Kalmiopsis,improve,OR,,3/7/2000,,42.5519,-124.0588,90
+LABE1,91,Lava Beds,improve,CA,,3/25/2000,,41.7117,-121.5068,1469
+LASU1,92,Lake Sugema,improve,IA,,,,40.6883,-91.9883,210
+LASU2,93,Lake Sugema,improve,IA,,12/2/2004,,40.6932,-92.0059,229
+LAVO1,93,Lassen Volcanic National Park,improve,CA,,3/2/1988,,40.5403,-121.5778,1755
+LIGO1,94,Linville Gorge,improve,NC,,3/29/2000,,35.9722,-81.9331,986
+LIVO1,95,Livonia,improve,IN,,3/6/2001,,38.5347,-86.2608,298
+LOPE1,96,Lone Peak Wilderness,improve,UT,,12/1/1993,,40.4449,-111.7081,1768
+LOST1,97,Lostwood,improve,ND,,12/15/1999,,48.642,-102.4022,692
+LYBR1,98,Lye Brook Wilderness,improve,VT,,9/21/1991,,43.1481,-73.1267,1006
+LYND1,99,Lynden,improve,WA,,10/16/1996,8/30/1997,48.9533,-122.5586,28
+MACA1,100,Mammoth Cave National Park,improve,KY,,9/4/1991,,37.1315,-86.1477,248
+MAKA1,101,Makah Tribe,improve,WA,,8/24/2006,,48.37185,-124.595,
+MALO1,102,Mauna Loa National Observatory (MALO1),improve,HI,,12/2/1992,,19.5389,-155.578,3400
+MALO2,103,Mauna Loa National Observatory (MALO2),improve,HI,,12/2/1992,,19.5389,-155.578,3400
+MALO3,104,Mauna Loa National Observatory (MALO3),improve,HI,,4/3/1996,5/18/1996,19.5389,-155.578,3400
+MALO4,105,Mauna Loa National Observatory (MALO4),improve,HI,,4/3/1996,5/18/1996,19.5389,-155.578,3400
+MAVI1,106,Martha's Vineyard,improve,MA,,,,41.3333,-70.8161,2
+MEAD1,107,Meadview,improve,AZ,,9/4/1991,9/3/1992,36.0194,-114.0684,910
+MELA1,108,Medicine Lake,improve,MT,,12/15/1999,,48.4872,-104.4757,605
+MEVE1,109,Mesa Verde National Park,improve,CO,,3/5/1988,,37.1984,-108.4907,2177
+MING1,110,Mingo,improve,MO,,5/24/2000,,36.9717,-90.1432,112
+MKGO1,111,M.K. Goddard,improve,PA,,4/17/2001,,41.4269,-80.1445,387
+MOHO1,112,Mount Hood,improve,OR,,3/7/2000,,45.2927,-121.7694,1341
+MOMO1,113,Mohawk Mt.,improve,CT,,9/28/2001,,41.8214,-73.2973,532
+MONT1,114,Monture,improve,MT,,3/28/2000,,47.1222,-113.1544,1293
+MOOS1,115,Moosehorn NWR,improve,ME,,12/7/1994,,45.1259,-67.2661,94
+MORA1,116,Mount Rainier National Park,improve,WA,,3/2/1988,,46.7579,-122.1225,427
+MOZI1,117,Mount Zirkel Wilderness,improve,CO,,7/30/1994,,40.5383,-106.6765,3243
+NEBR1,118,Nebraska National Forest,improve,NE,,,,41.8887,-100.3386,875
+NEYO1,119,New York City,improve,NY,,,,40.8161,-73.902,31
+NOAB1,120,North Absaroka,improve,WY,,1/25/2000,,44.7448,-109.3817,2480
+NOCA1,121,North Cascades,improve,WA,,3/1/2000,,48.7316,-121.0646,576
+NOCH1,122,Northern Cheyenne,improve,MT,,,,45.6493,-106.5573,1332
+OKEF1,123,Okefenokee National Wildlife Refuge,improve,GA,,9/28/1991,,30.7404,-82.1284,49
+OLTO1,124,Old Town,improve,ME,,7/7/2001,,44.9335,-68.6457,65
+OLYM1,125,Olympic,improve,WA,,7/11/2001,,48.0065,-122.9726,600
+OMAH1,126,Omaha,improve,NE,,,,42.1487,-96.4317,435
+ORPI1,127,Organ Pipe,improve,AZ,,,,31.9506,-112.8016,505
+PACK1,128,Pack Monadnock Summit,improve,NH,,10/22/2007,,42.8619,-71.8786,695
+PASA1,129,Pasayten,improve,WA,,11/15/2000,,48.3877,-119.9275,1634
+PEFO1,130,Petrified Forest National Park,improve,AZ,,3/2/1988,,35.0781,-109.7683,1767
+PETE1,131,Petersburg,improve,AK,,,,56.6108,-132.8123,0
+PHOE1,132,Phoenix,improve,AZ,,4/25/2001,,33.5038,-112.0958,342
+PHOE5,133,Phoenix Colocated Sampler,improve,AZ,,3/1/2004,,33.5038,-112.0958,342
+PINN1,134,Pinnacles National Monument,improve,CA,,3/2/1988,,36.485,-121.1556,317
+PITT1,135,Pittsburgh,improve,PA,,,,40.4654,-79.9607,268
+PMRF1,136,Proctor Maple R. F.,improve,VT,,12/22/1993,,44.5286,-72.8687,403
+PORE1,137,Point Reyes National Seashore,improve,CA,,3/2/1988,,38.1199,-122.9122,85
+PRIS1,138,Presque Isle,improve,ME,,3/20/2001,,46.6963,-68.0335,163
+PUSO1,139,Puget Sound,improve,WA,,3/23/1996,,47.5696,-122.3119,80
+QUCI1,140,Quaker City,improve,OH,,5/2/2001,,39.9429,-81.3378,376
+QURE1,141,Quabbin Summit,improve,MA,,3/20/2001,,42.2988,-72.335,315
+QUVA1,142,Queen Valley,improve,AZ,,4/30/2001,,33.2939,-111.2857,658
+RAFA1,143,San Rafael,improve,CA,,2/2/2000,,34.7339,-120.0074,953
+REDW1,144,Redwood National Park,improve,CA,,3/2/1988,,41.56,-124.0858,245
+RMHQ1,145,Rocky Mountain National Park (Headquarters),improve,CO,,3/2/1988,9/15/1990,40.3624,-105.5638,2408
+ROMA1,146,Cape Romain National Wildlife Refuge,improve,SC,,9/3/1994,,32.9415,-79.6572,3
+ROMO1,147,Rocky Mountain National Park,improve,CO,,9/19/1990,,40.2783,-105.5457,2755
+SAAN1,148,San Andres,improve,NM,,10/15/1997,8/30/2000,32.6869,-106.4844,1326
+SACR1,149,Salt Creek,improve,NM,,4/6/2000,,33.4597,-104.4043,1077
+SAFO1,150,Sac and Fox,improve,KS,,,,39.9789,-95.5677,293
+SAGA1,151,San Gabriel,improve,CA,,12/15/2000,,34.2969,-118.0282,1791
+SAGO1,152,San Gorgonio Wilderness,improve,CA,,3/2/1988,,34.1924,-116.9013,1705
+SAGO5,153,San Gorgonio,improve,CA,,,,34.1941,116.9128,1720
+SAGU1,154,Saguaro National Monument,improve,AZ,,6/4/1988,,32.1742,-110.7372,933
+SALM1,155,Salmon National Forest,improve,ID,,12/4/1993,,45.1588,-114.026,2788
+SAMA1,156,St. Marks,improve,FL,,6/13/2000,,30.0926,-84.1614,2
+SAPE1,157,San Pedro Parks,improve,NM,,8/15/2000,,36.014,-106.8446,2919
+SAWE1,158,Saguaro West,improve,AZ,,4/19/2001,,32.2486,-111.2178,718
+SAWT1,159,Sawtooth National Forest,improve,ID,,1/26/1994,,44.1706,-114.9283,1980
+SCOV1,160,Scoville,improve,ID,,5/13/1992,5/24/1997,43.65,-113.0333,1500
+SENE1,161,Seney,improve,MI,,11/16/1999,,46.2881,-85.9461,216
+SEQU1,162,Sequoia National Park,improve,CA,,3/4/1992,,36.4894,-118.8292,535
+SHEN1,163,Shenandoah National Park,improve,VA,,3/2/1988,,38.5229,-78.4347,1098
+SHMI1,164,Shamrock Mine,improve,CO,,8/1/2004,,37.3038,-107.4842,2351
+SHRO1,165,Shining Rock Wilderness,improve,NC,,7/20/1994,,35.3937,-82.7743,1621
+SIAN1,166,Sierra Ancha,improve,AZ,,2/10/2000,,34.0909,-110.942,1595
+SIKE1,167,Sikes,improve,LA,,3/22/2001,,32.058,-92.4334,45
+SIME1,168,Simeonof,improve,AK,,9/10/2001,,55.3255,-160.5063,57
+SIPS1,169,Sipsy Wilderness,improve,AL,,3/7/1992,,34.3433,-87.3388,279
+SNPA1,170,Snoqualmie Pass; Snoqualmie N.F,improve,WA,,7/3/1993,,47.4204,-121.4277,1160
+SOLA1,171,South Lake Tahoe,improve,CA,,3/25/1989,5/30/1998,38.9333,-119.9667,1900
+SPOK1,172,Spokane Res.,improve,WA,,7/11/2001,,47.9045,-117.8609,548
+STAR1,173,Starkey,improve,OR,,3/7/2000,,45.2249,-118.513,1258
+STPE1,174,Mount Zirkel Wilderness (Storm Peak),improve,CO,,12/1/1993,7/27/1994,40.445,-106.74,3220
+SULA1,175,Sula (Selway Bitteroot Wilderness),improve,MT,,8/10/1994,,45.8599,-114.0001,1903
+SWAN1,176,Swanquarter,improve,NC,,6/8/2000,,35.451,-76.2074,2
+SYCA1,177,Sycamore Canyon,improve,AZ,,9/11/1991,7/8/1992,35.1406,-111.9694,2040
+TALL1,178,Tallgrass,improve,KS,,,,38.3,-96.6,387
+THBA1,179,Thunder Basin,improve,WY,,,,44.6634,-105.2874,1193
+THRO1,180,Theodore Roosevelt,improve,ND,,12/15/1999,,46.8948,-103.3777,853
+THSI1,181,Three Sisters Wilderness,improve,OR,,7/24/1993,,44.291,-122.0433,885
+TONT1,182,Tonto National Monument,improve,AZ,,4/23/1988,,33.6494,-111.1088,786
+TRCR1,183,Trapper Creek,improve,AK,,9/10/2001,,62.3153,-150.3156,155
+TRIN1,184,Trinity,improve,CA,,7/19/2000,,40.7865,-122.8047,1007
+TUXE1,185,Tuxedni,improve,AK,,12/18/2001,,59.9925,-152.6656,15
+ULBE1,186,UL Bend,improve,MT,,1/25/2000,,47.5823,-108.7197,893
+UPBU1,187,Upper Buffalo Wilderness,improve,AR,,12/18/1991,,35.8259,-93.2029,723
+VIIS1,188,Virgin Islands National Park,improve,VI,,10/13/1990,,18.3384,-64.795,64
+VILA1,189,Viking Lake,improve,IA,,,,40.9712,-95.0439,426
+VOYA1,190,Voyageurs National Park 1,improve,MN,,3/2/1988,9/28/1996,48.5833,-93.1667,347
+VOYA2,191,Voyageurs National Park 2,improve,MN,,11/16/1999,,48.4126,-92.8286,429
+WARI1,192,Walker River Paiute Tribe,improve,NV,,,,38.9519,-118.8125,1262
+WASH1,193,Washington D.C.,improve,DC,,3/1/1988,,38.8761,-77.0343,16
+WEMI1,194,Weminuche Wilderness,improve,CO,,3/2/1988,,37.6594,-107.7998,2765
+WHIT1,195,White Mountain,improve,NM,,1/15/2002,,33.4698,-105.5227,2050
+WHPA1,196,White Pass,improve,WA,,2/15/2000,,46.6244,-121.3881,1830
+WHPE1,197,Wheeler Peak,improve,NM,,8/15/2000,,36.5855,-105.4513,3372
+WHRI1,198,White River National Forest,improve,CO,,7/17/1993,,39.1517,-106.819,3418
+WICA1,199,Wind Cave,improve,SD,,12/15/1999,,43.5577,-103.4838,1300
+WIMO1,200,Wichita Mountains,improve,OK,,3/1/2001,,34.7315,-98.7155,518
+YELL1,201,Yellowstone National Park 1,improve,WY,,3/9/1988,7/1/1996,44.5625,-110.373,2361
+YELL2,202,Yellowstone National Park 2,improve,WY,,7/1/1996,,44.5653,-110.4002,2425
+YOSE1,203,Yosemite National Park,improve,CA,,3/9/1988,,37.7125,-119.7042,1615
+ZICA1,204,Zion Canyon,improve,UT,,,,37.1973,-113.1456,1226
+ZION1,205,Zion,improve,UT,,3/21/2000,,37.4591,-113.2243,1545
+LASU2,206,Lake Sugema,improve,IA,,12/2/2004,,40.6932,-92.0059
+PENO1,207,Penobscot,improve,ME,,,,44.948,-68.6479
+STB,208,Steubenville,improve,OH,,,,40.3797,-80.6195

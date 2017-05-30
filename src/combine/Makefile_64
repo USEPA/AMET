@@ -1,0 +1,31 @@
+# make file to build combine program
+
+PROGRAM = combine_64.exe
+
+# Include file subsitution definitions
+INCLUDES = -DSUBST_GRID_ID= \
+ -DSUBST_IOPARMS=\'/share/linux/ioapi_30/include/PARMS3.EXT\' \
+ -DSUBST_IOFDESC=\'/share/linux/ioapi_30/include/FDESC3.EXT\' \
+ -DSUBST_IODECL=\'/share/linux/ioapi_30/include/IODECL3.EXT\'
+
+FC = ifort
+FC_FLAGS = -c -FI -O2 -132 -WB $(INCLUDES)
+
+LIBRARIES = -L /share/linux/ioapi_30/lib -lioapi \
+            -L /share/linux/netcdf_3.5/lib -lnetcdf 
+
+OBJS = \
+module_specdef.o \
+module_file.o \
+module_evaluator.o \
+utils.o \
+combine.o
+
+
+$(PROGRAM):  $(OBJS)
+	$(FC) $(OBJS) $(LIBRARIES) -o $(PROGRAM)
+
+.F.o:
+	$(FC) $(FC_FLAGS) $<
+
+

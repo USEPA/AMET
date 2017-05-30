@@ -1,0 +1,62 @@
+
+        *****************************************************
+        *                                                   *
+        *         University of L'Aquila -- CETEMPS         *
+        *                  L'Aquila, Italy                  *
+        *                                                   *
+        *****************************************************
+
+
+        Comments and feedback to:
+                Graziano.Giuliani@aquila.infn.it
+
+ MM5 format to netcdf format converter.
+
+ 1) examiner program dumps out header informations and list of
+    variables in MM5 output file. Should work on all V3 programs
+    output (from terrain up to model output) and on standard
+    V2 format output (no BDY).
+ 2) archiver program reads both V2 and V3 formats, normal and
+    gzipped inputs.
+ 3) proj2ll program can be used to interpolate mm5 model outputs to
+    regular lat/lon grids using bilinear iterpolation. It reads
+    output from archiver program. If you set maxlat=minlat and
+    maxlon=minlon, You will have a vertical profile (;->).
+
+    Caveat: Interpolation is performed using a bilinear scheme,
+            except for land_use, regime and snowcovr variables
+            where nearest neighbor is used.
+
+ Please edit local.h file and modify institution value to reflect
+ the data origin. To do this modify define line as in Ex.:
+
+ #define INSTITUTION "University of Boston, MA, USA"
+
+ To perform installation, You will need:
+
+ ZLIB   : http://www.gzip.org/zlib
+ NETCDF : http://unidata.ucar.edu/packages/netcdf
+
+ To compile against a non-default location of ZLIB or NETCDF, use
+ environment variables CPPFLAGS and LDFLAGS.
+
+ Ex:
+
+ $> setenv CPPFLAGS "-I/path/to/zlib/include -I/path/to/netcdf/include"
+ $> setenv LDFLAGS "-L/path/to/zlib/lib -L/path/to/netcdf/lib"
+ $> cd mm5tonetcdf_1.x
+ $> ./configure --prefix=/path/to/my/bin
+
+ If You use bash, syntax is like:
+
+ $> export CPPFLAGS="-I/path/to/zlib/include -I/path/to/netcdf/include"
+
+ Example usage:
+
+ examiner MMOUT_DOMAIN1
+ archiver MMOUT_DOMAIN1 0 48
+ proj2ll MMOUT_DOMAIN1.nc 48.0 43.0 0.25 15.0 5.0 0.25
+
+
+   Graziano             <graziano.giuliani@aquila.infn.it>
+

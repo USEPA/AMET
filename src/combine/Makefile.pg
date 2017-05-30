@@ -1,0 +1,31 @@
+# make file to build combine program
+
+PROGRAM = combine.exe
+
+# Include file subsitution definitions
+INCLUDES = -DSUBST_GRID_ID= \
+ -DSUBST_IOPARMS=\'/share/linux9.0/ioapi30_pg/include/PARMS3.EXT\' \
+ -DSUBST_IOFDESC=\'/share/linux9.0/ioapi30_pg/include/FDESC3.EXT\' \
+ -DSUBST_IODECL=\'/share/linux9.0/ioapi30_pg/include/IODECL3.EXT\'
+
+FC = pgf90
+FC_FLAGS = -c -tp px -Mextend $(INCLUDES)
+
+LIBRARIES = -L /share/linux9.0/ioapi30_pg/lib -lioapi \
+            -L /share/linux9.0/netcdf_3.5/lib -lnetcdf 
+
+OBJS = \
+module_specdef.o \
+module_file.o \
+module_evaluator.o \
+utils.o \
+combine.o
+
+
+$(PROGRAM):  $(OBJS)
+	$(FC) $(OBJS) $(LIBRARIES) -o $(PROGRAM)
+
+.F.o:
+	$(FC) $(FC_FLAGS) $<
+
+

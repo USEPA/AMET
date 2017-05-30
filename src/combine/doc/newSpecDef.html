@@ -1,0 +1,59 @@
+<html>
+<head><title>COMBINE (Input Requirements)</title></head>
+<body><FONT SIZE=5 COLOR="#000000">
+<h1>New Species Definition file</h1>
+<pre>
+
+/#start   YYYYDDD  HHMMSS
+/#end     YYYYDDD  HHMMSS
+#layer    1        (default is all layers)
+/
+/new species    ,units     ,expression
+
+NO              ,ppbV      ,NO[1]
+
+O3              ,ppbV      ,O3[1]
+
+HNO3_UGM3       ,ug/m3     ,HNO3_UGM3[1]
+
+HNO3            ,ppbV      ,HNO3_UGM3[1] / (2.1724*AIR_DENS[1])
+
+CO              ,ppbV      ,CO[1]
+
+SO2_UGM3        ,ug/m3     ,SO2_UGM3[1]
+
+SO2             ,ppbV      ,SO2_UGM3[1] / (2.2068*AIR_DENS[1])
+
+ASO4T           ,ug/m3     ,ASO4T[1]
+
+ANO3T           ,ug/m3     ,ANO3T[1]
+
+ANH4T           ,ug/m3     ,ANH4T[1]
+
+PM_OC           ,ug/m3     ,PM_OC[1]
+
+AECT            ,ug/m3     ,AECT[1]
+
+PM25            ,ug/m3     ,PM25[1]
+
+AIR_DENS        ,kg/m3     ,AIR_DENS[1]
+
+WDEP_ASO4T      ,kg/ha     ,WDEP_ASO4T[2]
+
+RT              ,cm        ,RT[2]
+
+WDEP_TNO3       ,kg/ha     ,WDEP_TNO3[2]
+
+WDEP_NHX        ,kg/ha     ,WDEP_NHX[2]
+
+WDEP_Na         ,kg/ha     ,WDEP_Na[2]
+
+WDEP_Cl         ,kg/ha     ,WDEP_Cl[2]
+
+</pre>
+<HR>
+
+<A HREF="recent.html"><CENTER>BACK</CENTER></A> 
+
+</FONT></body>
+</html>

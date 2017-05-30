@@ -1,0 +1,80 @@
+<html>
+<head><title>COMBINE (Species Definition file)</title></head>
+<body><FONT SIZE=5 COLOR="#000000">
+
+<h1>Species Definition File Format</h1>
+
+Definition of records begining with the following characters
+<FONT SIZE=3>
+<UL>
+  <LI><FONT color="blue"'>'&#47' or '!'</FONT>   comment record
+
+  <LI><FONT color="blue">'&#35start   YYYYDDD  HHMMSS'</FONT> defines starting date and time
+
+  <LI><FONT color="blue">'&#35end     YYYYDDD  HHMMSS'</FONT>   defines ending date and time
+
+  <LI><FONT color="blue">'&#35layer   lay'</FONT> defines which layer to process, default is all layers
+
+  <LI>blank records are ignored
+ 
+  <LI>All other records are read as species definition records
+</UL> 
+</FONT>
+
+
+Species definition (CSV) record fields
+<FONT SIZE=3>
+<OL>
+  <LI>species name (maximun of 16 characters)       
+  <LI>units (maximum of 10 characters)               
+  <LI>formular expression (maximun of 512 characters)
+</OL>
+</FONT>
+                                                            
+Formular expressions supports operators +-*/ and are
+evaluated from left to right using precedence order of */+-.    
+Order of evaluation can be forced by use of parentheses.        
+When part of an experssion is enclosed in parentheses, that     
+part is evaluated first.  Species from input files are        
+defined by their name followed by it's file number enclosed    
+in brackets. Previously defined output species can be defined 
+by using file number zero.  Expressions can be continued on 
+addition records by ending the record with a '&#92;' character.                                  
+
+<UL><LI>Note: This version will accept species definition files in old
+      formats, but they may not be supported in future versions.</UL>
+
+<HR>
+<h1>Example Species Definition file</h1>
+<pre>
+
+/
+#start   2001001  000000
+#end     2001031  230000
+#layer   1  
+/
+/new species    ,units     ,expression
+
+NO              ,ppbV      ,NO[1]
+
+O3              ,ppbV      ,O3[1]
+
+HNO3            ,ppbV      ,HNO3_UGM3[1] / (2.1724*AIR_DENS[1])
+
+RT              ,cm        ,RT[2]
+
+sqrtRT          ,cm        ,SQRT( RT[2] )
+
+absRT           ,cm        ,ABS( RT[2] )
+
+logRT           ,cm        ,LOG( RT[2]+1.0 )
+
+RT2             ,cm        ,(sqrtRT[0] * sqrtRT[0])
+
+</pre>
+<HR>
+
+<A HREF="input.html"><CENTER>BACK</CENTER></A> 
+
+</FONT></body>
+</html>

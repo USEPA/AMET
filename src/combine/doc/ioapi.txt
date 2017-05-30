@@ -1,0 +1,177 @@
+<html>
+<head><title>SITECMP (Input Requirements)</title></head>
+<body><FONT SIZE=5 COLOR="#000000">
+<h1>Example IOAPI Concentration File</h1>
+<pre>
+
+netcdf CCTM_I2a_b313.std.200101 {
+dimensions:
+	TSTEP = UNLIMITED ; // (744 currently)
+	DATE-TIME = 2 ;
+	LAY = 1 ;
+	VAR = 28 ;
+	ROW = 112 ;
+	COL = 148 ;
+variables:
+	int TFLAG(TSTEP, VAR, DATE-TIME) ;
+		TFLAG:units = "<YYYYDDD,HHMMSS>" ;
+		TFLAG:long_name = "TFLAG           " ;
+		TFLAG:var_desc = "Timestep-valid flags:  (1) YYYYDDD or (2) HHMMSS                                " ;
+	float NO(TSTEP, LAY, ROW, COL) ;
+		NO:long_name = "NO              " ;
+		NO:units = "ppbV            " ;
+		NO:var_desc = "NO                                                                              " ;
+	float NO2(TSTEP, LAY, ROW, COL) ;
+		NO2:long_name = "NO2             " ;
+		NO2:units = "ppbV            " ;
+		NO2:var_desc = "NO2                                                                             " ;
+	float O3(TSTEP, LAY, ROW, COL) ;
+		O3:long_name = "O3              " ;
+		O3:units = "ppbV            " ;
+		O3:var_desc = "O3                                                                              " ;
+	float HNO3(TSTEP, LAY, ROW, COL) ;
+		HNO3:long_name = "HNO3            " ;
+		HNO3:units = "ppbV            " ;
+		HNO3:var_desc = "HNO3                                                                            " ;
+	float HNO3_UGM3(TSTEP, LAY, ROW, COL) ;
+		HNO3_UGM3:long_name = "HNO3_UGM3       " ;
+		HNO3_UGM3:units = "ug/m3           " ;
+		HNO3_UGM3:var_desc = "HNO3                                                                            " ;
+	float VOC(TSTEP, LAY, ROW, COL) ;
+		VOC:long_name = "VOC             " ;
+		VOC:units = "ppbC            " ;
+		VOC:var_desc = "PAR+2ETH+2OLE+7TOL+8XYL+FORM+2ALD2+5ISOP                                        " ;
+	float CO(TSTEP, LAY, ROW, COL) ;
+		CO:long_name = "CO              " ;
+		CO:units = "ppbV            " ;
+		CO:var_desc = "CO                                                                              " ;
+	float SO2(TSTEP, LAY, ROW, COL) ;
+		SO2:long_name = "SO2             " ;
+		SO2:units = "ppbV            " ;
+		SO2:var_desc = "SO2                                                                             " ;
+	float SO2_UGM3(TSTEP, LAY, ROW, COL) ;
+		SO2_UGM3:long_name = "SO2_UGM3        " ;
+		SO2_UGM3:units = "ug/m3           " ;
+		SO2_UGM3:var_desc = "SO2                                                                             " ;
+	float NH3(TSTEP, LAY, ROW, COL) ;
+		NH3:long_name = "NH3             " ;
+		NH3:units = "ppbV            " ;
+		NH3:var_desc = "NH3                                                                             " ;
+	float NH3_UGM3(TSTEP, LAY, ROW, COL) ;
+		NH3_UGM3:long_name = "NH3_UGM3        " ;
+		NH3_UGM3:units = "ug/m3           " ;
+		NH3_UGM3:var_desc = "NH3                                                                             " ;
+	float ASO4T(TSTEP, LAY, ROW, COL) ;
+		ASO4T:long_name = "ASO4T           " ;
+		ASO4T:units = "ug/m3           " ;
+		ASO4T:var_desc = "ASO4I+ASO4J                                                                     " ;
+	float ANO3T(TSTEP, LAY, ROW, COL) ;
+		ANO3T:long_name = "ANO3T           " ;
+		ANO3T:units = "ug/m3           " ;
+		ANO3T:var_desc = "ANO3I_ANO3J                                                                     " ;
+	float ANH4T(TSTEP, LAY, ROW, COL) ;
+		ANH4T:long_name = "ANH4T           " ;
+		ANH4T:units = "ug/m3           " ;
+		ANH4T:var_desc = "ANH4I+ANH4J                                                                     " ;
+	float PM_OC(TSTEP, LAY, ROW, COL) ;
+		PM_OC:long_name = "PM_OC           " ;
+		PM_OC:units = "ug/m3           " ;
+		PM_OC:var_desc = "0.6*AORGAI+0.6*AORGAJ+0.833*AORGPAI+0.833*AORGPAJ+0.678*AORGBI+0.678*A          " ;
+	float AORGAT(TSTEP, LAY, ROW, COL) ;
+		AORGAT:long_name = "AORGAT          " ;
+		AORGAT:units = "ug/m3           " ;
+		AORGAT:var_desc = "AORGAI+AORGAJ                                                                   " ;
+	float AORGBT(TSTEP, LAY, ROW, COL) ;
+		AORGBT:long_name = "AORGBT          " ;
+		AORGBT:units = "ug/m3           " ;
+		AORGBT:var_desc = "AORGBI+AORGBJ                                                                   " ;
+	float AORGPAT(TSTEP, LAY, ROW, COL) ;
+		AORGPAT:long_name = "AORGPAT         " ;
+		AORGPAT:units = "ug/m3           " ;
+		AORGPAT:var_desc = "AORGPAI+AORGPAJ                                                                 " ;
+	float AH2OT(TSTEP, LAY, ROW, COL) ;
+		AH2OT:long_name = "AH2OT           " ;
+		AH2OT:units = "ug/m3           " ;
+		AH2OT:var_desc = "AH2OI+AH2OJ                                                                     " ;
+	float AECT(TSTEP, LAY, ROW, COL) ;
+		AECT:long_name = "AECT            " ;
+		AECT:units = "ug/m3           " ;
+		AECT:var_desc = "AECI+AECJ                                                                       " ;
+	float PM25(TSTEP, LAY, ROW, COL) ;
+		PM25:long_name = "PM25            " ;
+		PM25:units = "ug/m3           " ;
+		PM25:var_desc = "ASO4I+ASO4J+ANO3I+ANO3J+ANH4I+ANH4J+AORGAI+AORGAJ+1.167*AORGPAI+1.167*          " ;
+	float PM_OTH(TSTEP, LAY, ROW, COL) ;
+		PM_OTH:long_name = "PM_OTH          " ;
+		PM_OTH:units = "ug/m3           " ;
+		PM_OTH:var_desc = "A25I+A25J                                                                       " ;
+	float PM_CORS_TOT(TSTEP, LAY, ROW, COL) ;
+		PM_CORS_TOT:long_name = "PM_CORS_TOT     " ;
+		PM_CORS_TOT:units = "ug/m3           " ;
+		PM_CORS_TOT:var_desc = "ASOIL+ACORS+ASEAS (ASEAS is currently 0)                                        " ;
+	float ACORS(TSTEP, LAY, ROW, COL) ;
+		ACORS:long_name = "ACORS           " ;
+		ACORS:units = "ug/m3           " ;
+		ACORS:var_desc = "ACORS                                                                           " ;
+	float ASOIL(TSTEP, LAY, ROW, COL) ;
+		ASOIL:long_name = "ASOIL           " ;
+		ASOIL:units = "ug/m3           " ;
+		ASOIL:var_desc = "ASOIL                                                                           " ;
+	float TNO3(TSTEP, LAY, ROW, COL) ;
+		TNO3:long_name = "TNO3            " ;
+		TNO3:units = "ug/m3           " ;
+		TNO3:var_desc = "ANO3I+ANO3J+(0.9841*HNO3[converted to ug/m3]                                    " ;
+	float NHX(TSTEP, LAY, ROW, COL) ;
+		NHX:long_name = "NHX             " ;
+		NHX:units = "ug/m3           " ;
+		NHX:var_desc = "ANH4I+ANH4J+(NH3[converted to ug/m3]                                            " ;
+	float AIR_DENS(TSTEP, LAY, ROW, COL) ;
+		AIR_DENS:long_name = "AIR_DENS        " ;
+		AIR_DENS:units = "kg/m3           " ;
+		AIR_DENS:var_desc = "Air Density                                                                     " ;
+
+// global attributes:
+		:IOAPI_VERSION = "2.2 2003141 (May 21, 2003)" ;
+		:EXEC_ID = "????????????????                                                                " ;
+		:FTYPE = 1 ;
+		:CDATE = 2005209 ;
+		:CTIME = 1743 ;
+		:WDATE = 2005209 ;
+		:WTIME = 1743 ;
+		:SDATE = 2001001 ;
+		:STIME = 10000 ;
+		:TSTEP = 10000 ;
+		:NTHIK = 1 ;
+		:NCOLS = 148 ;
+		:NROWS = 112 ;
+		:NLAYS = 1 ;
+		:NVARS = 28 ;
+		:GDTYP = 2 ;
+		:P_ALP = 33. ;
+		:P_BET = 45. ;
+		:P_GAM = -97. ;
+		:XCENT = -97. ;
+		:YCENT = 40. ;
+		:XORIG = -2736000. ;
+		:YORIG = -2088000. ;
+		:XCELL = 36000. ;
+		:YCELL = 36000. ;
+		:VGTYP = 2 ;
+		:VGTOP = 10000.f ;
+		:VGLVLS = 1.f, 0.995f ;
+		:GDNAM = "METCRO_36KM_CROS" ;
+		:UPNAM = "COMBINE         " ;
+		:VAR-LIST = "NO              NO2             O3              HNO3            HNO3_UGM3       VOC             CO              SO2             SO2_UGM3        NH3             NH3_UGM3        ASO4T           ANO3T           ANH4T           PM_OC           AORGAT          AORGBT          AORGPAT         AH2OT           AECT            PM25            PM_OTH          PM_CORS_TOT     ACORS           ASOIL           TNO3            NHX             AIR_DENS        " ;
+		:FILEDESC = "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                               " ;
+		:HISTORY = "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                              " ;
+}
+
+</pre>
+<HR>
+
+<A HREF="input.html"><CENTER>BACK</CENTER></A> 
+
+</FONT></body>
+</html>
