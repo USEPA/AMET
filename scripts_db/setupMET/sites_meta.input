@@ -1,3 +1,0 @@
-## Observation site metadata file
-
-$site_file = "$amet_base/obs/MET/stations.csv"

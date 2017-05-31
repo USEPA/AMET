@@ -1,9 +1,0 @@
-stat_id,num_stat_id,stat_name,network,state,city,start_date,end_date,lat,lon,elevation,county,region
-YRK,1,,search,GA,,5/6/1998,,33.931,-85.046,395,Yorkville,
-JST,2,,search,GA,,8/1/1998,,33.776,-84.413,275,Jefferson Street - Atlanta,
-CTR,3,,search,AL,,5/11/1998,,32.902,-87.25,135,Centerville,
-GFP,4,,search,MS,,4/13/1999,,30.391,-89.05,5,Gulfport,
-BHM,5,,search,AL,,10/23/1998,,33.553,-86.815,200,North Birmingham,
-OAK,6,,search,MS,,5/16/1998,,30.985,-88.932,100,Oak Grove,
-PNS,7,,search,FL,,2/1/1999,,30.437,-87.256,5,Pensacola,
-OLF,8,,search,FL,,1/14/1999,,30.55,-87.376,45,Pensacola,
