@@ -1,4 +1,4 @@
-AMET version 1.2
+AMET version 1.3
 ======
 
 Atmospheric Model Evaluation Tool
@@ -10,10 +10,10 @@ This AMET Git archive is organized with each official public release stored as a
 To clone code from the AMET Git archive, specify the branch (i.e. version number) and issue the following command from within
 a working directory on your server:
 ```
-git clone -b 1.2 https://github.com/USEPA/AMET.git AMET_v12
+git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
 ```
 
-## AMET 1.2 Repository Guide
+## AMET 1.3 Repository Guide
 Source code and scripts are organized as follows:
 * **R:** 
 * **bin:** 
@@ -28,8 +28,8 @@ Source code and scripts are organized as follows:
 ## Documentation
 Release notes and Code documentation are included within this repository (they are version-controlled along with the code itself).  
 
-[AMETv1.2 User Guide](docs/AMET_Users_Guide_v1.md)   
-[AMETv1.2 Installation Guide](docs/AMET_Install_Guide_v1.md )   
+[AMETv1.3 User Guide](docs/AMET_Users_Guide_v1.md)   
+[AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v1.md )   
 
 ## AMET Tutorial
 
