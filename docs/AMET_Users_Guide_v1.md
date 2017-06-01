@@ -162,11 +162,12 @@ of two *fields* and two *processes*.
 
 Practically, a user may be interested in using only one of the fields
 (either MET or AQ), or may be interested in using both fields. That
-decision is based on the scope of the study. The three main software
-components of AMET are **MySQL** (an open-source database software
-system), **R** (a free software environment for statistical computing
-and graphics), and **perl** (an open-source cross-platform programming
-language).
+decision is based on the scope of the study. The two main software
+components of AMETv1.3 are **MySQL** (an open-source database software
+system) and **R** (a free software environment for statistical computing
+and graphics). The previous versions of AMET also utilized **perl** (an 
+open-source cross-platform programming language), but the **perl** code has
+been removed from AMETv1.3.
 
 Concept of an AMET “Project”
 ----------------------------
@@ -176,8 +177,8 @@ project groups a particular model simula­tion (specific model,
 physics-set, spatial domain, grid scale, etc.) with all of the AMET
 database tables that correspond to that simulation, the scripts
 necessary to populate that database, and the scripts required to analyze
-that project. For example, you might have one project for a 2002 36-km
-continental U.S. simulation, and another project for a 2002 12-km
+that project. For example, you might have one project for a 2011 12-km
+continental U.S. simulation, and another project for a 2011 4-km
 Eastern U.S. simulation. A project can be for either MET or AQ, not for
 both. It is essential that you uniquely name each project. It is
 recommended that you follow the directory structure when creating new
@@ -193,10 +194,8 @@ this user’s guide to assist you in applying the AMET system in your
 work. CMAS obtained the MET and AQ portions of AMET separately from EPA,
 then integrated the two to create a consistent and integrated AMET
 package that uses the UNIX C-shell interface to perform both MET and AQ
-model evaluation and analyses. After this integra­tion, we tested the
-integrated AMET package on multiple environments. After this
-integration, we tested the integrated AMET package on multiple
-environments.
+model evaluation and analyses. After this integration, we tested the 
+integrated AMET package on multiple environments.
 
 Finally, we created this user’s guide. The contents of the remaining
 sections are listed below.
@@ -204,7 +203,7 @@ sections are listed below.
 -   Section 2 describes the overall directory structure of the
     > AMET installation.
 
--   Section 3 gives instructions on how to configure the Perl and R
+-   Section 3 gives instructions on how to configure the R
     > configuration files.
 
 -   In Section 4 is an overview of the various model outputs and
