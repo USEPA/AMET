@@ -365,9 +365,8 @@ variables that need to be changed in amet-config.R.
 | **amet_login**          | Login for the AMET MySQL user. By default this is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
 
 | **passwd**              | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
-| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
-| **$R\_lib**             | All of the R library paths that should be searched by the R scripts. In our installation, they are **/usr/local/pkgs/Rpackages:$R\_dir/lib/R/site-library**, since we installed additional R libraries under **/usr/local/pkgs/Rpackages**.
 
+| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
 
 Datasets
 ========
