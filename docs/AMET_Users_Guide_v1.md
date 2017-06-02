@@ -166,8 +166,8 @@ decision is based on the scope of the study. The two main software
 components of AMETv1.3 are **MySQL** (an open-source database software
 system) and **R** (a free software environment for statistical computing
 and graphics). The previous versions of AMET also utilized **perl** (an 
-open-source cross-platform programming language), but the **perl** code has
-been removed from AMETv1.3.
+open-source cross-platform programming language), but the **perl** requirement
+has been removed from AMETv1.3.
 
 Concept of an AMET “Project”
 ----------------------------
@@ -273,12 +273,14 @@ class="anchor"></span></span>Table ‑1. Directories under $AMETBASE.
 | **output**            | Output of database population and analysis                            
                          (contains project-specific subdirectories).                            |
 | **perl**              | Perl scripts used primarily for database population.                  |
-| **R**                 | R scripts used for statistical analysis.                              |
+| **R\_analysis\_code** | R scripts used for statistical analysis.                              |
+| **R\_db\_code**       | R scripts used for user and database setup.                           |
 | **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis              
                          (contains project-specific subdirectories).                            |
 | **scripts\_db**       | Project-specific wrapper scripts and inputs for database population   
                          (contains project-specific subdirectories).                            |
 | **src**               | Source code for third-party software.                                 |
+| **web\_interface**    | Beta code for the AMET web graphical user interface for analysis      |
 
 *Note:* For large model outputs and for MADIS observations that cover a
 long period of time, it may be prudent to link these data within the
@@ -288,12 +290,10 @@ Configuration
 =============
 
 After untarring the AMET code and data and installing/building the
-required three tiers of software components (as discussed in the AMET
+required two tiers of software components (as discussed in the AMET
 installation guide referenced above), the next stage is to configure the
 AMET system. In the $AMETBASE/configure directory, you will find five
 files:
-
--   A perl configuration file (amet-config.pl).
 
 -   An R configuration file (amet-config.R).
 
@@ -307,6 +307,10 @@ files:
     > and observations is project specific. See Section 6.5, “Creating a
     > New AQ Project,” for more details on changing the default mapping
     > of AQ observations to model variables.
+    
+-   A php library file (amet-lib.php)
+
+-   A php configuration file (amet-www-config.php)
 
     1.  Perl Configuration File (amet-config.pl)
         ----------------------------------------
@@ -339,8 +343,8 @@ R Configuration File (amet-config.R)
 ------------------------------------
 
 The R configuration file is used by the underlying R programs to perform
-statistical analysis on your model-obs pairs. Most users will need to
-modify only a few specific lines of this configura­tion file. The most
+AMET setup and statistical analysis on your model-obs pairs. Most users will 
+need to modify only a few specific lines of this configura­tion file. The most
 common variables to change are shown in Table 3-2.
 
 <span id="_Toc199840993" class="anchor"></span>Table ‑. Most common
@@ -348,9 +352,23 @@ variables that need to be changed in amet-config.R.
 
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **server**     | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**.                                                                                                                                             |
-| **passwd**     | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. *Note*: The R and perl configuration files should have matching passwords and logins. |
-| **newLibPath** | Should include all R library paths where R packages were installed. In our installation, they are: **c(“/usr/local/pkgs/Rpackages”,oldLibPath)**, since we installed additional R libraries under **/usr/local/pkgs/Rpackages**. *Note:* The **oldLibPath** needs to be included in this variable.                                                                               |
+| **amet_base**           | The base directory where AMET is installed. |
+
+| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
+
+| **EXEC_sitex_daily **   | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
+
+| **obs_data_dir**        | Full path to directory containing AQ observational data. Be default **obs_data_dir** is set to
+**amet_base**/obs/AQ. |
+
+| **mysql_server**        | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
+
+| **amet_login**          | Login for the AMET MySQL user. By default this is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
+
+| **passwd**              | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
+| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
+| **$R\_lib**             | All of the R library paths that should be searched by the R scripts. In our installation, they are **/usr/local/pkgs/Rpackages:$R\_dir/lib/R/site-library**, since we installed additional R libraries under **/usr/local/pkgs/Rpackages**.
+
 
 Datasets
 ========
