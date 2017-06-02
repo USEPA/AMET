@@ -272,7 +272,6 @@ class="anchor"></span></span>Table ‑1. Directories under $AMETBASE.
                          (contains field-specific \[i.e., MET and AQ\] subdirectories).         |
 | **output**            | Output of database population and analysis                            
                          (contains project-specific subdirectories).                            |
-| **perl**              | Perl scripts used primarily for database population.                  |
 | **R\_analysis\_code** | R scripts used for statistical analysis.                              |
 | **R\_db\_code**       | R scripts used for user and database setup.                           |
 | **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis              
