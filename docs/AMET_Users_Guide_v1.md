@@ -624,11 +624,25 @@ necessary in order for them to be used with AMET’s sitecmp.
 
 *Species used with AMET* (from CMAQ deposition file):
 
+> Valcode
+>
+>Invalcode
+>
 > NH4; WDEP\_NHX (mg/L or kg/ha)
 >
 > NO3; WDEP\_TNO3 (mg/L or kg/ha)
 >
 > SO4; WDEP\_ASO4T (mg/L or kg/ha)
+>
+> Cl; WDEP\_TCL (mg/L or kg/ha)
+>
+> Na; WDEP\_ANAJK (mg/L or kg/ha)
+>
+> Ca; WDEP\_CAJK (mg/L or kg/ha)
+>
+> Mg; WDEP\_MGJK (mg/L or kg/ha)
+>
+> K; WDEP\_KJK (mg/L or kg/ha)
 >
 > precip; RT (mm)
 
@@ -641,7 +655,11 @@ SEARCH site. In order to be used with sitecmp and AMET, the individual
 site files must first be merged together into a single file. The example
 SEARCH data file provided with AMET should serve as an example of how
 the raw SEARCH data need to be combined and formatted in order to work
-with sitecmp and AMET.
+with sitecmp and AMET. The list of SEARCH species listed here is just an
+example of the species available from SEARCH, as the exact species 
+available varies depending on year and whether the data are hourly or 
+daily. AMET formatted SEARCH data files are available for download from
+the CMAS website.
 
 *Species used with AMET*:
 
@@ -665,14 +683,15 @@ with sitecmp and AMET.
 >
 > noy; NOY (ppb)
 
-### Speciation Trends Network (STN)
+### Chemical Speciation Network (CSN)
 
-*Source:* STN data are obtained through the EPA’s Air Quality System
+*Source:* CSN data are obtained through the EPA’s Air Quality System
 (AQS), located at
 [**http://www.epa.gov/ttn/airs/airsaqs/**](http://www.epa.gov/ttn/airs/airsaqs/).
-The data provided with AMET are a sample of the STN data that can be
-obtained through the AQS. No postprocessing of the downloaded STN data
-is necessary in order for them to work with sitecmp and AMET.
+The data provided with AMET are a sample of the CSN data that can be
+obtained through the AQS. Some postprocessing of the downloaded CSN data
+is necessary in order for them to work with sitecmp and AMET. However, AMET
+compatible CSN data files are available from the CMAS website.
 
 *Species used with AMET*:
 
@@ -694,15 +713,111 @@ is necessary in order for them to work with sitecmp and AMET.
 
 *Source:* AQS data are obtained through the EPA’s Air Quality System
 (AQS), located at
-[**http://www.epa.gov/ttn/airs/airsaqs/**](http://www.epa.gov/ttn/airs/airsaqs/).
+[**http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html**](http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html).
 Various species of atmospheric gases are available for download through
-the AQS. Although only ozone data are provided with the AMET release,
-both **sitecmp** and AMET can process other gaseous species available
-through the AQS (some customization is required, however).
+the AQS. THe pre-generated files on this site need to be combined into a
+single data file in order to work best with AMET. AMET compatible AQS data
+files are available for download from the CMAS website.
 
-*Species used with AMET:*
+*Hourly species used with AMET:*
 
-> ozone; ozone (ppb)
+> O3; O3 (ppb)
+>
+> NO; NO (ppb) 
+>
+> NOY; NOY (ppb)
+>
+> NO2; NO2 (ppb)
+>
+> NOX; NO+NO2 (NOX, ppb)
+>
+> CO; CO (ppb)
+>
+> SO2; SO2 (ppb)
+>
+> PM25; PMIJ (ug/m3) 
+>
+> PM10; PM10 (ug/m3)
+>
+> Isoprene; ISOP (ppb)
+>
+> Ethylene; ETH (ppb)
+>
+> Ethane; ETHA (ppb)
+>
+> Toluene; TOL (ppb)
+>
+> Temperature: SFC_TMP (C)
+>
+> RH; RH (%)
+>
+> Wind_Speed; WSPD10 (m/s)
+>
+> ; PBLH (m)
+>
+> ; SOL_RAD (watts/m2)
+>
+> ; 10*precip (mm/hr)
+
+*Daily species used with AMET:*
+
+>PM25; PMIJ (ug/m3)
+>
+> PM10; PM10 (ug/m3)
+>
+> Isoprene; ISOP (ppb)
+>
+> Ethylene;ETH (ppb)
+>
+> Ethane; ETHA (ppb)
+>
+> Toluene; TOL (ppb)
+>
+> Acetaldehyde; ALD2 (ppb)
+>
+> Formaldehyde; FORM (ppb)
+>
+> OC+OC_Blank; AOCIJ (ug/m3)
+>
+> EC,ug/m3; AECIJ (ug/m3)
+>
+> OC+OC_Blank+EC; AOCIJ+AECIJ (ug/m3)
+>
+> Na; ANAIJ (ug/m3)
+>
+> Cl; ACLIJ (ug/m3)
+>
+> Na+Cl; ACLIJ+ANAIJ (ug/m3)
+>
+> SO4; ASO4IJ (ug/m3)
+>
+> NO3; ANO3IJ (ug/m3)
+>
+> NH4; ANH4IJ (ug/m3)
+>
+> Fe; AFEJ (ug/m3)
+>
+> Al; AALJ(ug/m3)
+>
+> Si; SIJ (ug/m3)
+>
+> Ti; ATIJ (ug/m3)
+>
+> Ca; ACAJ (ug/m3)
+>
+> Mg; AMGJ (ug/m3)
+>
+> K; AKJ (ug/m3)
+>
+> Mg; AMNJ (ug/m3)
+>
+> 2.2\*Al+2.49\*Si+1.63\*Ca+2.42\*Fe+1.94\*Ti; ASOILJ (soil, ug/m3)
+>
+> PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti; AUNSPEC1IJ (OTHER, ug/m3)
+>
+> 0.8\*OC; ANCOMIJ (NCOM, ug/m3)
+>
+> PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)
 
 Database Setup
 ==============
