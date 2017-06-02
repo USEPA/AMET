@@ -352,20 +352,13 @@ variables that need to be changed in amet-config.R.
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **amet_base**           | The base directory where AMET is installed. |
-
 | **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
-
 | **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
-
 | **obs_data_dir**        | Full path to directory containing AQ observational data. Be default **obs_data_dir** is set to
 **amet_base**/obs/AQ. |
-
 | **mysql_server**        | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
-
 | **amet_login**          | Login for the AMET MySQL user. By default this is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
-
 | **passwd**              | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
-
 | **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
 
 Datasets
