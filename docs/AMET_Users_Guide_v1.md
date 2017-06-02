@@ -355,7 +355,7 @@ variables that need to be changed in amet-config.R.
 
 | **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
 
-| **EXEC_sitex_daily **   | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
 
 | **obs_data_dir**        | Full path to directory containing AQ observational data. Be default **obs_data_dir** is set to
 **amet_base**/obs/AQ. |
@@ -425,18 +425,18 @@ METCRO2D\_2002189
 METCRO2D\_2002190
 
 On the AQ side, we have included two CMAQ output files for the period
-July 01 2002 0:00 UTC to July 11 2002 00:00 UTC. The two files:
+July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
 
 > $AMETBASE/model\_data/AQ/**aqExample**/
 >
-> test.36km.conc
+> test.12km.conc
 >
-> test.36km.dep
+> test.12km.dep
 
 correspond to the concentration and wet deposition output files from
 CMAQ, after they have been postprocessed with the combine utility.
 
-All of the spatial domains cover the continental U.S. and have a 36-km
+All of the spatial domains cover the continental U.S. and have a 12-km
 grid resolution.
 
 Observational Data
@@ -490,14 +490,16 @@ with the steps taken to create these data for AMET, is given below. Note
 that in the species lists, each line is of the format “observed species
 name; model species name (units)”.
 
-### Clean Air Status and Trends Network (CASTNet) Weekly
+### Clean Air Status and Trends Network (CASTNET) Weekly
 
 *Source:* CASTNet data are obtained through the CASTNet web site:
 [**http://www.epa.gov/castnet/**](http://www.epa.gov/castnet/). Weekly
 CASTNet data can be obtained by downloading the “drychem” file under the
 prepackaged datasets on the CASTNet web site. No postprocessing of the
 downloaded data is necessary in order for them to be compatible with the
-Site Compare (sitecmp) software packaged with the AMET system.
+Site Compare (sitecmp) software packaged with the AMET system. Note that
+the species **MG**, **CA**, **K**, **NA**, and **CL** are available when
+using the CMAQ AERO6 module.
 
 <span id="OLE_LINK1" class="anchor"><span id="OLE_LINK2"
 class="anchor"></span></span>*Species used with AMET*:
@@ -513,6 +515,16 @@ class="anchor"></span></span>*Species used with AMET*:
 > nhno3; HNO3\_UGM3 (µg/m<sup>3</sup>)
 >
 > wso2; SO2\_UGM3 (µg/m<sup>3</sup>)
+>
+> MG; AMGJ (µg/m<sup>3</sup>)
+>
+> CA; ACAJ (µg/m<sup>3</sup>)
+>
+> K; AKJ (µg/m<sup>3</sup>)
+>
+> NA; ANAIJ (µg/m<sup>3</sup>)
+>
+> CL; ACLIJ (µg/m<sup>3</sup>)
 
 ### Clean Air Status and Trends Network (CASTNet) Hourly
 
@@ -562,6 +574,40 @@ AMET’s sitecmp.
 > ECf\_val; AECT (µg/m<sup>3</sup>)
 >
 > OCf\_val+ECf\_val; PM\_OC+AECT (TC; µg/m<sup>3</sup>)
+>
+> CHLf\_val; ACLIJ (µg/m<sup>3</sup>)
+>
+> MT\_val; PM10 (µg/m<sup>3</sup>)
+>
+> CM\_calculated\_val; PMC_TOT (µg/m<sup>3</sup>)
+>
+> NAf\_val; ANAIJ (µg/m<sup>3</sup>)
+>
+> NAf\_val+CHLf\_val; ANAIJ+ACLIJ (NaCl; µg/m<sup>3</sup>)
+>
+> FEf\_val; AFEJ (µg/m<sup>3</sup>)
+>
+> ALf\_val; AALJ (µg/m<sup>3</sup>)
+>
+> SIf\_val; ASIJ (µg/m<sup>3</sup>) 
+>
+> TIf\_val; ATIJ (µg/m<sup>3</sup>)
+>
+> CAf\_val; ACAJ (µg/m<sup>3</sup>)
+>
+> MGf\_val; AMGJ (µg/m<sup>3</sup>)
+>
+> Kf\_val; AKJ (µg/m<sup>3</sup>)
+>
+> MNf\_val; AMNJ (µg/m<sup>3</sup>)
+>
+> 2.20\*ALf\_val+2.49\*SIf\_val+1.63\*CAf\_val+2.42\*FEf\_val+1.94\*TIf\_val; ASOILJ (µg/m<sup>3</sup>)
+>
+> MF\_val-SO4f\_val-NO3f\_val-0.2903\*NO3f\_val-0.375\*SO4f\_val-OCf\_val-ECf\_val-NAf\_val-CHLf\_val-2.2*\ALf\_val-2.49\*SIf\_val-1.63\*CAf\_val-2.42\*FEf\_val-1.94\*TIf\_val; AUNSPEC1IJ (OTHER; µg/m<sup>3</sup>)
+>
+> ; ANCOMIJ (NCOM; µg/m<sup>3</sup>)
+>
+> ; AUNSPECIJ2 (OTHER_REM; µg/m<sup>3</sup>)
 
 ### Mercury Deposition Network (MDN)
 
