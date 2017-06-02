@@ -834,11 +834,11 @@ for both fields, you will need to run both setups. In the following
 discussion, we assume the default name of the AMET database, “amet”, and
 the default AMET MySQL user, “ametsecure”. If you decide to change
 either of these, then you will need to update the appropriate variables
-in the Perl and R configuration files in the directory
-$AMETBASE/configure (see Section 3). Before you run the setup scripts,
-you will need to know the “root” password for the MySQL admini­strator.
-Note that this is not the same as the “ametsecure” password that will be
-created using the scripts discussed below.
+in the R configuration files in the directory $AMETBASE/configure 
+(see Section 3). Before you run the setup scripts, you will need to know 
+the “root” password for the MySQL admini­strator. Note that this is not 
+the same as the “ametsecure” password that will be created using the scripts 
+discussed below.
 
 MET Setup
 ---------
@@ -912,14 +912,7 @@ sites metadata), project\_units (contains species-specific units for
 each project), and aq\_project\_log (contains summary information for
 each AQ project).
 
-The setup directory also contains scripts for removing projects and
-removing the amet database. To delete a specific MET project, use
-
-> $./delete\_project.csh
-
-This script will ask you for the name of the project to delete.
-**CAUTION:** This will delete all of the tables in the database
-corresponding to that project.
+The setup directory also contains a script for removing the amet database. 
 
 To delete the amet database from MySQL, use
 
