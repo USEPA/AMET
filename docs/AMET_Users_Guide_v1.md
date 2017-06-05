@@ -1285,8 +1285,8 @@ potentially confusing issue: the relationship between model species and
 monitor species. In order for AQ database population to work, there must
 be a mapping between the model species and the various network species.
 This mapping is accomplished by postprocessing the CMAQ model data, and
-through species definitions in the populate\_project.input file. The
-model data used in the aqExample section (Section 6.3) were already
+through the AQ_species_list.R file located in $AMETBASE/R_db_code directory.
+The model data used in the aqExample section (Section 6.3) were already
 postprocessed, so we did not need to go through that step when running
 the example project. In a new project, you will likely need to
 postprocess your CMAQ data before they are ingested into the amet
@@ -1336,13 +1336,6 @@ Run the two combine scripts:
 >
 > $ ./combine\_dep.csh
 
-Regarding the populate\_project.input file, you will not need to change
-it if you do not change the species definition files (spec\_def\*). If
-you do change the species definitions, you will need to change the
-species definitions and names in the
-$AMETBASE/scripts\_db/aqNC2007/populate\_project.input. See Appendix B
-for details.
-
 Next, create a new model data directory and move or link your
 postprocessed model data into it, as follows:
 
@@ -1357,11 +1350,71 @@ postprocessed model data into it, as follows:
 Here, you would replace “&lt;model data&gt;” with the path to your
 postprocessed model data file(s).
 
-Next, in the file $AMETBASE/scripts\_db/aqNC2007/aqProject.csh, edit the
-variables AMET\_PROJECT ("aqNC2007"), START\_DATE (start date of the
-model data), END\_DATE (end date of the model data), CONC\_1 (model
-concentration file(s)), and DEP\_1 (model deposition file(s)). Note that
-the model data files should point to your postprocessed model data.
+The next step is to edit the $AMETBASE/scripts\_db/aqNC2007/aqProject.csh
+script for your particular project. This script does two things. It creates
+your project table in the amet database and populates that project table
+with your data. You'll specifiy a number of options in the aqProject.csh 
+script which will then call several R script to run site compare and then
+poplulate the database with your data.
+
+You'll need to specify **AMETBASE** as done in the previous scripts. The **AMET_LOGIN**
+will default to your system user name, but you can change it if desired. 
+The **AMET_LOGIN** is only used to identify you in the amet database and is not
+used to as a login to the amet database. The **AMET_PROJECT** should be the same
+name you called the directory and needs to be unique and contain no spaces.
+Next set the **AMET_DATABASE** to use (by default this is set to "amet") and the
+location of the amet formatted observation files (by default this is set to
+$AMETBASE/obs/AQ). You'll need to specify the **AMET_OUT** directory where
+the output files (i.e. site compare scripts and paired data files) will be 
+written. By default, **AMET_OUT** is set to $AMETBASE/output/$AMET_PROJECT and will
+be created if it does not already exist.
+
+The table below describes the other options and file locations that need to be
+specified in the aqProject.csh script.
+
+| **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
+| **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
+| **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. |
+| **AMET\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/R\_db\_code/AQ\_species\_list.R** |
+| **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
+| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5. By default this flag is set to F and is considered an advanced user option. |
+| **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
+| **START\_DATE**            | Start date in YYYYJJJ to begin the processing. By default this is set to 2011182 (July 1, 2011) for the example case. |
+| **END\_DATE**              | End date in YYYYJJJ to begin the processing. By default this is set to 2011213 (August 1, 2011) for the example case. |
+| **CONC\_FILE\_\***         | Path to the CMAQ combined file containing the gas and aerosol species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. |
+| **DEP\_FILE\_\***          | Path to the CMAQ combined file containing the wet and dry species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. |
+| **CASTNET**                | T/F; Flag to include the CASTNET weekly data in the analysis |
+| **CASTNET\_HOURLY**        | T/F; Flag to include the CASTNET hourly data in the analysis |
+| **CASTNET\_DAILY\_O3**     | T/F; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
+| **IMPROVE**                | T/F; Flag to include the IMPROVE daily data in the analysis |
+| **NADP**                   | T/F; Flag to include the NADP weekly deposition data in the analysis |
+| **CSN**                    | T/F; Flag to include the CSN daily data in the analysis |
+| **AQS\_HOURLY**            | T/F; Flag to include the AQS hourly data in the analysis |
+| **AQS\_DAILY\_O3**         | T/F; Flag to include the AQS daily O3 (e.g. MDA8 O3) data in the analysis |
+| **AQS\_DAILY**             | T/F; Flag to include the AQS daily data in the analysis |
+| **SEARCH\_HOURLY**         | T/F; Flag to include the SEARCH hourly data in the analysis |
+| **SEARCH\_DAILY**          | T/F; Flag to include the SEARCH daily data in the analysis |
+| **NAPS\_HOURLY**           | T/F; Flag to include the NAPS hourly data in the analysis |
+| **CASTNET\_DRYDEP**        | T/F; Flag to include the CASTNET dry deposition data in the analysis |
+| **AIRMON**                 | T/F; Flag to include the AIRMON data in the analysis |
+| **AMON**                   | T/F; Flag to include the AMON data in the analysis |
+| **MDN**                    | T/F; Flag to include the MDN data in the analysis |
+| **FLUXNET**                | T/F; Flag to include the FLUXNET data in the analysis |
+| **AIRBASE\_HOURLY**        | T/F; Flag to include the AIRBASE hourly data in the analysis |
+| **AIRBASE\_DAILY**         | T/F; Flag to include the AIRBASE daily data in the analysis |
+| **AURN\_HOURLY**           | T/F; Flag to include the AURN hourly data in the analysis |
+| **AURN\_DAILY**            | T/F; Flag to include the AURN daily data in the analysis |
+| **EMEP\_HOURLY**           | T/F; Flag to include the EMEP hourly data in the analysis |
+| **EMEP\_DAILY**            | T/F; Flag to include the EMEP daily data in the analysis |
+| **AGANET**                 | T/F; Flag to include the AGANET data in the analysis |
+| **ADMN**                   | T/F; Flag to include the ADMN data in the analysis |
+| **NAMN**                   | T/F; Flag to include the NAMN data in the analysis |
+| **O3\_OBS\_FACTOR**        | Factor to apply to ozone observations, typically used to convert units. By default this is set to 1. |
+| **O3\_MOD\_FACTOR**        | Factor to apply to ozone model data, typically used to convert units. By default this is set to 1. |
+| **O3\_UNITS**              | ppb/ppm; Ozone units used. By default this is set to ppb.
+| **PRECIP\_UNITS**          | mm/cm; Precip units used. By default this is set to cm.
 
 Finally, run the populate script:
 
