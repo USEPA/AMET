@@ -1459,12 +1459,12 @@ and data).
 
 A second organizing structure is the grouping of three files for each
 type of analysis. In the project directories, you will see a C-shell
-script and an input file with similar names (e.g., run\_timeseries.csh
-and timeseries.input). These two files set up everything that is
-necessary to run an underlying R script in $AMETBASE/R and then they run
-that script. The use of the C-shell interface allows users who are not
-very familiar with R to perform these predefined analyses, shielding
-them from the actual R code.
+script and a subdirectory **input_files** containing an input file with 
+similar names (e.g., run\_timeseries.csh and timeseries.input). These two 
+files set up everything that is necessary to run an underlying R script in 
+$AMETBASE/R and then they run that script. The use of the C-shell interface 
+allows users who are not very familiar with R to perform these predefined 
+analyses, shielding them from the actual R code.
 
 wrfExample
 ----------
@@ -1549,8 +1549,9 @@ Go to the project directory:
 > $ cd $AMETBASE/scripts\_analysis/aqExample
 
 Here, you will see a series of C-shell scripts and their accompanying
-input files. We will go through an analysis script in detail as a
-example for running each of the scripts in the project.
+input files in the subdirectory **input\_files**. We will go through an 
+analysis script in detail as a example for running each of the scripts 
+in the project.
 
 The run\_scatterplot.csh script creates a scatterplot for one species
 from one or more monitoring networks. It compares the observed values to
@@ -1562,10 +1563,22 @@ scripts will likely fail. See Section 4.2 and Appendix B for more
 details on the various species that are monitored (or available) from
 each AQ network.
 
-First, edit the run\_scatterplot.csh file. Change the AMETBASE variable
-to correspond with your setup. Note that the species selected is SO4 and
-you are plotting two networks: IMPROVE and CASTNET. The corresponding
-input file, scatterplot.input, will likely not need to be changed.
+First, edit the run\_scatterplot.csh file. Below is a table describing
+the option available in the run\_scatterplot.csh script. Note that the 
+species selected is SO4 and you are plotting two networks: IMPROVE and 
+CASTNET. The corresponding input file, scatterplot.input, will likely not 
+need to be changed.
+
+| **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **AMETBASE**           | Base directory where AMET is installed. |
+| **AMET\_DATABASE**     | MySQL database containing your project. |
+| **AMET\_PROJECT**      | Name of the AMET project to analyze. |
+| **AMET\_OUT**          | Location to which to write output files (e.g. plots). By default this is set to $AMETBASE/output/$AMET_PROJECT/$analysis_script_type. |
+| **AMET\_SDATE**        | Start date in the form YYYYMMDD from which to begin the analysis. |
+| **AMET\_EDATE**        | End date in the form YYYYMMDD to which to end the analysis.|
+| **AMET\_PID**          | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
+| **AMET\_PTYPE**        | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
 
 Also note that all AQ analysis scripts make use of the Network.input
 input file. This file contains information about each observational
