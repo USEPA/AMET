@@ -1355,12 +1355,17 @@ script for your particular project. This script does two things. It creates
 your project table in the amet database and populates that project table
 with your data. You'll specifiy a number of options in the aqProject.csh 
 script which will then call several R script to run site compare and then
-poplulate the database with your data.
+poplulate the database with your data. This script will be reused for your
+various AMET-AQ projects, so while this script contains a number of options,
+you will likely only need to fully setup this script once and re-use it will
+little modification in the future.
 
-You'll need to specify **AMETBASE** as done in the previous scripts. The **AMET_LOGIN**
-will default to your system user name, but you can change it if desired. 
+First, you'll need to specify some basic amet information. You'll need to 
+specify **AMETBASE** as done in the previous scripts. The **AMET_LOGIN**
+will default to your system user ID, but you can change it if desired. 
 The **AMET_LOGIN** is only used to identify you in the amet database and is not
-used to as a login to the amet database. The **AMET_PROJECT** should be the same
+used to as a login to the amet database (when executed, the script will prompt
+you for the amet login and password). The **AMET_PROJECT** should be the same
 name you called the directory and needs to be unique and contain no spaces.
 Next set the **AMET_DATABASE** to use (by default this is set to "amet") and the
 location of the amet formatted observation files (by default this is set to
