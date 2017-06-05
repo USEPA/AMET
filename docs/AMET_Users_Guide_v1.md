@@ -1569,8 +1569,8 @@ species selected is SO4 and you are plotting two networks: IMPROVE and
 CASTNET. The corresponding input file, scatterplot.input, will likely not 
 need to be changed.
 
-| **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Variable**   | **Description** |
+|----------------|-----------------|
 | **AMETBASE**           | Base directory where AMET is installed. |
 | **AMET\_DATABASE**     | MySQL database containing your project. |
 | **AMET\_PROJECT**      | Name of the AMET project to analyze. |
@@ -1609,19 +1609,7 @@ scripts.
 
 | **C-shell Script**           | **Input**               | **Description**           | **Scope**         |                             | ---------------------------- | ----------------------- | ------------------------- | ----------------- | 
 | **run\_boxplot.csh**          | **boxplot.input**            | Creates a box plot of model-obs quartiles. Designed for an entire year of data. Can be used with a period as short as 3 months.      | single network; single species; single simulation              |
-| **run\_boxplot\_hourly.csh** | **boxplot\_hourly.input**    | Creates side-by-side boxplots to create a diurnal average curve. Hourly data only. | single network; hourly species only; single simulation              |
-| **run\_bugleplot.csh**       | **bugleplot.input**          | Model performance criteria are adjusted as a function of the average concentration of the observed value for that species. As the average concentration of the species decreases, the acceptable performance criteria increase. Creates a bias and error plot. | multiple networks; single species; single simulation              |
-| **run\_met\_aq.csh**         | **met\_aq\_coupled.input**   | Compares AQ and MET data. Creates a spatial plot of correlation and a time series plot of bias. Note that you need to setup both MET and AQ models and define the MET variables and the AQ species and network of interest. | AQS; O<sub>3</sub>; single MET/AQ simulation pair  |
-| **run\_pave\_overlay.csh**   | **pave\_overlay.input**      | Creates a data file that can be used by the program **bldoverlay** to create an overlay file. This file can be used in PAVE to overlay over CMAQ model output. Hourly data only. | single network; hourly species only; single simulation              |
-| **run\_plot\_spatial.csh**   | **plot\_spatial.input**      | Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. | multiple networks; single species; single simulation              |
-| **run\_scatterplot.csh**     | **scatterplot.input**        | Creates a single model vs. obs scatterplot. This script will plot a single species from up to three networks on a single plot. Summary statistics are also included on the plot. | multiple networks; single species; multiple simulations           |
-| **run\_scatterplot\_MtoM.csh**   | **scatterplot\_MtoM.input**    | Creates a single model-to-model scatterplot. *Note*: The model points correspond to network’s site locations only. | multiple networks; single species; multiple simulations           |
-| **run\_scatterplot\_single.csh** | **scatterplot\_single.input**  | Creates a scatter plot for a single network that includes more specific statistics than run\_scatterplot.csh.| single network;single species;multiple simulations           |
-| **run\_scatterplot\_skill.csh**  | **scatterplot\_skill.input**   | Creates a forecast skill scatter plot. The script is designed to work specifically with O<sub>3</sub>. | all AQS networks; O<sub>3</sub>; single simulation              |
-| **run\_soccerplot.csh**          | **soccerplot.input**           | Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines. | multiple network; multiple species; multiple simulations           |
-| **run\_stacked\_barplot.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes.| STN or SEARCH;species predefined; multiple simulations |
-| **run\_stats\_plots.csh**     | **stats\_plots.input**            | Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included. | multiple networks; single species; single simulation              |
-| **run\_timeseries.csh**       | **timeseries.input**    | Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model.| single network;single species; multiple simulations           |
+
 
 Creating a New Analysis Project
 -------------------------------
