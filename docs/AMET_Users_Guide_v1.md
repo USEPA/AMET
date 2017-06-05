@@ -7,9 +7,7 @@ Prepared under Work Assignment 3-04 of U.S. EPA Contract EP-W-05-045,
 “Operation of the Center for Community Air Quality Modeling and
 Analysis”
 
-Prepared for: Bill Benjey and Alice Gilliland
-
-U.S. EPA, ORD/NERL/AMD/APMB
+U.S. EPA, ORD/NERL/CED/AMAAB
 
 E243-04
 
@@ -17,7 +15,7 @@ USEPA Mailroom
 
 Research Triangle Park, NC 27711
 
-Prepared by: Saravanan Arunachalam, Alexis Zubrow and Neil Davis
+Prepared by: Wyat Appel, Robert Gilliam and Zac Adelman
 
 Institute for the Environment
 
@@ -831,14 +829,13 @@ AMET installation. There are separate setup procedures for the two
 fields, MET and AQ. If you are using AMET for only one of those fields,
 you need to run only the corresponding setup. If you are running AMET
 for both fields, you will need to run both setups. In the following
-discussion, we assume the default name of the AMET database, “amet”, and
-the default AMET MySQL user, “ametsecure”. If you decide to change
-either of these, then you will need to update the appropriate variables
-in the R configuration files in the directory $AMETBASE/configure 
-(see Section 3). Before you run the setup scripts, you will need to know 
-the “root” password for the MySQL admini­strator. Note that this is not 
-the same as the “ametsecure” password that will be created using the scripts 
-discussed below.
+discussion, we assume the default name of the AMET MySQL user is 
+“ametsecure”. If you decide to change either of these, then you will 
+need to update the appropriate variables in the R configuration files 
+in the directory $AMETBASE/configure (see Section 3). Before you run 
+the setup scripts, you will need to know the “root” password for the 
+MySQL admini­strator. Note that this is not the same as the “ametsecure” 
+password that will be created using the scripts discussed below.
 
 MET Setup
 ---------
@@ -898,7 +895,11 @@ etc.).
 
 To initialize the AQ side of AMET, you will need to edit and run the
 initialize\_aq\_db.csh script. Specifically, you should make sure the
-value of AMETBASE corresponds to your system. If you have already run
+value of AMETBASE corresponds to your system. You also need to specify
+the database to use (by default this is set to amet), the location of the
+observation files (by default this is set to $AMETBASE/obs/AQ), and the
+path to the sites_meta.input file (by default this is set to 
+$AMETBASE/scripts\_db/setupAQ/sites_meta.input). If you have already run
 the setup procedure for MET, you should set the variable “new\_db” to
 “N”; otherwise set it to “Y” to create a new amet database. Run the
 initialize script
@@ -920,8 +921,8 @@ To delete the amet database from MySQL, use
 
 This script will ask you for the MySQL “root” password before
 proceeding. *Use this script with **EXTREME CAUTION** because this will
-delete all of the data in the database corresponding to **all** of the
-projects (**both MET and AQ**).*
+delete all of the data in the database specifiedcorresponding to **all** 
+of the projects (**both MET and AQ**).*
 
 Basic MySQL Commands
 --------------------
@@ -1005,8 +1006,8 @@ To determine which networks are included in the aqExample project:
 
 > mysql&gt; select distinct network from aqExample;
 
-Database Population
-===================
+Project Creation and Database Population
+========================================
 
 The database population phase of AMET must be performed for each new
 project. As discussed in Section 1.2, the *project* is the organizing
@@ -1193,38 +1194,27 @@ Here, you will see two input files, one C-shell script, and the combine
 subdirectory. The setup\_project.input file is the input file for
 initializing the project’s database table (discussed later in Section
 6). The only thing you should need to change in this file is the
-“$email” variable. Note that you should use the backslash “escape”
-character, “\\”, to prevent Perl from evaluating the “@” in your e-mail
-address. The populate\_project.input file describes specific flags for
-the model outputs and observations that you want to process. See
-Appendix B for information on the specifics relating to each variable.
-You will likely not need to change anything in this second input file.
-The combine subdirectory is not used for this example; it is discussed
-later in Section 6.5, “Creating a New AQ Project”.
+“$email” variable. The combine subdirectory is not used for this example; 
+it is discussed later in Section 6.5, “Creating a New AQ Project”.
 
-The C-shell file aqProject.csh is a wrapper script for calling the Perl
-programs that actually populate the AMET database with the project data.
-The variable that you will likely need to change for this project is
-“AMETBASE”. Run the script by typing
+The C-shell file aqProject.csh is a wrapper script for calling the R
+programs that actually create your project and populate the AMET database 
+with the project data. The variable that you will likely need to change 
+for this project is “AMETBASE”. Run the script by typing
 
 > $ ./aqProject.csh &gt;& log.populate
 
-Note that if you are overwriting an existing project (i.e., using the
-same project name), you cannot redirect the screen output to a file
-because the script will require input from you.
-
 This C-shell script will create one empty project table in the AMET
 database: aqExample. After creating this table, the script then begins
-the matching process. This consists of calling a series of Perl programs
-and Fortran helper programs. The two Fortran helper programs are
-$AMETBASE/bin/cmp\_airs.exe and $AMETBASE/bin/sitecmp.exe; the first one
-matches the AQS network’s data to the nearest grid cell in the CMAQ
-model, and the second one does the same for the other networks. After
-each network has been matched to the model, the aqExample table is
-populated with the model-obs pairs. In addition to creating and
-populating the aqExample table, the script updates the project\_units
-table with each network for that project. This table defines the
-physical units of the species variables for this network (e.g., ppb vs.
+the matching process. This consists of calling a series of Fortran helper 
+programs. The two Fortran helper programs are $AMETBASE/bin/cmp\_airs.exe 
+and $AMETBASE/bin/sitecmp.exe; the first one matches the AQS network’s data 
+to the nearest grid cell in the CMAQ model, and the second one does the 
+same for the other networks. After each network has been matched to the model,
+the aqExample table is populated with the model-obs pairs. In addition to 
+creating and populating the aqExample table, the script updates the 
+project\_units table with each network for that project. This table defines 
+the physical units of the species variables for this network (e.g., ppb vs.
 µg/m<sup>3</sup>). Finally, the script updates the aq\_project\_log with
 summary information for the aqExample project.
 
