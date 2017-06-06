@@ -83,25 +83,17 @@ Table 7‑1. MET analysis scripts. 22
 
 Table 7‑2. AQ analysis scripts. 24
 
-Table B‑1. amet-config.pl 32
+Table B‑1. amet-config.R 
 
-Table B‑2. amet-config.R 34
+Table B-2. MET setup\_project.input
 
-Table B‑3. MET setup\_project.pl 35
+Table B‑3. AQ setup\_project.input 
 
-Table B‑4. AQ setup\_project.input 36
+Table B‑4. MET populate\_project.input 
 
-Table B‑5. MET populate\_project.input 37
+Table B‑5. MET analysis input variables 
 
-Table B‑6. AQ populate\_project.input 41
-
-Table B‑7. MET analysis input variables 43
-
-Table B‑8. AQ analysis input variables 50
-
-Table B‑9. AQ network input variables 56
-
-Table B‑10. AQ networks, species, and frequency of observations 57
+Table B‑6. AQ analysis input variables 
 
 1.  Overview
     ========
