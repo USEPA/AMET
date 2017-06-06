@@ -1887,8 +1887,8 @@ variables. Not all of these variables are available in every input file.
 <span id="_Toc199841002" class="anchor"></span>Table B‑. MET analysis
 input variables
 
-| **Variable**             | **Description**                                                                                                                                                                             |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Variable**             | **Description** |
+|--------------------------|-----------------|
 | **acars.only**           | Either plot only ACARS airport sites on site location plot, or include all profile stations:                                                                                                
                                                                                                                                                                                                                          
                             **TRUE** – only ACARS sites                                                                                                                                                                  
@@ -2032,7 +2032,7 @@ files. Not all of these variables are available in every input file.
 input variables
 
 | **Variable**             | **Description** |
-|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|--------------------------|-----------------|
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
 | **aq\_network**          | AQ monitoring network. |
