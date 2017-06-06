@@ -227,18 +227,13 @@ class="anchor"></span></span>Table ‑1. Directories under $AMETBASE.
 |-----------------------|-----------------------------------------------------------------------|
 | **bin**               | External executables used by helper scripts.                          |
 | **configure**         | Configuration files for R and php.                                    |
-| **model\_data**       | Model output data                                                     
-                         (contains field-specific \[i.e., MET and AQ\] subdirectories).         |
-| **obs**               | Observational data (e.g., MADIS, discussed in Section 4.2)            
-                         (contains field-specific \[i.e., MET and AQ\] subdirectories).         |
-| **output**            | Output of database population and analysis                            
-                         (contains project-specific subdirectories).                            |
+| **model\_data**       | Model output data (contains field-specific \[i.e., MET and AQ\] subdirectories). |
+| **obs**               | Observational data (e.g., MADIS, discussed in Section 4.2) (contains field-specific \[i.e., MET and AQ\] subdirectories).         |
+| **output**            | Output of database population and analysis (contains project-specific subdirectories). |
 | **R\_analysis\_code** | R scripts used for statistical analysis.                              |
 | **R\_db\_code**       | R scripts used for user and database setup.                           |
-| **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis              
-                         (contains project-specific subdirectories).                            |
-| **scripts\_db**       | Project-specific wrapper scripts and inputs for database population   
-                         (contains project-specific subdirectories).                            |
+| **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis (contains project-specific subdirectories).|
+| **scripts\_db**       | Project-specific wrapper scripts and inputs for database population (contains project-specific subdirectories). |
 | **src**               | Source code for third-party software.                                 |
 | **web\_interface**    | Beta code for the AMET web graphical user interface for analysis      |
 
