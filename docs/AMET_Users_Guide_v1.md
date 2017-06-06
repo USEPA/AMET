@@ -1691,7 +1691,7 @@ Configuration and Input Files**
 This is the configuration file for all R scripts used in database
 population—for example, $AMETBASE/configure/amet-config.R.
 
-<span id="_Toc199840996" class="anchor"></span>Table B‑. amet-config.pl
+<span id="_Toc199840996" class="anchor"></span>Table B-1. amet-config.R
 
 | **Variable**       | **Description**                                                                                                                                                                                                                                                              |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1699,10 +1699,10 @@ population—for example, $AMETBASE/configure/amet-config.R.
 | **obs\_data\_dir**  | Path to AQ observation data files. Default is **$amet_base/obs/AQ**. |
 | **mysql\_server** | MySQL server location. Examples are “**localhost**” for the same machine as AMET, or “**rama.cempd.unc.edu**” for a server on rama. |
 | **amet\_login**     | MySQL user for adding data to the database and performing queries. “**ametsecure**” is recommended. This user will be created in the database setup. *Note:* To increase system security, users may want to restrict this configuration file to read and write only by user. |
-| **$amet\_pass**    | Password for “**ametsecure**”, or your **$amet\_login** (if changed from “**ametsecure**”). This user will be created in the database setup.     |
+| **amet\_pass**    | Password for “**ametsecure**”, or your **$amet\_login** (if changed from “**ametsecure**”). This user will be created in the database setup.     |
 | **maxrec**     | Maximum number of records to extract from the database for any one query. No maximum = **-1**.    | 
-| **$EXEC\_sitex_daily**     | Full path to the site compare daily executable. |
-| **$EXEC\_sitex**           | Full path to site compare executable. |
+| **EXEC\_sitex_daily**     | Full path to the site compare daily executable. |
+| **EXEC\_sitex**           | Full path to site compare executable. |
 | **$fslftp\_madis** | MADIS ftp site (needed only if using MET side). |
 | **$login\_madis**  | MADIS-provided login (MET side only). |
 | **$pass\_madis**   | MADIS-provided password (MET side only). |
@@ -1711,14 +1711,14 @@ population—for example, $AMETBASE/configure/amet-config.R.
 | **$pass\_ncep**    | Anonymous password for NCEP, usually your email address. Note the necessary “\\@” (MET side only). |
 | **$amet\_verbose** | Verbose stdout. “**yes**” for more verbose, “**no**” for less verbose. |
 
-1.  MET Project Setup Input File
+
+2.  MET Project Setup Input File
 
 This is the MET input file for all new projects, and sets up an empty
 project—for example,
 $AMETBASE/scripts\_db/wrfExample/setup\_project.input.
 
-<span id="_Toc199840998" class="anchor"></span>Table B‑. MET
-setup\_project.pl
+<span id="_Toc199840998" class="anchor"></span>Table B‑2. MET setup\_project.R
 
 | **Variable**     | **Description**                                                                              |
 |------------------|----------------------------------------------------------------------------------------------|
@@ -1728,32 +1728,28 @@ setup\_project.pl
 | **$email**       | Your email. Note: use the backslash character “**\\**” to escape the “@” character for Perl. |
 | **$description** | Brief project description.                                                                   |
 
-1.  AQ Project Setup Input File
+
+3.  AQ Project Setup Input File
 
 This is the AQ input file for all new projects, and sets up an empty
 project—for example,
 $AMETBASE/scripts\_db/aqExample/setup\_project.input.
 
-<span id="_Toc199840999" class="anchor"></span>Table B‑. AQ
-setup\_project.input
+<span id="_Toc199840999" class="anchor"></span>Table B‑3. AQ setup\_project.input
 
 | **Variable**      | **Description**                                                                           |
 |-------------------|-------------------------------------------------------------------------------------------|
-| **$run\_id**      | Project name. Must be unique across both MET and AQ project names.                        |
-| **$model**        | AQ model. Example: “**CMAQ**”.                                                            |
-| **$login**        | Your username. Identifier used to populate **user** column in **aq\_project\_log** table. |
-| **$email**        | Your email. Note: use “**\\**” to escape the “**@**” character for Perl.                  |
-| **$description**  | Brief project description.                                                                |
-| **$delete\_id**   | Delete project if project already exists:                                                 
-                                                                                                                
-                     “**y**” – yes, delete project, with prompt                                                 
-                                                                                                                
-                     “**n**” – no, do not delete project                                                        |
-| **$exit\_exists** | Returned exit status of **AQ\_create\_project.pl** if project already exists:             
-                                                                                                                
-                     **1** – return error                                                                       
-                                                                                                                
-                     **0** – return success                                                                     |
+| **run\_id**      | Project name. Must be unique across both MET and AQ project names. By default this is obtained through the environment variable **AMET\_PROJECT**                       |
+| **model**        | AQ model. Example: “**CMAQ**”.                                                            |
+| **login**        | Your username. Identifier used to populate **user** column in **aq\_project\_log** table. By default this is obtained through the environment variable **AMET\_LOGIN**. |
+| **email**        | Your email. This actually isn't used for anything in AMET, but could be in the future.    |
+| **description**  | Brief project description.                                                                |
+| **check\_missing** | y/n or T/F; Flag to check project table for missing columns. Must be set to y/T for new projects or if your processing data for a previously unprocessed network. Can be set to F for existing projects that contain all the necessary columns. Speeds up the data loading process when set to F.
+| **update\_table**   | y/n or T/F; Update an existing project with the information provided. |
+| **remake\_table**   | y/n or T/F; Remake the project table for an existing project. Note that this will delete all the data in the existing project and leave an empty project table ready for use. Both the **remake\_table** and **remake\_table2** flags must be set to y/T to remake a table. |
+| **remake\_table2**  | y/n or T/F; Remake the project table for an existing project. Note that this will delete all the data in the existing project and leave an empty project table ready for use. Both the **remake\_table** and **remake\_table2** flags must be set to y/T to remake a table. |
+| **delete\_table**   | y/n or T/F; Delete the project table for an existing project. Note that this will delete all the data in the existing project and the project will no longer exist in the AMET database.  Both the **delete\_table** and **delete\_table2** flags must be set to y/T to remake a table. |
+| **delete\_table2**  | y/n or T/F; Delete the project table for an existing project. Note that this will delete all the data in the existing project and the project will no longer exist in the AMET database.  Both the **delete\_table** and **delete\_table2** flags must be set to y/T to remake a table. |
 
 1.  MET Project Populate Input Files
 
