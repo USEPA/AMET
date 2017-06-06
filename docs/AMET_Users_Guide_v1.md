@@ -3,30 +3,6 @@
 ***Atmospheric Model Evaluation Tool (AMET)  
 User’s Guide***
 
-Prepared under Work Assignment 3-04 of U.S. EPA Contract EP-W-05-045,
-“Operation of the Center for Community Air Quality Modeling and
-Analysis”
-
-U.S. EPA, ORD/NERL/CED/AMAAB
-
-E243-04
-
-USEPA Mailroom
-
-Research Triangle Park, NC 27711
-
-Prepared by: Wyat Appel, Robert Gilliam and Zac Adelman
-
-Institute for the Environment
-
-The University of North Carolina at Chapel Hill
-
-137 E. Franklin St., CB 6116
-
-Chapel Hill, NC 27599-6116
-
-Date prepared: May 30, 2008
-
 **Contents**
 
 Tables iv
