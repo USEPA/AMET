@@ -1670,11 +1670,7 @@ created the following subsections on the Bugzilla AMET page:
 References
 ==========
 
-Gilliam, R, W. Appel, and S. Phillips, 2005. The Atmospheric Model
-Evaluation Tool: Meteorology Module. Presented at the 4<sup>th</sup>
-Annual CMAS Conference, Chapel Hill, NC, Septem­ber 2005. Also available
-at:
-[**http://www.cmascenter.org/conference/2005/abstracts/6\_1.pdf**](http://www.cmascenter.org/conference/2005/abstracts/6_1.pdf)
+Appel, K.W., Gilliam, R.C., Davis, N., Zubrow, A., and Howard, S.C.: Overview of the Atmospheric Model Evaluation Tool (AMET) v1.1 for evaluating meteorological and air quality models, Environ. Modell. Softw.,26, 4, 434-443, 2011.
 
   
 ==
@@ -1690,50 +1686,30 @@ Overview Flow Diagram**
 **Appendix B:  
 Configuration and Input Files**
 
-1.  Perl Configuration File
+1.  R Configuration File (amet-config.R)
 
-This is the configuration file for all Perl scripts used in database
-population—for example, $AMETBASE/configure/amet-config.pl.
+This is the configuration file for all R scripts used in database
+population—for example, $AMETBASE/configure/amet-config.R.
 
 <span id="_Toc199840996" class="anchor"></span>Table B‑. amet-config.pl
 
 | **Variable**       | **Description**                                                                                                                                                                                                                                                              |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **$amet\_base**    | Top of AMET directory tree. It is recommended that you keep this as the value of the environmental variable **$AMETBASE**. If you use something else, the provided scripts will need significant modification.                                                               |
-| **$mysql\_server** | MySQL server location. Examples are “**localhost**” for the same machine as AMET, or “**rama.cempd.unc.edu**” for a server on rama.                                                                                                                                          |
-| **$root\_login**   | MySQL user for adding data to the database and performing queries. “**ametsecure**” is recommended. This user will be created in the database setup. *Note:* To increase system security, users may want to restrict this configuration file to read and write only by user. |
-| **$root\_pass**    | Password for “**ametsecure**”, or your **$root\_login** (if changed from “**ametsecure**”). This user will be created in the database setup.                                                                                                                                 |
-| **$dbase**         | The name of the MySQL database created for all AMET projects. “**amet**” is recommended.                                                                                                                                                                                     |
-| **$perl\_lib**     | Location of additional Perl libraries. In our example, we added additional libraries through CPAN to “**/usr/local/lib/perl**”. Below **$perl\_lib** is the version number directory and below that are the additional modules.                                              |
-| **$R\_dir**        | Base directory for R installation.                                                                                                                                                                                                                                           |
-| **$R\_exe**        | Full path to R executable.                                                                                                                                                                                                                                                   |
-| **$R\_lib**        | All of the R library paths that should be searched. In our example, “**/usr/local/pkgs/Rpackages:$R\_dir/lib/R/site-library**”, we installed additional R libraries under **/usr/local/pkgs/Rpackages**.                                                                     |
-| **$EXEC\_aqs**     | Full path to **cmp\_airs** executable.                                                                                                                                                                                                                                       |
-| **$EXEC\_all**     | Full path to **sitecmp** executable.                                                                                                                                                                                                                                         |
-| **$fslftp\_madis** | MADIS ftp site (needed only if using MET side).                                                                                                                                                                                                                              |
-| **$login\_madis**  | MADIS-provided login (MET side only).                                                                                                                                                                                                                                        |
-| **$pass\_madis**   | MADIS-provided password (MET side only).                                                                                                                                                                                                                                     |
-| **$fslftp\_ncep**  | NCEP ftp site (needed only if using MET side).                                                                                                                                                                                                                               |
-| **$login\_ncep**   | NCEP login; most likely “**anonymous**”.                                                                                                                                                                                                                                     |
-| **$pass\_ncep**    | Anonymous password for NCEP, usually your email address. Note the necessary “\\@” (MET side only).                                                                                                                                                                           |
-| **$amet\_verbose** | Verbose stdout. “**yes**” for more verbose, “**no**” for less verbose.                                                                                                                                                                                                       |
-
-1.  R Configuration File
-
-This is the configuration file for all R-based analyses scripts. Note
-that the values here should likely match the equivalent values in the
-Perl configuration file—for example, $AMETBASE/configure/amet-config.R.
-
-<span id="_Toc199840997" class="anchor"></span>Table B‑. amet-config.R
-
-| **Variable**   | **Description**                                                                                                                                                                                                                                                                                      |
-|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **server**     | MySQL server location. Examples are “**localhost**” for the same machine as AMET, or “**rama.cempd.unc.edu**” for a server on rama.                                                                                                                                                                  |
-| **login**      | MySQL user for adding data to the database and performing queries. “**ametsecure**” is recommended. This user will be created in the database setup. *Note:* To increase system security, users may want to restrict this configuration file to read and write only by user.                         |
-| **passwd**     | Password for “**ametsecure**”, or your login (if changed from “**ametsecure**”). This user will be created in the database setup, and should reflect the Perl configuration file.                                                                                                                    |
-| **dbase**      | The name of the MySQL database created for all AMET projects. “**amet**” is recommended.                                                                                                                                                                                                             |
-| **maxrec**     | Maximum number of records to extract from the database for any one query. No maximum = **-1**.                                                                                                                                                                                                       |
-| **newLibPath** | Should include all R library paths where R packages were installed. In our installation, they are: **c(“/usr/local/pkgs/Rpackages”,oldLibPath)**, since we installed additional R libraries under **/usr/local/pkgs/Rpackages**. Note that the **oldLibPath** needs to be included in this variable. |
+| **amet\_base**      | Top of AMET directory tree. |
+| **obs\_data\_dir**  | Path to AQ observation data files. Default is **$amet_base/obs/AQ**. |
+| **mysql\_server** | MySQL server location. Examples are “**localhost**” for the same machine as AMET, or “**rama.cempd.unc.edu**” for a server on rama. |
+| **amet\_login**     | MySQL user for adding data to the database and performing queries. “**ametsecure**” is recommended. This user will be created in the database setup. *Note:* To increase system security, users may want to restrict this configuration file to read and write only by user. |
+| **$amet\_pass**    | Password for “**ametsecure**”, or your **$amet\_login** (if changed from “**ametsecure**”). This user will be created in the database setup.     |
+| **maxrec**     | Maximum number of records to extract from the database for any one query. No maximum = **-1**.    | 
+| **$EXEC\_sitex_daily**     | Full path to the site compare daily executable. |
+| **$EXEC\_sitex**           | Full path to site compare executable. |
+| **$fslftp\_madis** | MADIS ftp site (needed only if using MET side). |
+| **$login\_madis**  | MADIS-provided login (MET side only). |
+| **$pass\_madis**   | MADIS-provided password (MET side only). |
+| **$fslftp\_ncep**  | NCEP ftp site (needed only if using MET side). |
+| **$login\_ncep**   | NCEP login; most likely “**anonymous**”. |
+| **$pass\_ncep**    | Anonymous password for NCEP, usually your email address. Note the necessary “\\@” (MET side only). |
+| **$amet\_verbose** | Verbose stdout. “**yes**” for more verbose, “**no**” for less verbose. |
 
 1.  MET Project Setup Input File
 
