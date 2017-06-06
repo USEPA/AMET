@@ -19,9 +19,7 @@ Tables iv
 
 3. Configuration 4
 
-3.1 Perl Configuration File (amet-config.pl) 4
-
-3.2 R Configuration File (amet-config.R) 5
+3.1 R Configuration File (amet-config.R) 5
 
 4. Datasets 6
 
@@ -74,9 +72,6 @@ Tables
 Table 2‑1. Directories under $AMETBASE. 3
 
 Table 3‑1. Most common variables that need to be changed in
-amet-config.pl. 4
-
-Table 3‑2. Most common variables that need to be changed in
 amet-config.R. 5
 
 Table 7‑1. MET analysis scripts. 22
@@ -231,7 +226,7 @@ class="anchor"></span></span>Table ‑1. Directories under $AMETBASE.
 | **Directory**         | **Description**                                                       |
 |-----------------------|-----------------------------------------------------------------------|
 | **bin**               | External executables used by helper scripts.                          |
-| **configure**         | Configuration files for Perl and R.                                   |
+| **configure**         | Configuration files for R and php.                                    |
 | **model\_data**       | Model output data                                                     
                          (contains field-specific \[i.e., MET and AQ\] subdirectories).         |
 | **obs**               | Observational data (e.g., MADIS, discussed in Section 4.2)            
@@ -277,32 +272,6 @@ files:
 
 -   A php configuration file (amet-www-config.php)
 
-    1.  Perl Configuration File (amet-config.pl)
-        ----------------------------------------
-
-The Perl configuration file is used by the underlying Perl programs to
-populate the database with the data pairs created by AMET’s matching of
-model output for particular locations to corre­spon­ding observed values
-(these data pairs are referred to in this document as “model-obs
-pairs”). Most users will need to modify only a few specific lines of
-this configuration file. The most com­mon variables to change are shown
-in Table 3-1; a full description can be found in Appendix B.1.
-
-<span id="_Toc199840992" class="anchor"></span>Table ‑. Most common
-variables that need to be changed in amet-config.pl.
-
-| **Variable**                   | **Description**                                                                                                                                                                                                                                                                                   |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **$mysql\_server**             | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**.                                                              |
-| **$root\_pass**                | Password for **ametsecure**, or your **$root\_login** (if you changed it from "**ametsecure**"). This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
-| **$perl\_lib**                 | Location of additional Perl libraries. In our testing, we added additional libraries through the Comprehensive Perl Archive Network (CPAN) to **/usr/local/lib/perl**. Below that is the version number directory, and below that are the additional modules.                                     |
-| **$R\_lib**                    | All of the R library paths that should be searched by the R scripts. In our installation, they are **/usr/local/pkgs/Rpackages:$R\_dir/lib/R/site-library**, since we installed additional R libraries under **/usr/local/pkgs/Rpackages**.                                                       |
-| **$fslftp\_madis<sup>1</sup>** | MADIS ftp site (MADIS is discussed in Section 4.2).                                                                                                                                                                                                                                               |
-| **$login\_madis<sup>1</sup>**  | MADIS-provided login.                                                                                                                                                                                                                                                                             |
-| **$pass\_madis<sup>1</sup>**   | MADIS-provided password.                                                                                                                                                                                                                                                                          |
-| **$pass\_ncep<sup>1</sup>**    | Anonymous password for the [National Centers for Environmental Prediction](http://www.ncep.noaa.gov/) (NCEP); this is usually your e-mail address. Note the necessary "\\@".                                                                                                                      |
-
-<sup>1</sup> Needed only if using MET side of AMET.
 
 R Configuration File (amet-config.R)
 ------------------------------------
@@ -310,13 +279,13 @@ R Configuration File (amet-config.R)
 The R configuration file is used by the underlying R programs to perform
 AMET setup and statistical analysis on your model-obs pairs. Most users will 
 need to modify only a few specific lines of this configura­tion file. The most
-common variables to change are shown in Table 3-2.
+common variables to change are shown in Table 3-1.
 
-<span id="_Toc199840993" class="anchor"></span>Table ‑. Most common
+<span id="_Toc199840993" class="anchor"></span>Table 3‑1. Most common
 variables that need to be changed in amet-config.R.
 
-| **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Variable**   | **Description** |
+|----------------|-----------------|
 | **amet_base**           | The base directory where AMET is installed. |
 | **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
 | **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
