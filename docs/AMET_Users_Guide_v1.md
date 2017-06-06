@@ -1555,41 +1555,41 @@ need to be changed.
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
-| **AMETBASE**               | Base directory where AMET is installed. |
-| **AMET\_DATABASE**         | MySQL database containing your project. |
-| **AMET\_PROJECT**          | Name of the AMET project to analyze. |
-| **AMET\_OUT**              | Location to which to write output files (e.g. plots). By default this is set to $AMETBASE/output/$AMET_PROJECT/$analysis_script_type. |
-| **AMET\_SDATE**            | Start date in the form YYYYMMDD from which to begin the analysis. |
-| **AMET\_EDATE**            | End date in the form YYYYMMDD to which to end the analysis.|
-| **AMET\_PID**              | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
-| **AMET\_PTYPE**            | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
-| **AMET\AQSPECIES**         | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species choosen must be one that is measured by the specified network (or networks if multiple networks are choosen). 
-| **CASTNET**                | y/n; Flag to include the CASTNET weekly data in the analysis |
-| **CASTNET\_HOURLY**        | y/n; Flag to include the CASTNET hourly data in the analysis |
-| **CASTNET\_DAILY\_O3**     | y/n; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
-| **IMPROVE**                | y/n; Flag to include the IMPROVE daily data in the analysis |
-| **NADP**                   | y/n; Flag to include the NADP weekly deposition data in the analysis |
-| **CSN**                    | y/n; Flag to include the CSN daily data in the analysis |
-| **AQS\_HOURLY**            | y/n; Flag to include the AQS hourly data in the analysis |
-| **AQS\_DAILY\_O3**         | y/n; Flag to include the AQS daily O3 (e.g. MDA8 O3) data in the analysis |
-| **AQS\_DAILY**             | y/n; Flag to include the AQS daily data in the analysis |
-| **SEARCH\_HOURLY**         | y/n; Flag to include the SEARCH hourly data in the analysis |
-| **SEARCH\_DAILY**          | y/n; Flag to include the SEARCH daily data in the analysis |
-| **NAPS\_HOURLY**           | y/n; Flag to include the NAPS hourly data in the analysis |
-| **CASTNET\_DRYDEP**        | y/n; Flag to include the CASTNET dry deposition data in the analysis |
-| **AIRMON**                 | y/n; Flag to include the AIRMON data in the analysis |
-| **AMON**                   | y/n; Flag to include the AMON data in the analysis |
-| **MDN**                    | y/n; Flag to include the MDN data in the analysis |
-| **FLUXNET**                | y/n; Flag to include the FLUXNET data in the analysis |
-| **AIRBASE\_HOURLY**        | y/n; Flag to include the AIRBASE hourly data in the analysis |
-| **AIRBASE\_DAILY**         | y/n; Flag to include the AIRBASE daily data in the analysis |
-| **AURN\_HOURLY**           | y/n; Flag to include the AURN hourly data in the analysis |
-| **AURN\_DAILY**            | y/n; Flag to include the AURN daily data in the analysis |
-| **EMEP\_HOURLY**           | y/n; Flag to include the EMEP hourly data in the analysis |
-| **EMEP\_DAILY**            | y/n; Flag to include the EMEP daily data in the analysis |
-| **AGANET**                 | y/n; Flag to include the AGANET data in the analysis |
-| **ADMN**                   | y/n; Flag to include the ADMN data in the analysis |
-| **NAMN**                   | y/n; Flag to include the NAMN data in the analysis |
+| **AMETBASE**                     | Base directory where AMET is installed. |
+| **AMET\_DATABASE**               | MySQL database containing your project. |
+| **AMET\_PROJECT**                | Name of the AMET project to analyze. |
+| **AMET\_OUT**                    | Location to which to write output files (e.g. plots). By default this is set to $AMETBASE/output/$AMET_PROJECT/$analysis_script_type. |
+| **AMET\_SDATE**                  | Start date in the form YYYYMMDD from which to begin the analysis. |
+| **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
+| **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
+| **AMET\_PTYPE**                  | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
+| **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species choosen must be one that is measured by the specified network (or networks if multiple networks are choosen). 
+| **AMET\_CASTNET**                | y/n; Flag to include the CASTNET weekly data in the analysis |
+| **AMET\_CASTNET\_HOURLY**        | y/n; Flag to include the CASTNET hourly data in the analysis |
+| **AMET\_CASTNET\_DAILY\_O3**     | y/n; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
+| **AMET\_IMPROVE**                | y/n; Flag to include the IMPROVE daily data in the analysis |
+| **AMET\_NADP**                   | y/n; Flag to include the NADP weekly deposition data in the analysis |
+| **AMET\_CSN**                    | y/n; Flag to include the CSN daily data in the analysis |
+| **AMET\_AQS\_HOURLY**            | y/n; Flag to include the AQS hourly data in the analysis |
+| **AMET\_AQS\_DAILY\_O3**         | y/n; Flag to include the AQS daily O3 (e.g. MDA8 O3) data in the analysis |
+| **AMET\_AQS\_DAILY**             | y/n; Flag to include the AQS daily data in the analysis |
+| **AMET\_SEARCH\_HOURLY**         | y/n; Flag to include the SEARCH hourly data in the analysis |
+| **AMET\_SEARCH\_DAILY**          | y/n; Flag to include the SEARCH daily data in the analysis |
+| **AMET\_NAPS\_HOURLY**           | y/n; Flag to include the NAPS hourly data in the analysis |
+| **AMET\_CASTNET\_DRYDEP**        | y/n; Flag to include the CASTNET dry deposition data in the analysis |
+| **AMET\_AIRMON**                 | y/n; Flag to include the AIRMON data in the analysis |
+| **AMET\_AMON**                   | y/n; Flag to include the AMON data in the analysis |
+| **AMET\_MDN**                    | y/n; Flag to include the MDN data in the analysis |
+| **AMET\_FLUXNET**                | y/n; Flag to include the FLUXNET data in the analysis |
+| **AMET\_AIRBASE\_HOURLY**        | y/n; Flag to include the AIRBASE hourly data in the analysis |
+| **AMET\_AIRBASE\_DAILY**         | y/n; Flag to include the AIRBASE daily data in the analysis |
+| **AMET\_AURN\_HOURLY**           | y/n; Flag to include the AURN hourly data in the analysis |
+| **AMET\_AURN\_DAILY**            | y/n; Flag to include the AURN daily data in the analysis |
+| **AMET\_EMEP\_HOURLY**           | y/n; Flag to include the EMEP hourly data in the analysis |
+| **AMET\_EMEP\_DAILY**            | y/n; Flag to include the EMEP daily data in the analysis |
+| **AMET\_AGANET**                 | y/n; Flag to include the AGANET data in the analysis |
+| **AMET\_ADMN**                   | y/n; Flag to include the ADMN data in the analysis |
+| **AMET\_NAMN**                   | y/n; Flag to include the NAMN data in the analysis |
 
 Also note that all AQ analysis scripts make use of the Network.input
 input file. This file contains information about each observational
