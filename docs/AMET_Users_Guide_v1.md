@@ -96,7 +96,7 @@ Table B‑6. AQ analysis input variables
     1.  Overall Objective and Basic Structure
         -------------------------------------
 
-The Atmospheric Model Evaluation Tool (AMET) (Gilliam et al., 2005) is a
+The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a
 suite of software designed to facilitate the analysis and evaluation of
 meteorological and air quality models. AMET matches the model output for
 particular locations to the corresponding observed values from one or
@@ -267,6 +267,10 @@ files:
 
 -   A php configuration file (amet-www-config.php)
 
+The last two files, amet-lib.php and amet-www-config.php, are only necessary if
+using the AMET web interface provided as beta code along with the AMEtv1.3 
+release. If not using the web interface, those two configuration files can be
+ignored.
 
 R Configuration File (amet-config.R)
 ------------------------------------
