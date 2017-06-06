@@ -2039,87 +2039,59 @@ input variables
 | **aq\_project**          | AQ project name. |
 | **aq\_site\_table**      | AQ monitoring site MySQL table. Most likely “**site\_metadata**”.|
 | **aq\_species\_col**     | AQ variables, column names, from AQ project table. |
-| **averaging**            | Average across time:                        
-                            “**n**” – no averaging (default)                                             
-                            “**s**” – seasonal averaging (DJF; MAM; JJA; SON)                                   
-                            “**m**” – monthly averaging                                                     
-                            “**a**” – entire time period averaging |
-| **axis\_max\_limit**     | Axis (x and y) max limit:
-                            “**NULL**” – script-defined limit |
-| **axis\_min\_limit**     | Axis (x and y) min limit:
-                            “**NULL**” – script-defined limit |
-| **bias\_range\_max**     | Bias range max limit:
-                            “**NULL**” – script-defined limit |
-| **bias\_range\_min**     | Bias range min limit:
-                            “**NULL**” – script-defined limit |
+| **averaging**            | Average across time: “**n**” – no averaging (default), “**s**” – seasonal averaging (DJF; MAM; JJA; SON), “**m**” – monthly averaging, “**a**” – entire time period averaging |
+| **axis\_max\_limit**     | Axis (x and y) max limit: “**NULL**” – script-defined limit |
+| **axis\_min\_limit**     | Axis (x and y) min limit: “**NULL**” – script-defined limit |
+| **bias\_range\_max**     | Bias range max limit: “**NULL**” – script-defined limit |
+| **bias\_range\_min**     | Bias range min limit: “**NULL**” – script-defined limit |
 | **Bldoverlay\_exe**      | The location of the **bldoverlay** Fortran executable. Most likely **$AMETBASE/bin/bldoverlay**. (AQ only) |
 | **conf\_line**           | Add confidence lines to scatterplots: “**y**” or “**n**”. |
 | **coverage\_limit**      | **%** necessary for data completeness (e.g., **75** means 75% data completeness). |
-| **custom\_title**        | Custom title for plots:
-                            ““ – no custom title |
+| **custom\_title**        | Custom title for plots: ““ – no custom title |
 | **datee**                | End date of query, YYYYMMDD format (**met\_aq\_coupled.input** only). |
 | **dates**                | Start date of query, YYYYMMDD format (**met\_aq\_coupled.input** only). |
-| **diff\_range\_max**     | Difference range max limit:
-                            “**NULL**” – script defined limit |
-| **diff\_range\_min**     | Difference range min limit:
-                            “**NULL**” – script defined limit |
+| **diff\_range\_max**     | Difference range max limit: “**NULL**” – script defined limit |
+| **diff\_range\_min**     | Difference range min limit: “**NULL**” – script defined limit |
 | **end\_date**            | End date of query, YYYYMMDD format. |
 | **end\_hour**            | End hour of query, HH format.|
-| **error\_range\_max**    | Error range max limit:    
-                            “**NULL**” – script defined limit  |
+| **error\_range\_max**    | Error range max limit: “**NULL**” – script defined limit  |
 | **figdir**               | Output directory for plots.|
-| **fixed.legend**         | Fixed legend intervals (**met\_aq\_coupled.input**):
-                            “**F**” – False, use full range of data
-                            “**T**” – True, specify custom legend through **legend.interval** |
+| **fixed.legend**         | Fixed legend intervals (**met\_aq\_coupled.input**): “**F**” – False, use full range of data, “**T**” – True, specify custom legend through **legend.interval** |
 | **inc\_ranges**          | Included quartile **ranges** on box plots**.** |
 | **legend.div**           | Number of levels if a fixed interval is not specified. |
 | **legend.interval**      | Custom legend interval (**met\_aq\_coupled.input**).  |
 | **legend.interval.bias** | Custom legend bias interval (**met\_aq\_coupled.input**). |
 | **LT.offset**            | Maximum and minimum UTC to LT offset in domain.  |
 | **max.dist**             | Maximum distance allowed between MET and AQ “buddy” sites. These “buddy” sites are used to compare MET and AQ results in **met\_aq\_coupled**. |
-| **median**               | Statistical averaging method to use for stacked barplot:
-                            **TRUE** – median                          
-                            **FALSE** – mean |
+| **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
 | **met\_database**        | MET MySQL database. Most likely “**amet**”. |
 | **met\_network**         | MET monitoring network. |
 | **met\_project**         | MET project name. |
 | **met\_site\_table**     | MET monitoring site MySQL table. Most likely “**stations**”. |
 | **met\_variable\_col**   | MET variables, column names, from AQ project table. |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
-| **overlay\_opt**         | PAVE/VERDI overlay times:
-                            **1** – hourly
-                            **2** – daily
-                            **3** – 1-hr daily max 
-                            **4** – 8-hr daily max |
+| **overlay\_opt**         | PAVE/VERDI overlay times: **1** – hourly, **2** – daily, **3** – 1-hr daily max, **4** – 8-hr daily max |
 | **pid**                  | Project name; must be unique across both MET and AQ.|
 | **plot\_colors**         | Scatter plot symbol colors for primary simulation. |
 | **plot\_colors2**        | Scatter plot symbol colors for secondary simulation. |
-| **plotfmt**              | Plot format, output type:
-                            “**PDF**” – pdf format
-                            “**PNG**” – png and pdf formats|
+| **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
 | **query**                | MySQL query to select data from database. In most cases, this is only part of the query. The complete query is constructed in the corresponding R script. |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
 | **remove\_other**        | Remove “PM other” category from stacked bar plot analysis. |
-| **rmse\_range\_max**     | **RMS Error** range max limit: 
-                            “**NULL**” – script defined limit |
-| **run\_info\_text**      | Include model run info as additional text to plots:
-                            “**y**” or “**n**”  |
+| **rmse\_range\_max**     | **RMS Error** range max limit: “**NULL**” – script defined limit |
+| **run\_info\_text**      | Include model run info as additional text to plots: “**y**” or “**n**”  |
 | **run\_name1**           | Project name; must be unique across AQ and MET.  |
 | **run\_name2**           | Second project name (allowed only in some scripts).|
 | **site**                 | Plot label for when you are including only certain sites. Note that you will need to use an additional query to actually subset the data to these sites. |
-| **soccerplot\_opt**      | Flag for soccer and bugle plot options:
-                            **1** – normalized mean bias/error
-                            **2** – fractional bias/error|
+| **soccerplot\_opt**      | Flag for soccer and bugle plot options: **1** – normalized mean bias/error, **2** – fractional bias/error|
 | **species**              | Chemical species to plot. |
 | **start\_date**          | Start date of query, YYYYMMDD format. |
 | **start\_hour**          | Start hour of query, HH format. |
 | **state**                | Plot label for indicating certain states. Note that you will need to use an additional query to actually subset the data to these states.|
 | **stat\_file**           | File containing specific list of stations to analyze. User-defined. |
 | **stats\_flags**         | Flags to determine which statistics are included on the **run\_scatterplot.csh** script. Up to five statistics can be included, and are indicated by a ‘**y**’. Unused statistics are left blank. The order of the statistics flags is: **index of agreement (IA), correlation (r), RMSE, systematic RMSE, unsystematic RMSE, NMB, NME, Normalized Median Bias, Normalized Median Error, Mean Bias, Mean Error, Median Bias, Median Error, Fractional Bias, Fractional Error** |
-| **symb**                 | Plot symbol:
-                            **15** – square
-                            **19** – circle |
+| **symb**                 | Plot symbol: **15** – square, **19** – circle |
 | **symbo**                | Plot symbol.|
 | **symbsiz**              | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
 | **textstats**            | Produce text statistics file: **TRUE** or **FALSE**.  |
