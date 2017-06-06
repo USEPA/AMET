@@ -221,7 +221,7 @@ in your home directory, then AMETBASE would be ~/AMET.
 Under $AMETBASE are the directories shown in Table 2-1.
 
 <span id="_Toc190070890" class="anchor"><span id="_Toc199840991"
-class="anchor"></span></span>Table ‑1. Directories under $AMETBASE.
+class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
 
 | **Directory**         | **Description**                                                       |
 |-----------------------|-----------------------------------------------------------------------|
