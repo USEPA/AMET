@@ -1588,34 +1588,12 @@ $AMETBASE/scripts\_db/wrfExample/setup\_project.input.
 | **$description** | Brief project description.                                                                   |
 
 
-3.  AQ Project Setup Input File
-
-This is the AQ input file for all new projects, and sets up an empty
-project—for example,
-$AMETBASE/scripts\_db/aqExample/setup\_project.input.
-
-<span id="_Toc199840999" class="anchor"></span>Table B‑3. AQ setup\_project.input
-
-| **Variable**      | **Description**                                                                           |
-|-------------------|-------------------------------------------------------------------------------------------|
-| **run\_id**      | Project name. Must be unique across both MET and AQ project names. By default this is obtained through the environment variable **AMET\_PROJECT**                       |
-| **model**        | AQ model. Example: “**CMAQ**”.                                                            |
-| **login**        | Your username. Identifier used to populate **user** column in **aq\_project\_log** table. By default this is obtained through the environment variable **AMET\_LOGIN**. |
-| **email**        | Your email. This actually isn't used for anything in AMET, but could be in the future.    |
-| **description**  | Brief project description.                                                                |
-| **check\_missing** | y/n or T/F; Flag to check project table for missing columns. Must be set to y/T for new projects or if your processing data for a previously unprocessed network. Can be set to F for existing projects that contain all the necessary columns. Speeds up the data loading process when set to F.
-| **update\_table**   | y/n or T/F; Update an existing project with the information provided. |
-| **remake\_table**   | y/n or T/F; Remake the project table for an existing project. Note that this will delete all the data in the existing project and leave an empty project table ready for use. Both the **remake\_table** and **remake\_table2** flags must be set to y/T to remake a table. |
-| **remake\_table2**  | y/n or T/F; Remake the project table for an existing project. Note that this will delete all the data in the existing project and leave an empty project table ready for use. Both the **remake\_table** and **remake\_table2** flags must be set to y/T to remake a table. |
-| **delete\_table**   | y/n or T/F; Delete the project table for an existing project. Note that this will delete all the data in the existing project and the project will no longer exist in the AMET database.  Both the **delete\_table** and **delete\_table2** flags must be set to y/T to remake a table. |
-| **delete\_table2**  | y/n or T/F; Delete the project table for an existing project. Note that this will delete all the data in the existing project and the project will no longer exist in the AMET database.  Both the **delete\_table** and **delete\_table2** flags must be set to y/T to remake a table. |
-
-4.  MET Project Populate Input Files
+3.  MET Project Populate Input Files
 
 This is the MET input file for populating new projects—for example,
 $AMETBASE/scripts\_db/wrfExample/populate\_project.input.
 
-<span id="_Toc199841000" class="anchor"></span>Table B‑4. MET
+<span id="_Toc199841000" class="anchor"></span>Table B‑3. MET
 populate\_project.input
 
 | **Variable**            | **Description** |
@@ -1644,13 +1622,13 @@ populate\_project.input
 | **$match\_config**      | Full path to configuration file for matching MADIS variables to model variables. Note that if you are using MM5 with a non-PX surface model, you will have to use **MET\_matching\_nonPX.conf** and change the **$diagnose\_sfc** value to **0.** All MCIP output should use the MCIP configuration file. |
 
 
-5.  MET Analysis Input Files
+4.  MET Analysis Input Files
 
 The analysis input files are found in
 $AMET/scripts\_analysis/wrfExample. The following is a partial list of
 variables. Not all of these variables are available in every input file.
 
-<span id="_Toc199841002" class="anchor"></span>Table B‑5. MET analysis input variables
+<span id="_Toc199841002" class="anchor"></span>Table B‑4. MET analysis input variables
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
@@ -1759,13 +1737,13 @@ variables. Not all of these variables are available in every input file.
 | **ys**                   | Starting year of analysis default; comes from the **csh** script.                                                                                                                           |
 | **zlims**                | Specification of lower and upper vertical level of profile.                                                                                                                                 |
 
-6.  AQ Analysis Input Files
+5.  AQ Analysis Input Files
 
 The analysis input files are found in $AMET/scripts\_analysis/aqExample.
 The following is a partial list of variables in the AQ analysis input
 files. Not all of these variables are available in every input file.
 
-<span id="_Toc199841003" class="anchor"></span>Table B‑6. AQ analysis input variables
+<span id="_Toc199841003" class="anchor"></span>Table B‑5. AQ analysis input variables
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
@@ -1836,7 +1814,7 @@ files. Not all of these variables are available in every input file.
 | **use\_log**             | Use natural log transform: “**y**” or “**n**”. |
 | **zeroprecip**           | Include zero-precipitation obs: “**y**” or “**n**” (typically set to “**n**”). |
 
-7.  AQ Network Input File
+6.  AQ Network Input File
 
 In addition to the analysis input files which are script specific, AMET
 makes use of the input file
