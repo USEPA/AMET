@@ -82,13 +82,11 @@ Table B‑1. amet-config.R
 
 Table B-2. MET setup\_project.input
 
-Table B‑3. AQ setup\_project.input 
+Table B‑3. MET populate\_project.input 
 
-Table B‑4. MET populate\_project.input 
+Table B‑4. MET analysis input variables 
 
-Table B‑5. MET analysis input variables 
-
-Table B‑6. AQ analysis input variables 
+Table B‑5. AQ analysis input variables 
 
 1.  Overview
     ========
@@ -288,10 +286,10 @@ variables that need to be changed in amet-config.R.
 | **amet_base**           | The base directory where AMET is installed. |
 | **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
 | **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
-| **obs_data_dir**        | Full path to directory containing AQ observational data. Be default **obs_data_dir** is set to **amet_base**/obs/AQ. |
+| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
 | **mysql_server**        | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
 | **amet_login**          | Login for the AMET MySQL user. By default this is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
-| **passwd**              | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
+| **amet_pass**              | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
 | **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
 
 Datasets
@@ -773,42 +771,28 @@ the setup scripts, you will need to know the “root” password for the
 MySQL admini­strator. Note that this is not the same as the “ametsecure” 
 password that will be created using the scripts discussed below.
 
-MET Setup
+AMET Setup
 ---------
 
 Go to the setup directory
 
-> $ cd $AMETBASE/scripts\_db/setupMET
+> $ cd $AMETBASE/scripts\_db/dbsetup
 
-Here, you will see a series of C-shell scripts (.csh) and an input file
-(.input). The input file, sites\_meta.input, defines the metadata file
-for the MADIS stations (station ID, location, etc.).
+Here, you will see two C-shell scripts (.csh). 
 
-To initialize the MET side of AMET, you will need to edit and run the
-initialize\_met\_db.csh script. Specifically, you should make sure the
-value of AMETBASE corresponds to your system. If you have already run
-the setup procedure for AQ, you should set the variable “new\_db” to
-“N”; otherwise set it to “Y” to create a new amet database. Run the
-initialize script
+To create an AMET user, you will need to edit and run the
+create\_amet\_user.csh script. Specifically, you should make sure the
+value of AMETBASE corresponds to your system.
 
-> $ ./initialize\_met\_db.csh
+> $ ./create\_amet\_user.csh
 
 This will ask you for MySQL’s “root” password. It will then set up the
-AMET database, “amet”, and the AMET user, “ametsecure”. It will also
-create two tables in your amet database: stations (observation sites
-metadata) and project\_log (contains summary information for each MET
-project).
+the AMET user, “ametsecure”. 
 
-The setup directory also contains scripts for removing projects and
-removing the amet database. To delete a specific MET project, use
-
-> $./delete\_project.csh
-
-This script will ask you for the name of the project to delete.
-**CAUTION:** This will delete all of the tables in the database
-corresponding to that project.
-
-To delete the amet database from MySQL, use
+The setup directory also contains scripts for removing the amet database. 
+To delete a specific AMET database, edit and run the delete\_db.csh script,
+specifically setting the $AMETBASE and $AMET_DATABASE (the database to be
+removed).
 
 > $./delete\_db.csh
 
@@ -817,48 +801,6 @@ proceeding. *Use this script with **EXTREME CAUTION** because this will
 delete all of the data in the database corresponding to **all** of the
 projects (**both MET and AQ**).*
 
-AQ Setup
---------
-
-Go to the setup directory
-
-> $ cd $AMETBASE/scripts\_db/setupAQ
-
-As for the MET setup, you will see a series of C-shell scripts and an
-input file. The input file, sites\_meta.input, defines the metadata
-files for the various AQ monitoring networks (station ID, location,
-etc.).
-
-To initialize the AQ side of AMET, you will need to edit and run the
-initialize\_aq\_db.csh script. Specifically, you should make sure the
-value of AMETBASE corresponds to your system. You also need to specify
-the database to use (by default this is set to amet), the location of the
-observation files (by default this is set to $AMETBASE/obs/AQ), and the
-path to the sites_meta.input file (by default this is set to 
-$AMETBASE/scripts\_db/setupAQ/sites_meta.input). If you have already run
-the setup procedure for MET, you should set the variable “new\_db” to
-“N”; otherwise set it to “Y” to create a new amet database. Run the
-initialize script
-
-> $ ./initialize\_aq\_db.csh
-
-This will ask you for MySQL’s “root” password. It will then set up the
-AMET database, “amet”, and the AMET user, “ametsecure”. It will also
-create three tables in your amet database: site\_metadata (observation
-sites metadata), project\_units (contains species-specific units for
-each project), and aq\_project\_log (contains summary information for
-each AQ project).
-
-The setup directory also contains a script for removing the amet database. 
-
-To delete the amet database from MySQL, use
-
-> $./delete\_db.csh
-
-This script will ask you for the MySQL “root” password before
-proceeding. *Use this script with **EXTREME CAUTION** because this will
-delete all of the data in the database specifiedcorresponding to **all** 
-of the projects (**both MET and AQ**).*
 
 Basic MySQL Commands
 --------------------
@@ -1013,62 +955,6 @@ when running this script. Please note that the MADIS data need to be
 downloaded once for a given time period and will subsequently be
 available to all projects.
 
-The mm5Example Project
-----------------------
-
-Go to the project directory:
-
-> $ cd $AMETBASE/scripts\_db/mm5Example
-
-Here, you will see two input files and two C-shell scripts. The
-setup\_project.input file is the input file for initializing the
-project’s database tables (discussed later in Section 6). The only thing
-you should need to change in this file is the “$email” variable. Note
-that you should use the backslash “escape” character, “\\”, to prevent
-Perl from evaluating the “@” in your e-mail address. The
-populate\_project.input file describes specific flags for the model
-outputs and observations that you want to process. See Appendix B for
-information on the specifics relating to each variable. You will likely
-not need to change anything in this second input file. Note that the MM5
-model has been run with the Pleim-Xiu (PX) surface model and has the
-relevant flags for this configuration; see Appendix B for more
-information.
-
-The C-shell file metProject.csh is a wrapper script for calling the Perl
-programs that actually populate the AMET database with the project data.
-You will likely only need to verify that the variable AMETBASE has been
-updated for this project. Run the script by typing
-
-> $ ./metProject.csh &gt;& log.populate
-
-This C-shell script will create three empty project tables in the AMET
-database: mm5Example\_profiler, mm5Example\_raob, and
-mm5Example\_surface. These tables correspond to the matches between the
-model outputs and (1) the wind profiler observations, (2) the radiosonde
-observations, and (3) the surface observations. After creating these
-tables, the script then begins the matching process. This consists of
-converting the MM5 output file into a netCDF file, auto-ftp-ing data
-from the MADIS web site for the model’s temporal period, unzipping the
-downloaded data, finding the geographic location of each observation
-site on the model grid and interpolating to those locations, populating
-the appropriate table with the model-obs pairs for each variable, and
-optionally rezipping the data for compressed storage. Finally, the
-script updates the project\_log with summary information for the
-mm5Example project.
-
-Note that if your MM5 simulation was configured to use a non-PX surface
-model, you will need to change the two variables $diagnose\_sfc and
-$match\_config in the populate\_project.input file; see Appendix B for
-more information.
-
-The second C-shell file, metFTP.csh, is a wrapper script for calling
-Perl programs to download observational data from MADIS for a specific
-period of time. This allows you to download observational data without
-having the model output. Make sure that the variable auto\_ftp is set to
-1 when running this script. Please note that the MADIS data need to be
-downloaded only once for a given time period and will subsequently be
-available to all projects.
-
 The mcipExample Project
 -----------------------
 
@@ -1126,17 +1012,15 @@ Go to the project directory:
 
 > $ cd $AMETBASE/scripts\_db/aqExample
 
-Here, you will see two input files, one C-shell script, and the combine
-subdirectory. The setup\_project.input file is the input file for
-initializing the project’s database table (discussed later in Section
-6). The only thing you should need to change in this file is the
-“$email” variable. The combine subdirectory is not used for this example; 
+Here you will see one C-shell script and the combine subdirectory. 
+The combine subdirectory is not used for this example; 
 it is discussed later in Section 6.5, “Creating a New AQ Project”.
 
 The C-shell file aqProject.csh is a wrapper script for calling the R
-programs that actually create your project and populate the AMET database 
-with the project data. The variable that you will likely need to change 
-for this project is “AMETBASE”. Run the script by typing
+programs that actually create your project (and database if necessary)
+and populate the AMET database with the project data. The variable that 
+you will likely need to change for this project is “AMETBASE”. Run the 
+script by typing
 
 > $ ./aqProject.csh &gt;& log.populate
 
