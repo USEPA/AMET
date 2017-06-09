@@ -1024,17 +1024,18 @@ script by typing
 
 > $ ./aqProject.csh &gt;& log.populate
 
-This C-shell script will create one empty project table in the AMET
-database: aqExample. After creating this table, the script then begins
-the matching process. This consists of calling a series of Fortran helper 
-programs. The two Fortran helper programs are $AMETBASE/bin/cmp\_airs.exe 
-and $AMETBASE/bin/sitecmp.exe; the first one matches the AQS network’s data 
-to the nearest grid cell in the CMAQ model, and the second one does the 
-same for the other networks. After each network has been matched to the model,
-the aqExample table is populated with the model-obs pairs. In addition to 
-creating and populating the aqExample table, the script updates the 
-project\_units table with each network for that project. This table defines 
-the physical units of the species variables for this network (e.g., ppb vs.
+This C-shell script will create the AMET database (if it doesn't already
+exist), three required AQ database tables (project_units, site_metadata and
+aq_project_log), and one empty project table in the AMET database: aqExample. 
+After creating this table, the script then begins the matching process. This 
+consists of calling a series of Fortran helper programs. The two Fortran helper 
+programs are $AMETBASE/bin/sitex\_daily.exe and $AMETBASE/bin/sitex_daily_O3.exe; 
+the first one matches the AQS network’s data to the nearest grid cell in the CMAQ 
+model, and the second one does the same for the other networks. After each network 
+has been matched to the model, the aqExample table is populated with the model-obs 
+pairs. In addition to creating and populating the aqExample table, the script 
+updates the project\_units table with each network for that project. This table 
+defines the physical units of the species variables for this network (e.g., ppb vs.
 µg/m<sup>3</sup>). Finally, the script updates the aq\_project\_log with
 summary information for the aqExample project.
 
@@ -1105,14 +1106,14 @@ potentially confusing issue: the relationship between model species and
 monitor species. In order for AQ database population to work, there must
 be a mapping between the model species and the various network species.
 This mapping is accomplished by postprocessing the CMAQ model data, and
-through the AQ_species_list.R file located in $AMETBASE/R_db_code directory.
-The model data used in the aqExample section (Section 6.3) were already
-postprocessed, so we did not need to go through that step when running
-the example project. In a new project, you will likely need to
-postprocess your CMAQ data before they are ingested into the amet
-database. This postprocessing is accomplished in the third step of
-creating a new AQ project (described below), using the combine Fortran
-program.
+through the AQ_species_list.input file located in the
+$AMETBASE/scripts\_db/input_files directory. The model data used in the 
+aqExample section (Section 6.3) were already postprocessed, so we did not 
+need to go through that step when running the example project. In a new 
+project, you will likely need to postprocess your CMAQ data before they 
+are ingested into the amet database. This postprocessing is accomplished 
+in the third step of creating a new AQ project (described below), using 
+the combine Fortran program.
 
 Also, when you create your own projects, we recommend that you utilize
 the structure of naming your directories after your projects. If you
@@ -1199,10 +1200,21 @@ specified in the aqProject.csh script.
 
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **MODEL\_TYPE**            | Type of AQ model being analyzed (e.g. CMAQ) |
+| **RUN\_DESCRIPTION**       | Text describing detail of the model simulation/analysis |
+| **USER\_NAME**             | User name to associate with the project (default is the system user name) |
+| **EMAIL\_ADDR**            | Email address to associate with the project (not currently used for anything) |
+| **AMET\_OBS**              | Top of the AQ observation data directory (defaults to **$AMETBASE/obs/AQ**) |
+| **SITE\_META\_LIST**       | Input file containing the list of AQ site meta data files (default is **$AMETBASE/scripts\_db/input\_files/sites\_meta.input**) |
+| **AMET\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/R\_db\_code/AQ\_species\_list.R** |
+| **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT**) |
 | **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
 | **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
 | **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. |
-| **AMET\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/R\_db\_code/AQ\_species\_list.R** |
+| **CHECK\_PROJECT\_TABLE**  | T/F; Flag to determine whether or not to check project table for missing species columns. Must be set to T for new projects. Can be set to F for existing projects to speed up performance. |
+| **UPDATE\_PROJECT**        | T/F; Flag to update project. Setting to T will re-write project info (i.e. description, user_name, email) but not affect any existing data in the database. |
+| **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. |
+| **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. |
 | **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
 | **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5. By default this flag is set to F and is considered an advanced user option. |
 | **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
