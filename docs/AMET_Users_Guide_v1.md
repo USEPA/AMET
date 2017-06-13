@@ -1736,6 +1736,7 @@ files. Not all of these variables are available in every input file.
 | **figdir**               | Output directory for plots.|
 | **greyscale**            | Option to use greyscale for the spatial plots:  “**y**” or “**n**”. |
 | **inc\_counties**        | Option to include county borders on spatial plots:  “**y**” or “**n**”. |
+| **inc\_FRM\_adj**        | Include FRM adjustment on stacked bar plots. Most users will set this to  “**n**”. Advanced users that calculated the FRM adjusted values for the CSN network may set this to  “**y**”. Default is  “**n**”. |
 | **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
 | **inc\_median\_lines**   | Include median lines on box plots: “**y**” or “**n**”. |
 | **inc\_median\_points**  | Include median points on box plots: “**y**” or “**n**”. |
@@ -1780,6 +1781,7 @@ files. Not all of these variables are available in every input file.
 | **symbsizfac**           | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
 | **textstats**            | Produce text statistics file: **TRUE** or **FALSE**.  |
 | **use\_avg\_stats**      | Use time-averaged statistics: “**y**” or “**n**”. |
+| **use\_median**          | Use median instead of mean for stacked bar plots: “**y**” or “**n**”. |
 | **use\_var\_mean**       | Remove the observation/model mean value from the time series plots, thereby only plotting the variation from the mean: “**y**” or “**n**”. |
 | **valid\_only**          | Flag to include only valid observations from the NADP network |
 | **x\_axis\_min**         | Specify the minimum value for the x-axis on a plot. **NULL**” – script defined limit |
