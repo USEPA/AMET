@@ -1711,6 +1711,7 @@ files. Not all of these variables are available in every input file.
 | **aq\_project**          | AQ project name. |
 | **aq\_site\_table**      | AQ monitoring site MySQL table. Most likely “**site\_metadata**”.|
 | **aq\_species\_col**     | AQ variables, column names, from AQ project table. |
+| **avg\_func**            | Specify the type of averaging to use for the time series plot. Acceptable values are **mean**, **median** or **sum** |
 | **averaging**            | Average across time: “**n**” – no averaging (default), “**s**” – seasonal averaging (DJF; MAM; JJA; SON), “**m**” – monthly averaging, “**h**” – hourly averaging, “**a**” – entire time period averaging |
 | **axis\_max\_limit**     | Axis (x and y) max limit: “**NULL**” – script-defined limit |
 | **axis\_min\_limit**     | Axis (x and y) min limit: “**NULL**” – script-defined limit |
@@ -1728,18 +1729,23 @@ files. Not all of these variables are available in every input file.
 | **end\_hour**            | End hour of query, HH format.|
 | **error\_range\_max**    | Error range max limit: “**NULL**” – script defined limit  |
 | **figdir**               | Output directory for plots.|
-| **inc\_ranges**          | Included quartile **ranges** on box plots**.** |
+| **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
+| **inc\_ranges**          | Include quartile ranges on box plots: “**y**” or “**n**”. |
+| **inc\_points**          | Include point symbols on the time series plot: “**y**” or “**n**”. |
+| **line\_width**          | Specify the line width for the time series plot (default is 1). Smaller number result is a thinner line, while larger numbers result in a thicker line. |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
-| **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to include on a time series plot. This can be used to eliminate days when only a small number of sites are available. |
+| **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation. This can be used to eliminate days when only a small number of sites are available. |
+| **obs\_per\_day\_limit** | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation for the time series plot. This can be used to eliminate days when only a small number of sites are available. |
 | **overlay\_opt**         | PAVE/VERDI overlay times: **1** – hourly, **2** – daily, **3** – 1-hr daily max, **4** – 8-hr daily max |
 | **pid**                  | Project name; must be unique across both MET and AQ.|
 | **plot\_colors**         | Scatter plot symbol colors for primary simulation. |
 | **plot\_colors2**        | Scatter plot symbol colors for secondary simulation. |
+| **plot\_symbols**        | Specify, by R symbol number, the order of plot symbols to use. 0-square; 1-circle; 2-triangle point up; 3-plus; 4-cross; 5-diamond; 6-triangle point down; 7-square cross; 8-star; 9-diamond plus; 10-circle plus; 11-triangles up and down; 12-square plus; 13-circle cross; 14-square and triangle down; 15-filled square; 16-filled circle; 17-filled triangle point-up; 18-filled diamond; 19-solid circle; 20-bullet (smaller circle); 21-filled circle blue; 22-filled square blue; 23-filled diamond blue; 24-filled triangle point-up blue; 25- filled triangle point down blue |
 | **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
 | **query**                | MySQL query to select data from database. In most cases, this is only part of the query. The complete query is constructed in the corresponding R script. |
-| **remove\_mean**         | Remove the observation/model mean from a time series plot, thereby just plotting the difference from the mean value (only applies to time series script) |
+| **remove\_mean**         | Remove the observation/model mean statistics calculation, thereby just calculating the difference from the mean value |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
 | **remove\_other**        | Remove “PM other” category from stacked bar plot analysis. |
 | **rmse\_range\_max**     | **RMS Error** range max limit: “**NULL**” – script defined limit |
@@ -1760,7 +1766,7 @@ files. Not all of these variables are available in every input file.
 | **symbsiz**              | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
 | **textstats**            | Produce text statistics file: **TRUE** or **FALSE**.  |
 | **use\_avg\_stats**      | Use time-averaged statistics: “**y**” or “**n**”. |
-| **use\_log**             | Use natural log transform: “**y**” or “**n**”. |
+| **use\_var\_mean**       | Remove the observation/model mean value from the time series plots, thereby only plotting the variation from the mean: “**y**” or “**n**”. |
 | **valid\_only**          | Flag to include only valid observations from the NADP network |
 | **x\_axis\_min**         | Specify the minimum value for the x-axis on a plot. **NULL**” – script defined limit |
 | **x\_axis\_max**         | Specify the maximum value for the x-axis on a plot. **NULL**” – script defined limit |
