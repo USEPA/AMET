@@ -1413,17 +1413,17 @@ scripts.
 | **run\_scatterplot\_soil.csh**     | **scatterplot\_soil.input**        | Creates a single model vs. obs scatterplot designed specifically for plotting soil species (e.g. Si, Fe, Al, etc.). This script will plot the soil species from a single network on a single plot. | single network; multiple soil species; single simulation           |
 | **run\_soccerplot.csh**          | **soccerplot.input**           | Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines. | multiple network; multiple species; multiple simulations           |
 | **run\_spectral\_analysis.csh**          | **spectral\_analysis.input**           | Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram | single network; single species; multiple simulations           |
-| **run\_stacked\_barplot\_AE6.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes.| CSN, IMPROVE or SEARCH; species predefined; multiple simulations |
+| **run\_stacked\_barplot\_AE6.csh**    | **stacked\_barplot\_AE6.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes.| CSN, IMPROVE or SEARCH; species predefined; multiple simulations |
 | **run\_stacked\_barplot.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes.| CSN, IMPROVE or SEARCH; species predefined; multiple simulations |
-| **run\_stacked\_barplot\_panel\_AE6.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. | CSN, IMPROVE or SEARCH; species predefined; single simulation |
-| **run\_stacked\_barplot\_panel\_AE6\_multi.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions for multiple simulations. | CSN, IMPROVE or SEARCH; species predefined; multiple simulations |
-| **run\_stacked\_barplot\_panel\_AE6.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. | CSN, IMPROVE or SEARCH; species predefined; single simulation |
-| **run\_stacked\_barplot\_soil.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes.| CSN and IMPROVE networks; species predefined; single simulation |
-| **run\_stacked\_barplot\_soil\_multi.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes.| CSN and IMPROVE networks; species predefined; multiple simulations |
+| **run\_stacked\_barplot\_panel\_AE6.csh**    | **stacked\_barplot\_panel\_AE6.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. | CSN, IMPROVE or SEARCH; species predefined; single simulation |
+| **run\_stacked\_barplot\_panel\_AE6\_multi.csh**    | **stacked\_barplot\_panel\_AE6\_multi.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions for multiple simulations. | CSN, IMPROVE or SEARCH; species predefined; multiple simulations |
+| **run\_stacked\_barplot\_panel\_AE6.csh**    | **stacked\_barplot\_panel\_AE6.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. | CSN, IMPROVE or SEARCH; species predefined; single simulation |
+| **run\_stacked\_barplot\_soil.csh**    | **stacked\_barplot\_soil.input**     | Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes.| CSN and IMPROVE networks; species predefined; single simulation |
+| **run\_stacked\_barplot\_soil\_multi.csh**    | **stacked\_barplot\_soil\_multi.input**     | Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes.| CSN and IMPROVE networks; species predefined; multiple simulations |
 | **run\_stats\_plots.csh**     | **stats\_plots.input**            | Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included. | multiple networks; single species; single simulation              |
 | **run\_timeseries.csh**       | **timeseries.input**    | Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model.| single network;single species; multiple simulations           |
-| **run\_timeseries\_mtom.csh**       | **timeseries.input**    | Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model.| single network;single species; multiple simulations           |
-| **run\_timeseries\_multi.csh**       | **timeseries.input**    | Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model.| multiple networks;single species; multiple simulations           |
+| **run\_timeseries\_mtom.csh**       | **timeseries\_mtom.input**    | Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model.| single network;single species; multiple simulations           |
+| **run\_timeseries\_multi.csh**       | **timeseries\_multi\_networks.input**    | Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model.| multiple networks;single species; multiple simulations           |
 
 Creating a New Analysis Project
 -------------------------------
@@ -1697,7 +1697,7 @@ variables. Not all of these variables are available in every input file.
 
 5.  AQ Analysis Input Files
 
-The analysis input files are found in $AMET/scripts\_analysis/aqExample.
+The analysis input files are found in $AMET/scripts\_analysis/aqExample/input\_files.
 The following is a partial list of variables in the AQ analysis input
 files. Not all of these variables are available in every input file.
 
@@ -1711,7 +1711,7 @@ files. Not all of these variables are available in every input file.
 | **aq\_project**          | AQ project name. |
 | **aq\_site\_table**      | AQ monitoring site MySQL table. Most likely “**site\_metadata**”.|
 | **aq\_species\_col**     | AQ variables, column names, from AQ project table. |
-| **averaging**            | Average across time: “**n**” – no averaging (default), “**s**” – seasonal averaging (DJF; MAM; JJA; SON), “**m**” – monthly averaging, “**a**” – entire time period averaging |
+| **averaging**            | Average across time: “**n**” – no averaging (default), “**s**” – seasonal averaging (DJF; MAM; JJA; SON), “**m**” – monthly averaging, “**h**” – hourly averaging, “**a**” – entire time period averaging |
 | **axis\_max\_limit**     | Axis (x and y) max limit: “**NULL**” – script-defined limit |
 | **axis\_min\_limit**     | Axis (x and y) min limit: “**NULL**” – script-defined limit |
 | **bias\_range\_max**     | Bias range max limit: “**NULL**” – script-defined limit |
@@ -1728,20 +1728,10 @@ files. Not all of these variables are available in every input file.
 | **end\_hour**            | End hour of query, HH format.|
 | **error\_range\_max**    | Error range max limit: “**NULL**” – script defined limit  |
 | **figdir**               | Output directory for plots.|
-| **fixed.legend**         | Fixed legend intervals (**met\_aq\_coupled.input**): “**F**” – False, use full range of data, “**T**” – True, specify custom legend through **legend.interval** |
 | **inc\_ranges**          | Included quartile **ranges** on box plots**.** |
-| **legend.div**           | Number of levels if a fixed interval is not specified. |
-| **legend.interval**      | Custom legend interval (**met\_aq\_coupled.input**).  |
-| **legend.interval.bias** | Custom legend bias interval (**met\_aq\_coupled.input**). |
-| **LT.offset**            | Maximum and minimum UTC to LT offset in domain.  |
-| **max.dist**             | Maximum distance allowed between MET and AQ “buddy” sites. These “buddy” sites are used to compare MET and AQ results in **met\_aq\_coupled**. |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
-| **met\_database**        | MET MySQL database. Most likely “**amet**”. |
-| **met\_network**         | MET monitoring network. |
-| **met\_project**         | MET project name. |
-| **met\_site\_table**     | MET monitoring site MySQL table. Most likely “**stations**”. |
-| **met\_variable\_col**   | MET variables, column names, from AQ project table. |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
+| **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to include on a time series plot. This can be used to eliminate days when only a small number of sites are available. |
 | **overlay\_opt**         | PAVE/VERDI overlay times: **1** – hourly, **2** – daily, **3** – 1-hr daily max, **4** – 8-hr daily max |
 | **pid**                  | Project name; must be unique across both MET and AQ.|
 | **plot\_colors**         | Scatter plot symbol colors for primary simulation. |
@@ -1749,12 +1739,14 @@ files. Not all of these variables are available in every input file.
 | **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
 | **query**                | MySQL query to select data from database. In most cases, this is only part of the query. The complete query is constructed in the corresponding R script. |
+| **remove\_mean**         | Remove the observation/model mean from a time series plot, thereby just plotting the difference from the mean value (only applies to time series script) |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
 | **remove\_other**        | Remove “PM other” category from stacked bar plot analysis. |
 | **rmse\_range\_max**     | **RMS Error** range max limit: “**NULL**” – script defined limit |
 | **run\_info\_text**      | Include model run info as additional text to plots: “**y**” or “**n**”  |
 | **run\_name1**           | Project name; must be unique across AQ and MET.  |
 | **run\_name2**           | Second project name (allowed only in some scripts).|
+| **run\_name\***          | Additional project names (allowed only in some scripts). |
 | **site**                 | Plot label for when you are including only certain sites. Note that you will need to use an additional query to actually subset the data to these sites. |
 | **soccerplot\_opt**      | Flag for soccer and bugle plot options: **1** – normalized mean bias/error, **2** – fractional bias/error|
 | **species**              | Chemical species to plot. |
@@ -1767,9 +1759,15 @@ files. Not all of these variables are available in every input file.
 | **symbo**                | Plot symbol.|
 | **symbsiz**              | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
 | **textstats**            | Produce text statistics file: **TRUE** or **FALSE**.  |
-| **time.of.day.utc**      | Range of time (UTC) to isolate met and AQ data (e.g., compare average temperature and average PM for hours between 6 and 12 UTC).|
 | **use\_avg\_stats**      | Use time-averaged statistics: “**y**” or “**n**”. |
 | **use\_log**             | Use natural log transform: “**y**” or “**n**”. |
+| **valid\_only**          | Flag to include only valid observations from the NADP network |
+| **x\_axis\_min**         | Specify the minimum value for the x-axis on a plot. **NULL**” – script defined limit |
+| **x\_axis\_max**         | Specify the maximum value for the x-axis on a plot. **NULL**” – script defined limit |
+| **y\_axis\_min**         | Specify the minimum value for the y-axis on a plot. **NULL**” – script defined limit |
+| **y\_axis\_max**         | Specify the maximum value for the y-axis on a plot. **NULL**” – script defined limit |
+| **bias\_y\_axis\_min**   | Specify the minimum value for the y-axis on a bias plot. **NULL**” – script defined limit |
+| **bias\_y\_axis\_max**   | Specify the maximum value for the y-axis on a bias plot. **NULL**” – script defined limit |
 | **zeroprecip**           | Include zero-precipitation obs: “**y**” or “**n**” (typically set to “**n**”). |
 
 6.  AQ Network Input File
