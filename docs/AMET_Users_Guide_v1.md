@@ -1705,6 +1705,9 @@ files. Not all of these variables are available in every input file.
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
+| **abs\_error\_max**      | Specify the maximum value for the axis on the absolute error plot from the run_stats.csh script. **NULL**” – script defined limit |
+| **abs\_rang\_min**       | Specify the minimum value for the axis on the absolute bias plot from the run_stats.csh script. **NULL**” – script defined limit |
+| **abs\_range\_max**      | Specify the maximum value for the axis on the absolute bias plot from the run_stats.csh script. **NULL**” – script defined limit |
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
 | **aq\_network**          | AQ monitoring network. |
@@ -1717,6 +1720,8 @@ files. Not all of these variables are available in every input file.
 | **axis\_min\_limit**     | Axis (x and y) min limit: “**NULL**” – script-defined limit |
 | **bias\_range\_max**     | Bias range max limit: “**NULL**” – script-defined limit |
 | **bias\_range\_min**     | Bias range min limit: “**NULL**” – script-defined limit |
+| **bias\_y\_axis\_min**   | Specify the minimum value for the y-axis on a bias plot. **NULL**” – script defined limit |
+| **bias\_y\_axis\_max**   | Specify the maximum value for the y-axis on a bias plot. **NULL**” – script defined limit |
 | **Bldoverlay\_exe**      | The location of the **bldoverlay** Fortran executable. Most likely **$AMETBASE/bin/bldoverlay**. (AQ only) |
 | **conf\_line**           | Add confidence lines to scatterplots: “**y**” or “**n**”. |
 | **coverage\_limit**      | **%** necessary for data completeness (e.g., **75** means 75% data completeness). |
@@ -1729,15 +1734,24 @@ files. Not all of these variables are available in every input file.
 | **end\_hour**            | End hour of query, HH format.|
 | **error\_range\_max**    | Error range max limit: “**NULL**” – script defined limit  |
 | **figdir**               | Output directory for plots.|
+| **greyscale**            | Option to use greyscale for the spatial plots:  “**y**” or “**n**”. |
+| **inc\_counties**        | Option to include county borders on spatial plots:  “**y**” or “**n**”. |
 | **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
+| **inc\_median\_lines**   | Include median lines on box plots: “**y**” or “**n**”. |
+| **inc\_median\_points**  | Include median points on box plots: “**y**” or “**n**”. |
 | **inc\_ranges**          | Include quartile ranges on box plots: “**y**” or “**n**”. |
 | **inc\_points**          | Include point symbols on the time series plot: “**y**” or “**n**”. |
 | **line\_width**          | Specify the line width for the time series plot (default is 1). Smaller number result is a thinner line, while larger numbers result in a thicker line. |
+| **inc\_whiskers**        | Include whiskers on the box plots: “**y**” or “**n**”. |
+| **map\_leg\_size**       | Map legend size factor. Default is 0.65. |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
 | **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation. This can be used to eliminate days when only a small number of sites are available. |
 | **obs\_per\_day\_limit** | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation for the time series plot. This can be used to eliminate days when only a small number of sites are available. |
 | **overlay\_opt**         | PAVE/VERDI overlay times: **1** – hourly, **2** – daily, **3** – 1-hr daily max, **4** – 8-hr daily max |
+| **perc_error_max**       | Specify the maximum value for the axis on the percent error plot from the run_stats.csh script. **NULL**” – script defined limit |
+| **perc_range_min**       | Specify the minimum value for the axis on the percent bias plot from the run_stats.csh script. **NULL**” – script defined limit |
+| **perc_range_max**       | Specify the maximum value for the axis on the percent bias plot from the run_stats.csh script. **NULL**” – script defined limit |
 | **pid**                  | Project name; must be unique across both MET and AQ.|
 | **plot\_colors**         | Scatter plot symbol colors for primary simulation. |
 | **plot\_colors2**        | Scatter plot symbol colors for secondary simulation. |
@@ -1763,7 +1777,7 @@ files. Not all of these variables are available in every input file.
 | **stats\_flags**         | Flags to determine which statistics are included on the **run\_scatterplot.csh** script. Up to five statistics can be included, and are indicated by a ‘**y**’. Unused statistics are left blank. The order of the statistics flags is: **index of agreement (IA), correlation (r), RMSE, systematic RMSE, unsystematic RMSE, NMB, NME, Normalized Median Bias, Normalized Median Error, Mean Bias, Mean Error, Median Bias, Median Error, Fractional Bias, Fractional Error** |
 | **symb**                 | Plot symbol: **15** – square, **19** – circle |
 | **symbo**                | Plot symbol.|
-| **symbsiz**              | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
+| **symbsizfac**           | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
 | **textstats**            | Produce text statistics file: **TRUE** or **FALSE**.  |
 | **use\_avg\_stats**      | Use time-averaged statistics: “**y**” or “**n**”. |
 | **use\_var\_mean**       | Remove the observation/model mean value from the time series plots, thereby only plotting the variation from the mean: “**y**” or “**n**”. |
@@ -1772,8 +1786,6 @@ files. Not all of these variables are available in every input file.
 | **x\_axis\_max**         | Specify the maximum value for the x-axis on a plot. **NULL**” – script defined limit |
 | **y\_axis\_min**         | Specify the minimum value for the y-axis on a plot. **NULL**” – script defined limit |
 | **y\_axis\_max**         | Specify the maximum value for the y-axis on a plot. **NULL**” – script defined limit |
-| **bias\_y\_axis\_min**   | Specify the minimum value for the y-axis on a bias plot. **NULL**” – script defined limit |
-| **bias\_y\_axis\_max**   | Specify the maximum value for the y-axis on a bias plot. **NULL**” – script defined limit |
 | **zeroprecip**           | Include zero-precipitation obs: “**y**” or “**n**” (typically set to “**n**”). |
 
 6.  AQ Network Input File
