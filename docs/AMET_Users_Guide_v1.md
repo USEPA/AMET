@@ -1395,7 +1395,6 @@ scripts.
 | **run\_boxplot\_solrad.csh**         | **boxplot.input**       | Creates a box plot of model-obs quartiles designed specifically to plot solar radiation data. | single network; single species; multi simulation              |
 | **run\_bugleplot.csh**       | **bugleplot.input**          | Model performance criteria are adjusted as a function of the average concentration of the observed value for that species. As the average concentration of the species decreases, the acceptable performance criteria increase. Creates a bias and error plot. | multiple networks; single species; single simulation              |
 | **run\_histogram.csh**         | **histogram.input**       | Creates a histogram of model-obs quartiles. | single network; single species; multi simulation              |
-| **run\_met\_aq.csh**         | **met\_aq\_coupled.input**   | Compares AQ and MET data. Creates a spatial plot of correlation and a time series plot of bias. Note that you need to setup both MET and AQ models and define the MET variables and the AQ species and network of interest. | AQS; O<sub>3</sub>; single MET/AQ simulation pair  |
 | **run\_overlay\_file.csh**   | **overlay\_file.input**      | Creates a data file that can be used by the program **bldoverlay** to create an overlay file. This file can be used in PAVE/VERDI to overlay over CMAQ model output. Hourly data only. | single network; hourly species only; single simulation              |
 | **run\_plot\_spatial.csh**   | **plot\_spatial.input**      | Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. | multiple networks; single species; single simulation              |
 | **run\_plot\_spatial\_diff.csh**   | **plot\_spatial.input**      | Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes. | multiple networks; single species; multi simulations required            |
@@ -1705,9 +1704,9 @@ files. Not all of these variables are available in every input file.
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
-| **abs\_error\_max**      | Specify the maximum value for the axis on the absolute error plot from the run_stats.csh script. **NULL**” – script defined limit |
-| **abs\_rang\_min**       | Specify the minimum value for the axis on the absolute bias plot from the run_stats.csh script. **NULL**” – script defined limit |
-| **abs\_range\_max**      | Specify the maximum value for the axis on the absolute bias plot from the run_stats.csh script. **NULL**” – script defined limit |
+| **abs\_error\_max**      | Specify the maximum value for the axis on the absolute error plot from the **run\_stats\_plots.csh** script. **NULL**” – script defined limit |
+| **abs\_rang\_min**       | Specify the minimum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
+| **abs\_range\_max**      | Specify the maximum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
 | **aq\_network**          | AQ monitoring network. |
