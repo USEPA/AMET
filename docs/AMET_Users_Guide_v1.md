@@ -39,15 +39,11 @@ Tables iv
 
 6.1 The wrfExample Project 15
 
-6.2 The mm5Example Project 15
+6.2 The aqExample Project 17
 
-6.3 The mcipExample Project 16
+6.3 Creating a New MET Project 18
 
-6.4 The aqExample Project 17
-
-6.5 Creating a New MET Project 18
-
-6.6 Creating a New AQ Project 19
+6.4 Creating a New AQ Project 19
 
 7. Analysis 21
 
@@ -174,8 +170,8 @@ sections are listed below.
     > SQL queries.
 
 -   Section 6 gives instructions on how to populate the AMET MySQL
-    > database, with specific instructions for each of the MM5, WRF,
-    > MCIP, and CMAQ models, and also on how to create a new MET project
+    > database, with specific instructions for each of the WRF and 
+    > CMAQ models, and also on how to create a new MET project
     > and a new AQ project for subsequent analyses.
 
 -   In Section 7 are instructions on how to perform model evaluation for
@@ -212,9 +208,9 @@ Directory Structure
 ===================
 
 In our discussions, we refer to the top of the AMET directory structure
-as “$AMETBASE”. This environment variable is actually set in many of the
+as “AMETBASE”. This environment variable is actually set in many of the
 scripts discussed below. For example, if you had untarred AMET’s tarball
-in your home directory, then AMETBASE would be ~/AMET.
+in your home directory, then $AMETBASE would be ~/AMET.
 
 Under $AMETBASE are the directories shown in Table 2-1.
 
@@ -245,7 +241,7 @@ Configuration
 After untarring the AMET code and data and installing/building the
 required two tiers of software components (as discussed in the AMET
 installation guide referenced above), the next stage is to configure the
-AMET system. In the $AMETBASE/configure directory, you will find five
+AMET system. In the $AMETBASE/configure directory, you will find six
 files:
 
 -   An R configuration file (amet-config.R).
@@ -266,7 +262,7 @@ files:
 -   A php configuration file (amet-www-config.php)
 
 The last two files, amet-lib.php and amet-www-config.php, are only necessary if
-using the AMET web interface provided as beta code along with the AMEtv1.3 
+using the AMET web interface provided as beta code along with the AMETv1.3 
 release. If not using the web interface, those two configuration files can be
 ignored.
 
@@ -275,7 +271,7 @@ R Configuration File (amet-config.R)
 
 The R configuration file is used by the underlying R programs to perform
 AMET setup and statistical analysis on your model-obs pairs. Most users will 
-need to modify only a few specific lines of this configura­tion file. The most
+need to modify only a few specific lines of this configuration file. The most
 common variables to change are shown in Table 3-1.
 
 <span id="_Toc199840993" class="anchor"></span>Table 3‑1. Most common
@@ -287,9 +283,9 @@ variables that need to be changed in amet-config.R.
 | **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
 | **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
 | **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
-| **mysql_server**        | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
-| **amet_login**          | Login for the AMET MySQL user. By default this is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
-| **amet_pass**              | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
+| **mysql\_server**       | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
+| **amet\_login**         | Login for the AMET MySQL user. For the purposes of this tutorial, we assume **amet\_login** is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
+| **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
 | **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
 
 Datasets
@@ -768,7 +764,7 @@ discussion, we assume the default name of the AMET MySQL user is
 need to update the appropriate variables in the R configuration files 
 in the directory $AMETBASE/configure (see Section 3). Before you run 
 the setup scripts, you will need to know the “root” password for the 
-MySQL admini­strator. Note that this is not the same as the “ametsecure” 
+MySQL administrator. Note that this is not the same as the “ametsecure” 
 password that will be created using the scripts discussed below.
 
 AMET Setup
@@ -782,14 +778,16 @@ Here, you will see two C-shell scripts (.csh).
 
 To create an AMET user, you will need to edit and run the
 create\_amet\_user.csh script. Specifically, you should make sure the
-value of AMETBASE corresponds to your system.
+value of **AMETBASE** corresponds to your system. To execute the script,
+type
 
 > $ ./create\_amet\_user.csh
 
-This will ask you for MySQL’s “root” password. It will then set up the
-the AMET user, “ametsecure”. 
+This will ask you for MySQL’s “root” password. The MySQL root user must 
+have permission to create and modify user. It will then set up the AMET user, 
+here assumed to be “ametsecure”. 
 
-The setup directory also contains scripts for removing the amet database. 
+The setup directory also contains a script for removing the amet user and database. 
 To delete a specific AMET database, edit and run the delete\_db.csh script,
 specifically setting the $AMETBASE and $AMET_DATABASE (the database to be
 removed).
@@ -838,18 +836,6 @@ that command will yield a table like this:
 >
 > | aq\_project\_log |
 >
-> | mm5Example\_profiler |
->
-> | mm5Example\_raob |
->
-> | mm5Example\_surface |
->
-> | mcipExample\_profiler|
->
-> | mcipExample\_raob |
->
-> | mcipExample\_surface |
->
 > | project\_log |
 >
 > | project\_units |
@@ -889,22 +875,18 @@ Project Creation and Database Population
 
 The database population phase of AMET must be performed for each new
 project. As discussed in Section 1.2, the *project* is the organizing
-structure that we use to group a particular model simula­tion with the
+structure that we use to group a particular model simulation with the
 scripts and data used to populate the amet tables. If you go to the
 database populate directory by typing
 
 > $ cd $AMETBASE/scripts\_db
 
-you will see four project directories, in addition to the setup
-directories described earlier. The projects are
+you will see two project directories and one input files directory in 
+addition to the setup directories described earlier. The projects are
 
 1.  a MET example for the WRF model (wrfExample),
 
-2.  a MET example for the MM5 model (mm5Example),
-
-3.  a MET example for MCIP postprocessed surface data (mcipExample), and
-
-4.  an AQ example for the CMAQ model (aqExample).
+2.  an AQ example for the CMAQ model (aqExample).
 
 In the following subsections, we describe how to run each project.
 
@@ -955,55 +937,6 @@ when running this script. Please note that the MADIS data need to be
 downloaded once for a given time period and will subsequently be
 available to all projects.
 
-The mcipExample Project
------------------------
-
-Go to the project directory
-
-> $ cd $AMETBASE/scripts\_db/mcipExample
-
-Here, you will see two input files and two C-shell scripts. The
-setup\_project.input file is the input file for initializing the
-project’s database tables (discussed later in Section 6). The only thing
-you should need to change in this file is the “$email” variable. Note
-that you should use the backslash “escape” character, “\\”, to prevent
-Perl from evaluating the “@” in your e-mail address. The
-populate\_project.input file describes specific flags for the model
-outputs and observations that you want to process. See Appendix B for
-information on the specifics relating to each variable. You will likely
-not need to change anything in this second input file.
-
-The C-shell file metProject.csh is a wrapper script for calling the Perl
-programs that actually populate the AMET database with the project data.
-You will likely only need to verify the variable AMETBASE has been
-updated for this project. Also note the variable AMET\_MCIP\_GRID, which
-should provide the full path to the GRIDCRO2D file used for this
-project. Run the script by typing
-
-> $ ./metProject.csh &gt;& log.populate
-
-This C-shell script will create three empty project tables in the AMET
-database: mcipExample\_profiler, mcipExample\_raob, and
-mcipExample\_surface. These tables correspond to the matches between the
-model outputs and (1) the wind profiler observations, (2) the radiosonde
-observations, and (3) the surface observations. However, AMET currently
-works only on MCIP surface data, so the profiler and raob tables will be
-empty. After creating these tables, the script then begins the matching
-process. This consists of auto-ftp-ing data from the MADIS web site for
-the model's temporal period, unzipping the downloaded data, finding the
-geographic location of each observation site on the model grid and
-interpolating to those locations, populating the appropriate table with
-the model-obs pairs for each variable, and optionally rezipping the data
-for compressed storage. Finally, the script updates the project\_log
-with summary information for the mcipExample project.
-
-The second C-shell file, metFTP.csh, is a wrapper script for calling
-Perl programs to download observational data from MADIS for a specific
-period of time. This allows you to download observational data without
-having the model output. Make sure the variable auto\_ftp is set to 1
-when running this script. Please note that the MADIS data need to be
-downloaded only once for a given time period and will subsequently be
-available to all projects.
 
 The aqExample Project
 ---------------------
@@ -1025,13 +958,15 @@ script by typing
 > $ ./aqProject.csh &gt;& log.populate
 
 This C-shell script will create the AMET database (if it doesn't already
-exist), three required AQ database tables (project_units, site_metadata and
+exist), three required AQ database tables (i.e. project_units, site_metadata and
 aq_project_log), and one empty project table in the AMET database: aqExample. 
 After creating this table, the script then begins the matching process. This 
 consists of calling a series of Fortran helper programs. The two Fortran helper 
 programs are $AMETBASE/bin/sitex\_daily.exe and $AMETBASE/bin/sitex_daily_O3.exe; 
 the first one matches the AQS network’s data to the nearest grid cell in the CMAQ 
-model, and the second one does the same for the other networks. After each network 
+model, and the second one does the same for the other networks. These programs need
+to be downloaded and built (and the path to the excutable specified in the 
+amet-config.R file before running the aqProject.csh script. After each network 
 has been matched to the model, the aqExample table is populated with the model-obs 
 pairs. In addition to creating and populating the aqExample table, the script 
 updates the project\_units table with each network for that project. This table 
@@ -1174,12 +1109,12 @@ postprocessed model data file(s).
 The next step is to edit the $AMETBASE/scripts\_db/aqNC2007/aqProject.csh
 script for your particular project. This script does two things. It creates
 your project table in the amet database and populates that project table
-with your data. You'll specifiy a number of options in the aqProject.csh 
-script which will then call several R script to run site compare and then
-poplulate the database with your data. This script will be reused for your
-various AMET-AQ projects, so while this script contains a number of options,
-you will likely only need to fully setup this script once and re-use it will
-little modification in the future.
+with your data (it will also create the database if it does not already exist). 
+You'll specifiy a number of options in the aqProject.csh script which will then 
+call several R script to run site compare and then poplulate the database with 
+your data. This script will be reused for your various AMET-AQ projects, so while 
+this script contains a number of options, you will likely only need to fully setup 
+this script once and re-use it with little modification in the future.
 
 First, you'll need to specify some basic amet information. You'll need to 
 specify **AMETBASE** as done in the previous scripts. The **AMET_LOGIN**
@@ -1469,9 +1404,13 @@ scripts.
 | **run\_raw\_data.csh**         | **raw_data.input**       | Used to extract raw data from the database. Output is a csv file containing the data requested. | single network; single species; multi simulation              |
 | **run\_scatterplot\_bins.csh**     | **scatterplot.input**        | Creates a multi-panel scatterplot of bias and RMSE, where the values are binned by the observed or modeled concentration. This script will plot a single species for a single network. | single networks; single species; multiple simulations           |
 | **run\_scatterplot.csh**     | **scatterplot.input**        | Creates a single model vs. obs scatterplot. This script will plot a single species from up to three networks on a single plot. Summary statistics are also included on the plot. | multiple networks; single species; multiple simulations           |
-| **run\_scatterplot\_MtoM.csh**   | **scatterplot\_MtoM.input**    | Creates a single model-to-model scatterplot. *Note*: The model points correspond to network’s site locations only. | multiple networks; single species; multiple simulations           |
+| **run\_scatterplot\_density.csh**     | **scatterplot\_density.input**        | Creates a single model vs. obs scatterplot with shading to represent the density of points. | multiple networks; single species; single simulation        |
+| **run\_scatterplot\_mtom.csh**   | **scatterplot\_mtom.input**    | Creates a single model-to-model scatterplot. *Note*: The model points correspond to network’s site locations only. | multiple networks; single species; multiple simulations           |
+| **run\_scatterplot\_multi.csh**     | **scatterplot\_multi.input**        | Creates a single model vs. obs scatterplot, designed specifically for plotting many simulations on a single plot. This script will plot a single species from a single network for up to six different simulations. Summary statistics are also included on the plot. | single networks; single species; multiple simulations |
+| **run\_scatterplot\_percentiles.csh**     | **scatterplot\_percentiles.input**        | Creates a single model vs. obs scatterplot, color coding the 5th, 25th, 50th, 75th and 95th percentiles. | single networks; single species; single simulation |
 | **run\_scatterplot\_single.csh** | **scatterplot\_single.input**  | Creates a scatter plot for a single network that includes more specific statistics than run\_scatterplot.csh.| single network;single species;multiple simulations           |
 | **run\_scatterplot\_skill.csh**  | **scatterplot\_skill.input**   | Creates a forecast skill scatter plot. The script is designed to work specifically with O<sub>3</sub>. | all AQS networks; O<sub>3</sub>; single simulation              |
+| **run\_scatterplot\_soil.csh**     | **scatterplot\_soil.input**        | Creates a single model vs. obs scatterplot designed specifically for plotting soil species (e.g. Si, Fe, Al, etc.). This script will plot the soil species from a single network on a single plot. | single network; multiple soil species; single simulation           |
 | **run\_soccerplot.csh**          | **soccerplot.input**           | Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines. | multiple network; multiple species; multiple simulations           |
 
 | **run\_stacked\_barplot.csh**    | **stacked\_barplot.input**     | Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes.| STN or SEARCH;species predefined; multiple simulations |
