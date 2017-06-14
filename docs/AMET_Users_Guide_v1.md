@@ -19,39 +19,39 @@ Tables iv
 
 3. Configuration 4
 
-  3.1 R Configuration File (amet-config.R) 5
+   3.1 R Configuration File (amet-config.R) 5
 
 4. Datasets 6
 
-  4.1 Model Data 6
+   4.1 Model Data 6
 
-  4.2 Observational Data 7
+   4.2 Observational Data 7
 
 5. Database Setup 11
 
-  5.1 MET Setup 11
+   5.1 MET Setup 11
 
-  5.2 AQ Setup 12
+   5.2 AQ Setup 12
 
-  5.3 Basic MySQL Commands 13
+   5.3 Basic MySQL Commands 13
 
 6. Database Population 14
 
-  6.1 The wrfExample Project 15
+   6.1 The wrfExample Project 15
 
-  6.2 The aqExample Project 17
+   6.2 The aqExample Project 17
 
-  6.3 Creating a New MET Project 18
+   6.3 Creating a New MET Project 18
 
-  6.4 Creating a New AQ Project 19
-
+   6.4 Creating a New AQ Project 19
+ 
 7. Analysis 21
 
-  7.1 wrfExample 21
+   7.1 wrfExample 21
 
-  7.2 aqExample 23
+   7.2 aqExample 23
 
-  7.3 Creating a New Analysis Project 27
+   7.3 Creating a New Analysis Project 27
 
 8. CMAS Support for AMET 28
 
