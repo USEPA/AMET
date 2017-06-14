@@ -1318,7 +1318,13 @@ First, edit the run\_scatterplot.csh file. Below is a table describing
 the option available in the run\_scatterplot.csh script. Note that the 
 species selected is SO4 and you are plotting two networks: IMPROVE and 
 CASTNET. The corresponding input file, scatterplot.input, will likely not 
-need to be changed.
+need to be changed for this example. 
+
+Note that while each script has its own individual corresponding input file, 
+there is also an input file called **all_scripts.input**, which contains all 
+the options available for all the analysis scripts. This input file can be 
+used instead of script specific input files, thereby eliminating the need to 
+edit each individual input file. This may be a preferred option for some users.
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
