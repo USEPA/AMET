@@ -5,9 +5,7 @@ User’s Guide***
 
 **Contents**
 
-Tables iv
-
-1. Overview 1
+1. Overview
 
    1.1 Overall Objective and Basic Structure
 
@@ -232,28 +230,17 @@ Configuration
 After untarring the AMET code and data and installing/building the
 required two tiers of software components (as discussed in the AMET
 installation guide referenced above), the next stage is to configure the
-AMET system. In the $AMETBASE/configure directory, you will find six
+AMET system. In the $AMETBASE/configure directory, you will find three
 files:
 
 -   An R configuration file (amet-config.R).
-
--   Three Meteorological Assimilation Data Ingest System (MADIS)
-    > configuration files (MET\_matching.conf, MET\_matching.MCIP.conf,
-    > and MET\_matching\_nonPX.conf). These configuration files describe
-    > how MADIS variables “match” (map or translate to) various MET
-    > model variables. Most users will not need to change these variable
-    > mapping files, so they are not discussed further in this guide.
-    > For the AQ side, the matching of variables between model output
-    > and observations is project specific. See Section 6.5, “Creating a
-    > New AQ Project,” for more details on changing the default mapping
-    > of AQ observations to model variables.
     
 -   A php library file (amet-lib.php)
 
 -   A php configuration file (amet-www-config.php)
 
 The last two files, amet-lib.php and amet-www-config.php, are only necessary if
-using the AMET web interface provided as beta code along with the AMETv1.3 
+using the AMET-AQ web interface provided as beta code along with the AMETv1.3 
 release. If not using the web interface, those two configuration files can be
 ignored.
 
