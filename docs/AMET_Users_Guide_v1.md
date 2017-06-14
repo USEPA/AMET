@@ -9,53 +9,53 @@ Tables iv
 
 1. Overview 1
 
-   1.1 Overall Objective and Basic Structure 1
+   1.1 Overall Objective and Basic Structure
 
-   1.2 Concept of an AMET “Project” 1
+   1.2 Concept of an AMET “Project”
 
-   1.3 Organization of This User’s Guide 2
+   1.3 Organization of This User’s Guide
 
-2. Directory Structure 3
+2. Directory Structure
 
-3. Configuration 4
+3. Configuration
 
-   3.1 R Configuration File (amet-config.R) 5
+   3.1 R Configuration File (amet-config.R)
 
-4. Datasets 6
+4. Datasets
 
-   4.1 Model Data 6
+   4.1 Model Data
 
-   4.2 Observational Data 7
+   4.2 Observational Data
 
-5. Database Setup 11
+5. Database Setup
 
-   5.1 MET Setup 11
+   5.1 MET Setup
 
-   5.2 AQ Setup 12
+   5.2 AQ Setup
 
-   5.3 Basic MySQL Commands 13
+   5.3 Basic MySQL Commands
 
-6. Database Population 14
+6. Database Population
 
-   6.1 The wrfExample Project 15
+   6.1 The wrfExample Project
 
-   6.2 The aqExample Project 17
+   6.2 The aqExample Project
 
-   6.3 Creating a New MET Project 18
+   6.3 Creating a New MET Project
 
-   6.4 Creating a New AQ Project 19
+   6.4 Creating a New AQ Project
  
-7. Analysis 21
+7. Analysis
 
-   7.1 wrfExample 21
+   7.1 wrfExample
 
-   7.2 aqExample 23
+   7.2 aqExample
 
-   7.3 Creating a New Analysis Project 27
+   7.3 Creating a New Analysis Project
 
-8. CMAS Support for AMET 28
+8. CMAS Support for AMET
 
-References 28
+References
 
 Appendix A: Overview Flow Diagram
 
@@ -65,14 +65,14 @@ Appendix A: Overview Flow Diagram
 Tables
 ======
 
-Table 2‑1. Directories under $AMETBASE. 3
+Table 2‑1. Directories under $AMETBASE
 
 Table 3‑1. Most common variables that need to be changed in
-amet-config.R. 5
+amet-config.R
 
-Table 7‑1. MET analysis scripts. 22
+Table 7‑1. MET analysis scripts
 
-Table 7‑2. AQ analysis scripts. 24
+Table 7‑2. AQ analysis scripts
 
 Table B‑1. amet-config.R 
 
@@ -128,7 +128,7 @@ Concept of an AMET “Project”
 ----------------------------
 
 A central organizing structure for AMET applications is a *project*. A
-project groups a particular model simula­tion (specific model,
+project groups a particular model simulation (specific model,
 physics-set, spatial domain, grid scale, etc.) with all of the AMET
 database tables that correspond to that simulation, the scripts
 necessary to populate that database, and the scripts required to analyze
@@ -155,54 +155,45 @@ integrated AMET package on multiple environments.
 Finally, we created this user’s guide. The contents of the remaining
 sections are listed below.
 
--   Section 2 describes the overall directory structure of the
-    > AMET installation.
+-   Section 2 describes the overall directory structure of the AMET installation.
 
--   Section 3 gives instructions on how to configure the R
-    > configuration files.
+-   Section 3 gives instructions on how to configure the R configuration files.
 
--   In Section 4 is an overview of the various model outputs and
-    > observed data provided with the AMET release.
+-   In Section 4 is an overview of the various model outputs and observed data 
+    provided with the AMET release.
 
--   Section 5 provides instructions on how to create the AMET MySQL
-    > database, with specific instructions for each of the MET and
-    > AQ models. Sample MySQL commands are also shown for illustrative
-    > SQL queries.
+-   Section 5 provides instructions on how to create the AMET MySQL database, with 
+    specific instructions for each of the MET and AQ models. Sample MySQL commands 
+    are also shown for illustrative SQL queries.
 
--   Section 6 gives instructions on how to populate the AMET MySQL
-    > database, with specific instructions for each of the WRF and 
-    > CMAQ models, and also on how to create a new MET project
-    > and a new AQ project for subsequent analyses.
+-   Section 6 gives instructions on how to populate the AMET MySQL database, with 
+    specific instructions for each of the WRF and CMAQ models, and also on how to 
+    create a new MET project and a new AQ project for subsequent analyses.
 
--   In Section 7 are instructions on how to perform model evaluation for
-    > each of the WRF and CMAQ models, and includes an overview of the
-    > functionality of all the MET and AQ evaluation scripts provided.  
-    > ***<span style="font-variant:small-caps;">Important
-    > note</span>:*** *The set of analyses/evaluation scripts provided
-    > in this release are strictly for illustration purposes on the
-    > functionality/design of AMET, and are not to be construed as a
-    > recommended suite of analyses scripts for model evaluation. We
-    > encourage the user community to use the scripts we have provided
-    > as examples as well as a basis to start developing other analyses
-    > scripts and contribute them to the modeling community to increase
-    > AMET functionality.*
+-   In Section 7 are instructions on how to perform model evaluation for each of the 
+    WRF and CMAQ models, and includes an overview of the functionality of all the MET 
+    and AQ evaluation scripts provided. 
 
--   Section 8 discusses how to obtain support for AMET from the
-    > Community Modeling and Analysis System (CMAS) Center
-    > ([**http://www.cmascenter.org**](http://www.cmascenter.org)).
+***<span style="font-variant:small-caps;">Important note</span>:*** *The set of 
+analyses/evaluation scripts provided in this release are strictly for illustration 
+purposes on the functionality/design of AMET, and are not to be construed as a 
+recommended suite of analyses scripts for model evaluation. We encourage the user 
+community to use the scripts we have provided as examples as well as a basis to 
+start developing other analyses scripts and contribute them to the modeling 
+community to increase AMET functionality.*
 
--   In Appendix A is an overall flow diagram for AMET and its
-    > various components.
+-   Section 8 discusses how to obtain support for AMET from the Community Modeling 
+    and Analysis System (CMAS) Center ([**http://www.cmascenter.org**](http://www.cmascenter.org)).
 
--   Appendix B provides information on the various input files used
-    > in AMET. For each input file, a table lists brief descriptions of
-    > all user-defined variables that can be set by the user for a
-    > given evaluation.
+-   In Appendix A is an overall flow diagram for AMET and its various components.
 
-Before using AMET and this user’s guide, you must first install the AMET
-package on your system. For information on the installation process,
-please see the separate *Atmospheric Model Evaluation Tool (AMET)
-Installation Guide* that can be downloaded from the CMAS web site.
+-   Appendix B provides information on the various input files used in AMET. For each 
+    input file, a table lists brief descriptions of all user-defined variables that can 
+    be set by the user for a given evaluation.
+
+Before using AMET and this user’s guide, you must first install the AMET package on your 
+system. For information on the installation process, please see the separate *Atmospheric 
+Model Evaluation Tool (AMET) Installation Guide* that can be downloaded from the CMAS web site.
 
 Directory Structure
 ===================
