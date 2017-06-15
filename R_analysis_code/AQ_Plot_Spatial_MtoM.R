@@ -327,12 +327,12 @@ for (l in 1:j) {
 ###########################################
 unique_labels <- "y"												# Flag within Misc_Functions.R to use predefined labels
 levLab <- leg_labels_diff
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_diff,figure=figure_diff,varlab=title_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) {
+if ((ametptype == "pdf") || (ametptype == "both")) {
    plotfmt <- "pdf" 												# Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_diff,figure=figure_diff,varlab=title_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
@@ -344,12 +344,12 @@ if ((ametptype == "pdf" || (ametptype == "both")) {
 #######################################
 unique_labels <- "y"                                                                                            # Flag within Misc_Functions.R to use predefined labels 
 levLab <- leg_labels_max
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_max,figure=figure_max,varlab=title_max,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
 }
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "pdf"                                                                                                # Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_max,figure=figure_max,varlab=title_max,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
@@ -361,12 +361,12 @@ if ((ametptype == "png" || (ametptype == "both")) {
 #######################################
 unique_labels <- "y"                                                                                            # Flag within Misc_Functions.R to use predefined labels 
 levLab <- leg_labels_max
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_min,figure=figure_min,varlab=title_min,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) {
+if ((ametptype == "pdf") || (ametptype == "both")) {
    plotfmt <- "pdf"                                                                                                # Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_min,figure=figure_min,varlab=title_min,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
