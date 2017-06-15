@@ -15,8 +15,8 @@ amet_base         <-  "/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13";   
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## MySQL Configuration
 mysql_server	<- "darwin.rtpnc.epa.gov"	## Name of MYSQL server
-amet_login	<- "wyat"			## AMET Root login for MYSQL server
-amet_pass	<- "283ButterFish!"		## AMET Root password for MYSQL server
+amet_login	<- "ametsecure"			## AMET Root login for MYSQL server
+amet_pass	<- "AMETSECURE"		## AMET Root password for MYSQL server
 maxrec		<- -1				## Set MySQL maximum records for queries (-1 for no maximum)
 
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
