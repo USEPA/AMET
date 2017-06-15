@@ -1,0 +1,229 @@
+#######################################################
+### This file is used essentially as a namelist for ###
+### each of the AMET R scripts.  The information in ###
+### this script must be updated in order for the    ###
+### AMET scripts to run properly.                   ###
+###                                                 ###
+### These variables can be hardcoded or taken from  ###
+### environmental variables.                        ###
+#######################################################
+
+##################################
+### Main Database Query String ###
+##################################
+start_date <- Sys.getenv("AMET_SDATE")  # yyyymmdd
+end_date   <- Sys.getenv("AMET_EDATE")  # yyyymmdd
+start_hour <- 00        # hh
+end_hour   <- 23        # hh
+
+#add_query <- "and d.lon between -125 and -60 "
+#add_query <-  "and (s.state='CT' or s.state='DE' or s.state='DC' or s.state='ME' or s.state='MD' or s.state='MA' or s.state='NH' or s.state='NJ' or s.state='NY' or s.state='PA' or s.state='RI' or s.state='VT') "
+#add_query <- ""
+add_query <- Sys.getenv("AMET_ADD_QUERY")
+
+query <- paste(" and s.stat_id=d.stat_id and d.ob_dates BETWEEN",start_date,"and",end_date,"and d.ob_datee BETWEEN",start_date,"and",end_date,"and ob_hour between",start_hour,"and",end_hour,add_query,sep=" ")
+
+#########################
+### Process ID number ###
+#########################
+### This can be set to anything, and is used as part of the name of output file(s) ###
+pid<-Sys.getenv("AMET_PID")
+
+
+#########################
+### Project ID Name 1 ###
+#########################
+run_name1<-Sys.getenv("AMET_PROJECT")
+run_name2<-Sys.getenv("AMET_PROJECT2")
+
+### Additional run names for some analyses ###
+run_name3	<- ""
+run_name4	<- ""
+run_name5	<- ""
+run_name6	<- ""
+
+#######################
+### Species to Plot ###
+#######################
+### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM25,EC,OC,TC,O3,SO2,CO,NO,SO4_dep,SO4_conc,NO3_dep,NO3_conc,NH4_dep,NH4_conc,precip,NOy ###
+
+species<-Sys.getenv("AMET_AQSPECIES")
+
+######################
+###  Title Options ###
+######################
+custom_title<-Sys.getenv("AMET_TITLE")
+
+######################
+###  Output dir    ###
+######################
+figdir <- Sys.getenv("AMET_OUT")
+#figdir <- "~/AMET/output/aqExample"
+
+###########################################################################
+
+#####################################
+### Spatial Decomposition Options ###
+#####################################
+
+### Monitoring Sites to Include ###
+site	<- 'All'
+
+### States to Include ###
+state	<- 'All'
+
+### Regional Planning Organizations to Include ###
+rpo	<- 'None'
+
+### Priciple Component Analysis (PCA) Region ###
+pca	<- 'None'
+
+### Flag to use PCA regions with binned scatter plots (applies to Run_Scatterplot_Bins_Batch.R Script) ###
+pca_flag <- "n"
+
+######################################
+
+############################
+### Various Option Flags ###
+############################
+
+### Time average flag (n=none; hour=h; day=d; month=m; season=s; all=a; year/month=ym)
+averaging<-"n"
+
+### Flag to Include or Remove Zero Precipitation Observations ###
+zeroprecip	<- 'n'
+
+### Data Completeness ###
+coverage_limit	<- 50
+valid_only	<- 'n'
+
+### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
+soccerplot_opt	<- 1
+
+### Flag for PAVE Overlay; 1=hourly, 2=daily ###
+overlay_opt	<- 1
+
+### Flag to include run info text on plots ###
+run_info_text	<- 'y'
+
+### Remove Negatives Flag ###
+remove_negatives	<- 'y'
+remove_mean 		<- 'n'
+color_ranges 		<- 'n'
+
+### Numerical Limit for Data Completeness as minimum number of required observations (used when calulating site statistics or averages)###
+num_obs_limit	<- 1
+
+### Flag to use average values for computing statistics; default is no (""); set to "y" to use average stats ###
+use_avg_stats	<- 'n'
+
+#########################
+### Axis Plot Options ###
+#########################
+
+### x and y axes limits ###
+axis_max_limit	<- NULL
+axis_min_limit	<- NULL
+x_axis_min 	<- NULL
+x_axis_max 	<- NULL
+y_axis_min 	<- NULL 
+y_axis_max 	<- NULL
+bias_y_axis_min <- NULL 
+bias_y_axis_max <- NULL
+
+### Set Plot symbol type and colors ###
+plot_colors     <- c("grey60","red","blue","green4","yellow3","orange2","brown","purple")
+plot_colors2    <- c("grey60","red","blue","green4","yellow3","orange2","brown","purple")
+plot_symbols    <- c(16,17,15,18,11,8,4)
+
+############################
+
+################################
+### Time Series Plot Options ###
+################################
+use_var_mean 	<- 'n'
+
+### Include points ###
+inc_points 	<- 'y'
+
+### Includ a legend ###
+inc_legend	<- 'y' 
+
+### Specify a minimum number of obs required per day ###
+obs_per_day_limit	<- 0
+
+### Specify which type of value to plot (mean, median or sum) ###
+avg_func	<- 'mean'
+#avg_func	<- 'median'
+#avg_func	<- 'sum'
+
+### Specify a multiplier for the line width (default is 1) ###
+line_width	<- '1'
+
+
+############################
+### Spatial Plot Options ###
+############################
+num_ints	<- 20 
+perc_error_max	<- NULL
+abs_error_max	<- NULL
+rmse_range_max	<- NULL
+perc_range_min	<- NULL
+perc_range_max	<- NULL
+abs_range_min	<- NULL
+abs_range_max	<- NULL
+diff_range_min	<- NULL
+diff_range_max	<- NULL
+greyscale	<- "n"
+inc_counties	<- "y"
+symbsizfac	<- 1
+map_leg_size	<-.65
+
+
+#######################
+### Boxplot Options ###
+#######################
+### Include whiskers on box plots ###
+inc_whiskers	<- 'n'
+
+### Include boxplot quartile ranges ###
+inc_ranges	<- 'y'
+
+### Include median points on box plots ###
+inc_median_points	<- 'y'
+
+### Include median points on box plots ###
+inc_median_lines	<- 'y'
+
+############################
+### Scatter Plot Options ###
+############################
+### Flags for Confidence Lines to Plot on Scatterplots ###
+conf_line	<-'n'
+
+### Array of flags for which statistics to include on scatter plots ###
+#  1) num_pairs, 2) mean(obs),  3) mean(mod),  4) indx_agr,    5) corr,      
+#  6) r_sqrd,    7) rmse,       8) rmse_sys,   9) rmse_unsys, 10) nmb,
+# 11) nme,      12) nmdnb,     13) nmdne,     14) mb,         15) me,
+# 16) med_bias, 17) med_error, 18) fb,        19) fe
+stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
+
+
+##################################
+### Stacked Bar Charts Options ###
+##################################
+inc_FRM_adj	<- 'y'
+use_median	<- 'y'
+remove_other 	<- 'n'
+
+##################################
+
+### File containing list of stations created dynamically by the user ###
+stat_file<-""
+
+##################################
+### Path of Network Input file ###
+##################################
+ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
+source(ametNetworkInput) # Network related input
+
