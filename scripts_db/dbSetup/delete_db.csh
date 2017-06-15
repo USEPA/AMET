@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/csh
 
 ###############################################################
 ##
@@ -11,33 +11,33 @@
 
 ## setup:
 ## Top AMET directory tree
-AMETBASE=/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13; export AMETBASE
+setenv AMETBASE /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
 
 ## Set AMET Database
-AMET_DATABASE=Test_AMETv13; export AMET_DATABASE
+setenv AMET_DATABASE Test_AMETv13
 
 
 ##################################################################
 ###### Most users will not need to modify anything below #########
 
-
 ## R script deletes MYSQL db and user
 echo "Running script for deleting AMET db and user"
-echo "Enter the MYSQL root user, root: "
-read mysql_root_login
-echo "Enter the MYSQL root user password: "
-read -s mysql_root_pass
-echo "WARNING, WARNING!!"
+echo -n "Enter the MYSQL root user, root: "
+set mysql_root_login = $<
+echo -n "Enter the MYSQL root user password: "
+stty -echo
+set mysql_root_pass = $<
+stty echo
+echo "\nWARNING, WARNING!!"
 echo "Deleting the database will destroy the data in all MET and AQ projects."
 echo "Are you sure you want to delete the AMET database?" 
-read delete_db
+set delete_db = $<
 echo "WARNING, WARNING!!"
 echo "Deleting the user will mean that you can't access data through this user"
 echo "Are you sure you want to delete the AMET user?"
-read delete_user
+set delete_user = $<
 R --no-save --slave --args < $AMETBASE/R_db_code/delete_AMETdb_user.R $mysql_root_login $mysql_root_pass $delete_db $delete_user
-#Rscript $AMETBASE/R_db_code/delete_AMETdb_user.R $mysql_root_login $mysql_root_pass $delete_db $delete_user
-if [ $? -ne 0 ] ; then
+if ( $status != 0 ) then
    echo "Error creating/updating new AMET-AQ db"
-   exit 1
-fi 
+   exit (1)
+endif

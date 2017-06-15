@@ -37,7 +37,12 @@
   setenv AMET_SDATE "20060701"
   setenv AMET_EDATE "20060711"
 
-  #  Custom title (if not set will autogenerate title based on variables 
+  # Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
+  # The PID is particularly important if using the AMET web interface and is determined there through
+  # a random number generator.
+  setenv AMET_PID 1
+
+#  Custom title (if not set will autogenerate title based on variables 
   #  and plot type)
 #  setenv AMET_TITLE "Hourly boxplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 

@@ -43,6 +43,8 @@ C*************************************************************************
       INTEGER        HOUR_START      ! starting hour for partial day
       INTEGER        HOUR_END        ! ending hour for partial day     
 
+      INTEGER        HOURS_8HRMAX    ! number of 8hr values to compute 8hr max     
+
       INTEGER        TIME_SHIFT      ! hours to adjust model data                                  
  
       LOGICAL        APPLYDLS        ! Daylight Savings flag
@@ -200,8 +202,21 @@ C...get ending date and time
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc                           
 c  Get the TIME Shift adjustment in hours                                                          
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc                           
-         ENV_DESC = 'Hours added to model data read'                                               
-         TIME_SHIFT= ENVINT( 'TIME_SHIFT', ENV_DESC, 0, STATUS)                                    
+       ENV_DESC = 'Hours added to model data read'                                               
+       TIME_SHIFT= ENVINT( 'TIME_SHIFT', ENV_DESC, 0, STATUS)                                    
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc                           
+c  Get the HOURS_8HRMAX environment variable (default is 24)                                                          
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc                           
+       ENV_DESC = 'Number of 8hr values to use when computing DM8HR'                                               
+       HOURS_8HRMAX= ENVINT( 'HOURS_8HRMAX', ENV_DESC, 24, STATUS)  
+	 
+       if ( ( HOURS_8HRMAX .NE. 24) .AND. ( HOURS_8HRMAX .NE. 17) ) THEN                                
+
+        MSG = '**Error** Invalid value for HOURS_8HRMAX, use 24 or 17'
+        CALL M3ERR( PNAME, 0, 0, MSG, .TRUE. ) 
+        Stop
+       Endif
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c  Get the DLS apply flag (default is false)

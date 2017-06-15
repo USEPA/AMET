@@ -675,6 +675,8 @@ C****************************************************************************
 C  routine to compute the 8 hour max from array of hourly values           
 C****************************************************************************
       Subroutine get8hourMax(values,sumMax,hourMax,missChk) 
+      
+      USE ENV_VARS
 
       Implicit None
 
@@ -690,8 +692,10 @@ C****************************************************************************
       tcount = 0
       summax = -99.0
       hourMax = -99
+      
+      if ( HOURS_8HRMAX .eq. 24 ) then ! use 24 8hr values
 
-      do i=1,24
+       do i=1,24
         sum = 0
         count = 0
         do j=1,8
@@ -711,10 +715,40 @@ C****************************************************************************
           Endif
         enddo
 
-      if( missChk .and. tcount.lt.18 ) then
+       if( missChk .and. tcount.lt.18 ) then !require 18/24
         summax = -99.0
         hourMax = -99
         endif
+
+      else !use only 17 8hr values, from 7 am to 11 pm
+
+       do i=8,24
+        sum = 0
+        count = 0
+        do j=1,8
+          if( values(i+j-1).ge.0.0 ) then
+            count = count + 1
+            sum = sum + values(i+j-1)
+            endif
+          enddo
+
+        if( count .ge. 6 ) then
+          tcount = tcount + 1
+          sum = sum / count
+          if( sum .gt. summax ) then
+            summax = sum
+            hourMax = i - 1
+            endif
+          Endif
+        enddo
+
+       if( missChk .and. tcount.lt.13 ) then !require 13/17
+        summax = -99.0
+        hourMax = -99
+        endif
+      
+      
+      endif
 
       return
       End Subroutine get8hourMax

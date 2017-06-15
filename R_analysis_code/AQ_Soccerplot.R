@@ -11,7 +11,7 @@
 ### lines.  This type of plot is used by EPA and RPOs as part of their
 ### assessment of model performance.
 ###
-### Last updated by Wyat Appel; April 5, 2007
+### Last updated by Wyat Appel; June 2017
 ################################################################
 
 
@@ -34,7 +34,7 @@ source(ametRinput)                                     # Anaysis configuration/i
 ## Load Required Libraries 
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 ### Set file names and titles ###
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }

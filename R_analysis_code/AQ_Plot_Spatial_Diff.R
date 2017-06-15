@@ -35,7 +35,7 @@ if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=15000000)
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=15000000)
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used

@@ -1,15 +1,17 @@
 ##------------------------------------------------------##
-#   FILE NAME: AMET_species_list.pl			 #
+#   FILE NAME: AMET_species_list.input			 #
 #							 #
-#   This file is r  uired by the AMET perl script        #
-#   amet_extract_all.pl.  It establishes the species     #
+#   This file is required by the AMET R script           #
+#   aqExample.csh script. It establishes the species     #
 #   that will be extracted for each network.  This is    #
 #   the default version of this file.  Changes can be    #
-#   made and used with the amet_extract_all.pl script    #
+#   made and used with the aqExample.csh script          #
 #							 #
-#       REQUIRED: amet_extract_all.pl	 		 #
+#       REQUIRED: aqExample.csh 	 		 #
 #	                                                 #
-#       PURPOSE: Species configuration file              #
+#       PURPOSE: Species configuration file for          #
+#                specifying how model and observation    #
+#                species names are paired                #
 #                                                        #
 ##------------------------------------------------------##
 

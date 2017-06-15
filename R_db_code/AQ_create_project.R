@@ -4,31 +4,62 @@
 #       PURPOSE: To create a MYSQL table usable for     #
 #               the AMET-AQ system                      #
 #							#
-#       Last Update: 03/13/2017 by Wyat Appel           #
+#       Last Update: 06/08/2017 by Wyat Appel           #
 #--------------------------------------------------------
 
 ######################################################################################
 
-require(RMySQL)                                              # Use RMYSQL package
+suppressMessages(require(RMySQL))	# Use RMYSQL package
 
-amet_base	<- Sys.getenv('AMETBASE')
-dbase		<- Sys.getenv('AMET_DATABASE')
+amet_base <- Sys.getenv('AMETBASE')
+if (!exists("amet_base")) {
+   stop("Must set AMETBASE environment variable")
+}
+dbase <-Sys.getenv('AMET_DATABASE')
+if (!exists("dbase")) {
+   stop("Must set AMET_DATABASE environment variable")
+}
+
+run_id		<- Sys.getenv('AMET_PROJECT')
+model		<- Sys.getenv('MODEL_TYPE')
+user_name	<- Sys.getenv('USER_NAME')
+email		<- Sys.getenv('EMAIL_ADDR')
+description	<- Sys.getenv('RUN_DESCRIPTION')
+delete_table	<- Sys.getenv('DELETE_PROJECT')
+remake_table	<- Sys.getenv('REMAKE_PROJECT')
+update_table	<- Sys.getenv('UPDATE_PROEJCT')
 
 source.command <- paste(amet_base,"/configure/amet-config.R",sep="")
 source(source.command)
 
-amet_R_input <- Sys.getenv('AMETRINPUT')
-source(amet_R_input)
+#amet_R_input <- Sys.getenv('AMETRINPUT')
+#source(amet_R_input)
 
-mysql           <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=5000000)           # Set MYSQL login and query options
-con             <- dbConnect(MySQL(),user=root_login,password=root_pass,dbname=dbase,host=mysql_server)
+args              <- commandArgs(2)
+amet_login        <- args[1]
+amet_pass         <- args[2]
+
+con             <- dbConnect(MySQL(),user=amet_login,password=amet_pass,dbname=dbase,host=mysql_server)
 MYSQL_tables    <- dbListTables(con)
 
-exists <- "n"
-cat(paste("Active MySQL database = ",dbase,"\n\n",sep=""))
-cat("Enter project id name (project id will checked to see if it already exists): \n")
-cat(paste("Project ID = ",run_id,"\n\n",sep=""))
+##################################################
+### Function to create a AMET AQ project table ###
+##################################################
+create_table<-function()
+{
+   aq_new_1 <- paste("create table ",run_id," (proj_code varchar(50), POCode integer, valid_code character(10), invalid_code character(10), network varchar(25), stat_id varchar(25), stat_id_POCode varchar(100), lat double, lon double, i integer(4), j integer(4), ob_dates date, ob_datee date, ob_hour integer(2), month integer(2), precip_ob double, precip_mod double)",sep="")
+   aq_new_2 <- paste("alter table ",run_id," add UNIQUE(network, stat_id,POCode,ob_dates,ob_datee,ob_hour)",sep="")
+   aq_new_3 <- paste("alter table ",run_id," add INDEX(month)",sep="")
+   create_table_log1 <- dbSendQuery(con,aq_new_1)
+   create_table_log2 <- dbSendQuery(con,aq_new_2)
+   create_table_log3 <- dbSendQuery(con,aq_new_3)
+   cat(paste("\nThe project table ",run_id," has been created \n",sep=""))
+}
+##################################################
 
+exists <- "n"
+cat(paste("\nActive MySQL database = ",dbase,"\n",sep=""))
+cat(paste("Project ID = ",run_id,"\n\n",sep=""))
 if (length(MYSQL_tables) != 0) {
    cat("List of existing projects in dbase\n")
    cat(paste(MYSQL_tables,"\n",sep=""))
@@ -36,27 +67,19 @@ if (length(MYSQL_tables) != 0) {
       cat ("\nThe project ID name you provided already exists.  Would you like to delete the existing project id (y/n)? \n")
       cat(paste(delete_table,"\n"))
       if (delete_table == 'y') {
-         cat(paste("\nAre you sure you want to delete project ",run_id," from the database (y/n)? \n",sep=""))
-         cat(paste(delete_table2,"\n\n"))
-         if (delete_table2 == "y") {
-            drop <- paste("drop table ",run_id,sep="")
-            dbSendQuery(con,drop)
-            drop2 <- paste("delete from aq_project_log where proj_code = '",run_id,"'",sep="")
-            dbSendQuery(con,drop2)
-            cat("The following MySQL database tables have been successfully removed from the database. \n")
-         }
+         drop <- paste("drop table ",run_id,sep="")
+         mysql_result <- dbSendQuery(con,drop)
+         drop2 <- paste("delete from aq_project_log where proj_code = '",run_id,"'",sep="")
+         mysql_result <- dbSendQuery(con,drop2)
+         cat("The following MySQL database tables have been successfully removed from the database. \n")
       }
       else {
          cat(paste("\nWould you like to update the description of the existing project ",run_id," (y/n)? \n",sep=""))
          cat(paste(update_table,"\n"))
          if (update_table == "y") {
-            cat("Enter model (e.i. CMAQ): ")
             cat(paste("\n\nModel = ",model,"\n",sep=""))
-            cat("Enter user name: ")
-            cat(paste("\n\n user name = ",login,"\n",sep=""))
-            cat("Enter email address: ")
+            cat(paste("\n\n user name = ",user_name,"\n",sep=""))
             cat(paste("\n\n email = ",email,"\n",sep=""))
-            cat("Enter project description: ")
             cat(paste("\n\n Project Description = ",description,"\n",sep=""))
             current_date <- Sys.Date()
 	    current_time <- Sys.time()
@@ -67,26 +90,21 @@ if (length(MYSQL_tables) != 0) {
             proj_time <- current_time
             proj_date <- paste(year,mon,day,sep="")
             cat(paste("\nproj_date=",proj_date))
-            table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",run_id,"','",model,"','",login,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
-            dbSendQuery(con,table_query)
+            table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",run_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
+            mysql_result <- dbSendQuery(con,table_query)
             cat("\nThe following existing project description has been successfully updated.  Please review the following for accuracy, then use the link below to advance to the next step.")
          }
          else {
             cat(paste("\nWould you like to re-make the table for project ",run_id," (y/n)? (Note this will delete all existing data in project ",run_id," but retain the existing project description): \n",sep=""))
             cat(paste(remake_table,"\n"))
             if (remake_table == "y") {
-               cat(paste("\nAre you sure you wish to re-make the data table for ",run_id," (y/n)? \n",sep=""))
-               cat(paste(remake_table2,"\n"))
-               if (remake_table2 == "y") {
-                  drop <- paste("drop table ",run_id,sep="")
-                  dbSendQuery(con,drop)
-                  create.command <- paste("R --no-save --slave < ",amet_base,"/R_db_code/AQ_create_database_table.R",sep="")
-                  system(create.command)
-                  cat("\nThe following database table has been successfully re-generated.  Please review the following for accuracy, then use the link below to advance to the next step. \n")
-               }
+               drop <- paste("drop table ",run_id,sep="")
+               mysql_result <- dbSendQuery(con,drop)
+               create_table()
+               cat("\nThe following database table has been successfully re-generated.  Please review the following for accuracy, then use the link below to advance to the next step. \n")
             }
             else {
-               cat(paste("\nAlright, doing nothing. Change the flags in the script if you wish to delete, update or re-make project ",run_id,".\n",sep=""))
+               cat(paste("\nAlright, doing nothing. Change the flags in the script if you wish to delete, update or re-make project ",run_id,".\n\n",sep=""))
             }
          }
       }
@@ -95,15 +113,11 @@ if (length(MYSQL_tables) != 0) {
 }
 
 if (exists != "y") {
-   cat(paste("\nNo existing project named ",run_id," found.  Creating new project ",run_id," \n",sep=""))
-   cat("\nEnter model (e.i. CMAQ): ")
-   cat(paste("\n model = ",model,"\n",sep=""))
-   cat("Enter user name: ")
-   cat(paste("\n user name = ",login,"\n",sep=""))
-   cat("Enter email address: ")
-   cat(paste("\n email = ",email,"\n",sep=""))
-   cat("Enter project description: ")
-   cat(paste("\n project description = ",description,"\n\n",sep=""))
+   cat(paste("\nNo existing project named ",run_id," found.  Creating new project ",run_id," with the information below:",sep=""))
+   cat(paste("\nmodel = ",model,sep=""))
+   cat(paste("\nuser name = ",user_name,sep=""))
+   cat(paste("\nemail = ",email,sep=""))
+   cat(paste("\nproject description = ",description,"\n\n",sep=""))
    current_date <- Sys.Date()
    current_time <- Sys.time()
    current_time <- substr(current_time,12,19)
@@ -112,21 +126,20 @@ if (exists != "y") {
    day  <- substr(current_date,9,10)
    proj_date <- paste(year,mon,day,sep="")
    proj_time <- current_time
-   table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",run_id,"','",model,"','",login,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
-   cat(table_query)
-   dbSendQuery(con,table_query)
-   create.command <- paste("R --no-save --slave < ",amet_base,"/R_db_code/AQ_create_database_table.R",sep="")
-   system(create.command)
-   cat("### The following database tables have been successfully generated.  Please review the following for accuracy. ### \n\n")
+   table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",run_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
+   mysql_result <- dbSendQuery(con,table_query)
+   create_table()
+   cat("\n### The following database tables have been successfully generated.  Please review the following for accuracy. ### \n")
 }
-query_min <- paste("SELECT * from aq_project_log where proj_code='",run_id,"' ",sep="")   # set query for project log table for all information regarding current project
-query_results <- dbGetQuery(con,query_min)                                      # execute query
-cat(paste("\nproject_id  = ",run_id,"\n",sep=""))
+
+query_min <- paste("SELECT * from aq_project_log where proj_code='",run_id,"' ",sep="")
+query_results <- suppressWarnings(dbGetQuery(con,query_min))
+cat(paste("project_id  = ",run_id,"\n",sep=""))
 cat(paste("model       = ",query_results$model,"\n",sep=""))
 cat(paste("user        = ",query_results$user,"\n",sep=""))
 cat(paste("email       = ",query_results$email,"\n",sep=""))
 cat(paste("description = ",query_results$description,"\n",sep=""))
 cat(paste("proj_date   = ",query_results$proj_date,"\n",sep=""))
 cat(paste("proj_time   = ",query_results$proj_time,"\n",sep=""))
-dbDisconnect(con)
+mysql_result <- dbDisconnect(con)
 

@@ -109,3 +109,109 @@ C****************************************************************************
 
       Return
       End Subroutine Upper
+
+C  Return the nth field of record
+      Subroutine getField( record, delimiter, nth, field )
+
+      CHARACTER*(*) record
+      CHARACTER*(1) delimiter
+      Integer nth
+      CHARACTER*(*) field
+
+      Integer nfields
+      Integer i, pos1
+
+      ! if delimiter is space, use method 2
+      if( delimiter.eq.' ' ) then
+        call getField2( record, delimiter, nth, field )
+        call RightTrim(field)
+        return
+        endif
+  
+      pos1 = 1
+      nfields = 0
+      field = ''
+      Do i=1, LEN(record)
+       if( record(i:i) .eq. delimiter ) then
+         nfields = nfields+1 
+         if( nfields .eq. nth ) then
+           if(pos1.lt.i) field = record(pos1:i-1)
+           call RightTrim(field)
+           return
+           Endif
+         pos1 = i+1
+         Endif
+       Enddo
+
+      nfields = nfields+1 
+
+      ! check if last field
+      if( nfields .eq. nth ) then
+        field = record(pos1:)
+        Endif
+
+      Call RightTrim(field)
+      Return
+      End
+
+C  Return the nth field in record (method 2)
+C  this method considers duplicate delimiters as one
+C
+      Subroutine getField2( record, delimiter, nth, field )
+ 
+      CHARACTER*(*) record
+      CHARACTER*(*) delimiter
+      Integer nth
+      CHARACTER*(*) field
+ 
+      Integer nfields
+      Integer i, pos1
+      Logical infield
+      Logical isDel
+ 
+      nfields = 0
+      field = ''
+      infield = .false.
+      Do i=1,LEN(record)
+        isDel = (record(i:i).eq.delimiter)
+ 
+         ! check for start of field
+         if( .NOT.infield .and. .NOT.isDel ) then   
+           nfields = nfields+1
+           pos1 = i
+           infield = .true.
+           endif
+ 
+        ! check for end of field
+        if( infield .and. isDel ) then
+          infield = .false.
+          endif
+ 
+        ! if end of nth field, return
+        if( nfields.eq.nth .and. .not.infield ) then
+          if(pos1.lt.i) field = record(pos1:i-1)
+          return
+          endif
+        enddo
+ 
+      ! check for last field
+      if( nfields.eq.nth ) field = record(pos1:)
+ 
+      Return
+      End
+
+C****************************************************************************
+C  routine to remove trailing white spaces from Character String
+C****************************************************************************
+      Subroutine RightTrim( STRING )
+ 
+      CHARACTER*(*) STRING
+      Integer I
+ 
+      Do I=LEN(STRING),1,-1
+        if(STRING(I:I) .lt. CHAR(32)) STRING(I:I) = CHAR(32)
+        if(STRING(I:I) .gt. CHAR(32)) Exit
+        EndDo
+
+      Return
+      End Subroutine RightTrim

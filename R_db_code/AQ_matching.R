@@ -25,11 +25,15 @@ base.command     <- paste(amet_base,"/configure/amet-config.R",sep="")
 
 source(base.command)
 
+args              <- commandArgs(2)
+amet_login        <- args[1]
+amet_pass         <- args[2]
+
 dbase                  <- Sys.getenv('AMET_DATABASE')
-obs_data_dir_in        <- Sys.getenv('OBS_DATA_DIR')
-if (obs_data_dir_in != "") {
-   obs_data_dir <- obs_data_dir_in
-}
+obs_data_dir           <- Sys.getenv('AMET_OBS')
+#if (obs_data_dir_in != "") {
+#   obs_data_dir <- obs_data_dir_in
+#}
 
 use_AE6                <- Sys.getenv('INC_AERO6_SPECIES')
 time_shift             <- Sys.getenv('TIME_SHIFT')
@@ -224,8 +228,7 @@ run_sitex <- function(network) {
       cat(paste("Finished running site compare for network ",network,"\n\n",sep=" "))
    }
    if ((load_sitex == "y") || (load_sitex == "Y") || (load_sitex == "t") || (load_sitex == "T")) {
-      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
-      cat(load.command)
+      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",amet_login," ",amet_pass," ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
       system(load.command)
       cat(paste("Finshed populating database for network ",network,"\n",sep=" "))
    }

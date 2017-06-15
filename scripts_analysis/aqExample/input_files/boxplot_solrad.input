@@ -27,9 +27,7 @@ query <- paste(" and s.stat_id=d.stat_id and d.ob_dates BETWEEN",start_date,"and
 #########################
 
 ### This can be set to anything, and is used as part of the name of output file(s) ###
-
-#pid<-Sys.getenv("AMET_PROJECT")
-pid<-1
+pid <- Sys.getenv("AMET_PID")
 
 
 #########################

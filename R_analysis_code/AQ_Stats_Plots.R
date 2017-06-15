@@ -31,7 +31,7 @@ if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 ################################################
 ## Set output names and remove existing files ##

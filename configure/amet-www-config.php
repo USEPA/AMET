@@ -11,9 +11,9 @@
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // MySQL Configuration
-$mysql_server="newton.rtpnc.epa.gov";	// Name of MYSQL server
-$root_login="AMETv13_User";		// Root login for MYSQL server
-$root_pass="AMETv13_User";		// Root password for MYSQL server
+$mysql_server="darwin.rtpnc.epa.gov";	// Name of MYSQL server
+$root_login="wyat";		// Root login for MYSQL server
+$root_pass="283ButterFish!";		// Root password for MYSQL server
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // R executable path

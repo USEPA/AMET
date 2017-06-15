@@ -40,6 +40,11 @@
   #  Start and End Dates of plot (YYYYMMDD) -- must match available dates in db
   setenv AMET_SDATE "20110701"             
   setenv AMET_EDATE "20110731"             
+  
+  # Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
+  # The PID is particularly important if using the AMET web interface and is determined there through
+  # a random number generator.
+  setenv AMET_PID 1
 
   #  Custom title (if not set will autogenerate title based on variables 
   #  and plot type)

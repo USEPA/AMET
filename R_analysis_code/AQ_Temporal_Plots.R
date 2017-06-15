@@ -32,7 +32,7 @@ if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 if(!require(stats)){stop("Required Package stats was not loaded")}
 if(!require(plotrix)){stop("Required Package plotrix was not loaded")}
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 network <- network_names[1]
 

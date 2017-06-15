@@ -30,7 +30,7 @@ source(ametRinput)                                     # Anaysis configuration/i
 ## Load Required Libraries 
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 filename_txt <- paste(run_name1,pid,"rawdata.csv",sep="_")     # Set output file name
 filename_txt <- paste(figdir,filename_txt,sep="/")     # Set output file name

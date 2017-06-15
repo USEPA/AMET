@@ -89,7 +89,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
          NSPECVAR = 0
          DO k=1,SIZE(varType)
-           DO N=1,50
+           DO N=1,300
 
              !  build VARNAME
              IF( N.le.9 ) THEN

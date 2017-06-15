@@ -7,7 +7,7 @@
 ### a stacked bar plot, along with the percent of the total PM2.5
 ### that each specie comprises.
 ###
-### Last updated 11/12/2010 by Wyat Appel 
+### Last updated by Wyat Appel: June 2017 
 ################################################################
 
 # get some environmental variables and setup some directories
@@ -29,7 +29,7 @@ source(ametRinput)                                     # Anaysis configuration/i
 ## Load Required Libraries 
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 network <- network_names[1]
 network_name <- network_label[1]

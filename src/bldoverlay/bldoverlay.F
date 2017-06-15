@@ -30,7 +30,7 @@ C
 C    hourly values are in GMT time
 C    daily averages are in local time
 C    daily 1 hour maximums are in local time
-C    daily 8 hour maximums are in local time (uses hours 1-24 of current day and 1-7 of next day)
+C    daily 8 hour maximums are in local time
 C
 C
 C
@@ -139,7 +139,7 @@ C... open sorted DATFILE and process a time step at a time
 
 C...read first record of data file to get starting date                          
       Read(lfn,'(i7,i3)',iostat=status) curDate, curHr                           
-      if(status.ne.0) then                                                       
+      if(status.ne.0) then
         Write(*,'(''**ERROR** No data found for time period'')')                 
         KSWIT = SHUT3()                                                          
         Stop                                                                     
@@ -315,26 +315,34 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       !  local variables                                                                  
       Integer stat
+      INTEGER HOURS_8HRMAX          ! number of 8hr values to compute 8hr max     
       Character*(256) record
       Character*(32) field
       Character*(16) varDesc(4)
       Character*(32) tmpFile
-      Integer       siteid, lastId
-      Integer hour
+      CHARACTER*16 ENV_DESC         ! message string
+      CHARACTER*16 PNAME            ! Program Name
+      CHARACTER*80 MSG              ! Error message
+      Integer       siteid, curid, previd
+      Integer hour, lnblnk
       Real latitude, longitude
-      Integer hdate, htime, i, id, tzoffset
-      Integer curDate, h, n
-      Logical hasValues
-      Real hrTotal
+      Integer hdate, htime, i, id, tzoffset, getTZ
+      Integer curDate, h, n, prevDate, hrmaxValues
+      Logical hasValues, miss_check
+      Real hrTotal, max8hr
 
       !  species variables
       Integer nSpecies
       Character*(16), Allocatable :: vNames(:)
       Character*(10), Allocatable :: vUnits(:)
       Real, Allocatable :: values(:)
+      Real, Allocatable :: values32(:)
       Real, Allocatable :: vals(:,:)
       Real, Allocatable :: prevVals(:,:)
       Real, Allocatable :: maxValues(:)
+
+      DATA  PNAME           / 'HR2DAY'        /
+
 
       Data varDesc /'Hourly Value','Daily Avg','1-Hour Max','8-Hour Max'/
 
@@ -344,6 +352,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       Data out /11/
      
       tmpFile = 'OBS.tmp'
+
 
 C...get species list from environment variable SPECIES
       CALL ENVSTR( 'SPECIES', 'List of species', ' ', record, STATUS)
@@ -356,6 +365,7 @@ C...find number of species and allocate arrays
       nSpecies = getParsedNumber( record, ',' )
       Allocate( vNames(nSpecies), vUnits(nSpecies), values(nSpecies) )
       Allocate( vals(24,nSpecies), prevVals(24,nSpecies) )
+      Allocate( values32(32) )
       Allocate( maxValues(nSpecies) )
 
 C... parse species record
@@ -379,6 +389,23 @@ C...get species units list from environment variable UNITS
           enddo
         endif 
 
+C... Get the HOURS_8HRMAX environment variable (default is 24)                                                          
+       ENV_DESC = 'Number of 8hr values to use when computing DM8HR'                                               
+       HOURS_8HRMAX= ENVINT( 'HOURS_8HRMAX', ENV_DESC, 24, STATUS)  
+	 
+       if ( ( HOURS_8HRMAX .NE. 24) .AND. ( HOURS_8HRMAX .NE. 17) ) THEN                                
+
+        MSG = '**Error** Invalid value for HOURS_8HRMAX, use 24 or 17'
+        CALL M3ERR( PNAME, 0, 0, MSG, .TRUE. ) 
+        Stop
+       Endif
+
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c  Get the switch for setting incomplete days to missing
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc    
+       MISS_CHECK = ENVYN('MISS_CHECK', 'Set incomplete days to missing', .TRUE., STATUS)
+
+
       ! sort input file in station order 
       status = system( 'sort -t "," -k3,3n  -k1,1n -k2,2n '
      &  // TRIM(dataFile) // ' > ' // TRIM(sortFile) )
@@ -398,9 +425,12 @@ C... open temp file as output
         return
         endif
 
-      lastId = -99
+      previd = -99
+      curid = -99
+      vals = -999.0
       prevVals = -999.0
       curDate = 0
+      prevDate = 0
 
 C... start loop to read and write each record
       Do 
@@ -422,11 +452,10 @@ C... start loop to read and write each record
         read(field,'(f16.0)') latitude
 
         Call getParsedField(record,',',3,field,.false.)
-        if( field.ne.' ' ) then
-          read(field,'(i10)') siteId
-        else
-          siteid = 100 * latitude
-          endif
+          read(field,'(i10)',err=10) siteId !try to read as integer
+	  goto 20
+10          siteid = 100 * latitude !could not read as integer, use lat
+20	continue
  
         Do i=1,nSpecies
           Call getParsedField(record,',',5+i,field,.false.)
@@ -434,19 +463,19 @@ C... start loop to read and write each record
           if(stat.ne.0 .or. field.eq.' ') values(i) = -999.0
           enddo
 
-        if( oType.eq.1 ) then  !hourly
+        if( oType.eq.1 ) then  !hourly, shift from local to GMT
           htime = 10000 * hour
-          tzoffset = -10000 * int((longitude-7.5) / 15.0)
+	  tzoffset = 10000 * getTZ(longitude, latitude)
           Call NEXTIME( hdate, htime, tzoffset)
           write(11,'(i7,i3.2,1x,i10.9,10g16.5)') hdate, htime/10000, siteid, values
-          endif
+          endif !hourly
 
         if( oType.eq.2 ) then  !daily 
           write(11,'(i7,i3.2,1x,i10.9,10g16.5)') hdate, 0, siteid, values
-          endif
+          endif !daily
 
         if( oType.eq.3 ) then  !1 hour max
-          if( hdate.ne.curDate .or. lastid.ne.siteid ) then
+          if( hdate.ne.curDate .or. curid.ne.siteid ) then ! new day and/or site
             maxValues = -999.0
             hasValues = .false.
             do n=1,nspecies
@@ -457,60 +486,72 @@ C... start loop to read and write each record
               enddo
    
             if( hasValues .and. curDate.gt.1900 ) then                           
-              write(11,'(i7,i3.2,1x,i10.9,10g16.5)') curDate, 0, lastid, maxValues
+              write(11,'(i7,i3.2,1x,i10.9,10g16.5)') curDate, 0, curid, maxValues
               endif
 
             vals = -999.0
             curDate = hdate
-            endif
+            endif ! new day and/or site
 
           h = hTime/10000 + 1
           vals(h,:) = values
-          endif
+          endif !1 hour max
 
-        if( oType.eq.4 ) then  !8 hour max                              
-          if( hdate.ne.curDate .or. lastid.ne.siteid ) then             
-            maxValues = -999.0
-            hasValues = .false.
-            do n=1,nspecies                                             
-              do h=1,24
-                hrTotal = 0.0
-                do i=h-7,h
-                  if(i.le.0) then
-                    if(hrTotal.gt.-998.0) hrTotal = hrTotal + prevVals(24-i,n)
-                    if( prevVals(24-i,n) .lt.-998.0) hrTotal = -999.0
-                   else
-                    if(hrTotal.gt.-998.0) hrTotal = hrTotal + vals(i,n)
-                    if( vals(i,n).lt.-998.0 ) hrTotal = -999.0           
-                    endif
-                  enddo
-                enddo
-              if(hrtotal.gt.maxValues(n)) maxValues(n) = hrTotal
-              if(maxValues(n).gt.-999.0) hasValues = .true.
-              enddo                                                     
-                                                                        
-            if( hasValues .and. curDate.gt.1900 ) then                           
-              write(11,'(i7,i3.2,1x,i10.9,10g16.5)') curDate, 0, lastid, maxValues/8      
-              endif                                                     
+        if( oType.eq.4 ) then  !8 hour max     
+          if( hdate.ne.curDate .or. curid.ne.siteid ) then   !new day and/or site          
+
+            do n=1,nspecies  
+	    
+	     do h = 1, 24
+	     
+	      values32(h) = prevVals(h,n)
+	      
+	     enddo !h 
+
+	     do h = 1, 8
+	     
+	      if ( (curid .eq. previd) .and. (curDate .eq. prevDate + 1) ) then
+	      
+	       values32(24+h) = vals(h,n)
+	       
+	      else
+	      
+	       values32(24+h) = -999.9
+	       
+	      endif
+	      
+	     enddo !h 
+	    
+	     Call get8hourMax(values32, max8hr, hrmaxValues, miss_check, hours_8hrmax)
+	     
+	     maxValues(n) = max8hr
+	     
+	    enddo !n
+	                                                                                                                       
+            if( prevDate.gt.1900 ) then                           
+              write(11,'(i7,i3.2,1x,i10.9,10g16.5)') prevDate, 0, previd, maxValues      
+              endif           
                       
             prevVals = vals                                                  
-            vals = -999.0                                               
+            vals = -999.0
+	    prevDate = curDate
+	    previd = curid                                               
             curDate = hdate                                             
-          endif
+          endif ! new day and/or site
 
           h = hTime/10000 + 1                                         
           vals(h,:) = values                                          
-          endif 
+          endif ! 8 hour max
  
         ! check for new siteid
-        if(siteid .ne. lastid) then
+        if(siteid .ne. curid) then
     
           ! check if siteid is new       
           if( getSiteNumber( siteid ) .le.0 ) then
             Call addSite(siteid,longitude,latitude)
             endif
 
-          lastid = siteid
+          curid = siteid
           endif
 
         enddo  ! end of read loop
@@ -679,3 +720,92 @@ C... start time loop
 
       return
       end Subroutine ReadSites
+
+
+
+C****************************************************************************
+C  routine to compute the 8 hour max from array of hourly values           
+C****************************************************************************
+      Subroutine get8hourMax(values,sumMax,hourMax,missChk,hours_8hrmax) 
+
+C    (uses hours 1-24 of current day and 1-7 of next day if HOURS_8HRMAX
+C     is set to 24 and 8-24 of current day and 1-7 of next day if 
+C     HOURS_8HRMAX is set to 17)
+      
+      USE M3UTILIO
+      Implicit None
+
+      ! arguments
+      Real values(*)
+      Real sumMax
+      Integer hourMax, status
+      Logical missChk
+
+      Integer i,j,count,tcount
+      Real sum
+
+      INTEGER HOURS_8HRMAX          ! number of 8hr values to compute 8hr max     
+
+      tcount = 0
+      summax = -999.0
+      hourMax = -99
+      
+      if ( HOURS_8HRMAX .eq. 24 ) then ! use 24 8hr values
+
+       do i=1,24
+        sum = 0
+        count = 0
+        do j=1,8
+          if( values(i+j-1).ge.0.0 ) then
+            count = count + 1
+            sum = sum + values(i+j-1)
+            endif
+          enddo
+
+        if( count .ge. 6 ) then
+          tcount = tcount + 1
+          sum = sum / count
+          if( sum .gt. summax ) then
+            summax = sum
+            hourMax = i - 1
+            endif
+          Endif
+        enddo
+
+       if( missChk .and. tcount.lt.18 ) then !require 18/24
+        summax = -999.0
+        hourMax = -99
+        endif
+
+      else !use only 17 8hr values, from 7 am to 11 pm
+
+       do i=8,24
+        sum = 0
+        count = 0
+        do j=1,8
+          if( values(i+j-1).ge.0.0 ) then
+            count = count + 1
+            sum = sum + values(i+j-1)
+            endif
+          enddo
+
+        if( count .ge. 6 ) then
+          tcount = tcount + 1
+          sum = sum / count
+          if( sum .gt. summax ) then
+            summax = sum
+            hourMax = i - 1
+            endif
+          Endif
+        enddo
+
+       if( missChk .and. tcount.lt.13 ) then !require 13/17
+        summax = -999.0
+        hourMax = -99
+        endif
+      
+      
+      endif
+
+      return
+      End Subroutine get8hourMax
