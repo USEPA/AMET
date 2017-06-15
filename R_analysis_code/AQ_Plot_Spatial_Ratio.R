@@ -250,24 +250,24 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 ### Plot Observations ###
 unique_labels <- "y"												# Do not use unique labels
 levLab <- leg_labels												# Unique label array to use
-if ((ametptype == "png" || (ametptype == "both")) { 
+if ((ametptype == "png") || (ametptype == "both")) { 
    plotfmt <-"png"  
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_obs,figure=figure_obs,varlab=title_obs,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for obs values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) { 
+if ((ametptype == "pdf") || (ametptype == "both")) { 
    plotfmt <- "pdf"												# Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_obs,figure=figure_obs,varlab=title_obs,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for ob values
 }
 #########################
 ### Plot Modeled Values ###
-if ((ametptype == "png" || (ametptype == "both")) { 
+if ((ametptype == "png") || (ametptype == "both")) { 
    plotfmt <- "png"												# Set plot format as png
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_mod,figure=figure_mod,varlab=title_mod,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for model values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) { 
+if ((ametptype == "pdf") || (ametptype == "both")) { 
    plotfmt <- "pdf"												# Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_mod,figure=figure_mod,varlab=title_mod,bounds=bounds,plotopts=plotopts,plot_units=units)   	# Call PlotSpatial function for model values
@@ -276,12 +276,12 @@ if ((ametptype == "pdf" || (ametptype == "both")) {
 ### Plot Model/Observation Difference ###
 unique_labels <- "y"												# Flag within Misc_Functions.R to use predefined labels
 levLab <- leg_labels_diff			
-if ((ametptype == "png" || (ametptype == "both")) { 								# Set lables to be ones defined above by levels_label_diff
+if ((ametptype == "png") || (ametptype == "both")) { 								# Set lables to be ones defined above by levels_label_diff
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_diff,figure=figure_diff,varlab=title_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) { 
+if ((ametptype == "pdf") || (ametptype == "both")) { 
    plotfmt <- "pdf" 												# Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_diff,figure=figure_diff,varlab=title_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
