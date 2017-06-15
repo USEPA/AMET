@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 AMET version 1.3
 ======
 
@@ -36,3 +37,9 @@ Release notes and Code documentation are included within this repository (they a
 ## EPA Disclaimer
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.    [<img src="https://licensebuttons.net/p/mark/1.0/88x31.png" width="50" height="15">](https://creativecommons.org/publicdomain/zero/1.0/)
  
+=======
+Atmospheric Model Evaluation Tool
+========
+## Overview
+The Atmospheric Model Evaluation Tool (AMET) was developed to aid in its evaluation of the meteorological and air quality models within the CMAQ modeling system. AMET organizes, provides consistency and speeds-up the evaluation process for operational meteorological and air quality model simulations. Although it was developed specifically to aid in the evaluation of the CMAQ modeling system, the AMET software can be adapted to work with other modeling systems.
+>>>>>>> dev_local/master

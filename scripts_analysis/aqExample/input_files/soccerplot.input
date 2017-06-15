@@ -1,0 +1,160 @@
+#######################################################
+### This file is used essentially as a namelist for ###
+### each of the AMET R scripts.  The information in ###
+### this script must be updated in order for the    ###
+### AMET scripts to run properly.  		    ###
+###						    ###
+### These variables can be hardcoded or taken from  ###
+### environmental variables.			    ###
+#######################################################
+
+##################################
+### Main Database Query String ###
+##################################
+start_date <- Sys.getenv("AMET_SDATE")	# yyyymmdd
+end_date   <- Sys.getenv("AMET_EDATE")	# yyyymmdd
+start_hour <- 00	# hh
+end_hour   <- 23	# hh
+
+#add_query <- "and d.lon between -125 and -60 "
+#add_query <-  "and (s.state='CT' or s.state='DE' or s.state='DC' or s.state='ME' or s.state='MD' or s.state='MA' or s.state='NH' or s.state='NJ' or s.state='NY' or s.state='PA' or s.state='RI' or s.state='VT') "
+add_query <- ""
+
+query <- paste(" and s.stat_id=d.stat_id and d.ob_dates BETWEEN",start_date,"and",end_date,"and d.ob_datee BETWEEN",start_date,"and",end_date,"and ob_hour between",start_hour,"and",end_hour,add_query,sep=" ")
+
+#########################
+### Process ID number ###
+#########################
+
+### This can be set to anything, and is used as part of the name of output file(s) ###
+pid<-Sys.getenv("AMET_PID")
+
+
+#########################
+### Project ID Name 1 ###
+#########################
+run_name1<-Sys.getenv("AMET_PROJECT")
+
+
+###############################################################
+### Project ID Name 2 (used for model-to-model comparisons) ###
+###############################################################
+run_name2<-""
+run_name3<-""
+run_name4<-""
+run_name5<-""
+run_name6<-""
+
+#######################
+### Species to Plot ###
+#######################
+### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM25,EC,OC,TC,O3,SO2,CO,NO,SO4_dep,SO4_conc,NO3_dep,NO3_conc,NH4_dep,NH4_conc,precip,NOy ###
+#species<-Sys.getenv("AMET_AQSPECIES")
+species<-unlist(strsplit(Sys.getenv("AMET_AQSPECIES"),","))
+#species<-c("SO4","NO3","NH4","TNO3")
+
+######################
+###  Title Options ###
+######################
+custom_title<-Sys.getenv("AMET_TITLE")
+
+######################
+###  Output dir    ###
+######################
+figdir <- Sys.getenv("AMET_OUT")
+#figdir <- "~/AMET/output/aqExample"
+
+########################################
+### Flags for Time Averaging Options ###
+########################################
+averaging<-"n"
+remove_negatives<- "y"
+use_avg_stats<-"n"
+
+#################################
+### Use natural log transform ###
+#################################
+use_log<-"n"
+
+##########################################
+###     ADDITIONAL PLOTTING TEXT       ###
+### used in conjunction with add_query ###
+##########################################
+site<-"All"  # Sites used in the study
+state<-"All" # States included in study
+
+###################################################
+### Subset by Regional Planning Organization    ###
+### Acceptable regions: VISTAS, CENRAP, MANE-VU ###
+###                     LADCO, WRAP or None     ###
+###################################################
+rpo<-"None"
+pca<-"None"
+
+###################################
+### Binned Scatter Plot Options ###
+###################################
+pca_flag<-""
+bin_by_mod<-""
+
+################################################################
+### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
+################################################################
+soccerplot_opt<-1
+ 
+#######################################################
+### Flag to Include Zero Precipitation Observations ###
+#######################################################
+zeroprecip<-"n"
+
+#################################################
+### Numerical Limit (%) for Data Completeness ###
+#################################################
+coverage_limit<-75
+
+##########################################################
+### Flags for Confidence Lines to Plot on Scatterplots ###
+##########################################################
+conf_line<-"n"
+
+########################################################################
+### File containing list of stations created dynamically by the user ###
+########################################################################
+stat_file<-""
+
+#######################################
+### Scatterplot x and y axes limits ###
+#######################################
+x_axis_min<-NULL
+x_axis_max<-NULL
+y_axis_min<-NULL
+y_axis_max<-NULL
+bias_y_axis_min<-NULL
+bias_y_axis_max<-NULL
+density_zlim<-NULL
+num_dens_bins<-NULL
+
+#######################################################################
+### Array of flags for which statistics to include on scatter plots ###
+#######################################################################
+#  1) num_pairs, 2) mean(obs),  3) mean(mod),  4) indx_agr,    5) corr,      
+#  6) r_sqrd,    7) rmse,       8) rmse_sys,   9) rmse_unsys, 10) nmb,
+# 11) nme,      12) nmdnb,     13) nmdne,     14) mb,         15) me,
+# 16) med_bias, 17) med_error, 18) fb,        19) fe
+stats_flags<-c("","","","y","","","","y","y","","","","","","","y","y","","")
+
+##############################################
+### Flag to include run info text on plots ###
+##############################################
+run_info_text<-"y"
+
+######################################
+### Set Scatter Plot symbol colors ###
+######################################
+plot_colors  <- c("red","blue","green4","orange","purple","brown","yellow4","darkgreen","blue3")
+
+##################################
+### Path of Network Input file ###
+##################################
+ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
+source(ametNetworkInput) # Network related input
