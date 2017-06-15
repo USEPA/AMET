@@ -1,0 +1,48 @@
+##------------------------------------------------------##
+#   FILE NAME: sites_meta.input                          #
+#                                                        #
+#   This file is required by the AMET R script           #
+#   aqExample.csh script, specifically when first        #
+#   setting up a new database to work with the AQ side   #
+#   of AMET. This file simply an R formatted file that   #
+#   lists the names of the network metadata files that   #
+#   will be loaded into the database. The user will need #
+#   to have already downloaded this files onto their     #
+#   system. These files are specifically formatted to    #
+#   work with AMET and can be downloaded through the     #
+#   CMAS website.					 #
+#                                                        #
+#       REQUIRED FOR: aqExample.csh                      #
+#                                                        #
+#       PURPOSE: Specifies the site metadata files to be #
+#                used.	                                 #
+#                                                        #
+##------------------------------------------------------##
+
+## North American Networks
+
+site_file     <- NULL
+site_file[1]  <- "CASTNET_full_site_list.csv"                   # CASTNet site list
+site_file[2]  <- "IMPROVE_full_site_list.csv"                   # IMPROVE site list
+site_file[3]  <- "NADP_full_site_list.csv"                      # NADP site list
+site_file[4]  <- "CSN_full_site_list.csv"                       # CSN site list
+site_file[5]  <- "SEARCH_full_site_list.csv"                    # SEARCH site list
+site_file[6]  <- "AIRMON_full_site_list.csv"                    # AIRMON (NDN) site list
+site_file[7]  <- "TOXICS_full_site_list.csv"                    # Toxics data
+site_file[8]  <- "CAPMON_full_site_list.csv"                    # Canadian CAPMON network
+site_file[9]  <- "NAPS_full_site_list.csv"                      # Canadian NAPS network
+site_file[10] <- "FLUXNET_full_site_list.csv"                   # FLUXNET network
+
+## European Networks
+
+site_file[11] <- "ADMN_full_site_list.csv"
+site_file[12] <- "AGANET_full_site_list.csv"
+site_file[13] <- "AIRBASE_full_site_list.csv"
+site_file[14] <- "AURN_full_site_list.csv"
+site_file[15] <- "EMEP_full_site_list.csv"
+site_file[16] <- "NAMN_full_site_list.csv"
+
+## AQS Network 
+
+aqs_site_file <- "AQS_full_site_list.csv"                       # AQS site list
+

@@ -1,0 +1,158 @@
+#######################################################
+# This script is sourced by all of the AQ run scripts #
+# to set up the network arrays used by AMET.          #
+#                                                     #
+# Initial Version: Neil Davis (04/29/2008)            #
+#######################################################
+
+###############################################
+### Network selection flags from run script ###
+###############################################
+inc_csn			<-Sys.getenv("AMET_CSN")
+inc_improve		<-Sys.getenv("AMET_IMPROVE")
+inc_castnet		<-Sys.getenv("AMET_CASTNET")
+inc_castnet_hr		<-Sys.getenv("AMET_CASTNET_Hourly")
+inc_castnet_daily_O3	<-Sys.getenv("AMET_CASTNET_Daily_O3")
+inc_castnet_drydep	<-Sys.getenv("AMET_CASTNET_Drydep")
+inc_nadp		<-Sys.getenv("AMET_NADP")
+inc_mdn			<-Sys.getenv("AMET_MDN")
+inc_airmon_dep		<-Sys.getenv("AMET_AIRMON")
+inc_aqs_hourly		<-Sys.getenv("AMET_AQS_Hourly")
+inc_aqs_daily_O3	<-Sys.getenv("AMET_AQS_Daily_O3")
+inc_aqs_daily		<-Sys.getenv("AMET_AQS_Daily")
+inc_search		<-Sys.getenv("AMET_SEARCH")
+inc_search_daily	<-Sys.getenv("AMET_SEARCH_DAILY")
+
+### Europe Networks ###
+inc_airbase_hourly	<-Sys.getenv("AMET_AirBase_Hourly")
+inc_airbase_daily	<-Sys.getenv("AMET_AirBase_Daily")
+inc_aurn_hourly		<-Sys.getenv("AMET_AURN_Hourly")
+inc_aurn_daily		<-Sys.getenv("AMET_AURN_Daily")
+inc_emep_hourly		<-Sys.getenv("AMET_EMEP_Hourly")
+inc_emep_daily		<-Sys.getenv("AMET_EMEP_Daily")
+inc_aganet		<-Sys.getenv("AMET_AGANET")
+inc_namn		<-Sys.getenv("AMET_NAMN")
+inc_admn		<-Sys.getenv("AMET_ADMN")
+
+#############################
+### Setup Networks Arrays ###
+#############################
+
+network_names <- NULL
+network_label <- NULL
+
+if (inc_improve == "y") {   
+   network_names <- c(network_names,"IMPROVE")     
+   network_label <- c(network_label,"IMPROVE")
+}
+if (inc_csn == "y") {   
+   network_names <- c(network_names,"CSN")         
+   network_label <- c(network_label,"CSN")
+}
+if (inc_castnet == "y") {
+   network_names <- c(network_names,"CASTNET")
+   network_label <- c(network_label,"CASTNET")
+}
+if (inc_castnet_hr == "y") {
+   network_names <- c(network_names,"CASTNET_Hourly")
+   network_label <- c(network_label,"CASTNet_hourly")
+}
+if (inc_castnet_daily_O3 == "y") {
+   network_names <- c(network_names,"CASTNet_Daily_O3")
+   network_label <- c(network_label,"CASTNet_daily")
+}
+if (inc_nadp == "y") {
+   network_names <- c(network_names,"NADP")
+   network_label <- c(network_label,"NADP")
+}
+if (inc_mdn == "y") {
+   network_names <- c(network_names,"MDN")
+   network_label <- c(network_label,"MDN")
+}
+if (inc_airmon_dep == "y") {
+   network_names <- c(network_names,"AIRMON")
+   network_label <- c(network_label,"AIRMON")
+}
+if (inc_aqs_hourly == "y") {
+   network_names <- c(network_names,"AQS_Hourly")        
+   network_label <- c(network_label,"AQS")
+}
+if (inc_aqs_daily_O3 == "y") {
+   network_names <- c(network_names,"AQS_Daily_O3")
+   network_label <- c(network_label,"AQS")
+}
+if (inc_aqs_daily == "y") {
+   network_names <- c(network_names,"AQS_Daily")
+   network_label <- c(network_label,"AQS")
+}
+if (inc_search == "y") {
+   network_names <- c(network_names,"SEARCH")      
+   network_label <- c(network_label,"SEARCH")
+}
+if (inc_search_daily == "y") {
+   network_names <- c(network_names,"SEARCH_daily")
+   network_label <- c(network_label,"SEARCH_daily")
+}
+
+### Europe Networks ###
+
+if (inc_namn == "y") {
+   network_names <- c(network_names,"NAMN")
+   network_label <- c(network_label,"NAMN")
+}
+if (inc_admn == "y") {
+   network_names <- c(network_names,"ADMN")
+   network_label <- c(network_label,"ADMN")
+}
+if (inc_aganet == "y") {
+   network_names <- c(network_names,"AGANET")
+   network_label <- c(network_label,"AGANET")
+}
+if (inc_airbase_hourly == "y") {
+   network_names <- c(network_names,"AirBase_Hourly")
+   network_label <- c(network_label,"AirBase")
+}
+if (inc_airbase_daily == "y") {
+   network_names <- c(network_names,"AirBase_Daily")
+   network_label <- c(network_label,"AirBase")
+}
+if (inc_aurn_hourly == "y") {
+   network_names <- c(network_names,"AURN_Hourly")
+   network_label <- c(network_label,"AURN")
+}
+if (inc_aurn_daily == "y") {
+   network_names <- c(network_names,"AURN_Daily")
+   network_label <- c(network_label,"AURN")
+}
+if (inc_emep_hourly == "y") {
+   network_names <- c(network_names,"EMEP_Hourly")
+   network_label <- c(network_label,"EMEP")
+}
+if (inc_emep_daily == "y") {
+   network_names <- c(network_names,"EMEP_Daily")
+   network_label <- c(network_label,"EMEP")
+}
+
+total_networks<-length(network_names)
+network1 <- network_names[[1]]
+
+
+#######################################################
+### Pre-defined RPO regions (Change only if needed) ###
+#######################################################
+
+if (rpo == "VISTAS") {
+   add_query <- paste(add_query,"and (s.state='AL' or s.state='FL' or s.state='GA' or s.state='KY' or s.state='MS' or s.state='NC' or s.state='SC' or s.state='TN' or s.state='VA' or s.state='WV')",sep=" ")
+}
+if (rpo == "CENRAP") {
+   add_query <- paste(add_query,"and (s.state='NE' or s.state='KS' or s.state='OK' or s.state='TX' or s.state='MN' or s.state='IA' or s.state='MO' or s.state='AR' or s.state='LA') ",sep=" ")
+}
+if (rpo == "MANE-VU") {
+   add_query <- paste(add_query,"and (s.state='CT' or s.state='DE' or s.state='DC' or s.state='ME' or s.state='MD' or s.state='MA' or s.state='NH' or s.state='NJ' or s.state='NY' or s.state='PA' or s.state='RI' or s.state='VT')",sep=" ")
+}
+if (rpo == "LADCO") {
+   add_query <- paste(add_query,"and (s.state='IL' or s.state='IN' or s.state='MI' or s.state='OH' or s.state='WI')",sep=" ")
+}
+if (rpo == "WRAP") {
+   add_query <- paste(add_query,"and (s.state='AK' or s.state='CA' or s.state='OR' or s.state='WA' or s.state='AZ' or s.state='NM' or s.state='CO' or s.state='UT' or s.state='WY' or s.state='SD' or s.state='ND' or s.state='MT' or s.state='ID' or s.state='NV')",sep=" ")
+}
