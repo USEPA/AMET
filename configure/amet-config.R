@@ -14,17 +14,14 @@ amet_base         <-  "/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13";   
 
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## MySQL Configuration
-mysql_server	<- "darwin.rtpnc.epa.gov"	## Name of MYSQL server
-amet_login	<- "ametsecure"			## AMET Root login for MYSQL server
+mysql_server	<- "mysql.server.name"	## Name of MYSQL server
+amet_login	<- "ametsecure"		## AMET Root login for MYSQL server
 amet_pass	<- "AMETSECURE"		## AMET Root password for MYSQL server
-maxrec		<- -1				## Set MySQL maximum records for queries (-1 for no maximum)
+maxrec		<- -1			## Set MySQL maximum records for queries (-1 for no maximum)
 
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## Misc Executables 
-#Bldoverlay_exe    <- paste(amet_base,"/src/bldoverlay/bldoverlay.exe",sep="")	## Path to boundary overlay executable
-#EXEC_sitex_daily  <-  paste(amet_base,"/src/sitecmp_dailyo3/sitecmp_dailyo3.exe,sep="")        # full path to site compare daily executable
-#EXEC_sitex        <-  paste(amet_base,"/src/sitecmp/sitecmp.exe",sep="")                       # full path to site compare executable
-Bldoverlay_exe	  <- "/home/appel/bin/bldoverlay.exe"	## Path to boundary overlay executable
-EXEC_sitex_daily  <-  paste(amet_base,"/bin/sitecmp_daily_newheader_poc.exe",sep="")	# full path to site compare daily executable
-EXEC_sitex        <-  paste(amet_base,"/bin/sitecmp_newheader_poc.exe",sep="")          # full path to site compare executable
+Bldoverlay_exe    <- paste(amet_base,"/src/bldoverlay/bldoverlay.exe",sep="")	## Path to boundary overlay executable
+EXEC_sitex_daily  <-  paste(amet_base,"/src/sitecmp_dailyo3/sitecmp_dailyo3.exe,sep="")        # full path to site compare daily executable
+EXEC_sitex        <-  paste(amet_base,"/src/sitecmp/sitecmp.exe",sep="")                       # full path to site compare executable
 
