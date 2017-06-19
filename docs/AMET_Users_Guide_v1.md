@@ -27,13 +27,11 @@ User’s Guide***
 
 5. Database Setup
 
-   5.1 MET Setup
+   5.1 AMET Setup
 
-   5.2 AQ Setup
+   5.2 Basic MySQL Commands
 
-   5.3 Basic MySQL Commands
-
-6. Database Population
+6. Project Creation and Database Population
 
    6.1 The wrfExample Project
 
@@ -193,7 +191,7 @@ Before using AMET and this user’s guide, you must first install the AMET packa
 system. For information on the installation process, please see the separate *Atmospheric 
 Model Evaluation Tool (AMET) Installation Guide* that can be downloaded from the CMAS web site.
 
-Directory Structure
+2. Directory Structure
 ===================
 
 In our discussions, we refer to the top of the AMET directory structure
@@ -224,7 +222,7 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
 long period of time, it may be prudent to link these data within the
 appropriate AMET directories rather than moving or copying them.
 
-Configuration
+3. Configuration
 =============
 
 After untarring the AMET code and data and installing/building the
@@ -236,7 +234,7 @@ files:
 -   An R configuration file (amet-config.R)
 
 
-R Configuration File (amet-config.R)
+3.1 R Configuration File (amet-config.R)
 ------------------------------------
 
 The R configuration file is used by the underlying R programs to perform
@@ -258,14 +256,14 @@ variables that need to be changed in amet-config.R.
 | **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
 | **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
 
-Datasets
+4. Datasets
 ========
 
 The AMET release includes both model and observational datasets provided
 as examples. You should have downloaded these into the proper
 directories during the installation process.
 
-Model Data
+4.1 Model Data
 ----------
 
 For the model data, we have included both meteorological and air quality
@@ -311,7 +309,7 @@ CMAQ, after they have been postprocessed with the combine utility.
 All of the spatial domains cover the continental U.S. and have a 12-km
 grid resolution.
 
-Observational Data
+4.2 Observational Data
 ------------------
 
 As with the model data, the observations directory structure is divided
@@ -700,7 +698,7 @@ files are available for download from the CMAS website.
 >
 > PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)
 
-Database Setup
+5. Database Setup
 ==============
 
 The next step in using AMET is to set up the MySQL database. Please
@@ -720,7 +718,7 @@ the setup scripts, you will need to know the “root” password for the
 MySQL administrator. Note that this is not the same as the “ametsecure” 
 password that will be created using the scripts discussed below.
 
-AMET Setup
+5.1 AMET Setup
 ---------
 
 Go to the setup directory
@@ -753,7 +751,7 @@ delete all of the data in the database corresponding to **all** of the
 projects (**both MET and AQ**).*
 
 
-Basic MySQL Commands
+5.2 Basic MySQL Commands
 --------------------
 
 As you begin to go through the amet database setup and the
@@ -823,7 +821,7 @@ To determine which networks are included in the aqExample project:
 
 > mysql&gt; select distinct network from aqExample;
 
-Project Creation and Database Population
+6. Project Creation and Database Population
 ========================================
 
 The database population phase of AMET must be performed for each new
@@ -843,7 +841,7 @@ addition to the setup directories described earlier. The projects are
 
 In the following subsections, we describe how to run each project.
 
-The wrfExample Project
+6.1 The wrfExample Project
 ----------------------
 
 Go to the project directory
@@ -891,7 +889,7 @@ downloaded once for a given time period and will subsequently be
 available to all projects.
 
 
-The aqExample Project
+6.2 The aqExample Project
 ---------------------
 
 Go to the project directory:
@@ -931,7 +929,7 @@ defines the physical units of the species variables for this network (e.g., ppb 
 µg/m<sup>3</sup>). Finally, the script updates the aq\_project\_log with
 summary information for the aqExample project.
 
-Creating a New MET Project
+6.3 Creating a New MET Project
 --------------------------
 
 When you create your own projects, we recommend that you utilize the
@@ -990,7 +988,7 @@ This will create a new MET project in the amet database. Specifically,
 it will create a new row in your project\_log table and three new
 tables: wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface.
 
-Creating a New AQ Project
+6.4 Creating a New AQ Project
 -------------------------
 
 Before describing the creation of a new AQ project, we need to clarify a
@@ -1156,7 +1154,7 @@ will create a new row in your aq\_project\_log table, a series of new
 rows (one for each network) in your project\_units table, and a new
 project table: aqNC2007.
 
-Analysis
+7. Analysis
 ========
 
 The analysis phase of AMET consists of performing statistical analyses
@@ -1190,7 +1188,7 @@ $AMETBASE/R and then they run that script. The use of the C-shell interface
 allows users who are not very familiar with R to perform these predefined 
 analyses, shielding them from the actual R code.
 
-wrfExample
+7.1 wrfExample
 ----------
 
 Go to the project directory:
@@ -1249,7 +1247,7 @@ inputs are basically treated the same in terms of analysis. You could
 easily add a new project directory for mm5Example or mcipExample by
 following the instructions in Section 7.3.
 
-aqExample
+7.2 aqExample
 ---------
 
 Go to the project directory:
@@ -1387,7 +1385,7 @@ scripts.
 | **run\_timeseries\_mtom.csh**       | **timeseries\_mtom.input**    | Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model.| single network;single species; multiple simulations           |
 | **run\_timeseries\_multi.csh**       | **timeseries\_multi\_networks.input**    | Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model.| multiple networks;single species; multiple simulations           |
 
-Creating a New Analysis Project
+7.3 Creating a New Analysis Project
 -------------------------------
 
 Creating a new analysis project requires the same basic steps for both
@@ -1422,7 +1420,7 @@ titles in many of the scripts.
 
 Run the desired analysis scripts from your new project directory.
 
-CMAS Support for AMET
+8. CMAS Support for AMET
 =====================
 
 We have added AMET to Bugzilla, the CMAS bug-tracking and support
