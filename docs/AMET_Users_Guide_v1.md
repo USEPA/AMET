@@ -296,23 +296,6 @@ The WRF data consist of five WRF output files in netCDF format:
 >
 > wrfout\_d01\_2002-07-09\_00:00:00
 
-The MCIP data consist of five METCRO2D files and one GRIDCRO2D file in
-netCDF format:
-
-$AMETBASE/model\_data/MET/mcipExample/
-
-GRIDCRO2D\_2002187
-
-METCRO2D\_2002186
-
-METCRO2D\_2002187
-
-METCRO2D\_2002188
-
-METCRO2D\_2002189
-
-METCRO2D\_2002190
-
 On the AQ side, we have included two CMAQ output files for the period
 July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
 
@@ -922,8 +905,12 @@ it is discussed later in Section 6.5, “Creating a New AQ Project”.
 The C-shell file aqProject.csh is a wrapper script for calling the R
 programs that actually create your project (and database if necessary)
 and populate the AMET database with the project data. The variable that 
-you will likely need to change for this project is “AMETBASE”. Run the 
-script by typing
+you will likely need to change for this project is “AMETBASE”. You can
+specify the MySQL login and password in the script if desired. If you do not,
+the script will prompt you for the MySQL login/password. If you submit
+the script to queue, you'll need to spcecify the login and password on the
+qsub command line. By default, the script is setup to prompt you for the 
+MySQL login/password. Run the script by typing
 
 > $ ./aqProject.csh &gt;& log.populate
 
@@ -1081,34 +1068,34 @@ script for your particular project. This script does two things. It creates
 your project table in the amet database and populates that project table
 with your data (it will also create the database if it does not already exist). 
 You'll specifiy a number of options in the aqProject.csh script which will then 
-call several R script to run site compare and then poplulate the database with 
+call several R scripts to run site compare and then poplulate the database with 
 your data. This script will be reused for your various AMET-AQ projects, so while 
 this script contains a number of options, you will likely only need to fully setup 
 this script once and re-use it with little modification in the future.
 
 First, you'll need to specify some basic amet information. You'll need to 
-specify **AMETBASE** as done in the previous scripts. The **AMET_LOGIN**
-will default to your system user ID, but you can change it if desired. 
-The **AMET_LOGIN** is only used to identify you in the amet database and is not
-used to as a login to the amet database (when executed, the script will prompt
-you for the amet login and password). The **AMET_PROJECT** should be the same
-name you called the directory and needs to be unique and contain no spaces.
-Next set the **AMET_DATABASE** to use (by default this is set to "amet") and the
-location of the amet formatted observation files (by default this is set to
-$AMETBASE/obs/AQ). You'll need to specify the **AMET_OUT** directory where
-the output files (i.e. site compare scripts and paired data files) will be 
-written. By default, **AMET_OUT** is set to $AMETBASE/output/$AMET_PROJECT and will
-be created if it does not already exist.
+specify **AMETBASE** as done in the previous scripts. Next set the **AMET_DATABASE** 
+to use (by default this is set to "amet"). If desired, you can specify the MySQL login
+information using the **mysql_login** and **mysql_password** variables (commented out by
+default). If you choose not to specify the login/password using these variables, the script
+will prompt you for the MySQL login and password. 
+
+The **AMET_PROJECT** should be the same name you called the directory and needs to be 
+unique and contain no spaces. Continue by specifying the AQ **MODEL_TYPE** (e.g. "CMAQ");
+the **RUN_DESCRIPTION**, which is a short description of your project; The **USER_NAME** 
+will default to your system user ID, but you can change it if desired. The **USER_NAME** 
+is only used to identify you in the amet database and is not used to as a login to the 
+amet database (when executed, the script will prompt you for the amet login and password 
+unless you specified it via the **mysql_login** and **mysql_password** variables). Finally,
+you can specify an email address (**EMAIL_ADDR**) to associate with the project, however this
+email address is not currenlty used for anything in AMET and is simply stored along with the
+project information.
 
 The table below describes the other options and file locations that need to be
 specified in the aqProject.csh script.
 
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **MODEL\_TYPE**            | Type of AQ model being analyzed (e.g. CMAQ) |
-| **RUN\_DESCRIPTION**       | Text describing detail of the model simulation/analysis |
-| **USER\_NAME**             | User name to associate with the project (default is the system user name) |
-| **EMAIL\_ADDR**            | Email address to associate with the project (not currently used for anything) |
 | **AMET\_OBS**              | Top of the AQ observation data directory (defaults to **$AMETBASE/obs/AQ**) |
 | **SITE\_META\_LIST**       | Input file containing the list of AQ site meta data files (default is **$AMETBASE/scripts\_db/input\_files/sites\_meta.input**) |
 | **AMET\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/R\_db\_code/AQ\_species\_list.R** |
