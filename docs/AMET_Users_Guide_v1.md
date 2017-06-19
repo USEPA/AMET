@@ -233,16 +233,8 @@ installation guide referenced above), the next stage is to configure the
 AMET system. In the $AMETBASE/configure directory, you will find three
 files:
 
--   An R configuration file (amet-config.R).
-    
--   A php library file (amet-lib.php)
+-   An R configuration file (amet-config.R)
 
--   A php configuration file (amet-www-config.php)
-
-The last two files, amet-lib.php and amet-www-config.php, are only necessary if
-using the AMET-AQ web interface provided as beta code along with the AMETv1.3 
-release. If not using the web interface, those two configuration files can be
-ignored.
 
 R Configuration File (amet-config.R)
 ------------------------------------
