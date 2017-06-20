@@ -206,6 +206,13 @@ conf_line	<-'n'
 ### Array of flags for which statistics to include on scatter plots ###
 stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
 
+### Bin by model value instead of obs value
+bin_by_mod<-"n"
+
+### Density Scatter plot options ###
+density_zlim<-NULL
+num_dens_bins<-NULL
+
 
 ##################################
 ### Stacked Bar Charts Options ###

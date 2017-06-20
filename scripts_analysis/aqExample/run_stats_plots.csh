@@ -12,8 +12,7 @@
 # simulation.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -21,15 +20,10 @@
   # These are the main controlling variables for the R script
   
    #  Top of AMET directory
-#  setenv AMETBASE ~/AMET
-  setenv AMETBASE	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13 
-  
-  #  AMET database
-#  setenv AMET_DATABASE  amet
-  setenv AMET_DATABASE Test_AMETv13
-
-  #  AMET project id or simulation id
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stats_plots
