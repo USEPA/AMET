@@ -4,44 +4,37 @@
 #       PURPOSE: To input site compare output into      #
 #               the AMET-AQ MYSQL database              #
 #                                                       #
-#   Last Update: 06/08/2017 by Wyat Appel               #
+#   Last Update: 06/2017 by Wyat Appel                  #
 #                                                       #
 #   Note that is program assumes a consistent           #
 #   configuration of the input files, mainly from       #
 #   the site compare and site compare daily O3          #
-#   programs.Alteration of the those files may          # 
+#   programs. Alteration of the those files may         # 
 #   result in this program not working properly.        #
 #--------------------------------------------------------
 
-require(RMySQL)
+## Load Required Libraries
+if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 
 run_dir          <- Sys.getenv('AMET_OUT')
 dbase            <- Sys.getenv('AMET_DATABASE')
 base_dir         <- Sys.getenv('AMETBASE')
 check_missing    <- Sys.getenv('CHECK_PROJECT_TABLE')
-source.command   <- paste(base_dir,"/configure/amet-config.R",sep="")
-source(source.command)
+config_file      <- Sys.getenv('MYSQL_CONFIG')
 
-source.command2 <- paste(base_dir,"/R_analysis_code/AQ_Misc_Functions.R",sep="")
-source(source.command2)
-
+source(config_file)
 
 if (check_missing == "") {
-   cat("check_missing environment variable not set. Defaulting to T. For existing project tables with data, the check_missing environment variable can be set to F to save loading time.\n\n")
+   cat("CHECK_PROJECT_TABLE environment variable not set. Defaulting to T. For existing project tables with data, the check_missing environment variable can be set to F to save loading time.\n\n")
    check_missing <- "T"
 }
 
 args              <- commandArgs(5)
-amet_login        <- args[1]
-amet_pass         <- args[2]
+mysql_login       <- args[1]
+mysql_pass        <- args[2]
 run_id            <- args[3]
 dtype             <- args[4]
 sitex_file        <- args[5]
-
-#args        <- commandArgs(TRUE)
-#run_id	    <- args[1]
-#dtype       <- args[2]
-#sitex_file  <- args[3]
 
 cat(paste("\nProject_ID: ",run_id,"\n",sep=""))
 cat(paste("Network: ",dtype,"\n",sep=""))
@@ -49,15 +42,41 @@ cat(paste("Sitex File: ",sitex_file,"\n",sep=""))
 cat(paste("MySQL Server: ",mysql_server,"\n",sep=""))
 cat(paste("Check Missing Flag: ",check_missing,"\n\n",sep=""))
 
-month <- NULL
+###############################################################
+#- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
+###############################################################
+db_Query<-function(query,mysql,get=1,verbose=FALSE)
+ {
+  db<-dbDriver("MySQL")                         # MySQL Database type
+  con <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server,dbname=mysql$dbase)           # Database connect
 
-mysql           <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)	# Set MYSQL login and query options
-#con             <- dbConnect(MySQL(),user=root_login,password=root_pass,dbname=dbase,host=mysql_server)
-con             <- dbConnect(MySQL(),user=amet_login,password=amet_pass,dbname=dbase,host=mysql_server)
-#MYSQL_tables    <- dbListTables(con)
-#dbDisconnect(con)
+  for (q in 1:length(query)){
+    rs<-dbSendQuery(con,query[q])       # Send query and place results in data frame
+    if(verbose){ print(query[q]) }
+  }
+  if(get == 1){df<-fetch(rs,n=mysql$maxrec)}
 
+  dbClearResult(rs)
+  dbDisconnect(con)             # Database disconnect
+
+  return(df)
+
+ }
+################################################################
+
+###############################################################
+#- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
+###############################################################
 reformat <- function(a) paste(a,collapse=",")
+###############################################################
+
+### Use MySQL login/password from config file if requested ###
+if (mysql_login == 'config_file') { mysql_login <- amet_login }
+if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
+##############################################################
+
+mysql	<- list(login=mysql_login, passwd=mysql_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)	# Set MYSQL login and query options
+con	<- dbConnect(MySQL(),user=mysql_login,password=mysql_pass,dbname=dbase,host=mysql_server)
 
 sitex_hdr_format <- 'new'
 sitex_in_chk <- read.csv(sitex_file,skip=3,nrows=1,colClasses="character",header=F)

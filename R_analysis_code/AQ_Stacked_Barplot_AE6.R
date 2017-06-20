@@ -7,29 +7,15 @@
 ### a stacked bar plot, along with the percent of the total PM2.5
 ### that each specie comprises.
 ###
-### Last updated by Wyat Appel: June 2017 
+### Last updated by Wyat Appel: June, 2017 
 ################################################################
 
 # get some environmental variables and setup some directories
-ametbase        <- Sys.getenv("AMETBASE")        # base directory of AMET
-dbase           <- Sys.getenv("AMET_DATABASE")      # AMET database
-ametR           <- paste(ametbase,"/R_analysis_code",sep="")      # R directory
-ametRinput      <- Sys.getenv("AMETRINPUT")  # input file for this script
-ametptype       <- Sys.getenv("AMET_PTYPE")   # Prefered output type
-## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-## and not specified via AMET_OUT, then set figdir to the current directory
-if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
-if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
+ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
+ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
-## source some configuration files, AMET libs, and input
-source(paste(ametbase,"/configure/amet-config.R",sep=""))
+## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-source(ametRinput)                                     # Anaysis configuration/input file
-
-## Load Required Libraries 
-if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
-
-mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 network <- network_names[1]
 network_name <- network_label[1]

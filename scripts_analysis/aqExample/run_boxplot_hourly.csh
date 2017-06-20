@@ -22,13 +22,10 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE ~/AMET
-
-  #  AMET database
+  setenv AMETBASE       /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
   setenv AMET_DATABASE  amet
-
-  #  AMET project id or simulation id
   setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_hourly
