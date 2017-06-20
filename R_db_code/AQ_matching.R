@@ -10,7 +10,7 @@
 #  the php interface included with AMET.                 #
 #                                                        #
 #       REQUIRED: amet-config.R                          #
-#                 AQ_species_list.R			 #
+#                 AQ_species_list.input			 #
 #                                                        #
 #       PURPOSE: Run Site Compare and then put the       #
 #                output into the MYSQL database for AMET #
@@ -18,23 +18,32 @@
 #                                                        #
 ##------------------------------------------------------##
 
-require(RMySQL)
+amet_base <- Sys.getenv('AMETBASE')
+if (!exists("amet_base")) {
+   stop("Must set AMETBASE environment variable")
+}
 
-amet_base        <- Sys.getenv('AMETBASE')
-base.command     <- paste(amet_base,"/configure/amet-config.R",sep="")
+config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+if (!exists("config_file")) {
+   stop("Must set MYSQL_CONFIG environment variable")
+}
+source(config_file)
 
-source(base.command)
+dbase <-Sys.getenv('AMET_DATABASE')
+if (!exists("dbase")) {
+   stop("Must set AMET_DATABASE environment variable")
+}
 
 args              <- commandArgs(2)
-amet_login        <- args[1]
-amet_pass         <- args[2]
+mysql_login        <- args[1]
+mysql_pass         <- args[2]
 
-dbase                  <- Sys.getenv('AMET_DATABASE')
+### Use MySQL login/password from config file if requested ###
+if (mysql_login == 'config_file') { mysql_login <- amet_login }
+if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
+##############################################################
+
 obs_data_dir           <- Sys.getenv('AMET_OBS')
-#if (obs_data_dir_in != "") {
-#   obs_data_dir <- obs_data_dir_in
-#}
-
 use_AE6                <- Sys.getenv('INC_AERO6_SPECIES')
 time_shift             <- Sys.getenv('TIME_SHIFT')
 run_dir                <- Sys.getenv('AMET_OUT')
@@ -45,7 +54,7 @@ end_date               <- Sys.getenv('END_DATE')
 write_sitex            <- Sys.getenv('WRITE_SITEX')
 run_sitex_flag         <- Sys.getenv('RUN_SITEX')
 load_sitex             <- Sys.getenv('LOAD_SITEX')
-AMET_species_list      <- Sys.getenv('AMET_SPECIES_FILE')
+AMET_species_list      <- Sys.getenv('AMET_SPEC_FILE')
 
 castnet_flag           <- Sys.getenv('CASTNET')               # Flag to include CASTNet data in the analysis
 castnet_hourly_flag    <- Sys.getenv('CASTNET_HOURLY')
@@ -228,7 +237,7 @@ run_sitex <- function(network) {
       cat(paste("Finished running site compare for network ",network,"\n\n",sep=" "))
    }
    if ((load_sitex == "y") || (load_sitex == "Y") || (load_sitex == "t") || (load_sitex == "T")) {
-      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",amet_login," ",amet_pass," ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
+      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",mysql_login," ",mysql_pass," ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
       system(load.command)
       cat(paste("Finshed populating database for network ",network,"\n",sep=" "))
    }

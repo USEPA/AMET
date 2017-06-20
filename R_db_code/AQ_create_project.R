@@ -15,10 +15,17 @@ amet_base <- Sys.getenv('AMETBASE')
 if (!exists("amet_base")) {
    stop("Must set AMETBASE environment variable")
 }
+
 dbase <-Sys.getenv('AMET_DATABASE')
 if (!exists("dbase")) {
    stop("Must set AMET_DATABASE environment variable")
 }
+
+config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+if (!exists("config_file")) {
+   stop("Must set MYSQL_CONFIG environment variable")
+}
+source(config_file)
 
 run_id		<- Sys.getenv('AMET_PROJECT')
 model		<- Sys.getenv('MODEL_TYPE')
@@ -29,17 +36,16 @@ delete_table	<- Sys.getenv('DELETE_PROJECT')
 remake_table	<- Sys.getenv('REMAKE_PROJECT')
 update_table	<- Sys.getenv('UPDATE_PROEJCT')
 
-source.command <- paste(amet_base,"/configure/amet-config.R",sep="")
-source(source.command)
-
-#amet_R_input <- Sys.getenv('AMETRINPUT')
-#source(amet_R_input)
-
 args              <- commandArgs(2)
-amet_login        <- args[1]
-amet_pass         <- args[2]
+mysql_login       <- args[1]
+mysql_pass        <- args[2]
 
-con             <- dbConnect(MySQL(),user=amet_login,password=amet_pass,dbname=dbase,host=mysql_server)
+### Use MySQL login/password from config file if requested ###
+if (mysql_login == 'config_file') { mysql_login <- amet_login }
+if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
+##############################################################
+
+con             <- dbConnect(MySQL(),user=mysql_login,password=mysql_pass,dbname=dbase,host=mysql_server)
 MYSQL_tables    <- dbListTables(con)
 
 ##################################################
