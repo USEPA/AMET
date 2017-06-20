@@ -11,16 +11,17 @@ amet_base <- Sys.getenv('AMETBASE')
 if (!exists("amet_base")) {
    stop("Must set AMETBASE environment variable")
 }
-source.command <- paste(amet_base,"/configure/amet-config.R",sep="")
-source(source.command)
 
 dbase <-Sys.getenv('AMET_DATABASE')
 if (!exists("dbase")) {
    stop("Must set AMET_DATABASE environment variable")
 }
 
-#amet_R_input <- Sys.getenv('AMETRINPUT')
-#source(amet_R_input)
+config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+if (!exists("config_file")) {
+   stop("Must set MYSQL_CONFIG environment variable")
+}
+source(config_file)
 
 # LOAD Required R Modules
 suppressMessages(if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")})
@@ -32,11 +33,15 @@ site_meta_data <- Sys.getenv('SITES_META_LIST')
 source(site_meta_data)
 
 args              <- commandArgs(2)
-amet_login        <- args[1]
-amet_pass         <- args[2]
+mysql_login       <- args[1]
+mysql_pass        <- args[2]
 
-#con   <- dbConnect(MySQL(),user=root_login,password=root_pass,dbname=dbase,host=mysql_server)
-con   <- dbConnect(MySQL(),user=amet_login,password=amet_pass,dbname=dbase,host=mysql_server)
+### Use MySQL login/password from config file if requested ###
+if (mysql_login == 'config_file') { mysql_login <- amet_login }
+if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
+##############################################################
+
+con   <- dbConnect(MySQL(),user=mysql_login,password=mysql_pass,dbname=dbase,host=mysql_server)
 if (!exists("con")) {
    stop("Your MySQL server was not found or login or passwords incorrect, please check to see if server is running or passwords are correct.")
 }
