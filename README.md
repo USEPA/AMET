@@ -28,7 +28,7 @@ Source code and scripts are organized as follows:
 ## Documentation
 Release notes and Code documentation are included within this repository (they are version-controlled along with the code itself).  
 
-[AMETv1.2 User Guide](docs/AMET_Users_Guide_v1.md)   
+[AMETv1.2 User Guide](https://www.cmascenter.org/amet/documentation/1.2/AMET_Users_Guide_v1.2.1.pdf)   
 [AMETv1.2 Installation Guide](docs/AMET_Install_Guide_v1.md )   
 
 ## AMET Tutorial
