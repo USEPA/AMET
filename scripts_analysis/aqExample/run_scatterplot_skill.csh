@@ -1,16 +1,18 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Scatterplot - Skill
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
 # a unique forecast skill scatter plot.  The scipt is designed to work
-# specifically with ozone or PM, as the lines can be user defined.
+# specifically with ozone or PM, however the script will work with any
+# species. The user can specify the goal line (often set the NAAQS standard
+# for either ozone or PM2.5). Only works for a single species from a single
+# network for a single simulation.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

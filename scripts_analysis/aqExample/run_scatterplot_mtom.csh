@@ -14,8 +14,7 @@
 # points in the other run.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -28,9 +27,9 @@
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
-  #  AMET project id or simulation id
-  setenv AMET_PROJECT2	aqExample
-  
+   ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
+ 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_mtom
   

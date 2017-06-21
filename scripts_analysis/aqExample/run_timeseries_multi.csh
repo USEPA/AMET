@@ -5,9 +5,10 @@
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
-# a timeseries plot.  The script can accept multiple sites and network, 
+# a timeseries plot.  The script can accept multiple sites and networks, 
 # as they will be time averaged to create the timeseries plot.  The script
 # also plots the bias and error between the obs and model for each network.
+# Single simulation only.
 #
 # Initial version:  Wyat Appel - Dec, 2012
 # Revised version:  Wyat Appel - Jun, 2017

@@ -1,15 +1,18 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Scatterplot - Soil
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
-# scatter plots - multi-network
+# a scatter plot specifically designed for plotting the various soil species
+# that are available in CMAQ (e.g. Fe, Si, Ca, etc.). All of the soil species
+# are plotted on a single scatter plot and are color coded to each individual
+# species. This script is designed for a single network, single simulation
+# with the species plotted hard-coded into the script.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

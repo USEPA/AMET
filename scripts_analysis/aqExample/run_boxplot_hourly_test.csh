@@ -12,8 +12,8 @@
 # data, but can be used with any hourly data (SEARCH, TEOM, etc).
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
 # Revised version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 #
 # -----------------------------------------------------------------------
 
@@ -27,11 +27,8 @@
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
-  #  AMET database
-  setenv AMET_DATABASE  Test_AMETv13
-
-  #  AMET project id or simulation id
-  setenv AMET_PROJECT   aqExample
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_hourly
