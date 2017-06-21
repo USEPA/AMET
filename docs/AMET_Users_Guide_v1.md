@@ -248,13 +248,17 @@ variables that need to be changed in amet-config.R.
 | **Variable**   | **Description** |
 |----------------|-----------------|
 | **amet_base**           | The base directory where AMET is installed. |
-| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
-| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
-| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
 | **mysql\_server**       | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
 | **amet\_login**         | Login for the AMET MySQL user. For the purposes of this tutorial, we assume **amet\_login** is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
 | **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
-| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
+| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1. |
+| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
+| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
+
+A word about specifying the **amet_login** and **amet_pass**. Obviously these are MySQL credentials and are therefore sensitive. The MySQL credentials specified here are always used in the analysis scripts that come with AMET, which require only database read access to function. Therefore, the MySQL user specified here can be limited to read access only. However, these credentials can also be setup to be used by the aqProject.csh and metProject.csh scripts (and by default those scripts are setup to do so). For those scripts to work properly, the MySQL user specified must have permission to create databases and tables, in addition to read access. So, if the setting in the aqProject.csh and/or metProject.csh scripts is to read the **amet_login** and **amet_pass** variables for the amet-config.R file, those credentials must be for a user with full MySQL permissions.
+
+For simplicity, it is suggested that the MySQL credentials specified in the amet-config.R file be for a user with full database permissions.
 
 4. Datasets
 ========
