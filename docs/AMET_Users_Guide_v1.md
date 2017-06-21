@@ -216,7 +216,6 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
 | **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis (contains project-specific subdirectories).|
 | **scripts\_db**       | Project-specific wrapper scripts and inputs for database population (contains project-specific subdirectories). |
 | **src**               | Source code for third-party software.                                 |
-| **web\_interface**    | Beta code for the AMET web graphical user interface for analysis      |
 
 *Note:* For large model outputs and for MADIS observations that cover a
 long period of time, it may be prudent to link these data within the
@@ -303,9 +302,9 @@ July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
 
 > $AMETBASE/model\_data/AQ/**aqExample**/
 >
-> test.12km.conc
+> AMET_CMAQ_July_2011_Test_Data.aconc
 >
-> test.12km.dep
+> AMET_CMAQ_July_2011_Test_Data.dep
 
 correspond to the concentration and wet deposition output files from
 CMAQ, after they have been postprocessed with the combine utility.
