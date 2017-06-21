@@ -246,7 +246,7 @@ variables that need to be changed in amet-config.R.
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
-| **amet_base**           | The base directory where AMET is installed. |
+| **amet_base**           | The base directory where AMET is installed. By default this is read from the environment variable **AMETBASE** and therefore does not need to set explicitly here.|
 | **mysql\_server**       | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
 | **amet\_login**         | Login for the AMET MySQL user. For the purposes of this tutorial, we assume **amet\_login** is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
 | **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
@@ -271,17 +271,8 @@ directories during the installation process.
 
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into four example projects:
-"mm5Example", "wrfExample", "mcipExample", and "aqExample". On the MET
-side, there is a 5-day MM5 simulation (July 04 2002 00:00 UTC to July 08
-2002 23:00 UTC), a 5‑day WRF simulation (July 05 2002 00:00 UTC to July
-09 2002 23:00 UTC), and a 5-day MCIP-postprocessed MM5 simulation (July
-05 2002 00:00 UTC to July 09 2002 23:00 UTC). The MM5 data file is
-
-> $AMETBASE/model\_data/MET/**mm5Example**/MMOUT\_DOMAIN1\_02Jul04
-
-Note that we have bolded “mm5Example” in the directory name above to
-highlight the fact that we are using the project name to organize the
-model output files into directories.
+"metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+(July 01 2011 00:00 UTC to July 31 2011 23:00 UTC). The WRF data file is
 
 The WRF data consist of five WRF output files in netCDF format:
 
@@ -296,6 +287,10 @@ The WRF data consist of five WRF output files in netCDF format:
 > wrfout\_d01\_2002-07-08\_00:00:00
 >
 > wrfout\_d01\_2002-07-09\_00:00:00
+
+Note that we have bolded “metExample” in the directory name above to
+highlight the fact that we are using the project name to organize the
+model output files into directories.
 
 On the AQ side, we have included two CMAQ output files for the period
 July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
