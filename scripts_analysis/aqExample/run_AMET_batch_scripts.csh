@@ -10,13 +10,14 @@
 #PBS -j oe
 #PBS -o /project/inf1w/appel/AMET_Code/AMAD_Code/Test/AMET_batch_scripts.log
 
-### Location of the R executable on HPCC (rain,snow) ###
+### Location of the R executable ###
 setenv R_EXEC_LOC /share/linux86_64/bin
 
 ### Set the location of the base AMET installation, database name and project name ###
 setenv AMETBASE 	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
 setenv AMET_DATABASE 	amet 
 setenv AMET_PROJECT	aqExample
+setenv MYSQL_CONFIG	$AMETBASE/configure/amet-config.R
 
 ### Set the project name to be used for model-to-model comparisons ###
 setenv AMET_PROJECT2 aqExample 

@@ -10,11 +10,12 @@
 # difference between the model and ob for each site for each 
 # corresponding network.  Mutiple values for a site are averaged
 # to a single value for plotting purposes.  The map area plotted
-# is dynamicall generated from the input data.   
+# is dynamically generated from the input data. Multiple network, single
+# species, single simulation.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
 # Revised version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

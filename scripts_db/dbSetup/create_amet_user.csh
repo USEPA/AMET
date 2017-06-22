@@ -10,6 +10,11 @@
 ## Top AMET directory tree
 setenv AMETBASE /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
 
+## AMET login info. Uncomment to specify AMET login/pass via script instead of via prompt/qsub command line. ###
+### Entering 'config_file' will obtain the login/pass from the amet-config.R file instead. ###
+set    mysql_login="config_file"
+set    mysql_password="config_file"
+
 ##################################################################
 ###### Most users will not need to modify anything below #########
 ##################################################################

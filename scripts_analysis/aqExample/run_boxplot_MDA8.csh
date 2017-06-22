@@ -1,6 +1,6 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Boxplot - MDA8 Ozone
 # -----------------------------------------------------------------------
 # Purpose:
 #
@@ -9,16 +9,10 @@
 # plot with on monthly boxes.  Individual observation/model pairs are
 # provided through a MYSQL query, from which the script computes the
 # 25% and 75% quartiles, as well as the median values for both obs and
-# model values.  The script then plots these values as a box plot.
-# While the script is designed to be used with an entire year of data,
-# it can be used with a shorter time period.  However, no less than
-# three months should be used, since any period of time shorter than
-# that can cause elements of the plot (text) to be misplaced on the
-# plot area. Designed for one species and one network.
+# model values. This version of the boxplot is designed specifically for
+# MDA8 ozone plotting
 #
-# Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - Dec, 2012
+# Initial version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -30,6 +24,9 @@
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
+
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
  
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_MD8A

@@ -12,7 +12,7 @@
 # simulation. This script is part of the AMETv1.2 code.
 #
 # Initial version:  Wyat Appel - Dec, 2012
-# Last revision:    Wyat Appel - June, 2017
+# Revised verison:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
