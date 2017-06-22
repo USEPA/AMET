@@ -15,7 +15,7 @@
 # as a beta script, as it has not been fully tested.
 #
 # Initial version:  Wyat Appel - Dec, 2012
-# Last revision:    Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

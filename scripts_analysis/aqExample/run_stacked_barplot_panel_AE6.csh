@@ -1,6 +1,6 @@
 #!/bin/csh -f
 # --------------------------------
-# Bar plot - CMAQv5.0 AERO6
+# Bar plot - CMAQv5.0 Panel AERO6 
 # -----------------------------------------------------------------------
 # Purpose:
 #
@@ -9,10 +9,13 @@
 # SEARCH networks.  Data are then averaged for SO4, NO3, NH4, EC, OC
 # soil, NaCl, NCOM, other and PM2.5 for the model and ob values.  
 # These averages are then plotted on a stacked bar plot, along with 
-# the percent of the total PM2.5 that each species comprises.
+# the percent of the total PM2.5 that each species comprises. The plots
+# are provided in a panel format by season (winter, spring, summer and fall)
+# and region (Northeast, Atlantic, Great Lakes and Midwest). Requires a 
+# full year simulation. Single simulation only.
 #
 # Initial version:  Wyat Appel - Dec, 2012
-# Revised version:  Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

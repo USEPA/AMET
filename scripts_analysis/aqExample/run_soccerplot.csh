@@ -1,15 +1,14 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Soccergoal Plot
 # -----------------------------------------------------------------------
-# Purpose:
-#
-# This is an example c-shell script to run the R-script that generates
-# scatter plots - multi-network
+# Purpose: This script creates a "soccergoal" plot by plotting NMB along the
+# x-axis and NME along the y-axis along with goal and criteria lines for each
+# which form a rectangular box (i.e. goal). The script is designed to plot
+# multiple networks and species for a single simulation.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

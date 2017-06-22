@@ -12,8 +12,8 @@
 # one observation network must be specified.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
 # Revised verison:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -26,9 +26,9 @@
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
-  #  AMET project id or simulation id
+   ### Set the project name to be used for model-to-model comparisons ###
   setenv AMET_PROJECT2  aqExample
-  
+ 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/plot_spatial_mtom
 

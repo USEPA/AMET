@@ -6,7 +6,7 @@
 # This is an example c-shell script to run the R-script that generates
 # a timeseries plot.  The script can accept multiple sites, as they
 # will be time averaged to create the timeseries plot.  The script
-# also plots the bias and error between the obs and model.
+# also plots the bias, RMSE and correlation between the obs and model.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
 #
@@ -22,6 +22,9 @@
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
+
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries

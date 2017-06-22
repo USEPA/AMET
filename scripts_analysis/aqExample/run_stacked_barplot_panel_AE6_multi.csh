@@ -1,6 +1,6 @@
 #!/bin/csh -f
 # --------------------------------
-# Bar plot - CMAQv5.0 AERO6
+# Bar plot - CMAQv5.0 Panel AERO6 multi-simulation 
 # -----------------------------------------------------------------------
 # Purpose:
 #
@@ -8,8 +8,10 @@
 # Appel.  Data are queried from the MYSQL database for the CSN or
 # SEARCH networks.  Data are then averaged for SO4, NO3, NH4, EC, OC
 # soil, NaCl, NCOM, other and PM2.5 for the model and ob values.  
-# These averages are then plotted on a stacked bar plot, along with 
-# the percent of the total PM2.5 that each species comprises.
+# These averages are then plotted on a stacked bar plot. The plots
+# are provided in a panel format by season (winter, spring, summer and fall)
+# and region (Northeast, Atlantic, Great Lakes and Midwest). Requires a 
+# full year simulation. Designed for up to two simulations.
 #
 # Initial version:  Wyat Appel - Dec, 2012
 # Revised version:  Wyat Appel - Jun, 2017
@@ -25,6 +27,9 @@
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
+
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot_panel_AE6_multi
   

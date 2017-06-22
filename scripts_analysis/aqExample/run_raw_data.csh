@@ -1,24 +1,11 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Raw output file
 # -----------------------------------------------------------------------
-# Purpose:
+# Purpose: This script simply outputs a csv file of raw data for the desired 
+# query, with no other processing done.
 #
-# This is an example c-shell script to run the R-script that generates
-# a box plot without whiskers.  The script is designed to create a box
-# plot with on monthly boxes.  Individual observation/model pairs are
-# provided through a MYSQL query, from which the script computes the
-# 25% and 75% quartiles, as well as the median values for both obs and
-# model values.  The script then plots these values as a box plot.
-# While the script is designed to be used with an entire year of data,
-# it can be used with a shorter time period.  However, no less than
-# three months should be used, since any period of time shorter than
-# that can cause elements of the plot (text) to be misplaced on the
-# plot area. Designed for one species and one network.
-#
-# Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - June, 2017
+# Initial version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

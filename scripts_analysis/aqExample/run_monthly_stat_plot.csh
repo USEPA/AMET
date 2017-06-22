@@ -16,10 +16,11 @@
 #
 # Any one of the computed statistics can be plotted with a small
 # change to the script.  The script works with multiple years as
-# well. This script is part of the AMETv1.2 code.
+# well. This script is new to the AMETv1.2 code and has been updated
+# for AMETv1.3.
 #
 # Initial version:  Wyat Appel - Dec, 2012
-# Last revision:    Wyat Appel - June, 2017
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   

@@ -1,6 +1,6 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Boxplot
 # -----------------------------------------------------------------------
 # Purpose:
 #
@@ -30,6 +30,9 @@
   setenv AMET_DATABASE 	amet
   setenv AMET_PROJECT	aqExample	
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R  
+
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2 	aqExample
 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot
