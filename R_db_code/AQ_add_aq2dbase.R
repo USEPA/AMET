@@ -19,15 +19,9 @@ if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 run_dir          <- Sys.getenv('AMET_OUT')
 dbase            <- Sys.getenv('AMET_DATABASE')
 base_dir         <- Sys.getenv('AMETBASE')
-check_missing    <- Sys.getenv('CHECK_PROJECT_TABLE')
 config_file      <- Sys.getenv('MYSQL_CONFIG')
 
 source(config_file)
-
-if (check_missing == "") {
-   cat("CHECK_PROJECT_TABLE environment variable not set. Defaulting to T. For existing project tables with data, the check_missing environment variable can be set to F to save loading time.\n\n")
-   check_missing <- "T"
-}
 
 args              <- commandArgs(5)
 mysql_login       <- args[1]
@@ -40,7 +34,6 @@ cat(paste("\nProject_ID: ",run_id,"\n",sep=""))
 cat(paste("Network: ",dtype,"\n",sep=""))
 cat(paste("Sitex File: ",sitex_file,"\n",sep=""))
 cat(paste("MySQL Server: ",mysql_server,"\n",sep=""))
-cat(paste("Check Missing Flag: ",check_missing,"\n\n",sep=""))
 
 ###############################################################
 #- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
@@ -78,38 +71,17 @@ if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
 mysql	<- list(login=mysql_login, passwd=mysql_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)	# Set MYSQL login and query options
 con	<- dbConnect(MySQL(),user=mysql_login,password=mysql_pass,dbname=dbase,host=mysql_server)
 
-sitex_hdr_format <- 'new'
-sitex_in_chk <- read.csv(sitex_file,skip=3,nrows=1,colClasses="character",header=F)
-if (sitex_in_chk[1] == "SiteId") {
-   sitex_hdr_format <- 'old'
+sitex_in    <- read.csv(sitex_file,skip=5,colClasses = "character") # Read sitex file with header
+sitex_in2   <- read.csv(sitex_file,skip=3,header=F,colClasses="character",nrows=3)  # Read sitex file w/o header
+sitex_names <- as.character(sitex_in2[3,])   # Store species names
+sitex_units <- as.character(sitex_in2[1,])   # Store species units
+sitex_modob <- as.character(sitex_in2[2,])   # Store mod/ob designation
+col_offset <- 18
+if (dtype == 'AQS_Daily_O3') {
+   col_offset <- 14
 }
-{
-   if (sitex_hdr_format == 'old') {
-      sitex_in    <- read.csv(sitex_file,skip=3,colClasses = "character")	# Read sitex file with header
-      sitex_in2   <- read.csv(sitex_file,skip=3,header=F,colClasses="character",nrows=10)  # Read sitex file w/o header
-      sitex_names <- as.character(sitex_in2[1,])   # Store species names
-      sitex_units <- as.character(sitex_in[1,])    # Store species units
-      sitex_modob <- as.character(sitex_in[2,])    # Store mod/ob designation
-      sitex_in    <- sitex_in[-c(1,2),]
-      col_offset  <- 7
-      if (dtype == 'NADP') {
-         col_offset  <- 9
-      } 
-   }
-   else {
-      sitex_in    <- read.csv(sitex_file,skip=5,colClasses = "character") # Read sitex file with header
-      sitex_in2   <- read.csv(sitex_file,skip=3,header=F,colClasses="character",nrows=3)  # Read sitex file w/o header
-      sitex_names <- as.character(sitex_in2[3,])   # Store species names
-      sitex_units <- as.character(sitex_in2[1,])   # Store species units
-      sitex_modob <- as.character(sitex_in2[2,])   # Store mod/ob designation
-      col_offset <- 18
-      if (dtype == 'AQS_Daily_O3') {
-         col_offset <- 14
-      }
-      if (dtype == 'NADP') {
-        col_offset <- 20
-      }
-   }
+if (dtype == 'NADP') {
+  col_offset <- 20
 }
 cat(paste("Successfully read ",sitex_file,"\n",sep=""))
 num_cols    <- ncol(sitex_in)
@@ -130,28 +102,31 @@ end_time    <- paste(end_year,sprintf("%02d",end_month),sprintf("%02d",end_day),
       sitex_in$POCode <- 1
    }      
 }
-if ((check_missing == 'Y') || (check_missing == 'T')) {	# Skip checking for missing POCode column if set to F
-   cat("Checking for missing POCode column in project table...")
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = '",run_id,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <- suppressMessages(db_Query(check_POCode,mysql))
+######################################################
+### Check for missing POCode in Site Compare Input ###
+######################################################
+cat("Checking for missing POCode column in project table...")
+check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = '",run_id,"' and COLUMN_NAME = 'POCode';",sep="")
+query_table_info.df <- suppressMessages(db_Query(check_POCode,mysql))
+cat("done. \n")
+if (length(query_table_info.df$COLUMN_NAME) == 0) {
+   create_POCode_Column <- paste("alter table ",run_id," add column POCode integer",sep="")
+   make_POCode_unique   <- paste("alter table ",run_id," add UNIQUE(network,stat_id,POCode,ob_dates,ob_datee,ob_hour)",sep="")
+   cat("\nPOCode column missing (must be an old table). Adding POCode column to project table...")
+   mysql_result <- dbSendQuery(con,create_POCode_Column)
+   mysql_result <- dbSendQuery(con,make_POCode_unique)
    cat("done. \n")
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {
-      create_POCode_Column <- paste("alter table ",run_id," add column POCode integer",sep="")
-      make_POCode_unique   <- paste("alter table ",run_id," add UNIQUE(network,stat_id,POCode,ob_dates,ob_datee,ob_hour)",sep="")
-      cat("\nPOCode column missing (must be an old table). Adding POCode column to project table...")
-      mysql_result <- dbSendQuery(con,create_POCode_Column)
-      mysql_result <- dbSendQuery(con,make_POCode_unique)
-      cat("done. \n")
-   }
-   check_stat_id_POCode 		<- paste("select * from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = '",run_id,"' and COLUMN_NAME = 'stat_id_POCode';",sep="")
-   query_table_info.df <- suppressMessages(db_Query(check_stat_id_POCode,mysql))
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {
-      create_stat_id_POCode_Column <- paste("alter table ",run_id," add column stat_id_POCode character(100)",sep="")
-      cat("stat_id_POCode column missing (must be an old table). Adding stat_id_POCode column to project table...")
-      mysql_result <- dbSendQuery(con,create_stat_id_POCode_Column)
-      cat("...done. \n")
-   }
 }
+check_stat_id_POCode 		<- paste("select * from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = '",run_id,"' and COLUMN_NAME = 'stat_id_POCode';",sep="")
+query_table_info.df <- suppressMessages(db_Query(check_stat_id_POCode,mysql))
+if (length(query_table_info.df$COLUMN_NAME) == 0) {
+   create_stat_id_POCode_Column <- paste("alter table ",run_id," add column stat_id_POCode character(100)",sep="")
+   cat("stat_id_POCode column missing (must be an old table). Adding stat_id_POCode column to project table...")
+   mysql_result <- dbSendQuery(con,create_stat_id_POCode_Column)
+   cat("...done. \n")
+}
+#####################################################
+
 ###########################################################
 ### Determine which month to associate with each record ###
 ###########################################################
@@ -166,41 +141,40 @@ sitex_in$dtype     <- dtype
 sitex_in$run_id    <- run_id
 sitex_in$hour      <- hour
 sitex_names        <- sitex_names[-c(1:col_offset)]
-{
-   if (sitex_hdr_format == 'old') {
-      unit_species_names <- sitex_names
-      unit_species_vals  <- sitex_units[-c(1:col_offset)]
-      sitex_modob        <- sitex_modob[-c(1:col_offset)]
-   }
-   else {
-      unit_names_tmp     <- unlist(strsplit(sitex_names,"_ob"))
-      unit_species_names <- unlist(strsplit(unit_names_tmp,"_mod"))
-      unit_species_vals  <- sitex_units[-c(1:col_offset)]
-   }
-}
-duplicate_names       <- duplicated(unit_species_names)   # Determine duplicated species names for units
+unit_names_tmp     <- unlist(strsplit(sitex_names,"_ob"))
+unit_species_names <- unlist(strsplit(unit_names_tmp,"_mod"))
+unit_species_vals  <- sitex_units[-c(1:col_offset)]
+duplicate_names	   <- duplicated(unit_species_names)   # Determine duplicated species names for units
 
-###########################################
-### Determine units and load into table ###
-###########################################
+########################################################
+### Check for missing species in project units table ###
+########################################################
 unit_query_names  <- unit_species_names[!duplicate_names]   # Remove duplicated names from name list
 unit_query_vals   <- unit_species_vals[!duplicate_names]  # Remove duplicated names from units list
 q1_units          <- "REPLACE INTO project_units"
 q2_units          <- " (proj_code,network"
 
-if ((check_missing == 'Y') || (check_missing == 'T')) {	# Skip checking for missing species in the units table if F
-   cat("Checking for missing species in project_units table...") 
-   for (i in 1:length(unit_query_names)) {
-      check_unit_names   <- paste("select * from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = 'project_units' and COLUMN_NAME = '",unit_query_names[i],"';",sep="")
-      query_table_info.df <- suppressMessages(db_Query(check_unit_names,mysql))
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {
-         create_units_column <- paste("alter table project_units add column ",unit_query_names[i]," varchar(10);",sep="")
-         dbSendQuery(con,create_units_column)
-      }
+cat("Checking for missing species in project_units table...") 
+check_unit_names        <- paste("select COLUMN_NAME from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = 'project_units'",sep="")
+query_table_info.df 	<- suppressMessages(db_Query(check_unit_names,mysql))
+units_to_add    	<- unit_query_names[!toupper(unit_query_names)%in%toupper(query_table_info.df$COLUMN_NAME)]
+cat("done. \n")
+if (length(units_to_add) > 0) {
+   cat("Units table column will be added for species: \n")
+   for (i in 1:length(units_to_add)) {
+      cat(paste(units_to_add[i],"\n"))
+      create_units_column <- paste("alter table project_units add column ",units_to_add[i]," varchar(10);",sep="")
+      mysql_result <- dbSendQuery(con,create_units_column)
    }
-   cat("done. \n")
+   cat("Done adding missing units species. \n\n")
 }
+########################################################
+
+###########################################
+### Load units into project units table ###
+###########################################
 cat("Loading units into project units table...")
+
 for (i in 1:length(unit_query_names)) {
    q2_units <- paste(q2_units,unit_query_names[i],sep=",")
 }
@@ -215,43 +189,24 @@ mysql_result <- suppressMessages(dbSendQuery(con,qs_units))
 cat("done. \n")
 ###########################################
 
+##################################################
+### Check for missing species in project table ###
+##################################################
+database_species_names <- sitex_names
+cat("Checking for missing species in project table...")
+check_species           <- paste("select COLUMN_NAME from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = '",run_id,"';",sep="")
+query_table_info.df     <- db_Query(check_species,mysql)
+species_to_add          <- database_species_names[!toupper(database_species_names)%in%toupper(query_table_info.df$COLUMN_NAME)]
+cat("done. \n")
 {
-   if (sitex_hdr_format == 'old') {
-      database_species_names <- NULL
-      for (i in 1:length(sitex_names)) {
-         if ((sitex_modob[i] == "Observed") || (sitex_modob[i] == "observed")) {
-            database_species_names <- c(database_species_names,paste(sitex_names[i],"_ob",sep=""))
-         }
-         else {
-            database_species_names <- c(database_species_names,paste(sitex_names[i],"_mod",sep=""))
-         }
+   if (length(species_to_add) > 0) {
+      cat("Table column will be added for species: \n")
+      cat(paste(species_to_add[1],"\n"))
+      create_species_column <- paste("alter table ",run_id," add column ",species_to_add[1]," double",sep="")
+      for (i in 2:length(species_to_add)) {
+         cat(paste(species_to_add[i],"\n"))
+         create_species_column <- paste(create_species_column,", add column ",database_species_names[i]," double",sep="")
       }
-   }
-   else {
-      database_species_names <- sitex_names
-   }
-}
-if ((check_missing == 'Y') || (check_missing == 'T')) {	# Skip checking for missing species in the project table if F
-   cat("Checking for missing species in project table: \n")
-   for (i in 1:length(database_species_names)) {
-      check_species       <- paste("select * from information_schema.COLUMNS where TABLE_SCHEMA = '",dbase,"' and TABLE_NAME = '",run_id,"' and COLUMN_NAME = '",database_species_names[i],"';",sep="")
-      query_table_info.df <- db_Query(check_species,mysql)
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {
-         cat(paste("Table column will be added for species ",database_species_names[i],"\n",sep=""))
-         {
-            if (!exists("create_species_column")) {
-               create_species_column <- paste("alter table ",run_id," add column ",database_species_names[i]," double",sep="")
-            }
-            else {
-               create_species_column <- paste(create_species_column,", add column ",database_species_names[i]," double",sep="")
-            }
-         }
-      }
-   }
-}
-
-{
-   if (exists("create_species_column")) {
       create_species_column <- paste(create_species_column,";",sep="")
       cat(paste("\nCreating table columns for all missing species...",sep=""))
       dbSendQuery(con,create_species_column)
@@ -261,7 +216,7 @@ if ((check_missing == 'Y') || (check_missing == 'T')) {	# Skip checking for miss
       cat("No missing species found in the project table. \n")
    }
 }
-cat("Done checking for missing species. \n")
+###################################################
 
 q1_main <- paste("REPLACE INTO",run_id,sep=" ")
 q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, j, ob_dates, ob_datee, ob_hour, month"
