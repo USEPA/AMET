@@ -52,7 +52,7 @@ setenv EMAIL_ADDR 	"appel.wyat@epa.gov"
 ### AQ observation data directory and input files ###
 setenv AMET_OBS 	$AMETBASE/obs/AQ
 setenv SITES_META_LIST	$AMETBASE/scripts_db/input_files/sites_meta.input
-setenv AMET_SPEC_FILE 	$AMETBASE/scripts_db/input_files/AQ_species_list.input
+setenv AQ_SPECIES_LIST 	$AMETBASE/scripts_db/input_files/AQ_species_list.input
 
 ### Output directory -- post-processed data will be written here ###
 setenv AMET_OUT 	$AMETBASE/output/$AMET_PROJECT
@@ -63,7 +63,6 @@ setenv RUN_SITEX        T
 setenv LOAD_SITEX       T
 
 ### Flags for project creation, updating and removal ###
-setenv CHECK_PROJECT_TABLE 	T
 setenv UPDATE_PROJECT 		F
 setenv REMAKE_PROJECT 		F
 setenv DELETE_PROJECT 		F
