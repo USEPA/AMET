@@ -1094,12 +1094,11 @@ specified in the aqProject.csh script.
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **AMET\_OBS**              | Top of the AQ observation data directory (defaults to **$AMETBASE/obs/AQ**) |
 | **SITE\_META\_LIST**       | Input file containing the list of AQ site meta data files (default is **$AMETBASE/scripts\_db/input\_files/sites\_meta.input**) |
-| **AMET\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/scripts\_db/input\_files/AMET\_species\_list.input** |
+| **A\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/scripts\_db/input\_files/AMET\_species\_list.input** |
 | **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT**) |
 | **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
 | **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
 | **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. |
-| **CHECK\_PROJECT\_TABLE**  | T/F; Flag to determine whether or not to check project table for missing species columns. Must be set to T for new projects. Can be set to F for existing projects to speed up performance. If in doubt, just set to T. |
 | **UPDATE\_PROJECT**        | T/F; Flag to update project. Setting to T will re-write project info (i.e. description, user_name, email) but not affect any existing data in the database. |
 | **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. |
 | **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. |
@@ -1756,3 +1755,7 @@ makes use of the input file
 all of the network-specific processing to be handled in one location,
 and allows for easier addition of new networks into the analysis
 scripts. This file does not need to be modified unless adding new AQ networks to AMET.
+
+7. AQ Species List Input File
+
+
