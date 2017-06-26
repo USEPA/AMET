@@ -37,7 +37,7 @@ setenv AMETBASE 	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
 setenv AMET_DATABASE 	amet
 setenv MYSQL_CONFIG     $AMETBASE/configure/amet-config.R
 
-## AMET login info. Uncomment to specify AMET login/pass via script instead of via prompt/qsub command line. ###
+## AMET login info. Comment out to specify AMET login/pass via script instead of via prompt/qsub command line. ###
 ### Entering 'config_file' will obtain the login/pass from the amet-config.R file instead. ###
 set    mysql_login="config_file"
 set    mysql_password="config_file"
@@ -55,7 +55,7 @@ setenv SITES_META_LIST	$AMETBASE/scripts_db/input_files/sites_meta.input
 setenv AQ_SPECIES_LIST 	$AMETBASE/scripts_db/input_files/AQ_species_list.input
 
 ### Output directory -- post-processed data will be written here ###
-setenv AMET_OUT 	$AMETBASE/output/$AMET_PROJECT
+setenv AMET_OUT 	$AMETBASE/output/$AMET_PROJECT/sitex_output
 
 ### Options to write, run and load sitex files (T/F) ###
 setenv WRITE_SITEX      T
@@ -77,23 +77,23 @@ setenv TIME_SHIFT 		0
 setenv START_DATE       2011182
 setenv END_DATE         2011213
 
-### Set path to concentration files (up to 10 files, sequentially numbered) ###
-setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.aconc.07
-setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.dep.07
+### Set path to concentration/dep files (up to 10 files, sequentially numbered) ###
+setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
+setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
 
 ### Flag (Y/T or N/F) set by user to include data in the analysis ###
 ### Standard North America networks (should all be set to T for complete analysis) ###
-setenv CASTNET          F
-setenv CASTNET_HOURLY   F
-setenv CASTNET_DAILY_O3 F
-setenv IMPROVE          F 
-setenv NADP             F
-setenv CSN              F
-setenv AQS_HOURLY       F
-setenv AQS_DAILY_O3     F
+setenv CASTNET          T
+setenv CASTNET_HOURLY   T
+setenv CASTNET_DAILY_O3 T
+setenv IMPROVE          T 
+setenv NADP             T
+setenv CSN              T
+setenv AQS_HOURLY       T
+setenv AQS_DAILY_O3     T
 setenv AQS_DAILY        T
-setenv SEARCH_HOURLY    F
-setenv SEARCH_DAILY     F
+setenv SEARCH_HOURLY    T
+setenv SEARCH_DAILY     T
 
 ### Non-standard North America networks (should be set to F unless specifically required) ###
 setenv NAPS_HOURLY      F
@@ -175,7 +175,7 @@ endif
 
 ## Check for output directory, create if not present
 if (! -d $AMET_OUT) then
-    mkdir $AMET_OUT
+    mkdir -p $AMET_OUT
 endif
 
 ## setup metadata tables
