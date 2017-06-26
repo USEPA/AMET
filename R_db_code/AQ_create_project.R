@@ -34,7 +34,7 @@ email		<- Sys.getenv('EMAIL_ADDR')
 description	<- Sys.getenv('RUN_DESCRIPTION')
 delete_table	<- Sys.getenv('DELETE_PROJECT')
 remake_table	<- Sys.getenv('REMAKE_PROJECT')
-update_table	<- Sys.getenv('UPDATE_PROEJCT')
+update_table	<- Sys.getenv('UPDATE_PROJECT')
 
 args              <- commandArgs(2)
 mysql_login       <- args[1]
