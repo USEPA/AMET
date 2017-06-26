@@ -7,17 +7,17 @@
 #                        MET_timeseries.R                               #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
+#         Version: 	1.3                                                 #
+#         Date:		May 15, 2017                                          #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
 #                                                                       #
-#	Version: 	1.2                                             #
-#	Date:		Oct, 2007                                       #
-#	Contributors:	Alexis Zubrow (IE UNC)                          #
+#	Version: 	1.2                                                         #
+#	Date:		Oct, 2007                                                     #
+#	Contributors:	Alexis Zubrow (IE UNC)                                  #
 #                                                                       #
 #-----------------------------------------------------------------------#
 # Version 1.2, May 8, 2013, Rob Gilliam                                 #
@@ -30,10 +30,10 @@
 #            - Extensive code clean and reformatting                    #
 #                                                                       #
 #  Version 1.3, May 15, 2017, Rob Gilliam                               # 
-#  Updates: - Removed old amet-config.R configuration option that       #
+#  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
-#           - Added a read password and MySQL config though wrapper     #
-#             and setenv statements.                                    # 
+#             Now users define that file location in csh wrapper scripts#
+#             via setenv MYSQL_CONFIG variable.                         #
 #           - Removed some deprecated variables and cleaned/formatted   #
 #             script for better readability. Also changed dir names     #
 #             to reflect the update (i.e., R_analysis_code instead of R)#      
@@ -69,8 +69,8 @@
 
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
- mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                        passwd=mysqlpasswd,maxrec=maxrec)
+ mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
 ########################################################################################################################
 #	MAIN TIME SERIES PROGRAM
