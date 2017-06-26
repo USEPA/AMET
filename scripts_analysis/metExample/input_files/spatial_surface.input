@@ -108,8 +108,8 @@
    me <-as.numeric(substr(date[2],5,6))       # Month to end
    ds <-as.numeric(substr(date[1],7,8))       # Day of the month to start npa processing
    de <-as.numeric(substr(date[2],7,8))       # Day to end 
-   hs <-as.numeric(substr(date[1],9,10))      # Hour to start
-   he <-as.numeric(substr(date[2],9,10))      # Hour to end
+   hs <-as.numeric(substr(date[1],10,11))     # Hour to start
+   he <-as.numeric(substr(date[2],10,11))     # Hour to end
    saveid	<-model
 
 #---------------------------------------------------##

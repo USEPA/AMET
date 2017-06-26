@@ -2,13 +2,14 @@
 ####################################################################################
 #                          USER CONFIGURATION
 
+# Main directories of AMET and MADIS data
+setenv AMETBASE  /home/grc/AMET_v13
+
 # Define Database and Password from argument input
 setenv MYSQL_LOGIN   rgilliam
 setenv AMET_DATABASE amad_nrt
 setenv MYSQL_SERVER  darwin.rtpnc.epa.gov
-
-# Main directories of AMET and MADIS data
-setenv AMETBASE  /home/grc/AMET2.0
+setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
 # Root directory of MADIS NetCDF obs. Note that this directory should
 # contain subdirectories like this in the standard
@@ -25,7 +26,7 @@ setenv RUN_DESCRIPTION "Main base WRF 12 km CONUS run with standard US EPA confi
 
 # Meteorological model output file location and control. The files that can be listed with
 # location below. A wildcard (*) is added in the script to get list of outputs.
-setenv METOUTPUT /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/conus12/wrfout/wrfout_d01_2017-05-29
+setenv METOUTPUT /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/conus12/wrfout/wrfout_d01_2017-06
 
 # MADIS dataset to match with MPAS or WRF
 # Options: metar, maritime, sao, mesonet, or text for non-MADIS obs input
@@ -42,7 +43,8 @@ setenv MAXDTMIN 15
 
 # If T, the master stations table in database will be updated with any new observation site metadata. May be wise to 
 # turn on from time to time as new sites around the world are added to the MADIS database. 
-# It is not neccessary to use frequently. 
+# It is not neccessary to use frequently. It is mandantory to use for a new database if you want
+# the ability to plot spatial statistics or use any windowing of a domain in statistics specs.
 setenv UPDATE_SITES F 
 
 # Write hourly site insert statements and reject statement to screen or logfile
@@ -54,8 +56,8 @@ setenv VERBOSE T
 ### when running interactively, or via qsub argument password if queued.
 ### This eliminates plain text file password in amet-config.R file and improves
 ### security.
-### Method 1: ./matching_obs_mod_wrf.csh mysqlpassword
-### Method 2: qsub -v password='mysqlpassword' matching_sfc.csh
+### Method 1: ./matching_surface.csh (Will prompt for password) 
+### Method 2: qsub -v password='mysqlpassword' matching_surface.csh
 if (! "$?password" ) then
    echo "Enter the AMET user password: "
    stty -echo
@@ -85,10 +87,10 @@ endif
 ####################################################################################
 ####################################################################
 # R run command of main model-obs matching script
-cd $AMETBASE/scripts_db/$AMETPROJECT
+cd $AMETBASE/scripts_db/$AMET_PROJECT
 echo 'Date/Time START'
 date
- R --no-save --slave --args < $AMETBASE/R_db_code/MET_matching.R "$amet_pass"
+ R --no-save --slave --args < $AMETBASE/R_db_code/MET_matching_surface.R "$amet_pass"
 echo 'Date/Time END'
 date
 exit (1)
