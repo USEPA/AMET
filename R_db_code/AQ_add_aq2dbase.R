@@ -205,7 +205,7 @@ cat("done. \n")
       create_species_column <- paste("alter table ",run_id," add column ",species_to_add[1]," double",sep="")
       for (i in 2:length(species_to_add)) {
          cat(paste(species_to_add[i],"\n"))
-         create_species_column <- paste(create_species_column,", add column ",database_species_names[i]," double",sep="")
+         create_species_column <- paste(create_species_column,", add column ",species_to_add[i]," double",sep="")
       }
       create_species_column <- paste(create_species_column,";",sep="")
       cat(paste("\nCreating table columns for all missing species...",sep=""))
