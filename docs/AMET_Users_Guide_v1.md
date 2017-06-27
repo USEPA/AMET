@@ -1758,4 +1758,14 @@ scripts. This file does not need to be modified unless adding new AQ networks to
 
 7. AQ Species List Input File
 
+The input file **$AMET/scripts\_analysis/aqExample/input_files/AQ_species_list.input** describes the mapping of observation species from each network to CMAQ model species (post-processed using combine) for use with site compare. This file is read as an input file to the AQ_matching.R script and used to create the site compare scripts for each network. This file is necessary since most air quality networks use different names to represent species. Site compare requires the observed and modeled species names to work correctly. The basic structure to map observation and species names for site compare is:
 
+ob_species_name, ob_species_unit, model_species_name, model_species_unit, output_species_name
+
+The **output_species_name** above is the name used by AMET to identify the species in the database. For example, for the IMPROVE network, sulfate is calculated in site compare by the following line:
+
+SO4f_val, ug/m3, ASO4IJ, ug/m3, SO4
+
+where SO4f_val is the name given to SO4 in the IMPROVE observation file, ASO4IJ is the name given to fine SO4 in the CMAQ combine file, and SO4 is the column name used to identify SO4 in the site compare output .csv file. Note that the units only need to be specified for either the observation or model species if they are the same (typically they are), but can be specified for both species.
+
+The **AQ_species_list.input** is setup to work with the default AQ networks in AMET. However, it can be modified to work with additional networks, or the species for existing networks can be modified if desired. Just follow the in the file to add additional species. Note that the species are numbered sequentially, and therefore when adding or removing species be careful to correctly number the remaining species.
