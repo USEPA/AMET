@@ -16,12 +16,13 @@ git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
 
 ## AMET 1.3 Repository Guide
 Source code and scripts are organized as follows:
-* **R:** 
 * **bin:** 
 * **configure:** 
 * **docs:** 
-* **obs:** 
-* **perl:** 
+* **obs:**
+* **output:**
+* **R_db_code:**
+* **R_analysis_code:**
 * **scripts_analysis:** 
 * **scripts_db:** 
 * **src:** 
