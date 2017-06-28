@@ -1,5 +1,3 @@
-<img src="media/image1.jpeg" width="304" height="72" />
-
 ***Atmospheric Model Evaluation Tool (AMET)  
 User’s Guide***
 
