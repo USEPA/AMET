@@ -7,8 +7,8 @@
 #                      MET_daily_barplot.R                              #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
+#         Version: 	1.3                                                 #
+#         Date:		May 15, 2017                                          #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -27,47 +27,48 @@
 #          -Cleaned code                                                #
 #                                                                       #            
 # Version 1.3, May 15, 2017, Rob Gilliam                                #
-#  Updates: - Removed old amet-config.R configuration option that       #
+#  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
+#             Now users define that file location in csh wrapper scripts#
+#             via setenv MYSQL_CONFIG variable.                         #
 #           - Changed directory names to reflect new directory structure#
 #             of AMET. Also reformatted some parts of the code          #
 #             for better readability.                                   #
 #########################################################################
 #:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
-  if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
+ if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
 
 ########################################################
 #    Initialize AMET Directory Structure Via Env. Vars
 #    AND Load required function and conf. files
 #########################################################
 
-  ## get some environmental variables and setup some directories
-  ametbase         <-Sys.getenv("AMETBASE")
-  ametR            <-paste(ametbase,"/R_analysis_code",sep="")
-  ametRinput       <-Sys.getenv("AMETRINPUT")
-  mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
+ ## get some environmental variables and setup some directories
+ ametbase         <-Sys.getenv("AMETBASE")
+ ametR            <-paste(ametbase,"/R_analysis_code",sep="")
+ ametRinput       <-Sys.getenv("AMETRINPUT")
+ mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
 
-  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-  # and not specified via AMET_OUT, then set figdir to the current directory
-  if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
-  if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                       }
+ # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
+ # and not specified via AMET_OUT, then set figdir to the current directory
+ if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
+ if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                       }
 
-  ## source some configuration files, AMET libs, and input
-  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
-  source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
-  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
-  source (mysqlloginconfig)
-  source (ametRinput)	                                
+ ## source some configuration files, AMET libs, and input
+ source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
+ source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
+ source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
+ source (mysqlloginconfig)
+ source (ametRinput)	                                
 
-  ametdbase      <- Sys.getenv("AMET_DATABASE")
-  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
-  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                        passwd=mysqlpasswd,maxrec=maxrec)
+ ametdbase      <- Sys.getenv("AMET_DATABASE")
+ mysqlserver    <- Sys.getenv("MYSQL_SERVER")
+ mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
-
-  plotopts       <-list(plotfmt=plotfmt)
-  dailybox.Rfile <-paste(figdir,"/daily_bar_",project,".",runid,".Rdata",sep="")
+ plotopts       <-list(plotfmt=plotfmt)
+ dailybox.Rfile <-paste(figdir,"/daily_bar_",project,".",runid,".Rdata",sep="")
 #####################################################################
 # MAIN PROGRAM
 # 1. Query for data over requested time period

@@ -17,13 +17,14 @@
 #                          USER CONFIGURATION OPTIONS
 
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMET2.0 
+  setenv AMETBASE /home/grc/AMET_v13 
 
-  # MySQL Server and AMET database configuration file.
+  # MySQL Server and AMET database configuration file. Default AMET config dir.
   # For security make file only readable by you. With the following variables
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
-  setenv MYSQL_CONFIG  /home/gilliam/.ametconfig
+  setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
+
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE amad_nrt
   setenv MYSQL_SERVER  darwin.rtpnc.epa.gov
@@ -43,8 +44,8 @@
   #  This excludes sites with limited obs. 
   #  24*NDAYS*0.5 would only do sites with 50% of data over
   #  number of days
-  setenv AMET_DATES "20170502"
-  setenv AMET_DATEE "20170510"
+  setenv AMET_DATES "20170502 00"
+  setenv AMET_DATEE "20170510 23"
   setenv THRESHOLD 1
 
   # Option to do daily statistics over the specified period above
@@ -62,7 +63,7 @@
   setenv AMET_PTYPE pdf             
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/spatial_surface.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/spatial_surface.input  
   
   # Check for plot and text output directory, create if not present
   mkdir -p $AMETBASE/output/$AMET_PROJECT

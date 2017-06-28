@@ -27,25 +27,46 @@
   require(date)
   require(ncdf4)
 
+  config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+  if (!exists("config_file")) {
+     stop("Must set MYSQL_CONFIG environment variable")
+  }
+  source(config_file)
+
+  amet_base <- Sys.getenv('AMETBASE')
+  if (!exists("amet_base")) {
+     stop("Must set AMETBASE environment variable")
+  }
+
+  ametdbase <-Sys.getenv('AMET_DATABASE')
+  if (!exists("ametdbase")) {
+     stop("Must set AMET_DATABASE environment variable")
+  }
+
+  mysqllogin <-Sys.getenv('MYSQL_LOGIN')
+  if (!exists("mysqllogin")) {
+     stop("Must set MYSQL_LOGIN environment variable")
+  }
+
   # Get Login and Password from R command arguments
   args              <- commandArgs(1)
-  mysqlpasswd       <- args[1]
+  mysqlpass         <- args[1]
+
+  ### Use MySQL login/password from config file if requested ###
+  if (mysqlpass == 'config_file')  { mysqlpass  <- amet_pass  }
+  ##############################################################
 
   # Initialize AMET Directory Structure Via Env. Vars
   # AND Load required function and configuration files
-  ametbase    <-Sys.getenv("AMETBASE")
-  source(paste(ametbase,"/R_db_code/MET_model.read.R",sep="")) 
-  source(paste(ametbase,"/R_db_code/MET_observation.read.R",sep="")) 
-  source(paste(ametbase,"/R_db_code/MET_site.mapping.R",sep="")) 
-  source(paste(ametbase,"/R_db_code/MET_dbase.R",sep=""))
-  source(paste(ametbase,"/R_db_code/MET_misc.R",sep=""))
+  source(paste(amet_base,"/R_db_code/MET_model.read.R",sep="")) 
+  source(paste(amet_base,"/R_db_code/MET_observation.read.R",sep="")) 
+  source(paste(amet_base,"/R_db_code/MET_site.mapping.R",sep="")) 
+  source(paste(amet_base,"/R_db_code/MET_dbase.R",sep=""))
+  source(paste(amet_base,"/R_db_code/MET_misc.R",sep=""))
 
 # Users can pass login and password via environmental variables if not concerned about security.
-# mysqlpasswd    <- Sys.getenv("AMETPASS")  
 
-  mysqllogin     <- Sys.getenv("MYSQL_LOGIN")
   madisbase      <- Sys.getenv("MADISBASE")  
-  ametdbase      <- Sys.getenv("AMET_DATABASE")  
   mysqlserver    <- Sys.getenv("MYSQL_SERVER")
   met_output     <- Sys.getenv("METOUTPUT") 
   madis_dset     <- Sys.getenv("MADISDSET") 
@@ -65,8 +86,7 @@
   # mysql server details below has two options with the first commented out. 1) Plain text
   # file with password (not secure) and 2) The default, via csh script and password argument.
   # For option 1, the file is $AMETBASE/configure/amet-config.R 
-  #mysql          <-list(server=server,dbase=ametdbase,login=login,passwd=passwd,maxrec=maxrec)
-  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,passwd=mysqlpasswd,maxrec=5E6)
+  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,passwd=mysqlpass,maxrec=5E6)
   command        <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",
                           mysql$passwd,"' --database=",mysql$dbase," < tmp.query",sep="")
   sitecommand    <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",

@@ -11,16 +11,17 @@
 #                          USER CONFIGURATION OPTIONS
   
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMET2.0 
+  setenv AMETBASE /home/grc/AMET_v13 
 
-  # MySQL Server and AMET database configuration file.
+  # MySQL Server and AMET database configuration file. Default AMET config dir.
   # For security make file only readable by you. With the following variables
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
-  setenv MYSQL_CONFIG  /home/gilliam/.ametconfig
+  setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
+
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  amad_nrt
-  setenv MYSQL_SERVER   darwin.rtpnc.epa.gov
+  setenv AMET_DATABASE amad_nrt
+  setenv MYSQL_SERVER  darwin.rtpnc.epa.gov
   
   #  AMET project id or simulation id
   setenv AMET_PROJECT wrf_conus_12km
@@ -56,7 +57,7 @@
   setenv AMET_PTYPE pdf            
 
   # Log File for R script
-  setenv AMET_LOG $AMETBASE/scripts_analysis/$AMET_PROJECT/daily_barplot.log
+  setenv AMET_LOG $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/daily_barplot.log
   
 #----------------------------------------------------------------------------------------
 # Most users will not need to modify anything below
