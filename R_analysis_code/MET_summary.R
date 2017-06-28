@@ -7,8 +7,8 @@
 #                         MET_summary.R                                 #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
+#         Version: 	1.3                                                 #
+#         Date:		May 15, 2017                                          #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -26,10 +26,10 @@
 #          - Extensive cleaning of R script, R input and .csh files     #
 #                                                                       #
 #  Version 1.3, May 15, 2017, Rob Gilliam                               # 
-#  Updates: - Removed old amet-config.R configuration option that       #
+#  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
-#           - Added a read password and MySQL config though wrapper     #
-#             and setenv statements.                                    # 
+#             Now users define that file location in csh wrapper scripts#
+#             via setenv MYSQL_CONFIG variable.                         #
 #           - Removed some deprecated variables and cleaned/formatted   #
 #             script for better readability. Also changed dir names     #
 #             to reflect the update (i.e., R_analysis_code instead of R)#      
@@ -68,8 +68,8 @@
  
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
- mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                       passwd=mysqlpasswd,maxrec=maxrec)
+ mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
 #################################################################################################################
 #	MAIN SUMMARY STATISTICS PROGRAM
@@ -226,6 +226,7 @@
          #	Temperature Stats	#
          ################################
          figure<-paste(figdir,"/",project,".",pid[q],".T.ametplot",sep="")
+         writeLines("Plotting summary of 2-m Temperature. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[1],
                   statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
          obs=datap$temp[,2]
@@ -252,6 +253,7 @@
          #	Wind Speed Stats	#
          ################################
          figure<-paste(figdir,"/",project,".",pid[q],".WS.ametplot",sep="")
+         writeLines("Plotting summary of Wind Speed. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[3],statid,
                   obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
          obs=datap$ws[,2]
@@ -278,8 +280,8 @@
          ################################
          #	Wind Direction Stats	#
          ################################
-         writeLines("Plotting summary of Wind Direction.. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".WD.ametplot",sep="")
+         writeLines("Plotting summary of Wind Direction.. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[4],statid,
                   obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,4)
          obs=datap$wd[,2]
@@ -311,8 +313,8 @@
          ################################
          #	Mixing Ratio Stats	#
          ################################
-         writeLines("Plotting summary of Mixing Ratio.. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".Q.ametplot",sep="")
+         writeLines("Plotting summary of Mixing Ratio.. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[2],
                   statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
          obs=datap$q[,2]*1000

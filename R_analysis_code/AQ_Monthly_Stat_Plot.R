@@ -92,13 +92,11 @@ network_name<-network_label[[1]]
 #######################################
 ### Compute total number of  months ###
 #######################################
-start_year	<- as.integer(substr(start_date,1,4))
-end_year	<- as.integer(substr(end_date,1,4))
-start_month     <- as.integer(substr(start_date,5,6))
-end_month       <- as.integer(substr(end_date,5,6))
+start_month     <- month_start
+end_month       <- month_end
 num_years       <- (year_end-year_start)+1
 years           <- seq(year_start,year_end,by=1)
-months		<- NULL
+months          <- NULL
 ##########################################
 
 #########################################
@@ -267,12 +265,12 @@ title(main=main.title,cex=1.5)
 
 ### Finish up ###
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
+   convert_command<-paste("convert -flatten -density 150x150 ",filename1_pdf," png:",filename1_png,sep="")
    dev.off()
    system(convert_command)
 
    if (ametptype == "png") {
-      remove_command <- paste("rm ",filename_pdf,sep="")
+      remove_command <- paste("rm ",filename1_pdf,sep="")
       system(remove_command)
    }
 }

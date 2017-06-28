@@ -13,13 +13,14 @@
 ###################################################################################
 #                          USER CONFIGURATION OPTIONS
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMETv1.3 
+  setenv AMETBASE /home/grc/AMET_v13 
 
-  # MySQL Server and AMET database configuration file.
+  # MySQL Server and AMET database configuration file. Default AMET config dir.
   # For security make file only readable by you. With the following variables
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
-  setenv MYSQL_CONFIG  /home/gilliam/.ametconfig
+  setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
+
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  amad_nrt
   setenv MYSQL_SERVER   darwin.rtpnc.epa.gov
@@ -61,7 +62,7 @@
 
 #---------------------------------------------------------------------------------------
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/timeseries.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/timeseries.input  
   
   # NOTE: Do not modify; this statement is necessary if an array of sites is specified.
   setenv AMET_SITEID "$SITES[*]"
