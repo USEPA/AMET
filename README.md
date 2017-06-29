@@ -48,10 +48,11 @@ AMET-wide updates:
    - The overall number of required input files has been reduced. 
    - The MySQL creditial management has been made more robust. Users can now opt to either enter the MySQL login/pass information manually, provide the login/pass in the run script or through the queue (e.g. qsub), or point a configure file that contains the MySQL user creditials (default option). This allows the user more options for handling the MySQL login/password information.
 
-AMET-wide updates:
-   - A number of new analysis scripts have been added to AMETv1.3.
+AQ-side updates:
+   - A number of new analysis scripts have been added to AMETv1.3
    - Several new options have been introduced to control the production and look of many of the scripts.
-   - A new batch processing script has been added to AMETv1.3. This allows for the execution of all the analysis scripts through a single "batch" script. The user can specifiy which set of analysis scripts they wish to run (e.g. scatter plots, time series plots, box plots, etc.) and minimally control the settings for those plots. The user will execute a single script which will then run all the specified analysis scripts and write the output to an organized directory tree.
+   - A new batch processing script has been added to AMETv1.3. This allows for the execution of all the analysis scripts through a single "batch" script. The user can specifiy which set of analysis scripts they wish to run (e.g. scatter plots, time series plots, box plots, etc.) and minimally control the settings for those plots. The user will execute a single script which will then run all the specified analysis scripts and write the output to an organized directory tree
+   - Support for two new AQ networks, AMON and FLUXNET
    
 
 ## EPA Disclaimer
