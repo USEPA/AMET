@@ -17,20 +17,21 @@
 #                          USER CONFIGURATION OPTIONS
 
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMET_v13 
+  setenv AMETBASE /home/xxx/AMET_v13 
 
-  # MySQL Server and AMET database configuration file. Default AMET config dir.
+  # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
+  # These are the only required for meteorological analysis. AQ requires more.
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE amad_nrt
-  setenv MYSQL_SERVER  darwin.rtpnc.epa.gov
+  setenv AMET_DATABASE  amet_test
+  setenv MYSQL_SERVER   xxxxxxx.epa.gov
 
   #  AMET project id or simulation id
-   setenv AMET_PROJECT wrf_conus_12km
+  setenv AMET_PROJECT metExample
   
   #  Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/spatial_surface
@@ -44,9 +45,9 @@
   #  This excludes sites with limited obs. 
   #  24*NDAYS*0.5 would only do sites with 50% of data over
   #  number of days
-  setenv AMET_DATES "20170502 00"
-  setenv AMET_DATEE "20170510 23"
-  setenv THRESHOLD 1
+  setenv AMET_DATES "20130701 00"
+  setenv AMET_DATEE "20130731 23"
+  setenv THRESHOLD 558
 
   # Option to do daily statistics over the specified period above
   # Or statistics for the entire period.

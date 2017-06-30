@@ -13,21 +13,21 @@
 ###################################################################################
 #                          USER CONFIGURATION OPTIONS
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMET_v13 
+  setenv AMETBASE /home/xxxx/AMET_v13 
 
-  # MySQL Server and AMET database configuration file. Default AMET config dir.
+  # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  amad_nrt
-  setenv MYSQL_SERVER   darwin.rtpnc.epa.gov
+  setenv AMET_DATABASE  amet_test
+  setenv MYSQL_SERVER   xxxxxxx.epa.gov
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. If left unset, it's ignored.
-  setenv AMET_PROJECT wrf_conus_12km
+  setenv AMET_PROJECT metExample
   setenv AMET_PROJECT2
   
   #  Directory where figures and text output will be directed
@@ -46,9 +46,9 @@
   #  Date range of timeseries where year (YY), month (MM), day (DD) are 
   #  the start and end values with one space between
   #  Below is the example for May 1-10, 2017
-  setenv AMET_YY "2017 2017"             
-  setenv AMET_MM "05 05"             
-  setenv AMET_DD "01 10"             
+  setenv AMET_YY "2011 2011"             
+  setenv AMET_MM "07 08"             
+  setenv AMET_DD "01 01"             
 
   #  Additional criteria to add to site query
   setenv AMET_EXTRA1              

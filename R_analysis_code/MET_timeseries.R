@@ -76,6 +76,7 @@
 #	MAIN TIME SERIES PROGRAM
 ########################################################################################################################
 
+  drange_plot <-paste(dates$y,dform(dates$m),dform(dates$d),"-",datee$y,dform(datee$m),dform(datee$d),sep="")
 
   # If the time series should be an hourly average of a collection  of stations, 
   # convert the station id vector, which contains multiple stations, to a single
@@ -100,8 +101,10 @@
   # Then set up figure names. 
   if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
   if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
-  figure  <-paste(figdir,"/",model1,".",statid,sep="")
-  textfile<-paste(figdir,"/",model1,".",statid,".txt",sep="")
+  figure  <-paste(figdir,"/",model1,".",statid,".",drange_plot,sep="")
+  textfile<-paste(figdir,"/",model1,".",statid,".",drange_plot,".txt",sep="")
+ 
+ savefile_name<-paste(figure,".Rdata",sep="")
    
 
 for (sn in 1:length(statid)){
@@ -128,7 +131,7 @@ for (sn in 1:length(statid)){
   data1<-ametQuery(query1,mysql)
 
   # If no data is in the database for the station then skip to next station or end program
-  if(length(data1) == 0){
+ if ( dim(data1)[1] == 0) {
 		writeLines(paste('',
 		           '**********************************************************************************',
 		           'NO DATA WAS FOUND FOR THIS SITE: Will skip to next site or terminate              ',
@@ -154,13 +157,16 @@ for (sn in 1:length(statid)){
   }
   else {
      tseries2 <-tseries1
+     data2    <-data1
   }
+  
   #######################################################################################
   #   STEP 3) Make a R data file and text file of time series if user specifies
   #######################################################################################
   # If users specifies they want a R data file with timeseries data then write
   if (savefile){
-  	save(tseries1,file=paste(figure,".RData",sep=""))
+        writeLines(paste("R data file output:",savefile_name[sn]))
+  	save(tseries1,tseries2,data1, data2, file=savefile_name[sn])
   }
   
   ##################################################################################################
@@ -226,12 +232,14 @@ for (sn in 1:length(statid)){
   
   # Write text output if user specifies
   if(textout) {
+     writeLines(paste("R text file output:",textfile[sn]))
      write.table(data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],ws[,1],ws[,2],wd[,1],wd[,2]),
                  textfile[sn],sep=",", col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)",
                  "Q Mod (g/kg)","Q Obs (g/kg)","WS Mod (m/s)","WS Obs (m/s)","WD Mod (Deg)","WD Obs (Deg)"),
                  row.names=F, quote=FALSE)
   }
-  writeLines(paste("Plotting figure for ",statid[sn]))
+  writeLines(paste("Plotting figure for site: ",statid[sn],"-->",figure[sn],".",plotopts$plotfmt,sep=""))
+  writeLines(paste("---------------------------------------------------------------------------------------"))
 #######################################################################################
 #   STEP 5) Plot time series
 #######################################################################################
@@ -239,7 +247,6 @@ for (sn in 1:length(statid)){
          plotTseries(temp,ws,wd,q,date.vec,plotopts,qclims,comp=comp,
                      tsnames=c(statid[sn],model1,model2),wdweightws=wdweightws)
  )
- writeLines(paste("Finished with ",statid[sn]))
  rm(temp,ws,ws,q,tseries1,data1)
 }	# End of loop through station ids
 ########################################################################################################################

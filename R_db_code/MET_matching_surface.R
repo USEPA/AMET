@@ -71,10 +71,12 @@
   met_output     <- Sys.getenv("METOUTPUT") 
   madis_dset     <- Sys.getenv("MADISDSET") 
   ametproject    <- Sys.getenv("AMET_PROJECT")
+  projectdesc    <- Sys.getenv("RUN_DESCRIPTION")
   maxdtmin       <- as.numeric(Sys.getenv("MAXDTMIN"))
   interp         <- Sys.getenv("INTERP_METHOD")
   updateSiteTable<-as.logical(Sys.getenv("UPDATE_SITES"))
-  projectdesc    <- Sys.getenv("RUN_DESCRIPTION")
+  autoftp        <-as.logical(Sys.getenv("AUTOFTP"))
+  madis_server   <- Sys.getenv("MADIS_SERVER")
   verbose        <- as.logical(Sys.getenv("VERBOSE"))
 
   userid         <-system("echo $USER",intern = TRUE)
@@ -103,7 +105,7 @@
   # DX and DY (in fractional grid form) of the obs site with respect to the grid point to the 
   # south and west. These are computed in site mapping to keep from repetative logic and calculations. 
   sitenum <-as.integer(0)
-  sitemax <-as.integer(15000)
+  sitemax <-as.integer(45000)
   sitelist<-array(NA,c(sitemax))
   cind    <-array(NA,c(sitemax,3))
   cwgt    <-array(NA,c(sitemax,3))
@@ -145,6 +147,7 @@ for(f in 1:nf) {
     # check first time model values. If 0, set skipind1 to 2.
     # This avoids an evaluation of obs against zero model values
     skipind  <-1
+    if(length(dim(model$sfc_met$t2)) < 2) { next }
     if(sum( model$sfc_met$t2[,1]) == 0) {
       skipind <-2
     }
@@ -183,7 +186,8 @@ for(t in skipind:nt){
   #          ihour, imin, isec, stime, stime2
   # sfc_met: t2, q2, u10, v10
   if(madis_dset != "text") {
-    obs<- madis_surface(madisbase, madis_dset, datetime, model$projection$standlon, model$projection$conef)
+    obs<- madis_surface(madisbase, madis_dset, datetime, autoftp, madis_server,
+                        model$projection$standlon, model$projection$conef)
     if(is.na(obs[1])) { next }
   } else if(madis_dset == "text") {
     obs<- text_surface(madisbase, datetime, model$projection$standlon, model$projection$conef)
@@ -235,7 +239,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     if(tdiff[ndiff]>maxdtmin) {
       if(verbose) {
         writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                          datetime$modeltime,actual_time,"(obs time) MAXDTMIN Violation - skipped"))
+                          datetime$modeltime,actual_time,"(obs time) MAXDTMIN Violation - skipped - tdiff (min):",tdiff))
       }
       next
     }
