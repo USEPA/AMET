@@ -88,9 +88,10 @@
  query    <-paste(varxstr," FROM ",project,"_surface d, stations s WHERE  s.stat_id=d.stat_id ",querystr,sep="")
  writeLines(paste("query: ",query))
  data     <- ametQuery(query,mysql)
-
+ 
+ 
  ## test to see if query returned anything
- if (length(data) == 0) {
+ if ( dim(data)[1] == 0) {
    stop(paste('',
               '**********************************************************************************',
               'NO DATA WAS FOUND FOR THIS QUERY: Please change some of the criteria and try again',
@@ -162,7 +163,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Temperature (2 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,1],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,1]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -170,7 +171,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Temperature (2 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,1],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,1]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -178,11 +179,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Temperature (2 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,1],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,1]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".T.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".T.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 
  # Write out daily mixing ratio statistics to text file
@@ -191,7 +192,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Mixing Ratio (2 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,2],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,2]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -199,7 +200,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Mixing Ratio (2 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,2],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,2]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -207,11 +208,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Mixing Ratio (2 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,2],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,2]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".Q.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".Q.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 
  # Write out daily wind speed statistics to text file
@@ -220,7 +221,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Speed (10 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,3],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,3]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -228,7 +229,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Speed (10 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,3],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,3]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -236,11 +237,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Speed (10 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,3],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,3]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".WS.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".WS.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 
  # Write out daily wind direction statistics to text file
@@ -249,7 +250,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Direction (10 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,4],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,4]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -257,7 +258,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Direction (10 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,4],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,4]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -265,11 +266,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Direction (10 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,4],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,4]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".WD.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".WD.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 #####################################################################
 

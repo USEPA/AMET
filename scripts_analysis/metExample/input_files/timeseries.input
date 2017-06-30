@@ -19,7 +19,6 @@
 #
 # Version 1.3, May 6, 2013, Rob Gilliam
 #  - better formatting of script
-#  - added requirement that password is passed via argument input.
 #########################################################################
 #---------------------------------------------------##
 #       Configurable DATE Definitions
@@ -43,9 +42,9 @@
  model2     <-Sys.getenv("AMET_PROJECT2")
  extra      <-Sys.getenv("AMET_EXTRA1")
  extra2     <-Sys.getenv("AMET_EXTRA2")
- wdweightws <-TRUE
- savefile   <-FALSE
- textout    <-FALSE
+ wdweightws <-T
+ savefile   <-T
+ textout    <-T
 
  figdir     <-Sys.getenv("AMET_OUT")
 
@@ -53,10 +52,10 @@
 #       Plot/Output Format
 #########################################################################
  plotfmt  <-Sys.getenv("AMET_PTYPE")
- symb     <-15                                            # Plot symbol (15-square,19-circle)
- symbsiz  <-2                                             # Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+ symb     <-15
+ symbsiz  <-2
  plotsize <-1
- scex     <-0.65                                          # Statistics Text size
+ scex     <-0.65
  maxrec   <-10000
 
 #########################################################################
@@ -72,13 +71,7 @@
  # against unruly extraction such as via web interface.
  # 10 million is about the number of data extracted for
  # 2/3rds of a year.
- maxrec   <- 10E6	
-
-#########################################################################
-#       Auto-Realtime Options
-#########################################################################
- realtime   <-FALSE         # Option to run script in real-time automated mode
- tserieslen <-10            # Option used in real-time mode to lag stats by "n" days
+ maxrec   <- 10E4	
 
 #########################################################################
 #-----                  END OF INPUT FILE       ------------------------#
