@@ -37,19 +37,11 @@ Date Updated: July 3, 2017
 
 4. Install Tier 2 Software 3
 
-4.1 netCDF (3.6.2) 3
+4.1 Input/Output Applications Programming Interface (I/O API) (3.0) 3
 
-4.2 Input/Output Applications Programming Interface (I/O API) (3.0) 3
+4.2 MySQL (5.0.38) 4
 
-4.3 MySQL (5.0.38) 4
-
-4.4 Perl packages from the Comprehensive Perl Archive Network *(CPAN)* 5
-
-4.5 R (2.14.0) 6
-
-4.6 MADIS (3.4) 7
-
-4.7 WGRIB (1.8.x) 7
+4.3 R (2.14.0) 6
 
 5. Install AMET Source Code and Tier 3 Software 7
 
@@ -200,13 +192,11 @@ included in parentheses:
 
 3.  **gzip** (1.3.9)
 
-4.  **Perl** (5.8.8)
+4.  **g++** (4.1.2)
 
-5.  **g++** (4.1.2)
+5.  **gfortran** (4.1.2) or other F90 compiler
 
-6.  **gfortran** (4.1.2) or other F90 compiler
-
-7.  **ImageMagick** (6.2.4.5)
+6.  **ImageMagick** (6.2.4.5)
 
 > *Note*: You need only the **convert** utility from this package.
 
@@ -225,30 +215,6 @@ Install Tier 2 Software
 > through standard Linux package management systems; you and/or your
 > system administrator are encouraged to install them through these
 > package management systems.
-
-netCDF (3.6.2)
---------------
-
-> Download from
-> [**http://www.unidata.ucar.edu/downloads/netcdf/index.jsp**](http://www.unidata.ucar.edu/downloads/netcdf/index.jsp)
->
-> Installation instructions:
-> [**http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-install/Building-and-Installing-NetCDF-on-Unix-Systems.html\#Building-and-Installing-NetCDF-on-Unix-Systems**](http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-)
->
-> *Notes*:
->
-> • Installation needs to include a static library and include files.
->
-> • You will need the **ncdump** utility.
->
-> • If you need to build I/O API, we recommend that you rebuild netCDF
-> with consistent compilers and flags that will be used in I/O API.
->
-> • By default, netCDF is installed in **/usr/local**. To install it in
-> a different directory, see the installation notes.
->
-> • When using the **gcc** compilers, make sure **g++** is set up to use
-> **gcc,** as the **c++** compiler will not work correctly.
 
 Input/Output Applications Programming Interface (I/O API) (3.0)
 ---------------------------------------------------------------
@@ -326,106 +292,6 @@ MySQL (5.0.38)
 > password that you have created. See the AMET 1.2 User’s Guide for
 > additional details.
 
-Perl packages from the Comprehensive Perl Archive Network *(CPAN)*
-------------------------------------------------------------------
-
-> Download all of the below from
-> [**http://www.cpan.org**](http://www.cpan.org/)
->
-> Installation instructions**:**
->
-> [**http://search.cpan.org/~jhi/perl-5.8.0/pod/perlmodinstall.pod**](http://search.cpan.org/%7Ejhi/perl-5.8.0/pod/perlmodinstall.pod)
->
-> **PDL**
->
-> **PDL::NetCDF** (we suggest that you compile this package from source)
->
-> **DBI**
->
-> **Mysql** (to install this perl package, it is essential that the
-> MySQL software mentioned above is already installed)
->
-> **Mail::Sendmail**
->
-> **Date::Calc**
->
-> **Sort::Fields**
->
-> *Notes*:
-
--   Ignore errors in **make test** for **Sort::Fields**.
-
--   **PDL** and **DBI** should be installed before **PDL::NetCDF** and
-    > **MySQL**, respectively.
-
--   From our experience, we expect that fewer problems will arise if
-    > your system administrator installs the above packages in the
-    > system directory **(/usr/lib**) using the **cpan** utility, rather
-    > than in other local directories.
-
-> *Notes:* The latest version of perl 5.10 does not allow proper
-> functioning of AMET scripts. The user needs to downgrade to perl 5.8.9
-> to ensure that AMET scripts will function as designed. Instructions on
-> the perl 5.8.9 installation on Ubuntu 10.04 are as follows:
->
-> **cd /home; mkdir perl; cd perl**
->
-> **wget**
-> [***http://www.cpan.org/src/5.0/perl-5.8.9.tar.gz***](http://www.cpan.org/src/5.0/perl-5.8.9.tar.gz)
->
-> **tar xvzf perl-5.8.9.tar.gz**
->
-> **cd perl-5.8.9**
->
-> **./Configure -des -Dprefix=/home/perl**
->
-> **make**
->
-> **make test**
->
-> **make install**
->
-> Then add the perl libraries required by AMET. The key to these
-> installation/downgrade instructions is that you must specify the
-> downgraded version of perl as shown below so that the libraries get
-> installed in the correct location on your system:
->
-> **/home/perl/perl-5.8.9/bin/perl -MCPAN -e shell**
->
-> **cpan&gt; install PDL**
->
-> **cpan&gt; install PDL::NetCDF**
->
-> **cpan&gt; install DBI**
->
-> **cpan&gt; install Mysql**
->
-> **cpan&gt; install Mail::Sendmail**
->
-> **cpan&gt; install Date::Calc**
->
-> **cpan&gt; install Sort::Fields. **
->
-> If you experience difficulties with the PDL installation you may need
-> to build it from the source as follows:
->
-> **cd /home; mkdir PDL; cd PDL **
->
-> **wget**
-> [***http://sourceforge.net/projects/pdl/files/PDL/2.4.11/PDL-2.4.11.tar.gz***](http://sourceforge.net/projects/pdl/files/PDL/2.4.11/PDL-2.4.11.tar.gz)
->
-> **tar xvzf PDL-2.4.11.tar.gz**
->
-> **cd PDL-2.4.11**
->
-> **/home/perl/perl-5.8.9/bin/perl Makefile.PL**
->
-> **make**
->
-> **make test**
->
-> **make install**
-
 R (2.14.0)
 ----------
 
@@ -450,8 +316,8 @@ R (2.14.0)
 >
 > **akima**
 >
-> **ncdf** (to install this R package, it is essential that the
-> **netCDF** software mentioned above is already installed.)
+> **ncdf4** (to install this R package, it is essential that the
+> **netCDF** software should be installed first.)
 >
 > **chron**
 >
@@ -492,26 +358,6 @@ R (2.14.0)
 > **&gt; install.packages(c("RMySQL", "maps",
 > "mapdata","date","reshape", "rgdal", "sp", "maptools", "xtable",
 > "yaml", "ggplot"))**
-
-MADIS (3.4)
------------
-
-> Download and installation instructions:
-> [***http://madis.noaa.gov/madis\_api.html***](http://madis.noaa.gov/madis_api.html)
->
-> *Notes:* On Ubuntu MADIS 3.9 does not work, and downgrading to MADIS
-> 3.6 will be necessary.
-
-WGRIB (1.8.x)
--------------
-
-> Download and installation instructions:
->
-> [**http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html**](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
->
-> *Note:* The tarball from the above link does not contain its own
-> directory, so we recommend that you create a **wgrib** directory
-> before untarring.
 
 Install AMET Source Code and Tier 3 Software
 ============================================
