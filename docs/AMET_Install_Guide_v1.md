@@ -1,9 +1,9 @@
-***Atmospheric Model Evaluation Tool (AMET) v1.2  
+***Atmospheric Model Evaluation Tool (AMET) v1.3 
 Installation Guide***
 
-Prepared under Work Assignment 3-01 of U.S. EPA Contract EP-W-09-023,
+Initially Prepared under Work Assignment 3-01 of U.S. EPA Contract EP-W-09-023,
 “Operation of the Center for Community Air Quality Modeling and Analysis
-(CMAS)”
+(CMAS)”; Updated by US EPA for significant changes made in AMET v1.3
 
 Prepared for: Bill Benjey
 
@@ -15,9 +15,9 @@ USEPA Mailroom
 
 Research Triangle Park, NC 27711
 
-Prepared by: Zac Adelman and Uma Shankar
+Prepared by: Zac Adelman, Uma Shankar, Wyat Appel and Robert Gilliam
 
-Institute for the Environment
+US EPA and the Institute for the Environment
 
 The University of North Carolina at Chapel Hill
 
@@ -25,7 +25,7 @@ The University of North Carolina at Chapel Hill
 
 Chapel Hill, NC 27599-6116
 
-Date prepared: June 21, 2013
+Date Updated: July 3, 2017
 
 **Contents**
 
