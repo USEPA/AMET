@@ -29,51 +29,49 @@ Date Updated: July 3, 2017
 
 **Contents**
 
-1. Introduction 1
+1. Introduction
 
-2. Download AMET Software and Test Case Data 1
+2. Download AMET Software and Test Case Data
 
-3. Verify the Availability of Tier 1 Software 2
+3. Verify the Availability of Tier 1 Software
 
-4. Install Tier 2 Software 3
+4. Install Tier 2 Software
 
-4.1 netCDF (3.6.2) 3
+4.1 netCDF (3.6.2)
 
-4.2 Input/Output Applications Programming Interface (I/O API) (3.0) 3
+4.2 Input/Output Applications Programming Interface (I/O API) (3.0)
 
-4.3 MySQL (5.0.38) 4
+4.3 MySQL (5.0.38)
 
-4.4 Perl packages from the Comprehensive Perl Archive Network *(CPAN)* 5
+4.4 Perl packages from the Comprehensive Perl Archive Network *(CPAN)*
 
-4.5 R (2.14.0) 6
+4.5 R (2.14.0)
 
-4.6 MADIS (3.4) 7
+4.6 MADIS (3.4)
 
-4.7 WGRIB (1.8.x) 7
+4.7 WGRIB (1.8.x)
 
-5. Install AMET Source Code and Tier 3 Software 7
+5. Install AMET Source Code and Tier 3 Software
 
-5.1 Meteorological model utility 8
+5.1 Meteorological model utility
 
-5.2 Air quality model utilities 8
+5.2 Air quality model utilities
 
-5.3 Binary linking 9
+5.3 Binary linking
 
-5.4 Configure AMETBASE variable 9
+5.4 Configure AMETBASE variable
 
-5.5 Modify header for perl scripts 9
+5.5 Modify header for perl scripts
 
-6. Install Test Case Data 9
+6. Install Test Case Data
 
-6.1 Sample model output data 9
+6.1 Sample model output data
 
-6.2 Observational data 11
+6.2 Observational data
 
-Reference 14
+Reference
 
-1.  
-
-2.  Introduction
+1.  Introduction
     ============
 
 The Atmospheric Model Evaluation Tool (AMET) (Gilliam et al., 2005) is a
@@ -85,13 +83,10 @@ observation) are then used to statistically and graphically analyze the
 model’s performance.
 
 More specifically, AMET is currently designed to analyze outputs from
-the PSU/NCAR Mesoscale Model (MM5), the Weather Research and Forecasting
-(WRF) model, and the Community Multiscale Air Quality (CMAQ) model, as
-well as Meteorology-Chemistry Interface Processor (MCIP)-postprocessed
-meteorological data (surface only). The basic structure of AMET consists
-of two *fields* and two *processes*.
+the Weather Research and Forecasting (WRF) model, and the Model for Prediction 
+Across Scales (MPAS). The basic structure of AMET consists of two *modules* and two *processes*.
 
--   The two fields (scientific topics) are **MET** and **AQ**,
+-   The two modules (scientific topics) are **MET** and **AQ**,
     corresponding to meteorology and air quality data.
 
 -   The two processes (actions) are **database population** and
@@ -101,13 +96,12 @@ of two *fields* and two *processes*.
     refers to the statistical evaluation of these pairings and their
     subsequent plotting.
 
-Practically, a user may be interested in using only one of the fields
-(either MET or AQ), or may be interested in using both fields. That
-decision is based on the scope of the study. The three main software
+Practically, a user may be interested in using only one of the modules
+(either MET or AQ), or may be interested in using both modules. That
+decision is based on the scope of the study. The two main software
 components of AMET are **MySQL** (an open-source database software
-system), **R** (a free software environment for statistical computing
-and graphics), and **perl** (an open-sourcecross-platform programming
-language).
+system), and **R** (a free software environment for statistical computing
+and graphics).
 
 The Community Modeling and Analysis System (CMAS) Center obtained the
 MET and AQ portions of AMET separately from EPA, then integrated the two
@@ -200,13 +194,11 @@ included in parentheses:
 
 3.  **gzip** (1.3.9)
 
-4.  **Perl** (5.8.8)
+4.  **g++** (4.1.2)
 
-5.  **g++** (4.1.2)
+5.  **gfortran** (4.1.2) or other F90 compiler
 
-6.  **gfortran** (4.1.2) or other F90 compiler
-
-7.  **ImageMagick** (6.2.4.5)
+6.  **ImageMagick** (6.2.4.5)
 
 > *Note*: You need only the **convert** utility from this package.
 
@@ -326,106 +318,6 @@ MySQL (5.0.38)
 > password that you have created. See the AMET 1.2 User’s Guide for
 > additional details.
 
-Perl packages from the Comprehensive Perl Archive Network *(CPAN)*
-------------------------------------------------------------------
-
-> Download all of the below from
-> [**http://www.cpan.org**](http://www.cpan.org/)
->
-> Installation instructions**:**
->
-> [**http://search.cpan.org/~jhi/perl-5.8.0/pod/perlmodinstall.pod**](http://search.cpan.org/%7Ejhi/perl-5.8.0/pod/perlmodinstall.pod)
->
-> **PDL**
->
-> **PDL::NetCDF** (we suggest that you compile this package from source)
->
-> **DBI**
->
-> **Mysql** (to install this perl package, it is essential that the
-> MySQL software mentioned above is already installed)
->
-> **Mail::Sendmail**
->
-> **Date::Calc**
->
-> **Sort::Fields**
->
-> *Notes*:
-
--   Ignore errors in **make test** for **Sort::Fields**.
-
--   **PDL** and **DBI** should be installed before **PDL::NetCDF** and
-    > **MySQL**, respectively.
-
--   From our experience, we expect that fewer problems will arise if
-    > your system administrator installs the above packages in the
-    > system directory **(/usr/lib**) using the **cpan** utility, rather
-    > than in other local directories.
-
-> *Notes:* The latest version of perl 5.10 does not allow proper
-> functioning of AMET scripts. The user needs to downgrade to perl 5.8.9
-> to ensure that AMET scripts will function as designed. Instructions on
-> the perl 5.8.9 installation on Ubuntu 10.04 are as follows:
->
-> **cd /home; mkdir perl; cd perl**
->
-> **wget**
-> [***http://www.cpan.org/src/5.0/perl-5.8.9.tar.gz***](http://www.cpan.org/src/5.0/perl-5.8.9.tar.gz)
->
-> **tar xvzf perl-5.8.9.tar.gz**
->
-> **cd perl-5.8.9**
->
-> **./Configure -des -Dprefix=/home/perl**
->
-> **make**
->
-> **make test**
->
-> **make install**
->
-> Then add the perl libraries required by AMET. The key to these
-> installation/downgrade instructions is that you must specify the
-> downgraded version of perl as shown below so that the libraries get
-> installed in the correct location on your system:
->
-> **/home/perl/perl-5.8.9/bin/perl -MCPAN -e shell**
->
-> **cpan&gt; install PDL**
->
-> **cpan&gt; install PDL::NetCDF**
->
-> **cpan&gt; install DBI**
->
-> **cpan&gt; install Mysql**
->
-> **cpan&gt; install Mail::Sendmail**
->
-> **cpan&gt; install Date::Calc**
->
-> **cpan&gt; install Sort::Fields. **
->
-> If you experience difficulties with the PDL installation you may need
-> to build it from the source as follows:
->
-> **cd /home; mkdir PDL; cd PDL **
->
-> **wget**
-> [***http://sourceforge.net/projects/pdl/files/PDL/2.4.11/PDL-2.4.11.tar.gz***](http://sourceforge.net/projects/pdl/files/PDL/2.4.11/PDL-2.4.11.tar.gz)
->
-> **tar xvzf PDL-2.4.11.tar.gz**
->
-> **cd PDL-2.4.11**
->
-> **/home/perl/perl-5.8.9/bin/perl Makefile.PL**
->
-> **make**
->
-> **make test**
->
-> **make install**
-
 R (2.14.0)
 ----------
 
@@ -440,8 +332,6 @@ R (2.14.0)
 >
 > **RMySQL**
 >
-> **DBI**
->
 > **date**
 >
 > **maps**
@@ -450,14 +340,11 @@ R (2.14.0)
 >
 > **akima**
 >
-> **ncdf** (to install this R package, it is essential that the
-> **netCDF** software mentioned above is already installed.)
+> **ncdf4** (to install this R package, refer to the ncdf4 user guide and dependencies)
 >
 > **chron**
 >
-> **Hmisc**
->
-> **Fields**
+> **fields**
 >
 > *Notes:* On Ubuntu 10 we recommend installing R from apt-get as
 > follows:
@@ -493,30 +380,10 @@ R (2.14.0)
 > "mapdata","date","reshape", "rgdal", "sp", "maptools", "xtable",
 > "yaml", "ggplot"))**
 
-MADIS (3.4)
------------
-
-> Download and installation instructions:
-> [***http://madis.noaa.gov/madis\_api.html***](http://madis.noaa.gov/madis_api.html)
->
-> *Notes:* On Ubuntu MADIS 3.9 does not work, and downgrading to MADIS
-> 3.6 will be necessary.
-
-WGRIB (1.8.x)
--------------
-
-> Download and installation instructions:
->
-> [**http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html**](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
->
-> *Note:* The tarball from the above link does not contain its own
-> directory, so we recommend that you create a **wgrib** directory
-> before untarring.
-
 Install AMET Source Code and Tier 3 Software
 ============================================
 
-Untar the tarball **AMET\_v1.0.tar.gz** (which you downloaded earlier
+Untar the tarball **AMET\_v1.3.tar.gz** (which you downloaded earlier
 from the CMAS web site into a temporary directory) into a new directory
 where you would like to have AMET installed. You do not need to make a
 directory called AMET prior to untarring because the tarball includes
@@ -537,8 +404,6 @@ following:
 >
 > **drwxr-x--- 5 user cmas 4096 2008-02-08 18:25 output**
 >
-> **drwxr-x--- 2 user cmas 4096 2008-02-08 18:25 perl**
->
 > **drwxr-x--- 2 user cmas 4096 2008-02-08 18:25 R**
 >
 > **drwxr-x--- 4 user cmas 4096 2008-02-08 18:25 scripts\_analysis**
@@ -548,7 +413,7 @@ following:
 > **drwxr-x--- 7 user cmas 4096 2008-02-08 18:25 src**
 
 During untarring, the AMET source code is installed in the
-**$AMETBASE/R** and **$AMETBASE/perl** directories, and the AMET scripts
+**$AMETBASE/R_db_code** and **$AMETBASE/R_analysis_code** directories, and the AMET scripts
 are located in the **$AMETBASE/script\_analysis** and
 **$AMETBASE/script\_db** directories. The Tier 3 software source code is
 located in the **$AMETBASE/src** directory. As noted earlier, Tier 3
@@ -562,26 +427,6 @@ and Tier 3 executables to the **$AMETBASE/bin** directory.
 
 Meteorological model utility
 ----------------------------
-
-> **mm5tonetcdf**
->
-> *Notes:*
->
-> • If NetCDF was installed in a nonstandard directory (i.e., not under
-> **/usr/local)**, see **$AMETBASE/src/mm5tonetcdf\_1.2/README** for
-> instructions on how to set corresponding paths to the include files
-> and libraries.
->
-> • The default install location of **mm5tonetcdf** in **/usr/local**
-> can be changed by the same process as for NetCDF; see the above
-> **README** file.
->
-> • Make sure that you compile **mm5tonetcdf** with the appropriate LFS
-> (large file support) flags. The flags for the **gcc** compiler are:
->
-> -**D\_FILE\_OFFSET\_BITS=64**
->
-> **-D\_LARGEFILE64\_SOURCE**
 
 Air quality model utilities
 ---------------------------
@@ -632,19 +477,6 @@ Configure AMETBASE variable
 > **AMETBASE** manually in the appropriate scripts (see the AMET user's
 > guide for specifics). This d
 
-Modify header for perl scripts
-------------------------------
-
-> **subs\_perl.csh**
->
-> *Note:* All the **\*.pl** scripts under **$AMETBASE/perl** have a
-> default location of the base **perl** as **/usr/local/perl**. If you
-> have **perl** installed in a different location on your machine,
-> change the setting for the variable **MYPERLDIR** in
-> **$AMETBASE/bin/subs\_perl.csh** and execute it. This script makes use
-> of the standard UNIX utility **sed.** If you do not have **sed**, you
-> can manually edit the first line of each of the **perl** scripts to
-> your **perl** path.
 
 Install Test Case Data
 ======================
@@ -661,14 +493,6 @@ from Section 1 in the corresponding directories indicated below.
 
 > **Meteorological output data**
 >
-> • **MM5** (5.2 GB uncompressed, 3.1 GB compressed):
->
-> Untar the file **mm5Example.tar.gz** in the directory
-> **$AMETBASE/model\_data/MET.** This tarball contains a single **MM5**
-> output file **MMOUT\_DOMAIN1\_02Jul04** that includes data from July
-> 04 2002 12:00 UTC to July 10 2002 00:00 UTC, with a spatial domain
-> covering the continental U.S. at 36- km resolution.
->
 > • **WRF** (4.6 GB uncompressed, 2.4 GB compressed):
 >
 > Untar the file **wrfExample.tar.gz** in the directory
@@ -678,84 +502,19 @@ from Section 1 in the corresponding directories indicated below.
 > continental U.S. at 36-km resolution. The spatial domain of the
 > **WRF** output is identical to the **MM5** domain above.
 >
-> • **MCIP** (455 MB uncompressed, 340 MB compressed):
->
-> Untar the file **mcipExample.tar.gz** in the directory
-> **$AMETBASE/model\_data/MET.** This tarball contains five days’ worth
-> of **MCIP** outputs in netCDF format. The temporal range is July 5
-> 2002 0:00 UTC to July 9 2002 23:00 UTC with a spatial domain covering
-> the continental U.S. at 36-km resolution. Additionally, there is a
-> **GRIDCRO2D** file for July 6 that is also used by AMET. The **MCIP**
-> files were created using the **MMOUT\_DOMAIN1\_02Jul04** file provided
-> in the **mm5Example.tar.gz** file.
 
 After you untar the tarfiles above, the **$AMETBASE/model\_data/MET**
 will contain the following files.
 
-> **total 32**
->
 > **drwxr-x--- 4 user cmas 4096 2008-02-14 20:35 .**
 >
 > **drwxr-x--- 4 user cmas 4096 2008-02-14 20:34 ..**
 >
-> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 mm5Example**
+> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 metExample**
 >
-> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 mcipExample**
+> **./metExample:**
 >
-> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 wrfExample**
->
-> **./mm5Example:**
->
-> **total 10807080**
->
-> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 .**
->
-> **drwxr-x--- 4 user cmas 4096 2008-02-14 20:35 ..**
->
-> **-rw-r----- 1 user cmas 5527809888 2008-02-11 12:15
-> MMOUT\_DOMAIN1\_02Jul04**
->
-> **./wrfExample:**
->
-> **total 12007696**
->
-> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 .**
->
-> **drwxr-x--- 4 user cmas 4096 2008-02-14 20:35 ..**
->
-> **-rw-r----- 1 user cmas 1228378440 2007-08-20 17:26
-> wrfout\_d01\_2002-07-05\_00:00:00**
->
-> **-rw-r----- 1 user cmas 1228378440 2007-08-20 18:17
-> wrfout\_d01\_2002-07-06\_00:00:00**
->
-> **-rw-r----- 1 user cmas 1228378440 2007-08-20 19:03
-> wrfout\_d01\_2002-07-07\_00:00:00**
->
-> **-rw-r----- 1 user cmas 1228378440 2007-08-20 19:37
-> wrfout\_d01\_2002-07-08\_00:00:00**
->
-> **./mcipExample:**
->
-> **total 579634**
->
-> **drwxr-x--- 2 user cmas 4096 2008-02-14 20:35 .**
->
-> **drwxr-x--- 4 user cmas 4096 2008-02-14 20:35 ..**
->
-> **-rw-r----- 1 user cmas 502332 2008-05-19 12:55 GRIDCRO2D\_2002187**
->
-> **-rw-r----- 1 user cmas 118426248 2008-05-12 11:21
-> METCRO2D\_2002187**
->
-> **-rw-r----- 1 user cmas 118426248 2008-05-12 11:25
-> METCRO2D\_2002188**
->
-> **-rw-r----- 1 user cmas 118426248 2008-05-12 11:29
-> METCRO2D\_2002189**
->
-> **-rw-r----- 1 user cmas 118426248 2008-05-12 11:33
-> METCRO2D\_2002190**
+> **Need to Add new WRF and MPAS datasets**
 >
 > **Air quality output data** (7.9 GB uncompressed; 6.3 GB compressed)
 >
@@ -844,8 +603,6 @@ Observational data
 > **drwxr-xr-x user/cmas 0 2007-11-18 21:40:59 point/raob/**
 >
 > **drwxr-xr-x user/cmas 0 2007-11-18 21:40:59 point/raob/netcdf/**
->
-> **-rw-r----- user/cmas 324001 2007-10-08 14:12:00 stations.csv**
 >
 > If the directory where AMET is installed has limited space, we suggest
 > that you move the entire directory structure under
