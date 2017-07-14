@@ -7,17 +7,17 @@
 #                        MET_timeseries.R                               #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                                 #
-#         Date:		May 15, 2017                                          #
+#         Version: 	1.3                                             #
+#         Date:		May 15, 2017                                    #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
 #                                                                       #
-#	Version: 	1.2                                                         #
-#	Date:		Oct, 2007                                                     #
-#	Contributors:	Alexis Zubrow (IE UNC)                                  #
+#	Version: 	1.2                                             #
+#	Date:		Oct, 2007                                       #
+#	Contributors:	Alexis Zubrow (IE UNC)                          #
 #                                                                       #
 #-----------------------------------------------------------------------#
 # Version 1.2, May 8, 2013, Rob Gilliam                                 #
