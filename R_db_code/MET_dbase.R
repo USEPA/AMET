@@ -3,7 +3,7 @@
 #                                                                 ################################
 #     AMET Database Functions Library for Meteorology             ###############################
 #                                                                 ###############################
-#       Version 2.0                                               ###############################
+#       Version 1.3                                               ###############################
 #       Date: April 18, 2017                                      ###############################
 #       Contributors:Robert Gilliam                               ###############################
 #                                                                 ###############################
@@ -12,7 +12,7 @@
 #####################################################################################################
 #######################################################################################################
 #
-#  V2.0, 2017Apr18, Robert Gilliam: Initial Development
+#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
 #
 #######################################################################################################
 #######################################################################################################
@@ -92,12 +92,12 @@
  new_dbase_tables <-function(mysql) {
 
    dbaseq<-paste("CREATE DATABASE IF NOT EXISTS ",mysql$dbase,";")
-   ametQuery(dbaseq,mysql,get=0)
-   #db   <-dbDriver("MySQL")
-   #con  <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server)
-   #rs   <-dbSendQuery(con,dbaseq)
-   #dbClearResult(rs)
-   #dbDisconnect(con)
+   writeLines(paste("Creating new database if it does not exist:",dbaseq))
+   db   <-dbDriver("MySQL")
+   con  <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server)
+   rs   <-dbSendQuery(con,dbaseq)
+   dbClearResult(rs)
+   dbDisconnect(con)
 
    # Check to see if stations table exist. If not create a new stations table in new database
    check_table<-paste("SHOW TABLES FROM `",mysql$dbase,"` LIKE 'stations'",sep="")

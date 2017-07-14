@@ -67,9 +67,12 @@
  source (mysqlloginconfig)
  source (ametRinput)
 
- ametdbase      <- Sys.getenv("AMET_DATABASE")
+ ametdbase1     <- Sys.getenv("AMET_DATABASE1")
+ ametdbase2     <- Sys.getenv("AMET_DATABASE2")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
- mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+ mysql1          <-list(server=mysqlserver,dbase=ametdbase1,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
+ mysql2          <-list(server=mysqlserver,dbase=ametdbase2,login=amet_login,
                         passwd=amet_pass,maxrec=maxrec)
 
 ########################################################################################################################
@@ -128,7 +131,7 @@ for (sn in 1:length(statid)){
                  dform(datee$m),dform(datee$d)," ",extra," ORDER BY ob_date,ob_time",sep="")
 
 # Query Database and put into data frame, then massage data
-  data1<-ametQuery(query1,mysql)
+  data1<-ametQuery(query1,mysql1)
 
   # If no data is in the database for the station then skip to next station or end program
  if ( dim(data1)[1] == 0) {
@@ -149,9 +152,12 @@ for (sn in 1:length(statid)){
 
   # Condition that user want to compare a second model to observations and first model
   if (comp){
-     data2    <-ametQuery(query2,mysql)
-     if(length(data2) == 0){
-       data2  <-data1;comp<-FALSE
+     data2    <-ametQuery(query2,mysql2)
+     if(dim(data2)[1] == 0){
+       writeLines(paste("Project ID 2 did not have any data. Either change dates
+                         to period where both projects have data or remove AMET_PROJECT2
+                         from the run_timeseries.csh script and just plot AMET_PROJECT"))
+       quit(save="no")                  
      }
      tseries2 <-massageTseries(data2,loc=locs,iftseries=TRUE)
   }
@@ -159,6 +165,7 @@ for (sn in 1:length(statid)){
      tseries2 <-tseries1
      data2    <-data1
   }
+  
   
   #######################################################################################
   #   STEP 3) Make a R data file and text file of time series if user specifies

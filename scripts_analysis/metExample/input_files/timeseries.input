@@ -38,7 +38,7 @@
 #       Database/Tables/Query Specifications
 #########################################################################
  statid     <-unlist(strsplit(Sys.getenv("AMET_SITEID")," "))
- model1     <-Sys.getenv("AMET_PROJECT")
+ model1     <-Sys.getenv("AMET_PROJECT1")
  model2     <-Sys.getenv("AMET_PROJECT2")
  extra      <-Sys.getenv("AMET_EXTRA1")
  extra2     <-Sys.getenv("AMET_EXTRA2")
