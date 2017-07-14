@@ -3,7 +3,7 @@
 #                                                                 ################################
 #     AMET Read Model Functions Library                           ###############################
 #                                                                 ###############################
-#       Version 22.0                                               ###############################
+#       Version 1.3                                               ###############################
 #       Date: April 18, 2017                                      ###############################
 #       Contributors:Robert Gilliam                               ###############################
 #                                                                 ###############################
@@ -12,7 +12,7 @@
 #####################################################################################################
 #######################################################################################################
 #
-#  V2.0, 2017Apr18, Robert Gilliam: Initial Development
+#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
 #
 #######################################################################################################
 #     This script contains the following functions
@@ -67,7 +67,11 @@
    v10    <- ncvar_get(f1, varid="v10")
    #swr   <- ncvar_get(f1, varid="swdnb")
   nc_close(f1)
-  
+
+  # Get met array dimensions; set first good model time to 1
+  ncells  <-dim(t2)[1]
+  nt      <-length(time)
+    
   # MPAS in radians, convert to degrees and +/- 180 Lon reference
   lat  <- lat * (180/pi)
   lon  <- lon * (180/pi)
@@ -77,6 +81,16 @@
   # Convert to same Lon reference as obs sites
   lon  <-ifelse(lon > 180, lon - 360, lon)
   lonv <-ifelse(lonv > 180, lonv - 360, lonv)
+
+  # Check dimensions of met variables to determine if file has only 
+  # one time. If so, add a time dimension to the array for interpolation
+  # compatability. 
+  if( nt == 1 ) {
+    t2  <-array(t2,c(ncells,1))
+    q2  <-array(q2,c(ncells,1))
+    u10 <-array(u10,c(ncells,1))
+    v10 <-array(v10,c(ncells,1))
+  }
 
   projection <-list(mproj=0, lat=lat, lon=lon, latv=latv, lonv=lonv, 
                     cells_on_vertex=cells_on_vertex, conef=0, standlon=0)
@@ -143,6 +157,17 @@
    
   nc_close(f1)
   
+  # Check dimensions of met variables to determine if file has only 
+  # one time. If so, add a time dimension to the array for interpolation
+  # compatability. 
+  nt    <-length(time)
+  if( nt == 1 ) {
+    t2  <-array(t2,c(nx,ny,1))
+    q2  <-array(q2,c(nx,ny,1))
+    u10 <-array(u10,c(nx,ny,1))
+    v10 <-array(v10,c(nx,ny,1))
+  }
+
   projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
                     truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
   sfc_met    <-list(time=time, t2=t2, q2=q2, u10=u10, v10=v10, swr=swr)

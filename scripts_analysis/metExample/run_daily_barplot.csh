@@ -56,9 +56,6 @@
   #  the main script in $AMET/R_analysis_code/MET_daily_barplot.R
   setenv AMET_PTYPE pdf            
 
-  # Log File for R script
-  setenv AMET_LOG $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/daily_barplot.log
-  
 #----------------------------------------------------------------------------------------
 # Most users will not need to modify anything below
 #----------------------------------------------------------------------------------------
@@ -85,6 +82,6 @@
     echo "VARIABLE is either T, Q, WS or WD"
     echo "-----------------------------------------------------------------------------------------"
   else
-     echo "The AMET R script did not produce any output, please check the LOGFILE $AMET_LOG for more details on the error."
+     echo "The AMET R script did not produce any output."
      echo "Often, this indicates no data matched the specified criteria (e.g., wrong dates for project). Please check and re-run!"
   endif
