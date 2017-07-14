@@ -7,8 +7,8 @@
 #                      MET_daily_barplot.R                              #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                                 #
-#         Date:		May 15, 2017                                          #
+#         Version: 	1.3                                             #
+#         Date:		May 15, 2017                                    #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
