@@ -7,8 +7,8 @@
 #                      MET_spatial_surface.R                            #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                                 #
-#         Date:		May 15, 2017                                          #
+#         Version: 	1.3                                             #
+#         Date:		May 15, 2017                                    #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -54,6 +54,8 @@
 #             for more flexibility. In csh wrapper that would be:
 #             setenv AMET_DATES "20170502 00"
 #             setenv AMET_DATEE "20170510 23"
+#           - thresh was input as text instead of numeric. Fixed. Also updated
+#             the color scheme and levels for some metrics in spatial_surface.input
 #                  
 #########################################################################
 #	Load required modules
@@ -63,7 +65,6 @@
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
   if(!require(akima))  {stop("Required Package akima was not loaded")}
   if(!require(fields)) {stop("Required Package fields was not loaded")}
-
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #    Initialize AMET Diractory Structure Via Env. Vars
 #    AND Load required function and conf. files
@@ -92,8 +93,8 @@
                         passwd=amet_pass,maxrec=maxrec)
 
  # Site data count below which site is skipped at statistics set to NA
- thresh         <- Sys.getenv("THRESHOLD")
- if(!exists("thresh") ){ thresh <- 2	}
+ thresh         <- as.numeric(Sys.getenv("THRESHOLD"))
+ if(!exists("thresh") ){ thresh <- 20	}
 
 
  dates<-mdy.date(month = ms, day = ds, year = ys)
@@ -125,12 +126,13 @@ while(datex <= datee) {
     daterange<-paste(d1p,".",d2p,sep="")
   }
   datestr  <-paste("BETWEEN '",d1q,"' AND '",d2q,"'",sep="")
+  datestrp <-paste("BETWEEN ",d1q," AND ",d2q,sep="")
   query    <-paste("SELECT  d.stat_id,d.T_mod,d.T_ob,d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob, 
                     HOUR(d.ob_time) FROM ",sfctable,"  d, stations s  WHERE s.stat_id=d.stat_id and d.ob_date ",
                     datestr,extra," ORDER BY d.stat_id ")
   qstat    <-paste("SELECT  DISTINCT s.stat_id, s.lat, s.lon, s.elev  FROM ",sfctable," d, stations s WHERE 
                     d.stat_id=s.stat_id AND d.ob_date ",datestr,extra," ORDER BY s.stat_id ")
-  monthAbr <-c("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC")
+
   if(file.exists(savefile) & checksave ) {
     load(savefile)
   }
@@ -155,10 +157,10 @@ while(datex <= datee) {
     	   
     tmp.file      <-paste(figdir,"/tmp",sep="")
     head.file     <-paste(figdir,"/head",sep="")
-    t.dframe.file <-  paste(figdir,"/",model,".spatial.temp.stats.csv",sep="")
-    ws.dframe.file<- paste(figdir,"/",model,".spatial.wndspd.stats.csv",sep="")
-    wd.dframe.file<- paste(figdir,"/",model,".spatial.wnddir.stats.csv",sep="")
-    q.dframe.file <-  paste(figdir,"/",model,".spatial.mixr.stats.csv",sep="")
+    t.dframe.file <-  paste(figdir,"/",model,".spatial.temp2m.stats.",daterange,".csv",sep="")
+    ws.dframe.file<-  paste(figdir,"/",model,".spatial.wndspd10m.stats.",daterange,".csv",sep="")
+    wd.dframe.file<-  paste(figdir,"/",model,".spatial.wnddir10m.stats.",daterange,".csv",sep="")
+    q.dframe.file <-  paste(figdir,"/",model,".spatial.mixr2m.stats.",daterange,".csv",sep="")
 
     sfile <-file(head.file) 
     writeLines(head, con =sfile)
@@ -189,11 +191,10 @@ while(datex <= datee) {
   for (s in 1:length(sget)) {
     statloc    <-sget[s]
     varloc     <-vget[v]
-    plotlab[1] <-paste(statid[statloc],"of",varid[varloc],"  Date:",datestr)
+    plotlab[1] <-paste(statid[statloc],"of",varid[varloc],"  Date:",datestrp)
      
     plotlab[2] <-paste("Query:",query)
     plotlab[3] <-paste("Database:",ametdbase)
-    fileName   <-paste(figdir,"/",saveid,".",d1,".",statAbr[statloc],".",varAbr[varloc],sep="")
     fileName   <-paste(figdir,"/",saveid,".",statAbr[statloc],".",varAbr[varloc],".",daterange,sep="")
     plotval    <-sstats$metrics[,statloc,varloc]
     if( length(na.omit(plotval)) == 0 ) { next }
@@ -231,3 +232,4 @@ while(datex <= datee) {
  close(sfile)
 ############################################################################
 quit(save='no')
+

@@ -1,5 +1,5 @@
 #########################################################################
-#------		INPUT FILE	INPUT FILE	INPUT FILE	   ---------------------#
+#------		INPUT FILE	INPUT FILE	INPUT FILE	     ---------------------#
 #-----------------------------------------------------------------------#
 #						 			
 #	SUMMARY STATISTIC TOOL				
@@ -25,9 +25,9 @@
 #########################################################################
 #	Configurable DATE Definitions
 #########################################################################
-  querystr	<-Sys.getenv("AMET_CRITERIA")	
-  pid       <-Sys.getenv("AMET_RUNID")		# Subset id; This is used to differentiate different subsets of data for the same project (i.e., regional, seasonal or annual). The id is used in the plot and text output names. 
-  project	  <-Sys.getenv("AMET_PROJECT") 		# Project id or model run id.	
+  querystr<-Sys.getenv("AMET_CRITERIA")	
+  pid      <-Sys.getenv("AMET_RUNID") 
+  project	 <-Sys.getenv("AMET_PROJECT")
   queryID  <-pid
   statid   <-"NULL"
   obnetwork<-"ALL"
@@ -46,15 +46,14 @@
 #########################################################################
 #	Database/Tables/Directory Information
 #########################################################################
-  model    <-project                # Surface data table in evaluation database
-  saveid   <-project                # Id used to name the R save file
-  figdir   <-Sys.getenv("AMET_OUT") # Figure directory
-  savedir  <-Sys.getenv("AMET_OUT") # R output data file save directory
-  wantsave <-F                      # Flag to save station statistics data
-  ametp    <-T                      # Flag to generate figures
-  diurnal  <-T                      # Flag to generate figures
-  textstats<-T                      # Text Output
-  writeLines(paste("Figure directory is set to:",figdir))
+  model    <-project
+  saveid   <-project
+  figdir   <-Sys.getenv("AMET_OUT")
+  savedir  <-Sys.getenv("AMET_OUT")
+  wantsave <-T
+  ametp    <-T
+  diurnal  <-T
+  textstats<-T 
 #########################################################################
 
 #########################################################################
@@ -65,10 +64,10 @@
 #########################################################################
 #	Plot Ouput Format
 #########################################################################
-  plotfmt  <-Sys.getenv("AMET_PTYPE")						# Plot format (png,pdf,jpg,eps)
-  plotsize <-1.50						# Scale factor to increase or decrease the size of a 541x700 (png) or 8.5x11 (pdf) plot
-  symb     <-15						#* Plot symbol (15-square,19-circle)
-  symbsiz	 <-0.90						#* Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+  plotfmt  <-Sys.getenv("AMET_PTYPE")
+  plotsize <-1.50
+  symb     <-15
+  symbsiz	 <-0.90
 
   plotopts	<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
 
@@ -77,13 +76,7 @@
  # against unruly extraction such as via web interface.
  # 10 million is about the number of data extracted for
  # 2/3rds of a year.
- maxrec   <- 10E6	
-
-#---------------------------------------------------##
-#	Auto-Realtime Options
-#---------------------------------------------------##
-    realtime	<-FALSE			#* Option to run script in real-time automated mode
-    daydelay 	<-2			#* Option used in real-time mode to lag stats by "n" days
+ maxrec   <- 2E6	
 #########################################################################
 #----- 			END OF INPUT FILE	------------------------#
 #########################################################################

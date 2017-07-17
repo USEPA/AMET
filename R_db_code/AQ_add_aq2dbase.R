@@ -1,3 +1,4 @@
+#!/usr/bin/R
 ##------------------------------------------------------
 #       AMET AQ Database Query Input (R format)         #
 #                                                       #

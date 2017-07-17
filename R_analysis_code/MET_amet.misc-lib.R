@@ -478,6 +478,14 @@ leapy<-function(y) {
 #------------------------------------------------------------------------------------##
   data<-ametQuery(query,mysql)
   statdat<-ametQuery(qstat,mysql)		
+  if ( dim(statdat)[1] == 0) {
+		writeLines(paste('',
+		           '**********************************************************************************',
+		           'NO DATA WAS FOUND FOR THIS SITE: Will skip to next site or terminate              ',
+		           '**********************************************************************************',sep="\n"))
+    quit(save="no")
+  }
+
   statget=list(id=statdat[,1],lat=statdat[,2],lon=statdat[,3],elev=statdat[,4])
   ns<-length(statget$id)
 
@@ -633,7 +641,7 @@ leapy<-function(y) {
       metrics[s,16,4]<-mean(modQ,na.rm=T)	                    # Mean Mod Wind Speed
       metrics[s,17,4]<-mean(obsQ,na.rm=T)	                    # Mean Obs Wind Speed
     }
-    writeLines(paste("Station ID ",statget$id[s]," has been processed, this is ",s,"out of ",ns," total stations"))
+    writeLines(paste("Station ID ",statget$id[s]," has been processed. This is ",s,"out of ",ns," total stations"))
     point<-ifelse(id == statget$id[s],T,F)
     tmpd<-tmpd[!point,]
     rm(obsT,modT,obsWS,modWS,obsWD,modWD,obsU,modU,obsV,modV,obsQ,modQ)

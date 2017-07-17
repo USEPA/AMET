@@ -19,7 +19,7 @@
 #	Protocol development: Input files for the daily-spatial.R script have been modified. Modifications
 #	include an update to the in-code documentation and general clean up of input file
 #-----------------------------------------------------------------------
-# Version 1.3, May 6, 2013, Rob Gilliam
+# Version 1.3, May 17, 2017, Rob Gilliam
 #  - better formatting of input file
 #  - removed convert command that has been depreicated 
 #########################################################################
@@ -29,20 +29,20 @@
  model     <- Sys.getenv("AMET_PROJECT")
  date      <- c(Sys.getenv("AMET_DATES"),Sys.getenv("AMET_DATEE"))    
  figid_sub <- ""   
- figdir    <- Sys.getenv("AMET_OUT")	# Figure directory
- savedir   <- Sys.getenv("AMET_OUT")	# R output data file save directory
+ figdir    <- Sys.getenv("AMET_OUT")
+ savedir   <- Sys.getenv("AMET_OUT")
 
- histplot  <- F      # Plot a histogram of station statistics
- shadeplot <- F      # Plot shaded statistics plot in addition to point statistics plot (T-true, F-false)
- sres      <- 0.10   # resolution of shaded plot in degrees (default is 0.25)
+ histplot  <- F
+ shadeplot <- F
+ sres      <- 0.10
 
 #########################################################################
 #	Database/Tables/Directory Information
 #########################################################################
  daily       <- as.logical(Sys.getenv("DAILY"))
  textstats   <- as.logical(Sys.getenv("AMET_TEXTSTATS"))
- wantfigs    <- T						# Flag to generate figures
- wantsave    <- T						# Flag to save station statistics data
+ wantfigs    <- T
+ wantsave    <- T
  checksave   <- T
  t.test.flag <- F
 
@@ -54,8 +54,8 @@
 #########################################################################
  plotfmt   <- Sys.getenv("AMET_PTYPE")
  plotsize  <- 1.50
- symb      <- 19		  # Plot symbol (15-square,19-circle)
- symbsiz   <- 0.85		# Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+ symb      <- 19
+ symbsiz   <- 0.85
  plotopts  <- list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
 
 #########################################################################
@@ -102,16 +102,20 @@
 #########################################################################
 #----- 			END OF INPUT FILE	------------------------#
 #########################################################################
-   ys <-as.numeric(substr(date[1],1,4))       # Year Start
-   ye <-as.numeric(substr(date[2],1,4))       # Year End
-   ms <-as.numeric(substr(date[1],5,6))       # Month to start
-   me <-as.numeric(substr(date[2],5,6))       # Month to end
-   ds <-as.numeric(substr(date[1],7,8))       # Day of the month to start npa processing
-   de <-as.numeric(substr(date[2],7,8))       # Day to end 
-   hs <-as.numeric(substr(date[1],10,11))     # Hour to start
-   he <-as.numeric(substr(date[2],10,11))     # Hour to end
-   saveid	<-model
+ ys <-as.numeric(substr(date[1],1,4))       # Year Start
+ ye <-as.numeric(substr(date[2],1,4))       # Year End
+ ms <-as.numeric(substr(date[1],5,6))       # Month to start
+ me <-as.numeric(substr(date[2],5,6))       # Month to end
+ ds <-as.numeric(substr(date[1],7,8))       # Day of the month to start npa processing
+ de <-as.numeric(substr(date[2],7,8))       # Day to end 
+ hs <-as.numeric(substr(date[1],10,11))     # Hour to start
+ he <-as.numeric(substr(date[2],10,11))     # Hour to end
+ saveid	<-model
 
+ if(is.na(hs) || is.na(he)) {
+   hs<-0
+   he<-23
+ }
 #---------------------------------------------------##
 # Various set-up definitions for main plot function
  plotlab=array(,)
@@ -122,6 +126,9 @@
 
  statAbr<-c("count","corr","ac","var","sdev","rmse","mae","bias","mfbias","mnbias","mngerr","nmbias","nmerr","max","min")
  varAbr<-c("T","WS","WD","Q")
+ vget	<-c(1,2,3,4)
+ sget	<-c(3,6,7,8)
+
  convfactor<-c(1.8,1.94,1,1)
  convfactor<-c(1,1,1,1)
 
@@ -141,25 +148,19 @@
   levs<-array(NA,c(length(statid),length(varid),20))
 
 # Typical Error and bias range w/ color scale
- L1<-c(0,1,2,3,4,5,6,7,8,9,10)
- C1<-c(great,good,fair,caut,quest,bad,bad,bad,bad,bad)
- L2<-c(-4,-3,-2,-1,-0.5,-0.25,0,0.25,0.5,1,2,3,4,5)
- C2<-c(bad,bad,quest,caut,fair,good,great,great,good,fair,caut,quest,bad,bad)
- C2<-rev(rainbow(length(L2)))
- C2[length(L2)/2]<-great
-
  L1<-c(seq(0.75,3,by=0.25),4,10)
  L1<-c(0,0.50,1,1.5,2,2.5,3,4,5,6,7,8)
  C1<-tim.colors(length(L1))
- vget	<-c(1,2,3,4)
- sget	<-c(3,6,7,8)
 
+ L2<-c(-3,-2,-1,-0.5,-0.25,0,0.25,0.5,1,2,3,4)
+ C2<-tim.colors(length(L2))
+ C2[length(L2)/2]<-great
 
 # Error and bias scale for wind direction
- L1wd<-c(0,10,20,30,40,50,60,70,80,90)
- C1wd<-c(gray(.8),"green","blue","blue","yellow","red","red","red","red")
- L2wd<-c(-40,-30,-20,-10,0,10,20,30)
-#C2wd<-c("red","yellow","blue","green","green","blue","yellow","red","red")
+ L1wd<-c(0,10,20,30,40,50,60,70,80,90,135,180)
+ C1wd<-rev(rainbow(length(L1wd)))
+
+ L2wd<-c(-40,-30,-20,-10,0,10,20,30,40)
  C2wd<-rev(rainbow(length(L2wd)))
  C2wd[(length(L2wd)/2)+1]<-great
 
@@ -171,10 +172,11 @@
  C2n<-rev(rainbow(length(L2n)))
 
 # Typical  range w/ color scale for Index of Agreement/Correlation Type plots
- L1iT<-c(0.0,0.5,0.75,0.9,1)
- L1iW<-c(0,0.4,0.6,0.7,0.8,1)
- C1iT<-c("red","yellow","blue","green")
- C1iW<-c("red","yellow","blue","green","green")
+ L1iT<-c(0.0,seq(0.5,1,by=0.05))
+ L1iW<-c(0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0)
+ L1iW<-c(seq(0,1,by=0.1))
+ C1iT<-tim.colors(length(L1iT))
+ C1iW<-tim.colors(length(L1iW))
 
      levs[1,,1]<-NA	# Set all count stats to NA (Plot Function will automatically set levels)  
 # 	Define Temperature Stat levels and colorscale
@@ -214,8 +216,8 @@
      levs[15,2,1:length(L2)]<-L2;   levcols[15,2,1:length(C2)]<-C2
 ##########################################################################
 # 	Define Wind Direction Stat levels and colorscale
-     levs[2,3,1:length(L1wd)]<-L1wd; levcols[2,3,1:length(C1wd)]<-C1wd
-     levs[3,3,1:length(L1wd)]<-L1wd; levcols[3,3,1:length(C1wd)]<-C1wd
+     levs[2,3,1:length(L1iW)]<-L1iW; levcols[2,3,1:length(C1iW)]<-C1iW
+     levs[3,3,1:length(L1iW)]<-L1iW; levcols[3,3,1:length(C1iW)]<-C1iW
 
      levs[4,3,1:length(L1wd)]<-L1wd;   levcols[4,3,1:length(C1wd)]<-C1wd
      levs[5,3,1:length(L1wd)]<-L1wd;   levcols[5,3,1:length(C1wd)]<-C1wd
