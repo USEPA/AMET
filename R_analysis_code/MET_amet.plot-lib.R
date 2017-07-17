@@ -475,8 +475,7 @@
 
 ###############################################
 #   Set plot margins and figure name 
-	
-	# Open Web figure in cache directory
+  writeLines(paste(figure,".",plotopts$plotfmt,sep=""))	
 	
   if (plotopts$plotfmt == "pdf"){pdf(file= paste(figure,".pdf",sep=""), width = 8.5, height = 11)	}
   if (plotopts$plotfmt == "bmp"){bitmap(file=paste(figure,".png",sep=""), width = (541*plotopts$plotsize)/100, height = (700*plotopts$plotsize)/100, res=100)	}
@@ -880,14 +879,14 @@
     sinfo$convFac<-1
   }
 # Set map symbols and calculate size based on relative data magnitude
-  spch		<-plotopts$symb		
-  mincex	<-0.65
-  scex		<-mincex+(abs(sinfo$plotval)/max(sinfo$levs))
-  scex		<-plotopts$symbsiz
-  lonw<- bounds[3]
-  lone<- bounds[4]
-  lats<-bounds[1]
-  latn<-bounds[2]
+  spch    <-plotopts$symb		
+  mincex  <-0.65
+  scex    <-mincex+(abs(sinfo$plotval)/max(sinfo$levs))
+  scex    <-plotopts$symbsiz
+  lonw    <- bounds[3]
+  lone    <- bounds[4]
+  lats    <-bounds[1]
+  latn    <-bounds[2]
 
   #lats <- lats + (lats-latn)/10
   #lone <- lone + (lone-lonw)/15 
@@ -907,7 +906,7 @@
   legend(lone,lats,levLab,col=sinfo$levcols,pch=spch,xjust=1,yjust=0, pt.cex=1.35, cex=1.20)
 
 # Draw Title
-  title(main=paste(varlab[1]),cex.main = 1.35, line=0.25)
+  title(main=paste(varlab[1]),cex.main = 1.0, line=0.25)
 #    
   #text(lonw+legoffset,lats+legoffset,"An Atmospheric Model Evaluation Tool (AMET) Product",adj=c(0,1),cex=0.75)
   dev.off() 

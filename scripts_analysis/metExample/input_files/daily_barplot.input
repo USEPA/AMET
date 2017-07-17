@@ -27,7 +27,7 @@
  # against unruly extraction such as via web interface.
  # 10 million is about the number of data extracted for
  # 2/3rds of a year.
- maxrec   <- 10E6	
+ maxrec   <- 5E6	
 ###########################
 #  Directory Information  #
 ###########################

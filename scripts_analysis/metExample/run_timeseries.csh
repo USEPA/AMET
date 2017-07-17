@@ -13,25 +13,27 @@
 ###################################################################################
 #                          USER CONFIGURATION OPTIONS
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMET_v13 
+  setenv AMETBASE /home/xxxx/AMET_v13 
 
-  # MySQL Server and AMET database configuration file. Default AMET config dir.
+  # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
-  # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  amad_nrt
-  setenv MYSQL_SERVER   darwin.rtpnc.epa.gov
+  # MySQL database server connection and AMET database. You can choose projects from 
+  # different databases to compare. If all in the same database just set DATABASE1&2 the same.
+  setenv AMET_DATABASE1  amet_test1
+  setenv AMET_DATABASE2  amet_test2
+  setenv MYSQL_SERVER   xxxxxxx.epa.gov
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. If left unset, it's ignored.
-  setenv AMET_PROJECT wrf_conus_12km
-  setenv AMET_PROJECT2
+  setenv AMET_PROJECT1  metExample
+  setenv AMET_PROJECT2  metExample
   
   #  Directory where figures and text output will be directed
-  setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT/timeseries
+  setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT1/timeseries
   
   #  Observation site for timeseries. If mulitple sites are specificed like example two below
   #  Sites and corresponding model values are either averaged into a timeseries if 
@@ -46,9 +48,9 @@
   #  Date range of timeseries where year (YY), month (MM), day (DD) are 
   #  the start and end values with one space between
   #  Below is the example for May 1-10, 2017
-  setenv AMET_YY "2017 2017"             
-  setenv AMET_MM "05 05"             
-  setenv AMET_DD "01 10"             
+  setenv AMET_YY "2011 2011"             
+  setenv AMET_MM "07 08"             
+  setenv AMET_DD "01 01"             
 
   #  Additional criteria to add to site query
   setenv AMET_EXTRA1              
@@ -62,13 +64,13 @@
 
 #---------------------------------------------------------------------------------------
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/timeseries.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.input  
   
   # NOTE: Do not modify; this statement is necessary if an array of sites is specified.
   setenv AMET_SITEID "$SITES[*]"
   
   # Create output directories for project
-  mkdir -p $AMETBASE/output/$AMET_PROJECT
+  mkdir -p $AMETBASE/output/$AMET_PROJECT1
   mkdir -p $AMET_OUT
 
   # R-script execution command
@@ -85,21 +87,21 @@
   endif
 
 
-  if(-e $AMET_OUT/$AMET_PROJECT.$PLOT_ID.$AMET_PTYPE) then
+  if(-e $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.$AMET_PTYPE) then
     echo
     echo "Examples of plots and data files that were produced"
     echo "-----------------------------------------------------------------------------------------"
-    echo "Timeseries plot is  ---------->" $AMET_OUT/$AMET_PROJECT.$PLOT_ID.$AMET_PTYPE
+    echo "Timeseries plot is  ---------->" $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.$AMET_PTYPE
     echo
-    echo "Text statistics are in file:-->" $AMET_OUT/$AMET_PROJECT.$PLOT_ID.txt
+    echo "Text statistics are in file:-->" $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.txt
     echo "-----------------------------------------------------------------------------------------"
-  else if(-e $AMET_OUT/$AMET_PROJECT.$SITES[1].$AMET_PTYPE) then
+  else if(-e $AMET_OUT/$AMET_PROJECT1.$SITES[1].$AMET_PTYPE) then
     echo
     echo "Examples of plots and data files that were produced"
     echo "-----------------------------------------------------------------------------------------"
-    echo "Timeseries plot is  ---------->" $AMET_OUT/$AMET_PROJECT.$SITES[1].$AMET_PTYPE
+    echo "Timeseries plot is  ---------->" $AMET_OUT/$AMET_PROJECT1.$SITES[1].$AMET_PTYPE
     echo 
-    echo "Text statistics are in file:-->" $AMET_OUT/$AMET_PROJECT.$SITES[1].txt
+    echo "Text statistics are in file:-->" $AMET_OUT/$AMET_PROJECT1.$SITES[1].txt
     echo "-----------------------------------------------------------------------------------------"
   else
      echo "Please check options above, the AMET R script did not produce any output."

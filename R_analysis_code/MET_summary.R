@@ -7,8 +7,8 @@
 #                         MET_summary.R                                 #
 #                                                                       #
 #                                                                       #
-#         Version: 	1.3                                                 #
-#         Date:		May 15, 2017                                          #
+#         Version: 	1.3                                             #
+#         Date:		May 15, 2017                                    #
 #         Contributors:	Robert Gilliam                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -87,7 +87,14 @@
     writeLines("Query used to extract data from MySQL database:")
     writeLines(paste(query))
     data<-ametQuery(query[q],mysql)
-    if (length(na.omit(data)) == 0){next;}	# stop if no data is found
+
+    ## test to see if query returned anything
+    if ( dim(data)[1] == 0) {
+       stop(paste('',
+              '**********************************************************************************',
+              'NO DATA WAS FOUND FOR THIS QUERY: Please change some of the criteria and try again',
+              '**********************************************************************************',sep="\n"))
+    }
 
     # Save dataframe into R datafile if specified
     if(wantsave){
@@ -225,8 +232,8 @@
          ################################
          #	Temperature Stats	#
          ################################
+         writeLines("Plotting summary of 2-m Temperature. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".T.ametplot",sep="")
-         writeLines("Plotting summary of 2-m Temperature. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[1],
                   statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
          obs=datap$temp[,2]
@@ -252,8 +259,8 @@
          ################################
          #	Wind Speed Stats	#
          ################################
+         writeLines("Plotting summary of Wind Speed. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".WS.ametplot",sep="")
-         writeLines("Plotting summary of Wind Speed. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[3],statid,
                   obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
          obs=datap$ws[,2]
@@ -280,8 +287,8 @@
          ################################
          #	Wind Direction Stats	#
          ################################
+         writeLines("Plotting summary of Wind Direction.. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".WD.ametplot",sep="")
-         writeLines("Plotting summary of Wind Direction.. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[4],statid,
                   obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,4)
          obs=datap$wd[,2]
@@ -313,8 +320,8 @@
          ################################
          #	Mixing Ratio Stats	#
          ################################
+         writeLines("Plotting summary of Mixing Ratio.. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".Q.ametplot",sep="")
-         writeLines("Plotting summary of Mixing Ratio.. Figure name:",figure)
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[2],
                   statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
          obs=datap$q[,2]*1000
@@ -342,7 +349,7 @@
    }	## END of AMET PLOT
    # If Text statistic file is generated mv final temporary file figdir/tmp to savedir/stats.some_process_id.dat	
    if (textstats){
-   	system(paste("mv ",figdir,"/tmp ",savedir,"/stats.",project,".",pid[q],".dat",sep=""))
+   	system(paste("mv ",figdir,"/tmp ",savedir,"/stats.",project,".",pid[q],".csv",sep=""))
    	system(paste("rm -f ",figdir,"/tmp* ",sep=""))
    }
  } #   END OF LOOP THROUGH Queries   	
