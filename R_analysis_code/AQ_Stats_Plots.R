@@ -7,31 +7,19 @@
 ### NOTE: The user should make sure the data is sorted by group before
 ### using this code.
 ###
-### Last modified by Wyat Appel: April, 2017
+### Last modified by Wyat Appel: June, 2017
 ################################################################
 
 # get some environmental variables and setup some directories
-ametbase        <- Sys.getenv("AMETBASE")        # base directory of AMET
-dbase           <- Sys.getenv("AMET_DATABASE")      # AMET database
-ametR           <- paste(ametbase,"/R_analysis_code",sep="")      # R directory
-ametRinput      <- Sys.getenv("AMETRINPUT")  # input file for this script
-ametptype       <- Sys.getenv("AMET_PTYPE")   # Prefered output type
-## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-## and not specified via AMET_OUT, then set figdir to the current directory
-if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
-if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
+ametbase        <- Sys.getenv("AMETBASE")		        # base directory of AMET
+ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
-## source some configuration files, AMET libs, and input
-source(paste(ametbase,"/configure/amet-config.R",sep=""))
+## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-source(ametRinput)                                     # Anaysis configuration/input file
 
 ## Load Required Libraries 
-if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
-
-mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 ################################################
 ## Set output names and remove existing files ##
@@ -455,66 +443,90 @@ for (n in 1:total_networks) {
 ##############################################
 
 ### Create Normalized Mean Bias (NMB) plots ###
-plotfmt <-"png"													# Set plot format as png
 unique_labels <- "y"												# Set use of unique labels as true
 levLab <- leg_labels_nmb												# Set labels to use on the plot
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
-plotSpatial(sinfo_nmb,figure=filename_nmb,varlab=title_nmb,bounds=bounds,plotopts=plotopts,plot_units="%")	# Create plot (map) for nmb in png format
-plotSpatial(sinfo_fb,figure=filename_fb,varlab=title_fb,bounds=bounds,plotopts=plotopts,plot_units="%")		# Create plot (map) for fb in png format
-plotfmt <- "pdf"
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-plotSpatial(sinfo_nmb,figure=filename_nmb,varlab=title_nmb,bounds=bounds,plotopts=plotopts,plot_units="%")	# Create plot (map) for nmb in pdf format
-plotSpatial(sinfo_fb,figure=filename_fb,varlab=title_fb,bounds=bounds,plotopts=plotopts,plot_units="%")		# Create plot (map) for fb in pdf format
+if ((ametptype == "png") || (ametptype == "both")) {
+   plotfmt <- "png"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotSpatial(sinfo_nmb,figure=filename_nmb,varlab=title_nmb,bounds=bounds,plotopts=plotopts,plot_units="%")	# Create plot (map) for nmb in png format
+   plotSpatial(sinfo_fb,figure=filename_fb,varlab=title_fb,bounds=bounds,plotopts=plotopts,plot_units="%")		# Create plot (map) for fb in png format
+}
+if ((ametptype == "pdf") || (ametptype == "both")) {
+   plotfmt <- "pdf"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+   plotSpatial(sinfo_nmb,figure=filename_nmb,varlab=title_nmb,bounds=bounds,plotopts=plotopts,plot_units="%")	# Create plot (map) for nmb in pdf format
+   plotSpatial(sinfo_fb,figure=filename_fb,varlab=title_fb,bounds=bounds,plotopts=plotopts,plot_units="%")		# Create plot (map) for fb in pdf format
+}
 ###############################################
 
 ### Create Normalized Mean Error (NME) plots ###
-plotfmt <- "png"
 levLab <- leg_labels_nme
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-plotSpatial(sinfo_nme,figure=filename_nme,varlab=title_nme,bounds=bounds,plotopts=plotopts,plot_units="%")
-plotSpatial(sinfo_fe,figure=filename_fe,varlab=title_fe,bounds=bounds,plotopts=plotopts,plot_units="%")
-plotfmt <- "pdf"
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-plotSpatial(sinfo_nme,figure=filename_nme,varlab=title_nme,bounds=bounds,plotopts=plotopts,plot_units="%")   
-plotSpatial(sinfo_fe,figure=filename_fe,varlab=title_fe,bounds=bounds,plotopts=plotopts,plot_units="%")
+if ((ametptype == "png") || (ametptype == "both")) {
+   plotfmt <- "png"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+   plotSpatial(sinfo_nme,figure=filename_nme,varlab=title_nme,bounds=bounds,plotopts=plotopts,plot_units="%")
+   plotSpatial(sinfo_fe,figure=filename_fe,varlab=title_fe,bounds=bounds,plotopts=plotopts,plot_units="%")
+}
+if ((ametptype == "pdf") || (ametptype == "both")) {
+   plotfmt <- "pdf"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+   plotSpatial(sinfo_nme,figure=filename_nme,varlab=title_nme,bounds=bounds,plotopts=plotopts,plot_units="%")   
+   plotSpatial(sinfo_fe,figure=filename_fe,varlab=title_fe,bounds=bounds,plotopts=plotopts,plot_units="%")
+}
 ################################################
 
 ### Create Mean Bias plot ###
-plotfmt <-"png"                                                                                                 # Set plot format as png
 levLab <- leg_labels_mb                                                                                         # Set labels to use on the plot
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-plotSpatial(sinfo_mb,figure=filename_mb,varlab=title_mb,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
-plotfmt <-"pdf"                                                                                                 # Set plot format as png
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-plotSpatial(sinfo_mb,figure=filename_mb,varlab=title_mb,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
+if ((ametptype == "png") || (ametptype == "both")) {
+   plotfmt <- "png"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
+   plotSpatial(sinfo_mb,figure=filename_mb,varlab=title_mb,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
+}
+if ((ametptype == "pdf") || (ametptype == "both")) {
+   plotfmt <-"pdf"                                                                                                 # Set plot format as png
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
+   plotSpatial(sinfo_mb,figure=filename_mb,varlab=title_mb,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
+}
 #################################################
 
 ### Create Mean Error plot ###
-plotfmt <-"png"                                                                                                 # Set plot format as png
 levLab <- leg_labels_me                                                                                         # Set labels to use on the plot
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-plotSpatial(sinfo_me,figure=filename_me,varlab=title_me,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
-plotfmt <-"pdf"                                                                                                 # Set plot format as png
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-plotSpatial(sinfo_me,figure=filename_me,varlab=title_me,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
+if ((ametptype == "png") || (ametptype == "both")) {
+   plotfmt <- "png"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
+   plotSpatial(sinfo_me,figure=filename_me,varlab=title_me,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
+}
+if ((ametptype == "pdf") || (ametptype == "both")) {
+   plotfmt <-"pdf"                                                                                                 # Set plot format as png
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
+   plotSpatial(sinfo_me,figure=filename_me,varlab=title_me,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
+}
 #################################################
 
 ### Create Root Mean Square Error (RMSE) plots ###
-plotfmt <- "png" 
 levLab <- leg_labels_rmse
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 
-plotSpatial(sinfo_rmse,figure=filename_rmse,varlab=title_rmse,bounds=bounds,plotopts=plotopts,plot_units=units)
-plotfmt <- "pdf" 
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 
-plotSpatial(sinfo_rmse,figure=filename_rmse,varlab=title_rmse,bounds=bounds,plotopts=plotopts,plot_units=units)
+if ((ametptype == "png") || (ametptype == "both")) {
+   plotfmt <- "png"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 
+   plotSpatial(sinfo_rmse,figure=filename_rmse,varlab=title_rmse,bounds=bounds,plotopts=plotopts,plot_units=units)
+}
+if ((ametptype == "pdf") || (ametptype == "both")) {
+   plotfmt <- "pdf" 
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 
+   plotSpatial(sinfo_rmse,figure=filename_rmse,varlab=title_rmse,bounds=bounds,plotopts=plotopts,plot_units=units)
+}
 ###############################################
 
 ### Create Correlation (Corr) plots ###
-plotfmt <- "png"
 levLab <- levs_corr
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-plotSpatial(sinfo_corr,figure=filename_corr,varlab=title_corr,bounds=bounds,plotopts=plotopts,plot_units="None")
-plotfmt <- "pdf"
-plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-plotSpatial(sinfo_corr,figure=filename_corr,varlab=title_corr,bounds=bounds,plotopts=plotopts,plot_units="None")
+if ((ametptype == "png") || (ametptype == "both")) {
+   plotfmt <- "png"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+   plotSpatial(sinfo_corr,figure=filename_corr,varlab=title_corr,bounds=bounds,plotopts=plotopts,plot_units="None")
+}
+if ((ametptype == "pdf") || (ametptype == "both")) {
+   plotfmt <- "pdf"
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+   plotSpatial(sinfo_corr,figure=filename_corr,varlab=title_corr,bounds=bounds,plotopts=plotopts,plot_units="None")
+}
 ########################################

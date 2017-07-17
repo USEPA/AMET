@@ -7,11 +7,15 @@
 # The code is interactive with the AMET_AQ system developed by Wyat
 # Appel.  Data are queried from the MYSQL database for the CSN or
 # SEARCH networks.  Data are then averaged for SO4, NO3, NH4, EC, OC
-# soil, NaCl, NCOM, other and PM2.5 for the model and ob values.  
-# These averages are then plotted on a stacked bar plot, along with 
-# the percent of the total PM2.5 that each species comprises.
+# other and PM2.5 for the model and ob values. These averages are then 
+# plotted on a stacked bar plot, along with the percent of the total PM2.5 
+# that each species comprises. The plots are provided in a panel format 
+# by season (winter, spring, summer and fall) and region (Northeast, 
+# Atlantic, Great Lakes and Midwest). Requires a full year simulation. 
+# Single simulation only.
 #
 # Initial version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -19,14 +23,10 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
-
-  #  AMET database
-  setenv AMET_DATABASE CMAQ_v51_Dev
-
-  #  AMET project id or simulation id
-#  setenv AMET_PROJECT   aqExample
-  setenv AMET_PROJECT CMAQ_v502_Base_New
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
+  setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot_panel

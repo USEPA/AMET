@@ -30,10 +30,10 @@
 #            - Extensive code clean and reformatting                    #
 #                                                                       #
 #  Version 1.3, May 15, 2017, Rob Gilliam                               # 
-#  Updates: - Removed old amet-config.R configuration option that       #
+#  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
-#           - Added a read password and MySQL config though wrapper     #
-#             and setenv statements.                                    # 
+#             Now users define that file location in csh wrapper scripts#
+#             via setenv MYSQL_CONFIG variable.                         #
 #           - Removed some deprecated variables and cleaned/formatted   #
 #             script for better readability. Also changed dir names     #
 #             to reflect the update (i.e., R_analysis_code instead of R)#      
@@ -67,15 +67,19 @@
  source (mysqlloginconfig)
  source (ametRinput)
 
- ametdbase      <- Sys.getenv("AMET_DATABASE")
+ ametdbase1     <- Sys.getenv("AMET_DATABASE1")
+ ametdbase2     <- Sys.getenv("AMET_DATABASE2")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
- mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                        passwd=mysqlpasswd,maxrec=maxrec)
+ mysql1          <-list(server=mysqlserver,dbase=ametdbase1,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
+ mysql2          <-list(server=mysqlserver,dbase=ametdbase2,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
 ########################################################################################################################
 #	MAIN TIME SERIES PROGRAM
 ########################################################################################################################
 
+  drange_plot <-paste(dates$y,dform(dates$m),dform(dates$d),"-",datee$y,dform(datee$m),dform(datee$d),sep="")
 
   # If the time series should be an hourly average of a collection  of stations, 
   # convert the station id vector, which contains multiple stations, to a single
@@ -100,8 +104,10 @@
   # Then set up figure names. 
   if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
   if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
-  figure  <-paste(figdir,"/",model1,".",statid,sep="")
-  textfile<-paste(figdir,"/",model1,".",statid,".txt",sep="")
+  figure  <-paste(figdir,"/",model1,".",statid,".",drange_plot,sep="")
+  textfile<-paste(figdir,"/",model1,".",statid,".",drange_plot,".txt",sep="")
+ 
+ savefile_name<-paste(figure,".Rdata",sep="")
    
 
 for (sn in 1:length(statid)){
@@ -125,10 +131,10 @@ for (sn in 1:length(statid)){
                  dform(datee$m),dform(datee$d)," ",extra," ORDER BY ob_date,ob_time",sep="")
 
 # Query Database and put into data frame, then massage data
-  data1<-ametQuery(query1,mysql)
+  data1<-ametQuery(query1,mysql1)
 
   # If no data is in the database for the station then skip to next station or end program
-  if(length(data1) == 0){
+ if ( dim(data1)[1] == 0) {
 		writeLines(paste('',
 		           '**********************************************************************************',
 		           'NO DATA WAS FOUND FOR THIS SITE: Will skip to next site or terminate              ',
@@ -146,21 +152,28 @@ for (sn in 1:length(statid)){
 
   # Condition that user want to compare a second model to observations and first model
   if (comp){
-     data2    <-ametQuery(query2,mysql)
-     if(length(data2) == 0){
-       data2  <-data1;comp<-FALSE
+     data2    <-ametQuery(query2,mysql2)
+     if(dim(data2)[1] == 0){
+       writeLines(paste("Project ID 2 did not have any data. Either change dates
+                         to period where both projects have data or remove AMET_PROJECT2
+                         from the run_timeseries.csh script and just plot AMET_PROJECT"))
+       quit(save="no")                  
      }
      tseries2 <-massageTseries(data2,loc=locs,iftseries=TRUE)
   }
   else {
      tseries2 <-tseries1
+     data2    <-data1
   }
+  
+  
   #######################################################################################
   #   STEP 3) Make a R data file and text file of time series if user specifies
   #######################################################################################
   # If users specifies they want a R data file with timeseries data then write
   if (savefile){
-  	save(tseries1,file=paste(figure,".RData",sep=""))
+        writeLines(paste("R data file output:",savefile_name[sn]))
+  	save(tseries1,tseries2,data1, data2, file=savefile_name[sn])
   }
   
   ##################################################################################################
@@ -226,12 +239,14 @@ for (sn in 1:length(statid)){
   
   # Write text output if user specifies
   if(textout) {
+     writeLines(paste("R text file output:",textfile[sn]))
      write.table(data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],ws[,1],ws[,2],wd[,1],wd[,2]),
                  textfile[sn],sep=",", col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)",
                  "Q Mod (g/kg)","Q Obs (g/kg)","WS Mod (m/s)","WS Obs (m/s)","WD Mod (Deg)","WD Obs (Deg)"),
                  row.names=F, quote=FALSE)
   }
-  writeLines(paste("Plotting figure for ",statid[sn]))
+  writeLines(paste("Plotting figure for site: ",statid[sn],"-->",figure[sn],".",plotopts$plotfmt,sep=""))
+  writeLines(paste("---------------------------------------------------------------------------------------"))
 #######################################################################################
 #   STEP 5) Plot time series
 #######################################################################################
@@ -239,7 +254,6 @@ for (sn in 1:length(statid)){
          plotTseries(temp,ws,wd,q,date.vec,plotopts,qclims,comp=comp,
                      tsnames=c(statid[sn],model1,model2),wdweightws=wdweightws)
  )
- writeLines(paste("Finished with ",statid[sn]))
  rm(temp,ws,ws,q,tseries1,data1)
 }	# End of loop through station ids
 ########################################################################################################################

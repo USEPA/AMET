@@ -10,7 +10,7 @@
 #  the php interface included with AMET.                 #
 #                                                        #
 #       REQUIRED: amet-config.R                          #
-#                 AQ_species_list.R			 #
+#                 AQ_species_list.input			 #
 #                                                        #
 #       PURPOSE: Run Site Compare and then put the       #
 #                output into the MYSQL database for AMET #
@@ -18,23 +18,31 @@
 #                                                        #
 ##------------------------------------------------------##
 
-require(RMySQL)
+amet_base <- Sys.getenv('AMETBASE')
+if (!exists("amet_base")) {
+   stop("Must set AMETBASE environment variable")
+}
 
-amet_base        <- Sys.getenv('AMETBASE')
-base.command     <- paste(amet_base,"/configure/amet-config.R",sep="")
+config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+if (!exists("config_file")) {
+   stop("Must set MYSQL_CONFIG environment variable")
+}
+source(config_file)
 
-source(base.command)
+dbase <-Sys.getenv('AMET_DATABASE')
+if (!exists("dbase")) {
+   stop("Must set AMET_DATABASE environment variable")
+}
 
 args              <- commandArgs(2)
-amet_login        <- args[1]
-amet_pass         <- args[2]
+mysql_login        <- args[1]
+mysql_pass         <- args[2]
 
-dbase                  <- Sys.getenv('AMET_DATABASE')
+### Use MySQL login/password from config file if requested ###
+if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
+##############################################################
+
 obs_data_dir           <- Sys.getenv('AMET_OBS')
-#if (obs_data_dir_in != "") {
-#   obs_data_dir <- obs_data_dir_in
-#}
-
 use_AE6                <- Sys.getenv('INC_AERO6_SPECIES')
 time_shift             <- Sys.getenv('TIME_SHIFT')
 run_dir                <- Sys.getenv('AMET_OUT')
@@ -45,7 +53,7 @@ end_date               <- Sys.getenv('END_DATE')
 write_sitex            <- Sys.getenv('WRITE_SITEX')
 run_sitex_flag         <- Sys.getenv('RUN_SITEX')
 load_sitex             <- Sys.getenv('LOAD_SITEX')
-AMET_species_list      <- Sys.getenv('AMET_SPECIES_FILE')
+AMET_species_list      <- Sys.getenv('AMET_SPEC_FILE')
 
 castnet_flag           <- Sys.getenv('CASTNET')               # Flag to include CASTNet data in the analysis
 castnet_hourly_flag    <- Sys.getenv('CASTNET_HOURLY')
@@ -102,10 +110,34 @@ if ((aqs_daily_pm_flag == "y") || (aqs_daily_pm_flag == "Y") || (aqs_daily_pm_fl
    aqs_daily_flag <- 'y'
 }
 
-if (time_shift == "") { time_shift <- 1 }     # Default to 1 (aconc) if time_shift value is not set in the environment
-
-source(AMET_species_list)
 ###########################################################
+
+#########################################################
+### Check which PM2.5 name being used in combine file ###
+#########################################################
+require(ncdf4)
+PM_MOD_SPEC     <- "ATOTIJ"
+PM_FRM_MOD_SPEC <- "ATOTIJ_FRM"
+if (Sys.getenv("WRITE_SITEX") == "T") {
+   M3_FILE <- Sys.getenv("CONC_FILE_1")
+   m3_file_in <- nc_open(M3_FILE)
+   var_list <- ncatt_get(m3_file_in,0,"VAR-LIST")
+   var_list <- var_list$value
+   vars <- strsplit(var_list," +")
+   if ("PMIJ" %in% vars[[1]]) {
+      PM_MOD_SPEC <- "PMIJ"
+      PM_FRM_MOD_SPEC <- "PMIJ_FRM"
+   }
+}
+##########################################################
+
+
+amet_species_list <- Sys.getenv("AQ_SPECIES_LIST")
+if (!exists("amet_species_list")) {
+   stop("Must set AQ_SPECIES_LIST environment variable")
+}
+source(amet_species_list)
+
 
 ###########################################################
 ### Function to create and execute site compare scripts ###
@@ -228,7 +260,7 @@ run_sitex <- function(network) {
       cat(paste("Finished running site compare for network ",network,"\n\n",sep=" "))
    }
    if ((load_sitex == "y") || (load_sitex == "Y") || (load_sitex == "t") || (load_sitex == "T")) {
-      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",amet_login," ",amet_pass," ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
+      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",mysql_login," ",mysql_pass," ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
       system(load.command)
       cat(paste("Finshed populating database for network ",network,"\n",sep=" "))
    }
@@ -276,7 +308,7 @@ if ((improve_flag == "y") || (improve_flag == "Y") || (improve_flag == "t") || (
    table_type    <- "IMPROVE"
    network       <- "IMPROVE"
    site_file     <- paste(obs_data_dir,"/site_files/IMPROVE_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/IMPROVE_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/IMPROVE_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -285,9 +317,9 @@ if ((csn_flag == 'y') || (csn_flag == 'Y') || (csn_flag == 't') || (csn_flag == 
    table_type    <- "STN"
    network       <- "CSN"
    site_file     <- paste(obs_data_dir,"/site_files/AQS_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/CSN_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/CSN_data_",year,".csv",sep="")
    if (year > 2010) {
-      ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/CSN_data_",year,"_VIEWS.csv",sep="")
+      ob_file       <- paste(obs_data_dir,"/",year,"/CSN_data_",year,"_VIEWS.csv",sep="")
    }
    EXEC          <- EXEC_sitex
    run_sitex(network)
@@ -297,7 +329,7 @@ if ((castnet_flag == "y") || (castnet_flag == "Y") || (castnet_flag == "t") || (
    table_type    <- "CASTNET"
    network       <- "CASTNET"
    site_file     <- paste(obs_data_dir,"/site_files/CASTNET_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/CASTNET_weekly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/CASTNET_weekly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -306,7 +338,7 @@ if ((castnet_hourly_flag == "y") || (castnet_hourly_flag == "Y") || (castnet_hou
    table_type    <- "MET"
    network       <- "CASTNET_Hourly"
    site_file     <- paste(obs_data_dir,"/site_files/CASTNET_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/CASTNET_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/CASTNET_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -315,7 +347,7 @@ if ((castnet_daily_O3_flag == "y") || (castnet_daily_O3_flag == "Y") || (castnet
    table_type    <- "CASTNET"
    network       <- "CASTNET_Daily"
    site_file     <- paste(obs_data_dir,"/site_files/CASTNET_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/CASTNET_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/CASTNET_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex_daily
    run_sitex(network)
 }
@@ -324,7 +356,7 @@ if ((castnet_drydep_flag == "y") || (castnet_drydep_flag == "Y") || (castnet_dry
    table_type    <- "CASTNET"
    network       <- "CASTNET_Drydep"
    site_file     <- paste(obs_data_dir,"/site_files/CASTNET_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/CASTNET_weekly_drydep_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/CASTNET_weekly_drydep_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -333,7 +365,7 @@ if ((nadp_flag == "y") || (nadp_flag == "Y") || (nadp_flag == "t") || (nadp_flag
    table_type    <- "NADP"
    network       <- "NADP"
    site_file     <- paste(obs_data_dir,"/site_files/NADP_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/NADP_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/NADP_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -342,7 +374,7 @@ if ((mdn_flag == "y") || (mdn_flag == "Y") || (mdn_flag == "t") || (mdn_flag == 
    table_type    <- "NADP"
    network       <- "MDN"
    site_file     <- paste(obs_data_dir,"/site_files/MDN_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/All_Years/MDN_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/All_Years/MDN_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -351,7 +383,7 @@ if ((amon_flag == "y") || (amon_flag == "Y") || (amon_flag == "t") || (amon_flag
    table_type    <- "CASTNET"
    network       <- "AMON"
    site_file     <- paste(obs_data_dir,"/site_files/AMON_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/All_Years/AMON_data.csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/All_Years/AMON_data.csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -360,7 +392,7 @@ if ((aqs_daily_O3_flag == "y") || (aqs_daily_O3_flag == "Y") || (aqs_daily_O3_fl
    table_type    <- ""
    network       <- "AQS_Daily_O3"
    site_file     <- paste(obs_data_dir,"/site_files/AQS_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/AQS_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AQS_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex_daily
    run_sitex(network)
 }
@@ -369,7 +401,7 @@ if ((aqs_daily_flag == "y") || (aqs_daily_flag == "Y") || (aqs_daily_flag == "t"
    table_type    <- "CASTNET"
    network       <- "AQS_Daily"
    site_file     <- paste(obs_data_dir,"/site_files/AQS_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/AQS_daily_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AQS_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -377,7 +409,7 @@ if ((aqs_hourly_flag == "y") || (aqs_hourly_flag == "Y") || (aqs_hourly_flag == 
    table_type    <- "CASTNET"
    network       <- "AQS_Hourly"
    site_file     <- paste(obs_data_dir,"/site_files/AQS_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/AQS_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AQS_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -386,7 +418,7 @@ if ((search_daily_flag == "y") || (search_daily_flag == "Y") || (search_daily_fl
    table_type    <- "CASTNET"
    network       <- "SEARCH_Daily"
    site_file     <- paste(obs_data_dir,"/site_files/SEARCH_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/SEARCH_daily_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/SEARCH_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -395,7 +427,7 @@ if ((search_hourly_flag == "y") || (search_hourly_flag == "Y") || (search_hourly
    table_type    <- "CASTNET"
    network       <- "SEARCH_Hourly"
    site_file     <- paste(obs_data_dir,"/site_files/SEARCH_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/SEARCH_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/SEARCH_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -404,7 +436,7 @@ if ((aeronet_flag == "y") || (aeronet_flag == "Y") || (aeronet_flag == "t") || (
    table_type    <- "CASTNET"
    network       <- "AERONET"
    site_file     <- paste(obs_data_dir,"/site_files/AERONET_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/AERONET_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AERONET_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -413,7 +445,7 @@ if ((fluxnet_flag == "y") || (fluxnet_flag == "Y") || (fluxnet_flag == "t") || (
    table_type    <- "CASTNET"
    network       <- "FLUXNET"
    site_file     <- paste(obs_data_dir,"/site_files/FLUXNET_sites_us.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/FLUXNET_US_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/FLUXNET_US_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -422,7 +454,7 @@ if ((naps_hourly_flag == "y") || (naps_hourly_flag == "Y") || (naps_hourly_flag 
    table_type    <- "CASTNET"
    network       <- "NAPS"
    site_file     <- paste(obs_data_dir,"/site_files/NAPS_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/NA_Data/",year,"/NAPS_hourly_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/NAPS_hourly_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -431,7 +463,7 @@ if ((emep_hourly_flag == "y") || (emep_hourly_flag == "Y") || (emep_hourly_flag 
    table_type    <- "SEARCH"
    network       <- "EMEP_Hourly"
    site_file     <- paste(obs_data_dir,"/site_files/EMEP_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/EMEP_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/EMEP_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -440,7 +472,7 @@ if ((emep_daily_flag == "y") || (emep_daily_flag == "Y") || (emep_daily_flag == 
    table_type    <- "SEARCH"
    network       <- "EMEP_Daily"
    site_file     <- paste(obs_data_dir,"/site_files/EMEP_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/EMEP_daily_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/EMEP_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -449,7 +481,7 @@ if ((aurn_hourly_flag == "y") || (aurn_hourly_flag == "Y") || (aurn_hourly_flag 
    table_type    <- "SEARCH"
    network       <- "AURN_Hourly"
    site_file     <- paste(obs_data_dir,"/site_files/AURN_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/AURN_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AURN_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -458,7 +490,7 @@ if ((aurn_daily_flag == "y") || (aurn_daily_flag == "Y") || (aurn_daily_flag == 
    table_type    <- "SEARCH"
    network       <- "AURN_Daily"
    site_file     <- paste(obs_data_dir,"/site_files/AURN_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/AURN_daily_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AURN_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -467,7 +499,7 @@ if ((airbase_hourly_flag == "y") || (airbase_hourly_flag == "Y") || (airbase_hou
    table_type    <- "SEARCH"
    network       <- "AIRBASE"
    site_file     <- paste(obs_data_dir,"/site_files/AIRBASE_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/AIRBASE_hourly_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AIRBASE_hourly_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -476,7 +508,7 @@ if ((airbase_daily_flag == "y") || (airbase_daily_flag == "Y") || (airbase_daily
    table_type    <- "SEARCH"
    network       <- "AIRBASE_Daily"
    site_file     <- paste(obs_data_dir,"/site_files/AIRBASE_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/AIRBASE_daily_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AIRBASE_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -485,7 +517,7 @@ if ((aganet_flag == "y") || (aganet_flag == "Y") || (aganet_flag == "t") || (aga
    table_type    <- "SEARCH"
    network       <- "AGANET"
    site_file     <- paste(obs_data_dir,"/site_files/AGANET_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/AGANET_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AGANET_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -494,7 +526,7 @@ if ((admn_flag == "y") || (admn_flag == "Y") || (admn_flag == "t") || (admn_flag
    table_type    <- "SEARCH"
    network       <- "ADMN"
    site_file     <- paste(obs_data_dir,"/site_files/ADMN_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/ADMN_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/ADMN_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -503,7 +535,7 @@ if ((namn_flag == "y") || (namn_flag == "Y") || (namn_flag == "t") || (namn_flag
    table_type    <- "SEARCH"
    network       <- "NAMN"
    site_file     <- paste(obs_data_dir,"/site_files/NAMN_sites.txt",sep="")
-   ob_file       <- paste(obs_data_dir,"/EU_Data/",year,"/NAMN_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/NAMN_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }

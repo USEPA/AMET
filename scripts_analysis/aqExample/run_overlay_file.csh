@@ -1,24 +1,13 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Overlay plot
 # -----------------------------------------------------------------------
-# Purpose:
-#
-# This is an example c-shell script to run the R-script that generates
-# a box plot without whiskers.  The script is designed to create a box
-# plot with on monthly boxes.  Individual observation/model pairs are
-# provided through a MYSQL query, from which the script computes the
-# 25% and 75% quartiles, as well as the median values for both obs and
-# model values.  The script then plots these values as a box plot.
-# While the script is designed to be used with an entire year of data,
-# it can be used with a shorter time period.  However, no less than
-# three months should be used, since any period of time shorter than
-# that can cause elements of the plot (text) to be misplaced on the
-# plot area. Designed for one species and one network.
+# Purpose: This script produces a VERDI/PAVE compatible overlay file. It is
+# designed to work with a single network, single species and single simulation.
+# It requires hourly or daily data and the type must be specified in the script.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - June, 2017
 # -----------------------------------------------------------------------
 
   
@@ -26,14 +15,11 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
- 
-  #  AMET database
-  setenv AMET_DATABASE Test_AMETv13
- 
-  #  AMET project id or simulation id
-  setenv AMET_PROJECT	aqExample	
-  
+  setenv AMETBASE       /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
+  setenv AMET_DATABASE  amet
+  setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
+
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/overlay_file
   

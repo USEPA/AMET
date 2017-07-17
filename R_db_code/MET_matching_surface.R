@@ -1,7 +1,7 @@
 #######################################################################################################
 #####################################################################################################
 #                                                                 ################################
-#       AMET (Atmospheric Model Evaluation Tool) Version 2.0            
+#       AMET (Atmospheric Model Evaluation Tool) Version 1.3            
 #                                                                  
 #       Meteorological Models:
 #            Model for Prediction Across Scales (MPAS)
@@ -14,7 +14,7 @@
 #       model output, MADIS observations, interpolate, 
 #       and construct the database queries.   
 #                                                            
-#       Version:        2.0                                         
+#       Version:        1.3                                         
 #       Date:           April 28, 2017                     
 #       Contributors:   Robert Gilliam, Russ Bullock 
 #                                                     
@@ -23,37 +23,61 @@
 #####################################################################################################
 #######################################################################################################
 
-  require(RMySQL)
-  require(date)
-  require(ncdf4)
+  if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded") }
+  if(!require(date))   {stop("Required Package date was not loaded")   }
+  if(!require(ncdf4))  {stop("Required Package ncdf4 was not loaded")  }
+
+  config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+  if (!exists("config_file")) {
+     stop("Must set MYSQL_CONFIG environment variable")
+  }
+  source(config_file)
+
+  amet_base <- Sys.getenv('AMETBASE')
+  if (!exists("amet_base")) {
+     stop("Must set AMETBASE environment variable")
+  }
+
+  ametdbase <-Sys.getenv('AMET_DATABASE')
+  if (!exists("ametdbase")) {
+     stop("Must set AMET_DATABASE environment variable")
+  }
+
+  mysqllogin <-Sys.getenv('MYSQL_LOGIN')
+  if (!exists("mysqllogin")) {
+     stop("Must set MYSQL_LOGIN environment variable")
+  }
 
   # Get Login and Password from R command arguments
   args              <- commandArgs(1)
-  mysqlpasswd       <- args[1]
+  mysqlpass         <- args[1]
+
+  ### Use MySQL login/password from config file if requested ###
+  if (mysqlpass == 'config_file')  { mysqlpass  <- amet_pass  }
+  ##############################################################
 
   # Initialize AMET Directory Structure Via Env. Vars
   # AND Load required function and configuration files
-  ametbase    <-Sys.getenv("AMETBASE")
-  source(paste(ametbase,"/R_db_code/MET_model.read.R",sep="")) 
-  source(paste(ametbase,"/R_db_code/MET_observation.read.R",sep="")) 
-  source(paste(ametbase,"/R_db_code/MET_site.mapping.R",sep="")) 
-  source(paste(ametbase,"/R_db_code/MET_dbase.R",sep=""))
-  source(paste(ametbase,"/R_db_code/MET_misc.R",sep=""))
+  source(paste(amet_base,"/R_db_code/MET_model.read.R",sep="")) 
+  source(paste(amet_base,"/R_db_code/MET_observation.read.R",sep="")) 
+  source(paste(amet_base,"/R_db_code/MET_site.mapping.R",sep="")) 
+  source(paste(amet_base,"/R_db_code/MET_dbase.R",sep=""))
+  source(paste(amet_base,"/R_db_code/MET_misc.R",sep=""))
 
 # Users can pass login and password via environmental variables if not concerned about security.
-# mysqlpasswd    <- Sys.getenv("AMETPASS")  
 
-  mysqllogin     <- Sys.getenv("MYSQL_LOGIN")
   madisbase      <- Sys.getenv("MADISBASE")  
-  ametdbase      <- Sys.getenv("AMET_DATABASE")  
   mysqlserver    <- Sys.getenv("MYSQL_SERVER")
   met_output     <- Sys.getenv("METOUTPUT") 
   madis_dset     <- Sys.getenv("MADISDSET") 
   ametproject    <- Sys.getenv("AMET_PROJECT")
+  projectdesc    <- Sys.getenv("RUN_DESCRIPTION")
   maxdtmin       <- as.numeric(Sys.getenv("MAXDTMIN"))
+  skipind        <- Sys.getenv("SKIPIND")
   interp         <- Sys.getenv("INTERP_METHOD")
   updateSiteTable<-as.logical(Sys.getenv("UPDATE_SITES"))
-  projectdesc    <- Sys.getenv("RUN_DESCRIPTION")
+  autoftp        <-as.logical(Sys.getenv("AUTOFTP"))
+  madis_server   <- Sys.getenv("MADIS_SERVER")
   verbose        <- as.logical(Sys.getenv("VERBOSE"))
 
   userid         <-system("echo $USER",intern = TRUE)
@@ -65,8 +89,7 @@
   # mysql server details below has two options with the first commented out. 1) Plain text
   # file with password (not secure) and 2) The default, via csh script and password argument.
   # For option 1, the file is $AMETBASE/configure/amet-config.R 
-  #mysql          <-list(server=server,dbase=ametdbase,login=login,passwd=passwd,maxrec=maxrec)
-  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,passwd=mysqlpasswd,maxrec=5E6)
+  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,passwd=mysqlpass,maxrec=5E6)
   command        <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",
                           mysql$passwd,"' --database=",mysql$dbase," < tmp.query",sep="")
   sitecommand    <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",
@@ -74,8 +97,15 @@
   dateO <-mdy.date(month = 1, day = 01, year = 1970)
   files <-system(paste("ls -lh ",met_output,"*",sep=''),intern=T)
   nf    <-length(files)
-  buffer<- 5
 
+  # Hard coded settings now
+  buffer  <- 5
+  
+  # Skip index setting for first file (1) and all after (2)
+  a<-strsplit(skipind,split=" ")
+  skipind1 <-as.numeric(unlist(a)[1])
+  skipind2 <-as.numeric(unlist(a)[2])
+  
   # Site mapping to model grid arrays for MPAS or WRF. Note CIND and CWGT are MPAS index
   # arrays and interp weighting values. WRFIND is the eqivalent for WRF. Values [site,1:3,1:2]
   # are indicies of the four grid point surrounding the obs site. [site,1,1:2] is the first and
@@ -83,7 +113,7 @@
   # DX and DY (in fractional grid form) of the obs site with respect to the grid point to the 
   # south and west. These are computed in site mapping to keep from repetative logic and calculations. 
   sitenum <-as.integer(0)
-  sitemax <-as.integer(15000)
+  sitemax <-as.integer(45000)
   sitelist<-array(NA,c(sitemax))
   cind    <-array(NA,c(sitemax,3))
   cwgt    <-array(NA,c(sitemax,3))
@@ -102,10 +132,13 @@ for(f in 1:nf) {
   nc_close(f1)
   if(metmodel == "mpas") {
    metmodel<-"mpas"
+   writeLines(paste("Matching MPAS output file with observations:",file))
   } else if(head != 0) {
    metmodel<-"wrf"
+   writeLines(paste("Matching WRF output file with observations:",file))
   } else if(metmodel == 0 & head == 0){ 
-   writeLines("The model output is not standard WRF or MPAS output. Double check. Terminating model-observation matching.")
+   writeLines("The model output is not standard WRF or MPAS output. Double check. 
+               Terminating model-observation matching.")
    quit(save="no")
   }
 
@@ -115,19 +148,13 @@ for(f in 1:nf) {
     qout<-new_dbase_tables(mysql)
     qout<-new_surface_met_table(mysql, ametproject, metmodel, userid, projectdesc, projectdate)
   }
-  
+
   # MPAS Grid and Sfc Met extraction
   #list includes: 
   #projection <-list(mproj=0,lat=lat,lon=lon,latv=latv,lonv=lonv,cells_on_vertex=cells_on_vertex,conef=cone)
   #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr)
   if(metmodel == "mpas"){
     model<-mpas_surface(file)
-    # check first time model values. If 0, set skipind1 to 2.
-    # This avoids an evaluation of obs against zero model values
-    skipind  <-1
-    if(sum( model$sfc_met$t2[,1]) == 0) {
-      skipind <-2
-    }
   }
 
   # WRF Grid and Sfc Met extraction
@@ -137,20 +164,31 @@ for(f in 1:nf) {
   #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr)
   if(metmodel == "wrf"){
     model<-wrf_surface(file)
-    # Check WRF array diminsions to make sure 3D (nx, ny, nt).
-    # Check first time model values. If 0, set skipind1 to 2.
-    # This avoids an evaluation of obs against zero model values
-    skipind  <-1
-    if(length(dim(model$sfc_met$t2)) < 3) { next }
-    if(sum( model$sfc_met$t2[,,1]) == 0) {
-      skipind <-2
-    }
   }
 
 ##########################################################################
 # begin loop for hours in MPAS file (reads one MADIS file)
+if(f == 1) { skipind <- skipind1 }
+if(f > 1)  { skipind <- skipind2 }
 nt  <-length(model$sfc_met$time)
+if(skipind > nt) { next }
+
 for(t in skipind:nt){
+
+  # Check time for missing or zero data and skip. This ensures initial times
+  # in model output that are often zero do not get compared with obs.
+  if(metmodel == "mpas"){
+    if(sum( model$sfc_met$t2[,t]) == 0) {
+      writeLines(paste("MPAS time period skipped because initial model time"))
+      next 
+    }
+  }
+  if(metmodel == "wrf"){
+    if(sum( model$sfc_met$t2[,,t]) == 0){ 
+      writeLines(paste("WRF time period skipped because initial model time"))
+      next 
+    }
+  }
 
   # Time component extraction from WRF or MPAS Time variable
   # return variable contains one list variable 
@@ -163,7 +201,8 @@ for(t in skipind:nt){
   #          ihour, imin, isec, stime, stime2
   # sfc_met: t2, q2, u10, v10
   if(madis_dset != "text") {
-    obs<- madis_surface(madisbase, madis_dset, datetime, model$projection$standlon, model$projection$conef)
+    obs<- madis_surface(madisbase, madis_dset, datetime, autoftp, madis_server,
+                        model$projection$standlon, model$projection$conef)
     if(is.na(obs[1])) { next }
   } else if(madis_dset == "text") {
     obs<- text_surface(madisbase, datetime, model$projection$standlon, model$projection$conef)
@@ -215,7 +254,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     if(tdiff[ndiff]>maxdtmin) {
       if(verbose) {
         writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                          datetime$modeltime,actual_time,"(obs time) MAXDTMIN Violation - skipped"))
+                          datetime$modeltime,actual_time,"(obs time) MAXDTMIN Violation - skipped - tdiff (min):",tdiff))
       }
       next
     }
@@ -224,8 +263,8 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
                        "Model time:",datetime$modeltime,"  Obs time:",actual_time))
     }
 
-    if(is.na(obs$sfc_met$t2[sind]))  { obs$sfc_met$t2[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$q2[sind]))  { obs$sfc_met$q2[sind] <-"NULL" }
+    if(is.na(obs$sfc_met$t2[sind]))  { obs$sfc_met$t2[sind]  <-"NULL" }
+    if(is.na(obs$sfc_met$q2[sind]))  { obs$sfc_met$q2[sind]  <-"NULL" }
     if(is.na(obs$sfc_met$u10[sind])) { obs$sfc_met$u10[sind] <-"NULL" }
     if(is.na(obs$sfc_met$v10[sind])) { obs$sfc_met$v10[sind] <-"NULL" }
 

@@ -1,17 +1,18 @@
 #!/bin/csh -f
 # --------------------------------
-# Bar plot - CMAQv5.0 AERO6
+# Bar plot - CMAQv5.0 
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # The code is interactive with the AMET_AQ system developed by Wyat
 # Appel.  Data are queried from the MYSQL database for the CSN or
 # SEARCH networks.  Data are then averaged for SO4, NO3, NH4, EC, OC
-# soil, NaCl, NCOM, other and PM2.5 for the model and ob values.  
-# These averages are then plotted on a stacked bar plot, along with 
-# the percent of the total PM2.5 that each species comprises.
+# and PM2.5 for the model and ob values. These averages are then plotted 
+# on a stacked bar plot, along with the percent of the total PM2.5 that 
+# each species comprises.
 #
 # Initial version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -19,15 +20,13 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
-
-  #  AMET database
-  setenv AMET_DATABASE Test_AMETv13
-
-  #  AMET project id or simulation id
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
-#  setenv AMET_PROJECT2	aqExample
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
  
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot

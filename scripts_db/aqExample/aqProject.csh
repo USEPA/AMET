@@ -32,93 +32,68 @@
 ##########################################################
 
 ## setup:
-## Top AMET directory tree
-#setenv AMETBASE ~/AMET 
-setenv AMETBASE /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13 
+### AMET base directory and database 
+setenv AMETBASE 	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13 
+setenv AMET_DATABASE 	amet
+setenv MYSQL_CONFIG     $AMETBASE/configure/amet-config.R
 
-### Set the database to be used. A new database will be created if it does not already exist ###
-#setenv AMET_DATABASE AMET
-setenv AMET_DATABASE amad_Test_AMETv13_new
+## AMET login info. Comment out to specify AMET login/pass via script instead of via prompt/qsub command line. ###
+### Entering 'config_file' will obtain the login/pass from the amet-config.R file instead. ###
+set    mysql_login="config_file"
+set    mysql_password="config_file"
 
-### Project name. Should be unique and must not contain spaces. Will be created if it does not already exist ###
-setenv AMET_PROJECT "aqExample2"
+### Project name and details. Project will be created if it does not already exist ###
+setenv AMET_PROJECT 	"aqExample"
+setenv MODEL_TYPE 	"CMAQ"
+setenv RUN_DESCRIPTION 	"AQ example project; July 2011"
+setenv USER_NAME 	`whoami`
+setenv EMAIL_ADDR 	"appel.wyat@epa.gov"
 
-### AQ model (e.g CMAQ) ###
-setenv MODEL_TYPE "CMAQ"
-
-### Project description. Can contain spaces but must be in quotes ###
-setenv RUN_DESCRIPTION "AQ example project"
-
-### User name for the project (defaults to system login name) ###
-setenv USER_NAME `whoami`
-
-### Email address (not currently used for anything) ###
-setenv EMAIL_ADDR "appel.wyat@epa.gov"
-
-### Top of AQ observation data directory ###
-setenv AMET_OBS $AMETBASE/obs/AQ
-
-### R input -- defines which files to include in site-metadata (use default) ###
-setenv SITES_META_LIST $AMETBASE/scripts_db/input_files/sites_meta.input
-
-### AMET species list (use default; you can make a copy and use your own if necessary) ###
-setenv AMET_SPECIES_FILE $AMETBASE/scripts_db/input_files/AQ_species_list.input
+### AQ observation data directory and input files ###
+setenv AMET_OBS 	$AMETBASE/obs/AQ
+setenv SITES_META_LIST	$AMETBASE/scripts_db/input_files/sites_meta.input
+setenv AQ_SPECIES_LIST 	$AMETBASE/scripts_db/input_files/AQ_species_list.input
 
 ### Output directory -- post-processed data will be written here ###
-setenv AMET_OUT $AMETBASE/output/$AMET_PROJECT
+setenv AMET_OUT 	$AMETBASE/output/$AMET_PROJECT/sitex_output
 
 ### Options to write, run and load sitex files (T/F) ###
 setenv WRITE_SITEX      T
 setenv RUN_SITEX        T
 setenv LOAD_SITEX       T
 
-### Flag to check table for missing columns (T/F). Must be set to T for new projects. Can be set to F for existing projects. Speeds up data loading to set to F ###
-setenv CHECK_PROJECT_TABLE T
+### Flags for project creation, updating and removal ###
+setenv UPDATE_PROJECT 		F
+setenv REMAKE_PROJECT 		F
+setenv DELETE_PROJECT 		F
 
-### Flag to update an existing AMET project description (T/F). Ddoes not affect existing table data ###
-setenv UPDATE_PROJECT F
-
-### Remake existing project table (T/F).  WARNING: This will delete all data in the existing AMET data table and create a new empty data table. All data will be lost. ###
-setenv REMAKE_PROJECT F
-
-### Delete existing project table (T/F).  WARNING: This will delete all data in the existing AMET table and remove the table from the database.  ###
-setenv DELETE_PROJECT F
-
-### Include AERO6 soil species (T/F); T to include soil-related species ###
-setenv INC_AERO6_SPECIES T 
-
-### Include PM2.5 sharp cutoff species (T/F) ###
-setenv INC_CUTOFF F
-
-### Set timeshift flag in site compare.  This should be set to 1 for files that have been timeshifted (sometimes done to ACONC files).  Not applicable to deposition files. ###
-setenv TIME_SHIFT 0
+### Site compare post-processing options ###
+setenv INC_AERO6_SPECIES	T 
+setenv INC_CUTOFF 		F
+setenv TIME_SHIFT 		0
 
 ### Set start and end date for analysis (Year and Julian day) ###
 ### Jan 001-032; Feb 032-060; Mar 060-091; Apr 091-121; May 121-152; Jun 152-182; Jul 182-213; Aug 213-244; Sep 244-274; Oct 274-305; Nov 305-335; Dec 355-365 ###
 setenv START_DATE       2011182
 setenv END_DATE         2011213
 
-### Set path to concentration files (up to 10 files, sequentially numbered) ###
-setenv CONC_FILE_1 $AMETBASE/model_data/AQ/aqExample/CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.aconc.07
-#setenv CONC_FILE_2 $AMETBASE/model_data/AQ/
-
-### Set path to deposition files (up to 10 files, sequentially numbered) ###
-setenv DEP_FILE_1 $AMETBASE/model_data/AQ/aqExample/CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.dep.07
-#setenv DEP_FILE_2 $AMETBASE/model_data/AQ/
+### Set path to concentration/dep files (up to 10 files, sequentially numbered) ###
+setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
+setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
 
 ### Flag (Y/T or N/F) set by user to include data in the analysis ###
 ### Standard North America networks (should all be set to T for complete analysis) ###
-setenv CASTNET          F
-setenv CASTNET_HOURLY   F
-setenv CASTNET_DAILY_O3 F
-setenv IMPROVE          F 
-setenv NADP             F
-setenv CSN              F
-setenv AQS_HOURLY       F
-setenv AQS_DAILY_O3     F
+setenv CASTNET          T
+setenv CASTNET_HOURLY   T
+setenv CASTNET_DAILY_O3 T
+setenv IMPROVE          T 
+setenv NADP             T
+setenv CSN              T
+setenv AQS_HOURLY       T
+setenv AQS_DAILY_O3     T
 setenv AQS_DAILY        T
-setenv SEARCH_HOURLY    F
-setenv SEARCH_DAILY     F
+setenv SEARCH_HOURLY    T
+setenv SEARCH_DAILY     T
 
 ### Non-standard North America networks (should be set to F unless specifically required) ###
 setenv NAPS_HOURLY      F
@@ -151,11 +126,11 @@ setenv PRECIP_UNITS     cm
 ###### Most users will not need to modify anything below #########
 ##################################################################
 
-if (! "$?login" ) then
+if (! "$?mysql_login" ) then
    echo "Enter the AMET user name: "
    set amet_login = "$<"
 endif
-if (! "$?password" ) then
+if (! "$?mysql_password" ) then
    echo "Enter the AMET user password: "
    stty -echo
    set amet_pass = "$<"
@@ -163,47 +138,45 @@ if (! "$?password" ) then
 endif
 
 if (! "$?amet_login" ) then
-   if (! $?login ) then
+   if (! $?mysql_login ) then
        echo "No login provided via qsub argument"
    else
-      if ("$login" == "")  then
+      if ("$mysql_login" == "")  then
          echo "qsub login is empty"
       else
-         set amet_login = "$login"
+         set amet_login = "$mysql_login"
          echo "Qsub -v login was accepted and will be passed to the script."
       endif
    endif
 endif
 
 if (! "$?amet_pass" ) then
-   if (! $?password ) then
+   if (! $?mysql_password ) then
       echo "No password provided via qsub argument"
    else
-      if ("$password" == "")  then
+      if ("$mysql_password" == "")  then
          echo "qsub password is empty"
       else
-         set amet_pass = "$password"
+         set amet_pass = "$mysql_password"
          echo "Qsub -v password was accepted and will be passed to the script."
      endif
    endif
 endif
 
 if (! $?amet_login ) then
-    echo "No login provided. Either specify via terminal or qsub -v login=amet_login"
+    echo "No login provided. Either specify via script, terminal or qsub -v login=amet_login"
     exit(0)
 endif
 
 if (! $?amet_pass ) then
-    echo "No password provided. Either specify via terminal or qsub -v password=amet_pass"
+    echo "No password provided. Either specify via script, terminal or qsub -v password=amet_pass"
     exit(0)
 endif
 
 ## Check for output directory, create if not present
 if (! -d $AMET_OUT) then
-    mkdir $AMET_OUT
+    mkdir -p $AMET_OUT
 endif
-
-echo "$amet_pass"
 
 ## setup metadata tables
 echo "\n**Setting up AMET database if needed**"

@@ -9,29 +9,15 @@
 ### change to the script.  The script works with multiple years as
 ### well.
 ###
-### Last updated by Wyat Appel; May 14, 2009  
+### Last updated by Wyat Appel: June, 2017
 ################################################################
 
 ## get some environmental variables and setup some directories
-ametbase<-Sys.getenv("AMETBASE")        # base directory of AMET
-dbase<-Sys.getenv("AMET_DATABASE")      # AMET database
-ametR<-paste(ametbase,"/R_analysis_code",sep="")      # R directory
-ametRinput <- Sys.getenv("AMETRINPUT")  # input file for this script
-ametptype <- Sys.getenv("AMET_PTYPE")   # Prefered output type
-## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-## and not specified via AMET_OUT, then set figdir to the current directory
-if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
-if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
+ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
+ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
-## source some configuration files, AMET libs, and input
-source(paste(ametbase,"/configure/amet-config.R",sep=""))
-source (paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-source (ametRinput)                                     # Anaysis configuration/input file
-
-## Load Required Libraries
-if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
-
-mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)            # Set MYSQL login and query options
+## source miscellaneous R input file 
+source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ################################################
 ### Retrieve units label from database table ###
@@ -106,13 +92,11 @@ network_name<-network_label[[1]]
 #######################################
 ### Compute total number of  months ###
 #######################################
-start_year	<- as.integer(substr(start_date,1,4))
-end_year	<- as.integer(substr(end_date,1,4))
-start_month     <- as.integer(substr(start_date,5,6))
-end_month       <- as.integer(substr(end_date,5,6))
+start_month     <- month_start
+end_month       <- month_end
 num_years       <- (year_end-year_start)+1
 years           <- seq(year_start,year_end,by=1)
-months		<- NULL
+months          <- NULL
 ##########################################
 
 #########################################
@@ -281,12 +265,12 @@ title(main=main.title,cex=1.5)
 
 ### Finish up ###
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
+   convert_command<-paste("convert -flatten -density 150x150 ",filename1_pdf," png:",filename1_png,sep="")
    dev.off()
    system(convert_command)
 
    if (ametptype == "png") {
-      remove_command <- paste("rm ",filename_pdf,sep="")
+      remove_command <- paste("rm ",filename1_pdf,sep="")
       system(remove_command)
    }
 }

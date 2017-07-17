@@ -26,10 +26,10 @@
 #          - Extensive cleaning of R script, R input and .csh files     #
 #                                                                       #
 #  Version 1.3, May 15, 2017, Rob Gilliam                               # 
-#  Updates: - Removed old amet-config.R configuration option that       #
+#  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
-#           - Added a read password and MySQL config though wrapper     #
-#             and setenv statements.                                    # 
+#             Now users define that file location in csh wrapper scripts#
+#             via setenv MYSQL_CONFIG variable.                         #
 #           - Removed some deprecated variables and cleaned/formatted   #
 #             script for better readability. Also changed dir names     #
 #             to reflect the update (i.e., R_analysis_code instead of R)#      
@@ -68,8 +68,8 @@
  
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
- mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                       passwd=mysqlpasswd,maxrec=maxrec)
+ mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
 #################################################################################################################
 #	MAIN SUMMARY STATISTICS PROGRAM
@@ -87,7 +87,14 @@
     writeLines("Query used to extract data from MySQL database:")
     writeLines(paste(query))
     data<-ametQuery(query[q],mysql)
-    if (length(na.omit(data)) == 0){next;}	# stop if no data is found
+
+    ## test to see if query returned anything
+    if ( dim(data)[1] == 0) {
+       stop(paste('',
+              '**********************************************************************************',
+              'NO DATA WAS FOUND FOR THIS QUERY: Please change some of the criteria and try again',
+              '**********************************************************************************',sep="\n"))
+    }
 
     # Save dataframe into R datafile if specified
     if(wantsave){
@@ -225,6 +232,7 @@
          ################################
          #	Temperature Stats	#
          ################################
+         writeLines("Plotting summary of 2-m Temperature. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".T.ametplot",sep="")
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[1],
                   statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
@@ -251,6 +259,7 @@
          ################################
          #	Wind Speed Stats	#
          ################################
+         writeLines("Plotting summary of Wind Speed. Figure name:")
          figure<-paste(figdir,"/",project,".",pid[q],".WS.ametplot",sep="")
          qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[3],statid,
                   obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
@@ -340,7 +349,7 @@
    }	## END of AMET PLOT
    # If Text statistic file is generated mv final temporary file figdir/tmp to savedir/stats.some_process_id.dat	
    if (textstats){
-   	system(paste("mv ",figdir,"/tmp ",savedir,"/stats.",project,".",pid[q],".dat",sep=""))
+   	system(paste("mv ",figdir,"/tmp ",savedir,"/stats.",project,".",pid[q],".csv",sep=""))
    	system(paste("rm -f ",figdir,"/tmp* ",sep=""))
    }
  } #   END OF LOOP THROUGH Queries   	

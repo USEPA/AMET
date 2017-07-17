@@ -9,9 +9,12 @@
 # plot multiple simulations as different colors on the same
 # plot.  Statistics for each simulation are included.  Only one
 # network and species can be plotted at a time.  This script is 
-# new to the AMETv1.2 code.
+# new to the AMETv1.2 code and has been revised in AMETv1.3. Additional
+# projects beyond two can be specified in the corresponding input file
+# for this script.
 #
 # Initial version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -19,14 +22,14 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
-
-  #  AMET database
-  setenv AMET_DATABASE Test_AMETv13
-
-  #  AMET project id or simulation id (add additional project in input file)
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
-  
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
+
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
+ 
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_multi
   

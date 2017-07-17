@@ -1120,7 +1120,6 @@ if (greyscale == "y") {
 }
 #########################################################################
 
-
 #########################################################
 ### Create list of requested run_names
 #########################################################
@@ -1152,3 +1151,31 @@ if(!exists("run_name1")) {
 }
 #########################################################
 
+
+##############################
+### Get some common R info ###
+##############################
+
+## get some environmental variables and setup some directories
+ametbase        <- Sys.getenv("AMETBASE")                       # base directory of AMET
+dbase           <- Sys.getenv("AMET_DATABASE")                  # AMET database
+ametRinput      <- Sys.getenv("AMETRINPUT")                     # input file for this script
+ametptype       <- Sys.getenv("AMET_PTYPE")                     # Prefered output type
+config_file     <- Sys.getenv("MYSQL_CONFIG")                   # MySQL configuration file 
+
+## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
+## and not specified via AMET_OUT, then set figdir to the current directory
+if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
+if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
+
+## source some configuration files, AMET libs, and input
+source (config_file)
+if(ametRinput != "") {
+   source (ametRinput)  # Anaysis configuration/input file
+}
+
+## Load Required Libraries
+if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
+
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)           # Set MYSQL login and query options
+##############################

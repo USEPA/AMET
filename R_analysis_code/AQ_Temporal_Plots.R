@@ -1,38 +1,23 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
-### AMET CODE: R_Scatterplot.r 
+################## MODEL TO OBS TEMPORAL PLOTS #################### 
+### AMET CODE: AQ_Temporal_Plots.R 
 ###
 ### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot. This script will plot a
-### single species from up to three networks on a single plot.  
-### Additionally, summary statistics are also included on the plot.  
-### The script will also allow a second run to plotted on top of the
-### first run. 
+### four different plots, namely a CDF plot, a Q-Q plot, a Taylor
+### diagram, and a periodogram.
 ###
-### Last Updated by Wyat Appel: April, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2017
+###################################################################
 
 # get some environmental variables and setup some directories
-ametbase        <- Sys.getenv("AMETBASE")        # base directory of AMET
-dbase           <- Sys.getenv("AMET_DATABASE")      # AMET database
-ametR           <- paste(ametbase,"/R_analysis_code",sep="")      # R directory
-ametRinput      <- Sys.getenv("AMETRINPUT")  # input file for this script
-ametptype       <- Sys.getenv("AMET_PTYPE")   # Prefered output type
-## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-## and not specified via AMET_OUT, then set figdir to the current directory
-if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
-if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
+ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
+ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
-## source some configuration files, AMET libs, and input
-source(paste(ametbase,"/configure/amet-config.R",sep=""))
+## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-source(ametRinput)                                     # Anaysis configuration/input file
 
 ## Load Required Libraries 
-if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 if(!require(stats)){stop("Required Package stats was not loaded")}
 if(!require(plotrix)){stop("Required Package plotrix was not loaded")}
-
-mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 network <- network_names[1]
 

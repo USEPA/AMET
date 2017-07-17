@@ -40,13 +40,23 @@
 #          - Extensive cleaning of R script, R input and .csh files
 #
 #  Version 1.3, May 15, 2017, Rob Gilliam
-#  Updates: - Removed old amet-config.R configuration option that 
-#             defined MySQL server, database and password (unsecure).
-#           - Added a read password and MySQL config though wrapper csh
-#             and setenv statements.
+#  Updates: - Removed hard coded amet-config.R config option that       
+#             defined MySQL server, database and password (unsecure).   
+#             Now users define that file location in csh wrapper scripts
+#             via setenv MYSQL_CONFIG variable.
 #           - Removed some deprecated variables and cleaned/formatted
 #             script for better readability. Also changed dir names
-#             to reflect new version (i.e., R_analysis_code instead of R)     
+#             to reflect new version (i.e., R_analysis_code instead of R)
+#           - Changed the date start and date end to include new MySQL
+#             timestamp. The new one condisders the end date to be 00 UTC
+#             for that day, while the old considered data for all hours.
+#             Now a user can specify the start "day hour" and end "day hour"
+#             for more flexibility. In csh wrapper that would be:
+#             setenv AMET_DATES "20170502 00"
+#             setenv AMET_DATEE "20170510 23"
+#           - thresh was input as text instead of numeric. Fixed. Also updated
+#             the color scheme and levels for some metrics in spatial_surface.input
+#                  
 #########################################################################
 #	Load required modules
   if(!require(maps))   {stop("Required Package maps was not loaded")}
@@ -55,7 +65,6 @@
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
   if(!require(akima))  {stop("Required Package akima was not loaded")}
   if(!require(fields)) {stop("Required Package fields was not loaded")}
-
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 #    Initialize AMET Diractory Structure Via Env. Vars
 #    AND Load required function and conf. files
@@ -80,12 +89,12 @@
 
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
- mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                       passwd=mysqlpasswd,maxrec=maxrec)
+ mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
  # Site data count below which site is skipped at statistics set to NA
- thresh         <- Sys.getenv("THRESHOLD")
- if(!exists("thresh") ){ thresh <- 2	}
+ thresh         <- as.numeric(Sys.getenv("THRESHOLD"))
+ if(!exists("thresh") ){ thresh <- 20	}
 
 
  dates<-mdy.date(month = ms, day = ds, year = ys)
@@ -96,28 +105,34 @@ datex  <-dates
 while(datex <= datee) {
   if(!exists("daily")) { daily <-F }   
   if(daily) {	      
-   d1        <-date.mdy(datex)     
-   d1        <-paste(d1$year,dform(d1$month),dform(d1$day),sep="")
-   d2        <-d1
-   savefile  <-paste(savedir,"/",saveid,".",d1,".RData",sep="")
-   daterange <-d1
+    d1       <-date.mdy(dates)
+    d2       <-date.mdy(datee)
+    d1p      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),"_",dform(hs),sep="")
+    d2p      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),"_",dform(he),sep="")
+    d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day)," ",dform(hs),":00:00",sep="")
+    d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day)," ",dform(he),":00:00",sep="")
+    savefile <-paste(savedir,"/",saveid,".",d1p,".",d2p,".RData",sep="")
+    daterange<-paste(d1p,".",d2p,sep="")
   }
   else {
     d1       <-date.mdy(dates)
     d2       <-date.mdy(datee)
-    d1       <-paste(d1$year,dform(d1$month),dform(d1$day),sep="")
-    d2       <-paste(d2$year,dform(d2$month),dform(d2$day),sep="")
+    d1p      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),"_",dform(hs),sep="")
+    d2p      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),"_",dform(he),sep="")
+    d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day)," ",dform(hs),":00:00",sep="")
+    d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day)," ",dform(he),":00:00",sep="")
     datex    <-datee       
-    savefile <-paste(savedir,"/",saveid,".",d1,".",d2,".RData",sep="")
-    daterange<-paste(d1,".",d2,sep="")
+    savefile <-paste(savedir,"/",saveid,".",d1p,".",d2p,".RData",sep="")
+    daterange<-paste(d1p,".",d2p,sep="")
   }
-  datestr  <-paste("BETWEEN",d1,"AND",d2)
+  datestr  <-paste("BETWEEN '",d1q,"' AND '",d2q,"'",sep="")
+  datestrp <-paste("BETWEEN ",d1q," AND ",d2q,sep="")
   query    <-paste("SELECT  d.stat_id,d.T_mod,d.T_ob,d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob, 
                     HOUR(d.ob_time) FROM ",sfctable,"  d, stations s  WHERE s.stat_id=d.stat_id and d.ob_date ",
                     datestr,extra," ORDER BY d.stat_id ")
   qstat    <-paste("SELECT  DISTINCT s.stat_id, s.lat, s.lon, s.elev  FROM ",sfctable," d, stations s WHERE 
                     d.stat_id=s.stat_id AND d.ob_date ",datestr,extra," ORDER BY s.stat_id ")
-  monthAbr <-c("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC")
+
   if(file.exists(savefile) & checksave ) {
     load(savefile)
   }
@@ -142,10 +157,10 @@ while(datex <= datee) {
     	   
     tmp.file      <-paste(figdir,"/tmp",sep="")
     head.file     <-paste(figdir,"/head",sep="")
-    t.dframe.file <-  paste(figdir,"/",model,".spatial.temp.stats.csv",sep="")
-    ws.dframe.file<- paste(figdir,"/",model,".spatial.wndspd.stats.csv",sep="")
-    wd.dframe.file<- paste(figdir,"/",model,".spatial.wnddir.stats.csv",sep="")
-    q.dframe.file <-  paste(figdir,"/",model,".spatial.mixr.stats.csv",sep="")
+    t.dframe.file <-  paste(figdir,"/",model,".spatial.temp2m.stats.",daterange,".csv",sep="")
+    ws.dframe.file<-  paste(figdir,"/",model,".spatial.wndspd10m.stats.",daterange,".csv",sep="")
+    wd.dframe.file<-  paste(figdir,"/",model,".spatial.wnddir10m.stats.",daterange,".csv",sep="")
+    q.dframe.file <-  paste(figdir,"/",model,".spatial.mixr2m.stats.",daterange,".csv",sep="")
 
     sfile <-file(head.file) 
     writeLines(head, con =sfile)
@@ -176,11 +191,10 @@ while(datex <= datee) {
   for (s in 1:length(sget)) {
     statloc    <-sget[s]
     varloc     <-vget[v]
-    plotlab[1] <-paste(statid[statloc],"of",varid[varloc],"  Date:",datestr)
+    plotlab[1] <-paste(statid[statloc],"of",varid[varloc],"  Date:",datestrp)
      
     plotlab[2] <-paste("Query:",query)
     plotlab[3] <-paste("Database:",ametdbase)
-    fileName   <-paste(figdir,"/",saveid,".",d1,".",statAbr[statloc],".",varAbr[varloc],sep="")
     fileName   <-paste(figdir,"/",saveid,".",statAbr[statloc],".",varAbr[varloc],".",daterange,sep="")
     plotval    <-sstats$metrics[,statloc,varloc]
     if( length(na.omit(plotval)) == 0 ) { next }
@@ -218,3 +232,4 @@ while(datex <= datee) {
  close(sfile)
 ############################################################################
 quit(save='no')
+

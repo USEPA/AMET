@@ -9,31 +9,19 @@
 ### to a single value for plotting purposes.  The map area plotted
 ### is dynamically generated from the input data.   
 ###
-### Last modified by Wyat Appel; April, 2017
+### Last modified by Wyat Appel: June, 2017
 ################################################################
 
 ## get some environmental variables and setup some directories
-ametbase        <- Sys.getenv("AMETBASE")        # base directory of AMET
-dbase           <- Sys.getenv("AMET_DATABASE")      # AMET database
-ametR           <- paste(ametbase,"/R_analysis_code",sep="")      # R directory
-ametRinput      <- Sys.getenv("AMETRINPUT")  # input file for this script
-ametptype       <- Sys.getenv("AMET_PTYPE")   # Prefered output type
-## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-## and not specified via AMET_OUT, then set figdir to the current directory
-if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
-if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
+ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
+ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
-## source some configuration files, AMET libs, and input
-source(paste(ametbase,"/configure/amet-config.R",sep=""))
+## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-source(ametRinput)                                     # Anaysis configuration/input file
 
 ## Load Required Libraries 
-if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
-
-mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
@@ -327,12 +315,12 @@ for (l in 1:j) {
 ###########################################
 unique_labels <- "y"												# Flag within Misc_Functions.R to use predefined labels
 levLab <- leg_labels_diff
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_diff,figure=figure_diff,varlab=title_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) {
+if ((ametptype == "pdf") || (ametptype == "both")) {
    plotfmt <- "pdf" 												# Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_diff,figure=figure_diff,varlab=title_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
@@ -344,12 +332,12 @@ if ((ametptype == "pdf" || (ametptype == "both")) {
 #######################################
 unique_labels <- "y"                                                                                            # Flag within Misc_Functions.R to use predefined labels 
 levLab <- leg_labels_max
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_max,figure=figure_max,varlab=title_max,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
 }
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "pdf"                                                                                                # Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_max,figure=figure_max,varlab=title_max,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
@@ -361,12 +349,12 @@ if ((ametptype == "png" || (ametptype == "both")) {
 #######################################
 unique_labels <- "y"                                                                                            # Flag within Misc_Functions.R to use predefined labels 
 levLab <- leg_labels_max
-if ((ametptype == "png" || (ametptype == "both")) {
+if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_min,figure=figure_min,varlab=title_min,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values
 }
-if ((ametptype == "pdf" || (ametptype == "both")) {
+if ((ametptype == "pdf") || (ametptype == "both")) {
    plotfmt <- "pdf"                                                                                                # Set plot format as pdf
    plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_min,figure=figure_min,varlab=title_min,bounds=bounds,plotopts=plotopts,plot_units=units)   # Call PlotSpatial function for difference values

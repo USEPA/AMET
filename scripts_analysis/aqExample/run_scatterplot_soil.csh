@@ -1,15 +1,18 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Scatterplot - Soil
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
-# scatter plots - multi-network
+# a scatter plot specifically designed for plotting the various soil species
+# that are available in CMAQ (e.g. Fe, Si, Ca, etc.). All of the soil species
+# are plotted on a single scatter plot and are color coded to each individual
+# species. This script is designed for a single network, single simulation
+# with the species plotted hard-coded into the script.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -17,13 +20,10 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
-
-  #  AMET database
-  setenv AMET_DATABASE Test_AMETv13
-
-  #  AMET project id or simulation id
-  setenv AMET_PROJECT  aqExample
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
+  setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_soil

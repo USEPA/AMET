@@ -1,5 +1,3 @@
-<img src="media/image1.jpeg" width="304" height="72" />
-
 ***Atmospheric Model Evaluation Tool (AMET)  
 User’s Guide***
 
@@ -27,13 +25,11 @@ User’s Guide***
 
 5. Database Setup
 
-   5.1 MET Setup
+   5.1 AMET Setup
 
-   5.2 AQ Setup
+   5.2 Basic MySQL Commands
 
-   5.3 Basic MySQL Commands
-
-6. Database Population
+6. Project Creation and Database Population
 
    6.1 The wrfExample Project
 
@@ -193,7 +189,7 @@ Before using AMET and this user’s guide, you must first install the AMET packa
 system. For information on the installation process, please see the separate *Atmospheric 
 Model Evaluation Tool (AMET) Installation Guide* that can be downloaded from the CMAS web site.
 
-Directory Structure
+2. Directory Structure
 ===================
 
 In our discussions, we refer to the top of the AMET directory structure
@@ -218,13 +214,12 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
 | **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis (contains project-specific subdirectories).|
 | **scripts\_db**       | Project-specific wrapper scripts and inputs for database population (contains project-specific subdirectories). |
 | **src**               | Source code for third-party software.                                 |
-| **web\_interface**    | Beta code for the AMET web graphical user interface for analysis      |
 
 *Note:* For large model outputs and for MADIS observations that cover a
 long period of time, it may be prudent to link these data within the
 appropriate AMET directories rather than moving or copying them.
 
-Configuration
+3. Configuration
 =============
 
 After untarring the AMET code and data and installing/building the
@@ -233,18 +228,10 @@ installation guide referenced above), the next stage is to configure the
 AMET system. In the $AMETBASE/configure directory, you will find three
 files:
 
--   An R configuration file (amet-config.R).
-    
--   A php library file (amet-lib.php)
+-   An R configuration file (amet-config.R)
 
--   A php configuration file (amet-www-config.php)
 
-The last two files, amet-lib.php and amet-www-config.php, are only necessary if
-using the AMET-AQ web interface provided as beta code along with the AMETv1.3 
-release. If not using the web interface, those two configuration files can be
-ignored.
-
-R Configuration File (amet-config.R)
+3.1 R Configuration File (amet-config.R)
 ------------------------------------
 
 The R configuration file is used by the underlying R programs to perform
@@ -257,38 +244,33 @@ variables that need to be changed in amet-config.R.
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
-| **amet_base**           | The base directory where AMET is installed. |
-| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
-| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
-| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
+| **amet_base**           | The base directory where AMET is installed. By default this is read from the environment variable **AMETBASE** and therefore does not need to set explicitly here.|
 | **mysql\_server**       | The MySQL server location. Examples are **localhost** if MySQL is installed on the same machine on which you have installed AMET, or **rama.cempd.unc.edu** if you have installed the MySQL server on a remote host called **rama**. |
 | **amet\_login**         | Login for the AMET MySQL user. For the purposes of this tutorial, we assume **amet\_login** is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
 | **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
-| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1.
+| **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1. |
+| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
+| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
 
-Datasets
+A word about specifying the **amet_login** and **amet_pass**. Obviously these are MySQL credentials and are therefore sensitive. The MySQL credentials specified here are always used in the analysis scripts that come with AMET, which require only database read access to function. Therefore, the MySQL user specified here can be limited to read access only. However, these credentials can also be setup to be used by the aqProject.csh and metProject.csh scripts (and by default those scripts are setup to do so). For those scripts to work properly, the MySQL user specified must have permission to create databases and tables, in addition to read access. So, if the setting in the aqProject.csh and/or metProject.csh scripts is to read the **amet_login** and **amet_pass** variables for the amet-config.R file, those credentials must be for a user with full MySQL permissions.
+
+For simplicity, it is suggested that the MySQL credentials specified in the amet-config.R file be for a user with full database permissions.
+
+4. Datasets
 ========
 
 The AMET release includes both model and observational datasets provided
 as examples. You should have downloaded these into the proper
 directories during the installation process.
 
-Model Data
+4.1 Model Data
 ----------
 
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into four example projects:
-"mm5Example", "wrfExample", "mcipExample", and "aqExample". On the MET
-side, there is a 5-day MM5 simulation (July 04 2002 00:00 UTC to July 08
-2002 23:00 UTC), a 5‑day WRF simulation (July 05 2002 00:00 UTC to July
-09 2002 23:00 UTC), and a 5-day MCIP-postprocessed MM5 simulation (July
-05 2002 00:00 UTC to July 09 2002 23:00 UTC). The MM5 data file is
-
-> $AMETBASE/model\_data/MET/**mm5Example**/MMOUT\_DOMAIN1\_02Jul04
-
-Note that we have bolded “mm5Example” in the directory name above to
-highlight the fact that we are using the project name to organize the
-model output files into directories.
+"metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+(July 01 2011 00:00 UTC to July 31 2011 23:00 UTC). The WRF data file is
 
 The WRF data consist of five WRF output files in netCDF format:
 
@@ -304,31 +286,18 @@ The WRF data consist of five WRF output files in netCDF format:
 >
 > wrfout\_d01\_2002-07-09\_00:00:00
 
-The MCIP data consist of five METCRO2D files and one GRIDCRO2D file in
-netCDF format:
-
-$AMETBASE/model\_data/MET/mcipExample/
-
-GRIDCRO2D\_2002187
-
-METCRO2D\_2002186
-
-METCRO2D\_2002187
-
-METCRO2D\_2002188
-
-METCRO2D\_2002189
-
-METCRO2D\_2002190
+Note that we have bolded “metExample” in the directory name above to
+highlight the fact that we are using the project name to organize the
+model output files into directories.
 
 On the AQ side, we have included two CMAQ output files for the period
 July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
 
 > $AMETBASE/model\_data/AQ/**aqExample**/
 >
-> test.12km.conc
+> AMET_CMAQ_July_2011_Test_Data.aconc
 >
-> test.12km.dep
+> AMET_CMAQ_July_2011_Test_Data.dep
 
 correspond to the concentration and wet deposition output files from
 CMAQ, after they have been postprocessed with the combine utility.
@@ -336,7 +305,7 @@ CMAQ, after they have been postprocessed with the combine utility.
 All of the spatial domains cover the continental U.S. and have a 12-km
 grid resolution.
 
-Observational Data
+4.2 Observational Data
 ------------------
 
 As with the model data, the observations directory structure is divided
@@ -725,7 +694,7 @@ files are available for download from the CMAS website.
 >
 > PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)
 
-Database Setup
+5. Database Setup
 ==============
 
 The next step in using AMET is to set up the MySQL database. Please
@@ -745,7 +714,7 @@ the setup scripts, you will need to know the “root” password for the
 MySQL administrator. Note that this is not the same as the “ametsecure” 
 password that will be created using the scripts discussed below.
 
-AMET Setup
+5.1 AMET Setup
 ---------
 
 Go to the setup directory
@@ -778,7 +747,7 @@ delete all of the data in the database corresponding to **all** of the
 projects (**both MET and AQ**).*
 
 
-Basic MySQL Commands
+5.2 Basic MySQL Commands
 --------------------
 
 As you begin to go through the amet database setup and the
@@ -848,7 +817,7 @@ To determine which networks are included in the aqExample project:
 
 > mysql&gt; select distinct network from aqExample;
 
-Project Creation and Database Population
+6. Project Creation and Database Population
 ========================================
 
 The database population phase of AMET must be performed for each new
@@ -868,7 +837,7 @@ addition to the setup directories described earlier. The projects are
 
 In the following subsections, we describe how to run each project.
 
-The wrfExample Project
+6.1 The wrfExample Project
 ----------------------
 
 Go to the project directory
@@ -916,7 +885,7 @@ downloaded once for a given time period and will subsequently be
 available to all projects.
 
 
-The aqExample Project
+6.2 The aqExample Project
 ---------------------
 
 Go to the project directory:
@@ -930,8 +899,12 @@ it is discussed later in Section 6.5, “Creating a New AQ Project”.
 The C-shell file aqProject.csh is a wrapper script for calling the R
 programs that actually create your project (and database if necessary)
 and populate the AMET database with the project data. The variable that 
-you will likely need to change for this project is “AMETBASE”. Run the 
-script by typing
+you will likely need to change for this project is “AMETBASE”. You can
+specify the MySQL login and password in the script if desired. If you do not,
+the script will prompt you for the MySQL login/password. If you submit
+the script to queue, you'll need to spcecify the login and password on the
+qsub command line. By default, the script is setup to prompt you for the 
+MySQL login/password. Run the script by typing
 
 > $ ./aqProject.csh &gt;& log.populate
 
@@ -952,7 +925,7 @@ defines the physical units of the species variables for this network (e.g., ppb 
 µg/m<sup>3</sup>). Finally, the script updates the aq\_project\_log with
 summary information for the aqExample project.
 
-Creating a New MET Project
+6.3 Creating a New MET Project
 --------------------------
 
 When you create your own projects, we recommend that you utilize the
@@ -1011,7 +984,7 @@ This will create a new MET project in the amet database. Specifically,
 it will create a new row in your project\_log table and three new
 tables: wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface.
 
-Creating a New AQ Project
+6.4 Creating a New AQ Project
 -------------------------
 
 Before describing the creation of a new AQ project, we need to clarify a
@@ -1089,52 +1062,51 @@ script for your particular project. This script does two things. It creates
 your project table in the amet database and populates that project table
 with your data (it will also create the database if it does not already exist). 
 You'll specifiy a number of options in the aqProject.csh script which will then 
-call several R script to run site compare and then poplulate the database with 
+call several R scripts to run site compare and then poplulate the database with 
 your data. This script will be reused for your various AMET-AQ projects, so while 
 this script contains a number of options, you will likely only need to fully setup 
 this script once and re-use it with little modification in the future.
 
 First, you'll need to specify some basic amet information. You'll need to 
-specify **AMETBASE** as done in the previous scripts. The **AMET_LOGIN**
-will default to your system user ID, but you can change it if desired. 
-The **AMET_LOGIN** is only used to identify you in the amet database and is not
-used to as a login to the amet database (when executed, the script will prompt
-you for the amet login and password). The **AMET_PROJECT** should be the same
-name you called the directory and needs to be unique and contain no spaces.
-Next set the **AMET_DATABASE** to use (by default this is set to "amet") and the
-location of the amet formatted observation files (by default this is set to
-$AMETBASE/obs/AQ). You'll need to specify the **AMET_OUT** directory where
-the output files (i.e. site compare scripts and paired data files) will be 
-written. By default, **AMET_OUT** is set to $AMETBASE/output/$AMET_PROJECT and will
-be created if it does not already exist.
+specify **AMETBASE** as done in the previous scripts. Next set the **AMET_DATABASE** 
+to use (by default this is set to "amet"). If desired, you can specify the MySQL login
+information using the **mysql_login** and **mysql_password** variables (commented out by
+default). If you choose not to specify the login/password using these variables, the script
+will prompt you for the MySQL login and password. 
+
+The **AMET_PROJECT** should be the same name you called the directory and needs to be 
+unique and contain no spaces. Continue by specifying the AQ **MODEL_TYPE** (e.g. "CMAQ");
+the **RUN_DESCRIPTION**, which is a short description of your project; The **USER_NAME** 
+will default to your system user ID, but you can change it if desired. The **USER_NAME** 
+is only used to identify you in the amet database and is not used to as a login to the 
+amet database (when executed, the script will prompt you for the amet login and password 
+unless you specified it via the **mysql_login** and **mysql_password** variables). Finally,
+you can specify an email address (**EMAIL_ADDR**) to associate with the project, however this
+email address is not currenlty used for anything in AMET and is simply stored along with the
+project information.
 
 The table below describes the other options and file locations that need to be
 specified in the aqProject.csh script.
 
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **MODEL\_TYPE**            | Type of AQ model being analyzed (e.g. CMAQ) |
-| **RUN\_DESCRIPTION**       | Text describing detail of the model simulation/analysis |
-| **USER\_NAME**             | User name to associate with the project (default is the system user name) |
-| **EMAIL\_ADDR**            | Email address to associate with the project (not currently used for anything) |
 | **AMET\_OBS**              | Top of the AQ observation data directory (defaults to **$AMETBASE/obs/AQ**) |
 | **SITE\_META\_LIST**       | Input file containing the list of AQ site meta data files (default is **$AMETBASE/scripts\_db/input\_files/sites\_meta.input**) |
-| **AMET\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/R\_db\_code/AQ\_species\_list.R** |
-| **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT**) |
+| **A\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/scripts\_db/input\_files/AMET\_species\_list.input** |
+| **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT/sitex_output** |
 | **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
 | **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
 | **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. |
-| **CHECK\_PROJECT\_TABLE**  | T/F; Flag to determine whether or not to check project table for missing species columns. Must be set to T for new projects. Can be set to F for existing projects to speed up performance. |
 | **UPDATE\_PROJECT**        | T/F; Flag to update project. Setting to T will re-write project info (i.e. description, user_name, email) but not affect any existing data in the database. |
 | **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. |
 | **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. |
 | **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
-| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5. By default this flag is set to F and is considered an advanced user option. |
+| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
 | **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
 | **START\_DATE**            | Start date in YYYYJJJ to begin the processing. By default this is set to 2011182 (July 1, 2011) for the example case. |
 | **END\_DATE**              | End date in YYYYJJJ to begin the processing. By default this is set to 2011213 (August 1, 2011) for the example case. |
-| **CONC\_FILE\_\***         | Path to the CMAQ combined file containing the gas and aerosol species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. |
-| **DEP\_FILE\_\***          | Path to the CMAQ combined file containing the wet and dry species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. |
+| **CONC\_FILE\_\***         | Path to the CMAQ combined file containing the gas and aerosol species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. By default this is set to point to the example model data in **$AMETBASE/model_data/AQ/test.12km.conc**|
+| **DEP\_FILE\_\***          | Path to the CMAQ combined file containing the wet and dry species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. By default this is set to point to the example model data in **$AMETBASE/model_data/AQ/test.12km.dep** |
 | **CASTNET**                | T/F; Flag to include the CASTNET weekly data in the analysis |
 | **CASTNET\_HOURLY**        | T/F; Flag to include the CASTNET hourly data in the analysis |
 | **CASTNET\_DAILY\_O3**     | T/F; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
@@ -1177,7 +1149,7 @@ will create a new row in your aq\_project\_log table, a series of new
 rows (one for each network) in your project\_units table, and a new
 project table: aqNC2007.
 
-Analysis
+7. Analysis
 ========
 
 The analysis phase of AMET consists of performing statistical analyses
@@ -1211,7 +1183,7 @@ $AMETBASE/R and then they run that script. The use of the C-shell interface
 allows users who are not very familiar with R to perform these predefined 
 analyses, shielding them from the actual R code.
 
-wrfExample
+7.1 wrfExample
 ----------
 
 Go to the project directory:
@@ -1270,7 +1242,7 @@ inputs are basically treated the same in terms of analysis. You could
 easily add a new project directory for mm5Example or mcipExample by
 following the instructions in Section 7.3.
 
-aqExample
+7.2 aqExample
 ---------
 
 Go to the project directory:
@@ -1408,7 +1380,7 @@ scripts.
 | **run\_timeseries\_mtom.csh**       | **timeseries\_mtom.input**    | Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model.| single network;single species; multiple simulations           |
 | **run\_timeseries\_multi.csh**       | **timeseries\_multi\_networks.input**    | Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model.| multiple networks;single species; multiple simulations           |
 
-Creating a New Analysis Project
+7.3 Creating a New Analysis Project
 -------------------------------
 
 Creating a new analysis project requires the same basic steps for both
@@ -1443,7 +1415,7 @@ titles in many of the scripts.
 
 Run the desired analysis scripts from your new project directory.
 
-CMAS Support for AMET
+8. CMAS Support for AMET
 =====================
 
 We have added AMET to Bugzilla, the CMAS bug-tracking and support
@@ -1781,3 +1753,17 @@ makes use of the input file
 all of the network-specific processing to be handled in one location,
 and allows for easier addition of new networks into the analysis
 scripts. This file does not need to be modified unless adding new AQ networks to AMET.
+
+7. AQ Species List Input File
+
+The input file **$AMET/scripts\_analysis/aqExample/input_files/AQ_species_list.input** describes the mapping of observation species from each network to CMAQ model species (post-processed using combine) for use with site compare. This file is read as an input file to the AQ_matching.R script and used to create the site compare scripts for each network. This file is necessary since most air quality networks use different names to represent species. Site compare requires the observed and modeled species names to work correctly. The basic structure to map observation and species names for site compare is:
+
+ob_species_name, ob_species_unit, model_species_name, model_species_unit, output_species_name
+
+The **output_species_name** above is the name used by AMET to identify the species in the database. For example, for the IMPROVE network, sulfate is calculated in site compare by the following line:
+
+SO4f_val, ug/m3, ASO4IJ, ug/m3, SO4
+
+where SO4f_val is the name given to SO4 in the IMPROVE observation file, ASO4IJ is the name given to fine SO4 in the CMAQ combine file, and SO4 is the column name used to identify SO4 in the site compare output .csv file. Note that the units only need to be specified for either the observation or model species if they are the same (typically they are), but can be specified for both species.
+
+The **AQ_species_list.input** is setup to work with the default AQ networks in AMET. However, it can be modified to work with additional networks, or the species for existing networks can be modified if desired. Just follow the in the file to add additional species. Note that the species are numbered sequentially, and therefore when adding or removing species be careful to correctly number the remaining species.

@@ -8,9 +8,11 @@
 # variation of a scatter plot.  The script plots the mean bias 
 # and RMSE of the data by bins based on the range of the observed
 # concentration.  The script accepts multiple simulations, but
-# only a single network and species. This script is new to AMETv1.2.
+# only a single network and species. This script is new to AMETv1.2 and
+# has been updated in AMETv1.3.
 #
 # Initial version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -18,14 +20,14 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
-
-  #  AMET database
-  setenv AMET_DATABASE Test_AMETv13
-
-  #  AMET project id or simulation id
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
+  ### Set the project name to be used for model-to-model comparisons ###
+  setenv AMET_PROJECT2  aqExample
+
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_bins
   

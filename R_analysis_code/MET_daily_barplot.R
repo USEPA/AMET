@@ -27,47 +27,48 @@
 #          -Cleaned code                                                #
 #                                                                       #            
 # Version 1.3, May 15, 2017, Rob Gilliam                                #
-#  Updates: - Removed old amet-config.R configuration option that       #
+#  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
+#             Now users define that file location in csh wrapper scripts#
+#             via setenv MYSQL_CONFIG variable.                         #
 #           - Changed directory names to reflect new directory structure#
 #             of AMET. Also reformatted some parts of the code          #
 #             for better readability.                                   #
 #########################################################################
 #:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
-  if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
+ if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
 
 ########################################################
 #    Initialize AMET Directory Structure Via Env. Vars
 #    AND Load required function and conf. files
 #########################################################
 
-  ## get some environmental variables and setup some directories
-  ametbase         <-Sys.getenv("AMETBASE")
-  ametR            <-paste(ametbase,"/R_analysis_code",sep="")
-  ametRinput       <-Sys.getenv("AMETRINPUT")
-  mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
+ ## get some environmental variables and setup some directories
+ ametbase         <-Sys.getenv("AMETBASE")
+ ametR            <-paste(ametbase,"/R_analysis_code",sep="")
+ ametRinput       <-Sys.getenv("AMETRINPUT")
+ mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
 
-  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-  # and not specified via AMET_OUT, then set figdir to the current directory
-  if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
-  if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                       }
+ # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
+ # and not specified via AMET_OUT, then set figdir to the current directory
+ if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
+ if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                       }
 
-  ## source some configuration files, AMET libs, and input
-  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
-  source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
-  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
-  source (mysqlloginconfig)
-  source (ametRinput)	                                
+ ## source some configuration files, AMET libs, and input
+ source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
+ source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
+ source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
+ source (mysqlloginconfig)
+ source (ametRinput)	                                
 
-  ametdbase      <- Sys.getenv("AMET_DATABASE")
-  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
-  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,
-                        passwd=mysqlpasswd,maxrec=maxrec)
+ ametdbase      <- Sys.getenv("AMET_DATABASE")
+ mysqlserver    <- Sys.getenv("MYSQL_SERVER")
+ mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
+                        passwd=amet_pass,maxrec=maxrec)
 
-
-  plotopts       <-list(plotfmt=plotfmt)
-  dailybox.Rfile <-paste(figdir,"/daily_bar_",project,".",runid,".Rdata",sep="")
+ plotopts       <-list(plotfmt=plotfmt)
+ dailybox.Rfile <-paste(figdir,"/daily_bar_",project,".",runid,".Rdata",sep="")
 #####################################################################
 # MAIN PROGRAM
 # 1. Query for data over requested time period
@@ -87,9 +88,10 @@
  query    <-paste(varxstr," FROM ",project,"_surface d, stations s WHERE  s.stat_id=d.stat_id ",querystr,sep="")
  writeLines(paste("query: ",query))
  data     <- ametQuery(query,mysql)
-
+ 
+ 
  ## test to see if query returned anything
- if (length(data) == 0) {
+ if ( dim(data)[1] == 0) {
    stop(paste('',
               '**********************************************************************************',
               'NO DATA WAS FOUND FOR THIS QUERY: Please change some of the criteria and try again',
@@ -161,7 +163,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Temperature (2 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,1],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,1]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -169,7 +171,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Temperature (2 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,1],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,1]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -177,11 +179,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Temperature (2 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,1],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,1]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".T.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".T.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 
  # Write out daily mixing ratio statistics to text file
@@ -190,7 +192,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Mixing Ratio (2 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,2],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,2]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -198,7 +200,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Mixing Ratio (2 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,2],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,2]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -206,11 +208,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Mixing Ratio (2 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,2],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,2]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".Q.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".Q.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 
  # Write out daily wind speed statistics to text file
@@ -219,7 +221,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Speed (10 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,3],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,3]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -227,7 +229,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Speed (10 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,3],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,3]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -235,11 +237,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Speed (10 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,3],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,3]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".WS.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".WS.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 
  # Write out daily wind direction statistics to text file
@@ -248,7 +250,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Direction (10 m) Correlation", con =sfile)
  close(sfile)
- write.table(corData[,4],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,corData[,4]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -256,7 +258,7 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Direction (10 m) Bias", con =sfile)
  close(sfile)
- write.table(biasData[,4],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,biasData[,4]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
@@ -264,11 +266,11 @@
  writeLines("--------------------------------------------------------", con =sfile)
  writeLines("Daily Wind Direction (10 m) RMSE", con =sfile)
  close(sfile)
- write.table(RMSEData[,4],paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ write.table(data.frame(dates,RMSEData[,4]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
  system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
  system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
 
- system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".WD.daily_stats.dat",sep=""))
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".WD.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 #####################################################################
 

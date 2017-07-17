@@ -14,26 +14,28 @@
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
   #  Top of AMET directory
-  setenv AMETBASE /home/grc/AMET2.0 
+  setenv AMETBASE /home/xxx/AMET_v13 
 
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
+  # These are the only required for meteorological analysis. AQ requires more.
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
-  setenv MYSQL_CONFIG  /home/gilliam/.ametconfig
+  setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
+
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  amad_nrt
-  setenv MYSQL_SERVER   darwin.rtpnc.epa.gov
+  setenv AMET_DATABASE  amet_test
+  setenv MYSQL_SERVER   xxxxxxx.epa.gov
   
   #  AMET project id or simulation id
-  setenv AMET_PROJECT wrf_conus_12km
+  setenv AMET_PROJECT metExample
   
   #  Directory where figures and text output will be directed
   setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT/summary
   
   #  A seperate identification to be attached to figure/text output
   #  This is used to distiguish different subset output for the same project
-  setenv AMET_RUNID AMET2_TEST
+  setenv AMET_RUNID JULY2013
 
   # This variable (AMET_CRITERIA) controls what data you want to evaluate. It is necessary to understand how to build
   # MySQL queries to develop your own custom queries of data. Below are some examples along with what criteria can be used.
@@ -41,13 +43,13 @@
   # Note:   sample queries: 1) By day range only 2) date range and state 
   #                         3) date range and observation network and 4) Date range full domain
   # There are unlimted number of combinations not shown like query by Temperature, wind speed ranges, lat-lon bounds, etc
-  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20060601 AND 20060831 and (s.ob_network='OTHER-MTR' \
+  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110801 and (s.ob_network='OTHER-MTR' \
                          or s.ob_network='SAO' or s.ob_network='ASOS' or s.ob_network='MARITIME')"
-  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20060601 AND 20060831 AND d.ob_time AND (s.state='FL' \
+  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110801 AND d.ob_time AND (s.state='FL' \
                          OR s.state='SC' OR s.state='GA' OR s.state='LA' OR s.state='MS' OR s.state='AL' OR s.state='NC') "
-  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110731 AND (s.lat BETWEEN \
+  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110801 AND (s.lat BETWEEN \
                          38 and 40 AND s.lon BETWEEN -77.8 and -75.0)"
-  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20170501 AND 20170510"
+  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110801"
 
   #  Plot Type, plot options are is "png" or "pdf" are only plot formats unless user modifies
   #  the main script in $AMET/R_analysis_code/MET_summary.R
@@ -56,7 +58,7 @@
   #-----------------------------------------------------------------------------------------------------------------------
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/summary.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/summary.input  
   
   # Create output directory for project and analysis subdirectory
   mkdir -p $AMETBASE/output/$AMET_PROJECT

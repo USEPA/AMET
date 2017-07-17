@@ -1,16 +1,18 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot
+# Scatterplot - Skill
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
 # a unique forecast skill scatter plot.  The scipt is designed to work
-# specifically with ozone or PM, as the lines can be user defined.
+# specifically with ozone or PM, however the script will work with any
+# species. The user can specify the goal line (often set the NAAQS standard
+# for either ozone or PM2.5). Only works for a single species from a single
+# network for a single simulation.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-#
-# Revised version:  Wyat Appel - Dec, 2012
+# Revised version:  Wyat Appel - Jun, 2017
 # -----------------------------------------------------------------------
 
   
@@ -18,13 +20,10 @@
   # These are the main controlling variables for the R script
   
   #  Top of AMET directory
-  setenv AMETBASE  /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
-
-  #  AMET database
-  setenv AMET_DATABASE Test_AMETv13
-
-  #  AMET project id or simulation id
+  setenv AMETBASE       ~/AMET
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
   #  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_skill

@@ -17,52 +17,52 @@ end_date   		<- "20110731"
 batch_query <- c("month=7")
 batch_names <- c("July")
 
-hourly_ozone_analysis   <- 'n'	# Flag to include hourly ozone analysis
+hourly_ozone_analysis   <- 'y'	# Flag to include hourly ozone analysis
 daily_ozone_analysis    <- 'y'	# Flag to include daily ozone analysis
-aerosol_analysis        <- 'n'	# Flag to include aerosol analysis
-dep_analysis            <- 'n'	# Flag to include analysis of deposition performance
-gas_analysis            <- 'n'	# Flag to include gas analysis
-AE6_analysis            <- 'n'	# Flag to include AERO6 soil species from CSN and IMPROVE
-AOD_analysis		<- 'n'	# Flag to include Aerosol Optical Depth (AOD) from AERONET
-PAMS_analysis		<- 'n'	# Flag to include PAMS network species from AQS (hourly and daily)
+aerosol_analysis        <- 'y'	# Flag to include aerosol analysis
+dep_analysis            <- 'y'	# Flag to include analysis of deposition performance
+gas_analysis            <- 'y'	# Flag to include gas analysis
+AE6_analysis            <- 'y'	# Flag to include AERO6 soil species from CSN and IMPROVE
+AOD_analysis		<- 'y'	# Flag to include Aerosol Optical Depth (AOD) from AERONET
+PAMS_analysis		<- 'y'	# Flag to include PAMS network species from AQS (hourly and daily)
 
-ozone_averaging         <- 'n'  # Flag to average ozone data; options are n (none), d (daily), m (month), s (season), y (all)           
-aerosol_averaging       <- 'n'  # Flag to average aerosol data; options are n (none), d (daily), m (month), s (season), y (all)
-deposition_averaging    <- 'n'  # Flag to sum deposition data; options are n (none), d (daily), m (month), s (season), y (all)
-gas_averaging           <- 'n'  # Flag to average gas data; options are n (none), d (daily), m (month), s (season), y (all)
-AE6_averaging           <- 'n'	# Flag to soil species; options are n (none), d (daily), m (month), s (season), y (all)
-AOD_averaging		<- 'n'	# Flag to AOD; options are n (none), d (daily), m (month), s (season), y (all)
-PAMS_averaging		<- 'n'	# Flag to average PAMS species; options are n (none), d (daily), m (month), s (season), y (all)
+ozone_averaging         <- 'y'  # Flag to average ozone data; options are n (none), d (daily), m (month), s (season), y (all)           
+aerosol_averaging       <- 'y'  # Flag to average aerosol data; options are n (none), d (daily), m (month), s (season), y (all)
+deposition_averaging    <- 'y'  # Flag to sum deposition data; options are n (none), d (daily), m (month), s (season), y (all)
+gas_averaging           <- 'y'  # Flag to average gas data; options are n (none), d (daily), m (month), s (season), y (all)
+AE6_averaging           <- 'y'	# Flag to soil species; options are n (none), d (daily), m (month), s (season), y (all)
+AOD_averaging		<- 'y'	# Flag to AOD; options are n (none), d (daily), m (month), s (season), y (all)
+PAMS_averaging		<- 'y'	# Flag to average PAMS species; options are n (none), d (daily), m (month), s (season), y (all)
 
 ### Choose which spatial plots to run ###
-stat_plots 	<- 'n'	# AQ_Stats_Plots.R
-spatial_plots 	<- 'n'	# AQ_Plot_Spatial.R
-diff_plots	<- 'n'	# AQ_Plot_Spatial_Diff.R
-mtom_plots	<- 'n'	# AQ_Plot_Spatial_MtoM.R
-ratio_plots	<- 'n'	# AQ_Plot_Spatial_Ratio.R
+stat_plots 	<- 'y'	# AQ_Stats_Plots.R
+spatial_plots 	<- 'y'	# AQ_Plot_Spatial.R
+diff_plots	<- 'y'	# AQ_Plot_Spatial_Diff.R
+mtom_plots	<- 'y'	# AQ_Plot_Spatial_MtoM.R
+ratio_plots	<- 'y'	# AQ_Plot_Spatial_Ratio.R
 
 ### Choose which bar plots to run ###
-AE5_barplot		<- 'n'	# AQ_Stacked_Barplot.R
-AE6_barplot		<- 'n'	# AQ_Stacked_Barplot_AE6.R
-soil_barplot		<- 'n'	# AQ_Stacked Barplot_soil.R
-soil_multi_barplot	<- 'n'	# AQ_Stacked_Barplot_soil_multi.R
+AE5_barplot		<- 'y'	# AQ_Stacked_Barplot.R
+AE6_barplot		<- 'y'	# AQ_Stacked_Barplot_AE6.R
+soil_barplot		<- 'y'	# AQ_Stacked Barplot_soil.R
+soil_multi_barplot	<- 'y'	# AQ_Stacked_Barplot_soil_multi.R
 
 ### Choose which time plots to run ###
-timeseries_plot		<- 'n'	# AQ_Timeseries.R
-timeseries_mtom		<- 'n'	# AQ_Timeseries_multi_networks.R
-temporal_plot		<- 'n'	# AQ_Temporal_Plots.R
-box_plot		<- 'n'	# AQ_Boxplot.R
-box_plot_hourly		<- 'n'	# AQ_Boxplot_Hourly.R
-box_plot_roselle	<- 'n'	# AQ_Boxplot_Roselle.R
-monthly_stat_plot	<- 'n'	# AQ_Monthly_Stat_Plot.R
+timeseries_plot		<- 'y'	# AQ_Timeseries.R
+timeseries_mtom		<- 'y'	# AQ_Timeseries_multi_networks.R
+temporal_plot		<- 'y'	# AQ_Temporal_Plots.R
+box_plot		<- 'y'	# AQ_Boxplot.R
+box_plot_hourly		<- 'y'	# AQ_Boxplot_Hourly.R
+box_plot_roselle	<- 'y'	# AQ_Boxplot_Roselle.R
+monthly_stat_plot	<- 'y'	# AQ_Monthly_Stat_Plot.R
 
 ### Choose which scatter plots to run ###
-scatter_plot               <- 'n'	# AQ_Scatterplot.R
-scatter_single_plot        <- 'n'	# AQ_Scatterplot_single.R
-scatter_density_plot       <- 'n'	# AQ_Scatterplot_density.R
-scatter_bins_plot          <- 'n'	# AQ_Scatterplot_bins.R
-scatter_percentiles_plot   <- 'n'	# AQ_Scatterplot_percentiles.R
-scatter_skill_plot         <- 'n'	# AQ_Scatterplot_skill.R
+scatter_plot               <- 'y'	# AQ_Scatterplot.R
+scatter_single_plot        <- 'y'	# AQ_Scatterplot_single.R
+scatter_density_plot       <- 'y'	# AQ_Scatterplot_density.R
+scatter_bins_plot          <- 'y'	# AQ_Scatterplot_bins.R
+scatter_percentiles_plot   <- 'y'	# AQ_Scatterplot_percentiles.R
+scatter_skill_plot         <- 'y'	# AQ_Scatterplot_skill.R
 scatter_mtom_plot	   <- 'y'	# AQ_Scatterplot_mtom.R
 
 ### Choose to plot soccer plots ###
@@ -205,6 +205,13 @@ conf_line	<-'n'
 
 ### Array of flags for which statistics to include on scatter plots ###
 stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
+
+### Bin by model value instead of obs value
+bin_by_mod<-"n"
+
+### Density Scatter plot options ###
+density_zlim<-NULL
+num_dens_bins<-NULL
 
 
 ##################################
