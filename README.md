@@ -16,22 +16,21 @@ git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
 
 ## AMET 1.3 Repository Guide
 Source code and scripts are organized as follows:
-* **bin:** 
-* **configure:** 
-* **docs:** 
-* **obs:**
-* **output:**
-* **R_db_code:**
-* **R_analysis_code:**
-* **scripts_analysis:** 
-* **scripts_db:** 
-* **src:** 
+* **configure:** AMET configuration scripts
+* **docs:** AMET documentation
+* **obs:** air quality and meteorology observational data
+* **output:** output from AMET analysis scripts
+* **R_db_code:** R code for loading data to the AMET MySQL database
+* **R_analysis_code:** R codes for generating AMET analysis plots
+* **scripts_analysis:** scripts for running AMET analyses
+* **scripts_db:** scripts for loading the AMET database
+* **src:** source code of the AMET model->obs utility programs
 
 ## Documentation
 Code documentation are included within this repository (they are version-controlled along with the code itself).  
 
 [AMETv1.3 User Guide](docs/AMET_Users_Guide_v1.md)   
-[AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v1.md )   
+[AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v13.md )   
 =======
 
 The release versions of CMAQ that are currently available on Git Hub include:
