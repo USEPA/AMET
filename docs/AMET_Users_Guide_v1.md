@@ -1337,42 +1337,42 @@ You should see files of the form:
 
 A brief summary of each of the C-shell scripts is given below.
 
-**run\_boxplot.csh** ([Example Plot](./images/aqExample_PM_TOT_1_boxplot_all.png))
+**run\_boxplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_boxplot_all.png))
    - boxplot.input
    - Creates a box plot of model-obs quartiles
    - single network; single species; multi simulation
 
-**run\_boxplot\_DofW.csh**         
+**run\_boxplot\_DofW.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_boxplot_dofw.png))         
    - boxplot.input
    - Creates a box plot of model-obs quartiles parsed by the day of the week
    - single network; single species; single simulation
    
-**run\_boxplot\_hourly.csh** 
+**run\_boxplot\_hourly.csh** ([Example Plot](./images/aqExample_O3_aqExample_boxplot_hourly.png))
    - boxplot\_hourly.input
    - Creates side-by-side boxplots to create a diurnal average curve. Hourly data only
    - single network; hourly species only; multi simulation
 
-**run\_boxplot\_MDA8.csh**
+**run\_boxplot\_MDA8.csh** ([Example Plot](./images/aqExample_NC_aqExample_8hrboxplot.png))
    - boxplot.input
    - Creates a box plot of model-obs quartiles based on MDA8 ozone
    - single network; single species; single simulation
    
-**run\_boxplot\_roselle.csh**
+**run\_boxplot\_roselle.csh** ([Example Plot](./images/aqExample_SO4_aqExample_boxplot_roselle.png))
    - boxplot.input
    - Creates a box plot of model-obs quartiles, with select statistics provided underneath the box plot
    - single network; single species; multi simulation
 
-**run\_boxplot\_solrad.csh**
+**run\_boxplot\_solrad.csh** 
    - boxplot.input
    - Creates a box plot of model-obs quartiles designed specifically to plot solar radiation data
    - single network; single species; multi simulation
 
-**run\_bugleplot.csh**
+**run\_bugleplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_bugleplot_bias.png))
    - bugleplot.input
    - Model performance criteria are adjusted as a function of the average concentration of the observed value for that species. As the average concentration of the species decreases, the acceptable performance criteria increase. Creates a bias and error plot
    - multiple networks; single species; single simulation
 
-**run\_histogram.csh**
+**run\_histogram.csh** ([Example Plot](./images/aqExample_SO4_aqExample_histogram.png))
    - histogram.input
    - Creates a histogram of model-obs quartiles
    - single network; single species; multi simulation
@@ -1382,22 +1382,22 @@ A brief summary of each of the C-shell scripts is given below.
    - Creates a data file that can be used by the program **bldoverlay** to create an overlay file. This file can be used in PAVE/VERDI to overlay over CMAQ model output. Hourly data only
    - single network; hourly species only; single simulation
 
-**run\_plot\_spatial.csh**
+**run\_plot\_spatial.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_diff.png))
    - plot\_spatial.input
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
 
-**run\_plot\_spatial\_diff.csh**
+**run\_plot\_spatial\_diff.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_bias_diff.png))
    - plot\_spatial.input
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; multi simulations required
 
-**run\_plot\_spatial\_mtom.csh**
+**run\_plot\_spatial\_mtom.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_mtom_diff_avg.png))
    - plot\_spatial.input
    - Plots the absolute difference between two model simulations at observation sites, regardless if valid observations exist or not. Multiple values for a site are averaged to a single value for plotting purposes.
    - multiple networks; single species; multiple simulations required
 
-**run\_plot\_spatial\_ratio.csh**
+**run\_plot\_spatial\_ratio.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_ratio_diff.png))
    - plot\_spatial.input
    - Plots the model/obs ratio for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
@@ -1407,57 +1407,57 @@ A brief summary of each of the C-shell scripts is given below.
    - Used to extract raw data from the database. Output is a csv file containing the data requested
    - single network; single species; multi simulation
 
-**run\_scatterplot\_bins.csh**
+**run\_scatterplot\_bins.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot_bins.png))
    - scatterplot.input
    - Creates a multi-panel scatterplot of bias and RMSE, where the values are binned by the observed or modeled concentration. This script will plot a single species for a single network
    - single networks; single species; multiple simulations
 
-**run\_scatterplot.csh**
+**run\_scatterplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot.png))
    - scatterplot.input
    - Creates a single model vs. obs scatterplot. This script will plot a single species from up to three networks on a single plot. Summary statistics are also included on the plot
    - multiple networks; single species; multiple simulations
 
-**run\_scatterplot\_density.csh**
+**run\_scatterplot\_density.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_scatterplot_density.png))
    - scatterplot\_density.input
    - Creates a single model vs. obs scatterplot with shading to represent the density of points
    - multiple networks; single species; single simulation
 
-**run\_scatterplot\_mtom.csh**
+**run\_scatterplot\_mtom.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot_mtom.png))
    - scatterplot\_mtom.input
    - Creates a single model-to-model scatterplot. *Note*: The model points correspond to network’s site locations only
    - multiple networks; single species; multiple simulations
 
-**run\_scatterplot\_multi.csh**
+**run\_scatterplot\_multi.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot.png))
    - scatterplot\_multi.input
    - Creates a single model vs. obs scatterplot, designed specifically for plotting many simulations on a single plot. This script will plot a single species from a single network for up to six different simulations. Summary statistics are also included on the plot
    - single networks; single species; multiple simulations
 
-**run\_scatterplot\_percentiles.csh**
+**run\_scatterplot\_percentiles.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_scatterplot_percentiles.png))
    - scatterplot\_percentiles.input
    - Creates a single model vs. obs scatterplot, color coding the 5th, 25th, 50th, 75th and 95th percentiles
    - single networks; single species; single simulation
 
-**run\_scatterplot\_single.csh**
+**run\_scatterplot\_single.csh** ([Example Plot](./images/aqExample_SO4_dep_aqExample_scatterplot_single.png))
    - scatterplot\_single.input
    - Creates a scatter plot for a single network that includes more specific statistics than run\_scatterplot.csh
    - single network;single species;multiple simulations
 
-**run\_scatterplot\_skill.csh**
+**run\_scatterplot\_skill.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_scatterplot_skill.png))
    - scatterplot\_skill.input
    - Creates a forecast skill scatter plot. The script is designed to work specifically with O<sub>3</sub>
    - all AQS networks; O<sub>3</sub>; single simulation
 
-**run\_scatterplot\_soil.csh**
+**run\_scatterplot\_soil.csh** ([Example Plot](./images/aqExample_PM25_TOT_aqExample_scatterplot_soil.png))
    - scatterplot\_soil.input
    - Creates a single model vs. obs scatterplot designed specifically for plotting soil species (e.g. Si, Fe, Al, etc.). This script will plot the soil species from a single network on a single plot
    - single network; multiple soil species; single simulation
 
-**run\_soccerplot.csh** 
+**run\_soccerplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_soccer_plot.png))
    - soccerplot.input
    - Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines
    - multiple network; multiple species; multiple simulations
 
-**run\_spectral\_analysis.csh**
+**run\_spectral\_analysis.csh** ([Example Plot](./images/aqExample_SO4_aqExample_taylor.png))
    - spectral\_analysis.input
    - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
    - single network; single species; multiple simulations
