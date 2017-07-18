@@ -22,7 +22,6 @@
 #                                                                 ################################
 #####################################################################################################
 #######################################################################################################
-
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded") }
   if(!require(date))   {stop("Required Package date was not loaded")   }
   if(!require(ncdf4))  {stop("Required Package ncdf4 was not loaded")  }
