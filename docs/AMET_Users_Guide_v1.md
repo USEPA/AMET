@@ -1341,7 +1341,7 @@ A brief summary of each of the C-shell scripts is given below.
    - boxplot.input
    - Creates a box plot of model-obs quartiles
    - single network; single species; multi simulation
-   <a id="Figure4-2"></a> ![](./images/aqExample_PM_TOT_1_boxplot_all.png "Boxplot.png")
+   [Boxplot.png](./images/aqExample_PM_TOT_1_boxplot_all.png)
 
 
 **run\_boxplot\_DofW.csh**         
