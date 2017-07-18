@@ -340,21 +340,20 @@ Also, you can adjust the quality control level from its current highest
 level. See the MADIS documentation available from their web site for
 more information on how to customize these template files.
 
-On the AQ side, we have included the observational data for the
-following networks: Air Quality System (AQS) network, Clean Air Status
+On the AQ side, we have included the observational data for a number of
+networks including: Air Quality System (AQS) network, Clean Air Status
 and Trends Network (CASTNET), Interagency Monitoring of PROtected Visual
 Environments (IMPROVE) network, Mercury Deposition Network (MDN),
 National Atmospheric Deposition Program (NADP) network, SouthEastern
 Aerosol Research and Characterization Study (SEARCH) network, and the
-Speciated Trends Network (STN). The observational datasets have been
-preprocessed and reformatted (in some instances from their original
-sources) for access by AMET. The temporal range is network dependent,
-and ranges from 2001 to 2006. The monitoring station locations are
-provided by a series of .csv files under the subdirectory
-$AMETBASE/obs/AQ/site\_lists. A brief synopsis of each network, along
-with the steps taken to create these data for AMET, is given below. Note
-that in the species lists, each line is of the format “observed species
-name; model species name (units)”.
+Chemical Speciation Network (CSN; formerly STN). The observational datasets 
+have been preprocessed and reformatted (in some instances from their original
+sources) for access by AMET. The temporal range is network dependent. 
+The monitoring station locations are provided by a series of .csv files 
+under the subdirectory $AMETBASE/obs/AQ/site\_lists. A brief synopsis of 
+each network, along with the steps taken to create these data for AMET, 
+is given below. Note that in the species lists, each line is of the format 
+“observed species name; model species name (units)”.
 
 ### Clean Air Status and Trends Network (CASTNET) Weekly
 
