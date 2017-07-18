@@ -1,0 +1,94 @@
+#!/bin/csh -f
+
+# ================== AMET1.3 Configuration Script =================== #
+# Requirements: I/O API & netCDF libraries                            #
+#               PGI, Intel, or Gnu Fortran compiler                   #
+#                                                                     #
+# Note that this script was configured/tested on Red Hat Linux O/S    #
+#                                                                     #
+# To report problems or request help with this script/program:        #
+#             http://www.cmascenter.org/help_desk.cfm                 #
+# =================================================================== #
+
+#> model source code repository location
+ setenv AMETBASE /proj/ie/apps/AMET/AMET_v13 # [Add AMETv1.3 Install Directory Here]
+
+#===============================================================================
+#> architecture & compiler specific settings
+#-------------------------------------------------------------------------------
+
+#> Set the compiler
+ setenv compiler intel  #> options: intel, pgi, gcc
+
+#> I/O API, netCDF, and MPI libraries 
+ setenv IOAPI_DIR /proj/ie/apps/CMAQ/CMAQ_v5.2Beta_UNC_Testing/lib/x86_64/intel/ioapi     #> I/O API directory path
+ setenv NETCDF_DIR /proj/ie/apps/CMAQ/CMAQ_v5.2Beta_UNC_Testing/lib/x86_64/intel/netcdf   #> netCDF directory path
+
+#> Compiler flags and settings
+ switch ( $compiler )
+    case intel:
+#> Intel fortran compiler......................................................
+       setenv myFC mpif90 
+       setenv myCC icc
+       setenv myFSTD "-O3"
+       setenv myDBG  "-g -check bounds -check uninit -fpe0 -fno-alias -ftrapuv -traceback"
+       setenv myLINK_FLAG "-openmp"
+       setenv myFFLAGS "-fixed -132"
+       setenv myFRFLAGS "-free"
+       setenv myCFLAGS "-O2"
+       setenv extra_lib "-lcurl"
+       breaksw
+
+    case pgi:
+#> Portland Group fortran compiler.............................................
+       setenv myFC mpif90 
+       setenv myCC pgcc
+       setenv myLINK_FLAG ""
+       setenv myFSTD "-Mextend"
+       setenv myDBG  "-g -Mbounds -Mchkptr -traceback -Ktrap=fp"
+       setenv myFFLAGS "-Mfixed -O3"
+       setenv myFRFLAGS "-Mfree -O3"
+       setenv myCFLAGS "-O2"
+       setenv extra_lib "-lcurl"
+       breaksw
+
+    case gcc:
+#> gfortran compiler......................................................
+       setenv myFC mpif90
+       setenv myCC gcc
+       setenv myFSTD "-O3 -funroll-loops -finit-character=32"
+       setenv myDBG  " -Wall -O0 -g -traceback"
+       setenv myFFLAGS "-ffixed-form -ffixed-line-length-132 -O3 -funroll-loops -finit-character=32"
+       setenv myFRFLAGS "-ffree-form -ffree-line-length-none -O3 -funroll-loops -finit-character=32"
+       setenv myCFLAGS "-O2"
+       setenv myLINK_FLAG ""
+       setenv extra_lib "-lgomp"
+       breaksw
+
+    default:
+       echo "*** Compiler $compiler not found"
+       exit(2)
+       breaksw
+
+ endsw
+ 
+#===============================================================================
+ 
+#> check for netcdf and I/O API libs/includes, error if they don't exist
+
+if ( ! -e $NETCDF_DIR/lib/libnetcdf.a ) then 
+   echo "ERROR: $NETCDF_DIR/lib/libnetcdf.a does not exist in your CMAQ_LIB directory!!! Check your installation before proceeding with CMAQ build."
+   exit
+endif
+if ( ! -e $NETCDF_DIR/include/netcdf.h ) then 
+   echo "ERROR: $NETCDF_DIR/include/netcdf.h does not exist in your CMAQ_LIB directory !!! Check your installation before proceeding with CMAQ build."
+   exit
+endif
+if ( ! -e $IOAPI_DIR/lib/libioapi.a ) then 
+   echo "ERROR: $IOAPI_DIR/lib/libioapi.a does not exist in your CMAQ_LIB directory!!! Check your installation before proceeding with CMAQ build."
+   exit
+endif
+if ( ! -e $IOAPI_DIR/include/m3utilio.mod ) then 
+   echo "ERROR: $IOAPI_DIR/include/m3utilio.mod does not exist in your CMAQ_LIB directory!!! Check your installation before proceeding with CMAQ build."
+   exit
+endif
