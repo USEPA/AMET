@@ -1337,12 +1337,10 @@ You should see files of the form:
 
 A brief summary of each of the C-shell scripts is given below.
 
-**run\_boxplot.csh**
+**run\_boxplot.csh** ([Example Plot](./images/aqExample_PM_TOT_1_boxplot_all.png))
    - boxplot.input
    - Creates a box plot of model-obs quartiles
    - single network; single species; multi simulation
-   [Boxplot.png](./images/aqExample_PM_TOT_1_boxplot_all.png)
-
 
 **run\_boxplot\_DofW.csh**         
    - boxplot.input
