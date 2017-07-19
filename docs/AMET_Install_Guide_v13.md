@@ -132,7 +132,7 @@ Tier 2 software includes scientific software utilities for accessing and storing
 * Install both the MySQL server and client. At a minimum, the MySQL client must be on the same machine that will host the AMET scripts. The MySQL server can either be installed on the AMET host or an a remote host.
 * MySQL development files (include files and libraries), such as **mysql.h** and **libmysqlclient.so.15**, are needed on the system that will run AMET.
 * If MySQL server is installed on a remote host, the server permissions will need to be granted to support accessing the database from the AMET local host.
-* There are different ways to configure MySQL for use with AMET. In the example below, a single database user, **ametsecure**, is created with root access to the database. This user is given full privileges to read-write to the database. This user would then be able to load data into the database and create plots. As write access to the database is only needed to load data into the system and not to create plots, additional users with only read access could be created, if needed. An example is a case where a User wants to share data with colleagues, but protect their own database from accidental contamination. Or, accessing the paired model-obs data via a web interface. The analysis scripts also read the plain text amet-config.R file for login information, so read only is more secure. See below an example of setting up a read only login and password.
+* There are different ways to configure MySQL for use with AMET. In the example below, a single database user, **ametsecure**, is created with root access to the database. This user is given full privileges to read-write to the database. This user would then be able to load data into the database and create plots. As write access to the database is only needed to load data into the system and not to create plots, additional users with only read access could be created, if needed. An example is a case where a user wants to share data with colleagues, but protect their own database from accidental contamination. Or, accessing the paired model-obs data via a web interface. The analysis scripts also read the plain text amet-config.R file for login information, so read only adds a extra level of security. See below an example of setting up a read only login and password.
 
 **Example for configuring MySQL on a remote host with a user that has full access privileges.**
 
@@ -169,16 +169,6 @@ The easiest way to install R packages, is through the R package manager.  Once R
 > install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "Fields"))
 ```
 
-#### MADIS
-[***https://madis.ncep.noaa.gov/madis_api.shtml***](https://madis.ncep.noaa.gov/madis_api.shtml)
-
-Follow the installation instructions for the MADIS API. The AMET scripts will need to be configured to point to the compiled binaries for this utility.  
-
-#### WGRIB
-[**http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html**](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
-
-*Note:* The tarball from the above link does not contain its own directory, so we recommend that you create a **wgrib** directory before untarring.
-
 ### Install AMET Source Code and Tier 3 Software
 
 The AMET Tier 3 software includes utilities for pairing model and observation data. Unlike the Tier 1 and Tier 2 software, the Tier 3 software is included in the AMET software distribution package. After either unzipping the AMET zip file from GitHub or using the git clone command provided above, the AMET source code and Tier 3 software will be installed on your Linux system.
@@ -207,24 +197,6 @@ For the AMET scripts, there is nothing further to do during
 installation. Below are instructions to complete the
 installation of Tier 3 software, and directions for linking the Tier 2
 and Tier 3 executables into the AMET **bin** directory.
-
-#### Meteorological model utility: mm5tonetcdf
-
-*Notes:*
-
-* If NetCDF was installed in a nonstandard directory (i.e., not under
- **/usr/local)**, see **$AMETBASE/src/mm5tonetcdf\_1.2/README** for
- instructions on how to set corresponding paths to the include files
- and libraries.
-* The default install location of **mm5tonetcdf** in **/usr/local**
- can be changed by the same process as for NetCDF; see the above
- **README** file.
-* Make sure that you compile **mm5tonetcdf** with the appropriate LFS
- (large file support) flags. The flags for the **gcc** compiler are:
-
- **-D\_FILE\_OFFSET\_BITS=64**
-
- **-D\_LARGEFILE64\_SOURCE**
 
 #### Air quality model utilities
 
@@ -262,7 +234,7 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 
 *Note: the root_login and root_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
-Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **root_login** and **root_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
+Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **root_login** and **root_pass** in amet-config.R to use these settings. If you set up a read-only login *ametread* and *some_other_pass*, those may be used in the amet-config.R instead of the read-write and users can use the secure password for database population. Otherwise, set these variable to login and password that you selected when setting up MySQL.
 
 Additional AMET configuration is handled in the database loading and plot creation scripts. See the AMET 1.3 User’s Guide on configuring AMET for additional details.
 
@@ -281,7 +253,7 @@ from Section 2 in the corresponding directories indicated below.
 #### Meteorological output data
 **WRF** (4.6 GB uncompressed, 2.4 GB compressed) - Untar the file **wrfExample.tar.gz** in the directory **$AMETBASE/model\_data/MET**. This tarball contains five days’ worth of **WRF** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 8 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. The spatial domain of the
 
- **MCIP** (455 MB uncompressed, 340 MB compressed) - Untar the file **mcipExample.tar.gz** in the directory **$AMETBASE/model\_data/MET.** This tarball contains five days’ worth of **MCIP** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 9 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. Additionally, there is a **GRIDCRO2D** file for July 6 that is also used by AMET.
+ **MPAS** (455 MB uncompressed, 340 MB compressed) - Untar the file **mcipExample.tar.gz** in the directory **$AMETBASE/model\_data/MET.** This tarball contains five days’ worth of **MCIP** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 9 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. Additionally, there is a **GRIDCRO2D** file for July 6 that is also used by AMET.
 
 After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET** will contain the following files.
 
