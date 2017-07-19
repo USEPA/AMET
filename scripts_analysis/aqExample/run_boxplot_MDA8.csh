@@ -29,7 +29,7 @@
   setenv AMET_PROJECT2  aqExample
  
   #  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_MD8A
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_MDA8
   
   #  Start and End Dates of plot (YYYYMMDD) -- must match available dates in db
   setenv AMET_SDATE "20110701"             

@@ -31,15 +31,15 @@ units <- db_Query(units_qs,mysql)													# Query the database for units nam
 ################################################
 
 ### Set file names and titles ###
-filename_bias_1		 <- paste(run_name1,species,pid,"spatial_plot_Bias_1",sep="_")       # Filename for obs spatial plot
-filename_bias_2		 <- paste(run_name1,species,pid,"spatial_plot_Bias_2",sep="_")       # Filename for model spatial plot
-filename_bias_diff	 <- paste(run_name1,species,pid,"spatial_plot_Bias_Diff",sep="_") # Filename for diff spatial plot
-filename_bias_diff_hist	 <- paste(run_name1,species,pid,"spatial_plot_Bias_Diff_Hist",sep="_") # Filename for diff spatial plot
-filename_error_1	 <- paste(run_name1,species,pid,"spatial_plot_Error_1",sep="_")     # Filename for obs spatial plot
-filename_error_2	 <- paste(run_name1,species,pid,"spatial_plot_Error_2",sep="_")     # Filename for model spatial plot
-filename_error_diff	 <- paste(run_name1,species,pid,"spatial_plot_Error_Diff",sep="_")       # Filename for diff spatial plot
-filename_error_diff_hist <- paste(run_name1,species,pid,"spatial_plot_Error_Diff_Hist",sep="_")       # Filename for diff spatial plot
-filename_csv  		 <- paste(run_name1,species,pid,"spatial_plot_diff.csv",sep="_")
+filename_bias_1		 <- paste(run_name1,species,pid,"spatialplot_bias_1",sep="_")       # Filename for obs spatial plot
+filename_bias_2		 <- paste(run_name1,species,pid,"spatialplot_bias_2",sep="_")       # Filename for model spatial plot
+filename_bias_diff	 <- paste(run_name1,species,pid,"spatialplot_bias_diff",sep="_") # Filename for diff spatial plot
+filename_bias_diff_hist	 <- paste(run_name1,species,pid,"spatialplot_bias_diff_hist",sep="_") # Filename for diff spatial plot
+filename_error_1	 <- paste(run_name1,species,pid,"spatialplot_error_1",sep="_")     # Filename for obs spatial plot
+filename_error_2	 <- paste(run_name1,species,pid,"spatialplot_error_2",sep="_")     # Filename for model spatial plot
+filename_error_diff	 <- paste(run_name1,species,pid,"spatialplot_error_diff",sep="_")       # Filename for diff spatial plot
+filename_error_diff_hist <- paste(run_name1,species,pid,"spatialplot_error_diff_hist",sep="_")       # Filename for diff spatial plot
+filename_csv  		 <- paste(run_name1,species,pid,"spatialplot_diff.csv",sep="_")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
