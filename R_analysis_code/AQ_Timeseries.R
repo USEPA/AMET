@@ -205,6 +205,17 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       Dates[[j]]           <- unique(aqdat.df$Hour)
       x_label		   <- "Hour (LST)"
    }
+   if (averaging == "a") {
+      years                <- substr(aqdat.df$Start_Date,1,4)
+      aqdat.df$Year        <- years
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,centre,type=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,centre,type=avg_func)
+      Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
+      CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
+      RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
+      Dates[[j]]           <- unique(aqdat.df$Year)
+      x_label              <- "Year"
+   }
    if (j == 1) { # Set number of sites based on first run loaded (applies if runs have different number of sites)
       num_sites    <- length(unique(aqdat.df$Stat_ID))
    }
@@ -329,7 +340,7 @@ for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
       points(Dates[[1]],Mod_Mean[[1]],col=plot_colors[[2]])
    }
    {
-      if ((averaging == "h") || (averaging == "m")) {
+      if ((averaging == "h") || (averaging == "m") || (averaging == "a")) {
          axis(side=1, at=Dates[[1]])
       }
       else if (averaging == "ym") {
@@ -411,7 +422,7 @@ for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
    }
 
    {
-      if ((averaging == "h") || (averaging == "m")) {
+      if ((averaging == "h") || (averaging == "m") || (averaging == "a")) {
          axis(side=1, at=Dates[[1]])
       }
       else if (averaging == "ym") {
