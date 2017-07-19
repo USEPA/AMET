@@ -251,9 +251,9 @@ In this step, you will untar the previously downloaded model outputs
 from Section 2 in the corresponding directories indicated below.
 
 #### Meteorological output data
-**WRF** (4.6 GB uncompressed, 2.4 GB compressed) - Untar the file **wrfExample.tar.gz** in the directory **$AMETBASE/model\_data/MET**. This tarball contains five days’ worth of **WRF** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 8 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. The spatial domain of the
+**WRF** - Untar the example data file **XXXXXX** in the directory **$AMETBASE**. It will automatically populate the **$AMETBASE/model_data/MET/metExample** directory with these WRF model outputs. This tarball contains one month of **WRF** outputs in netCDF format (reduced variable output). The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC with a spatial domain covering the continental U.S. at 12-km resolution.
 
- **MPAS** (455 MB uncompressed, 340 MB compressed) - Untar the file **mcipExample.tar.gz** in the directory **$AMETBASE/model\_data/MET.** This tarball contains five days’ worth of **MCIP** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 9 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. Additionally, there is a **GRIDCRO2D** file for July 6 that is also used by AMET.
+ **MPAS** - The example data file for WRF also contains with **MPAS** model output and put in the same **$AMETBASE/model_data/MET/metExample** directory. This tarball contains one month of **MPAS** outputs in netCDF format. The temporal range is July 1 2013 0:00 UTC to July 31 2013 23:00 UTC with a global mesh that ranges from 92 km global to 25 km over the continental U.S.
 
 After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET** will contain the following files.
 
@@ -275,9 +275,7 @@ After you untar the tarfiles above, the directory **$AMETBASE/model\_data/AQ/aqE
 
 #### Observational data
 
- Change directory to **$AMETBASE/obs**, and untar the contents of the file **AMET\_obs\_data.tar.gz** that you downloaded in Section 1. This will populate the air quality observations as well as provide the necessary directory structure for storing meteorological data.
-
- **Meteorological observational data**: These data are not included as part of this distribution, because AMET dynamically downloads them as needed from the Meteorological Assimilation Data Ingest System (MADIS) web site to **$AMETBASE/obs/MET**. The contents of this directory should now look like the following:
+ **Meteorological observational data**: These data are in the same example data file as the **WRF** and **MPAS** outputs and extracted into the proper **$AMETBASE/obs/MET/point/metar/netcdf** directory automatically. After extracting the model output, make sure these MADIS files are this directory before running the test case. The contents of this directory should now look like the following:
 
  ```
  Add file list
