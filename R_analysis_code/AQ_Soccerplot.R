@@ -28,9 +28,9 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
    else { title <- custom_title }
 }
 
-filename_pdf <- paste(run_name1,pid,"soccerplot.pdf",sep="_")             # Set PDF filename
-filename_png <- paste(run_name1,pid,"soccerplot.png",sep="_")             # Set PNG filename
-filename_txt <- paste(run_name1,pid,"soccerplot.csv",sep="_")       # Set output file name
+filename_pdf <- paste(run_name1,pid,"soccer_plot.pdf",sep="_")             # Set PDF filename
+filename_png <- paste(run_name1,pid,"soccer_plot.png",sep="_")             # Set PNG filename
+filename_txt <- paste(run_name1,pid,"soccer_plot.csv",sep="_")       # Set output file name
 
 ## Create a full path to file
 filename_pdf <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename
