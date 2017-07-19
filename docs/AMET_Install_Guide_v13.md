@@ -96,7 +96,7 @@ Many of these 3rd-party packages are available through standard Linux package ma
 Tier 1 software are used by the AMET Tier 2 and Tier 3 components and must be present on a Linux system to run AMET. Confirm that all of the Tier 1 software are installed on your system before proceeding with the AMET installation. Refer to the documentation for each package for instructions on how to download and install the software.
 
 The versions of these packages that were used by the CMAS Center in their installation and testing are included in parentheses. In
-almost all cases these are already on User's Unix system and any contemporary versions will work.
+many cases these are already on User's Unix system and any contemporary versions will work.
 
 * **gzip** (1.3.9)
 
@@ -132,7 +132,7 @@ Tier 2 software includes scientific software utilities for accessing and storing
 * Install both the MySQL server and client. At a minimum, the MySQL client must be on the same machine that will host the AMET scripts. The MySQL server can either be installed on the AMET host or an a remote host.
 * MySQL development files (include files and libraries), such as **mysql.h** and **libmysqlclient.so.15**, are needed on the system that will run AMET.
 * If MySQL server is installed on a remote host, the server permissions will need to be granted to support accessing the database from the AMET local host.
-* There are different ways to configure MySQL for use with AMET. In the example below, a single database user, **ametsecure**, is created with root access to the database. This user is given full privileges to read-write to the database. This user would then be able to load data into the database and create plots. As write access to the database is only needed to load data into the system and not to create plots, additional users with only read access could be created, if needed.
+* There are different ways to configure MySQL for use with AMET. In the example below, a single database user, **ametsecure**, is created with root access to the database. This user is given full privileges to read-write to the database. This user would then be able to load data into the database and create plots. As write access to the database is only needed to load data into the system and not to create plots, additional users with only read access could be created, if needed. An example is a case where a User wants to share data with colleagues, but protect their own database from accidental contamination. Or, accessing the paired model-obs data via a web interface. The analysis scripts also read the plain text amet-config.R file for login information, so read only is more secure. See below an example of setting up a read only login and password.
 
 **Example for configuring MySQL on a remote host with a user that has full access privileges.**
 
@@ -144,6 +144,8 @@ Once connected to the server, use the following commands to set up a single AMET
 ```
 mysql> create user 'ametsecure'@'localhost' identified by 'some_pass';
 mysql> grant all privileges on \*.\* to 'ametsecure'@'localhost' with grant option;
+mysql> create user 'ametread'@'localhost' identified by 'some_other_pass';
+mysql> grant select on \*.\* to 'ametread'@'localhost' with grant option;
 mysql> \q
 ```
 
