@@ -76,13 +76,12 @@ Table B‑4. MET analysis input variables
 
 Table B‑5. AQ analysis input variables 
 
-<a id="Overview"></a>
-1.  Overview
-    ========
+<a id="Overview"></a>1. Overview
+===========
 
-<a id="Basic_Structure"></a>
-    1.  Overall Objective and Basic Structure
-        -------------------------------------
+
+<a id="Basic_Structure"></a>1.1 Overall Objective and Basic Structure
+-------------------------------------
 
 The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a
 suite of software designed to facilitate the analysis and evaluation of
@@ -119,7 +118,7 @@ open-source cross-platform programming language), but the **perl** requirement
 has been removed from AMETv1.3.
 
 <a id="AMET_Project"></a>
-Concept of an AMET “Project”
+1.2 Concept of an AMET “Project”
 ----------------------------
 
 A central organizing structure for AMET applications is a *project*. A
@@ -137,7 +136,7 @@ mm5Example, wrfExample) provided with the installation and then renaming
 it to the new project’s name.
 
 <a id="Users_Guide"></a>
-Organization of This User’s Guide
+1.3 Organization of This User’s Guide
 ---------------------------------
 
 The Community Modeling and Analysis System (CMAS) Center has created
