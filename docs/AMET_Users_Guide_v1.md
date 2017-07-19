@@ -1351,7 +1351,7 @@ A brief summary of each of the C-shell scripts is given below.
    - Creates side-by-side boxplots to create a diurnal average curve. Hourly data only
    - single network; hourly species only; multi simulation
 
-**run\_boxplot\_MDA8.csh** ([Example Plot](./images/aqExample_NC_aqExample_8hrboxplot.png))
+**run\_boxplot\_MDA8.csh** ([Example Plot](./images/aqExample_NC_aqExample_8hr_boxplot.png))
    - boxplot.input
    - Creates a box plot of model-obs quartiles based on MDA8 ozone
    - single network; single species; single simulation
