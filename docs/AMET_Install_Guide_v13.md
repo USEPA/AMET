@@ -95,7 +95,8 @@ Many of these 3rd-party packages are available through standard Linux package ma
 
 Tier 1 software are used by the AMET Tier 2 and Tier 3 components and must be present on a Linux system to run AMET. Confirm that all of the Tier 1 software are installed on your system before proceeding with the AMET installation. Refer to the documentation for each package for instructions on how to download and install the software.
 
-The versions of these packages that were used by the CMAS Center in their installation and testing are included in parentheses:
+The versions of these packages that were used by the CMAS Center in their installation and testing are included in parentheses. In
+almost all cases these are already on User's Unix system and any contemporary versions will work.
 
 * **gzip** (1.3.9)
 
