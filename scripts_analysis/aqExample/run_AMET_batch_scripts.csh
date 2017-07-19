@@ -1,15 +1,5 @@
 #!/bin/csh -f	
 
-#PBS -N run_extract_all.csh 
-#PBS -l walltime=10:00:00
-#PBS -l nodes=inode35.amad.gov:ppn=1
-##PBS -W group_list=mod3eval
-#PBS -q batch
-#PBS -V
-#PBS -m n
-#PBS -j oe
-#PBS -o /project/inf1w/appel/AMET_Code/AMAD_Code/Test/AMET_batch_scripts.log
-
 ### Location of the R executable ###
 setenv R_EXEC_LOC /share/linux86_64/bin
 
