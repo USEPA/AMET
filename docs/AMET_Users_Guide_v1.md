@@ -1366,7 +1366,7 @@ A brief summary of each of the C-shell scripts is given below.
    - Creates a box plot of model-obs quartiles designed specifically to plot solar radiation data
    - single network; single species; multi simulation
 
-**run\_bugleplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_bugleplot_bias.png))
+**run\_bugleplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_bugle_plot_bias.png))
    - bugleplot.input
    - Model performance criteria are adjusted as a function of the average concentration of the observed value for that species. As the average concentration of the species decreases, the acceptable performance criteria increase. Creates a bias and error plot
    - multiple networks; single species; single simulation
