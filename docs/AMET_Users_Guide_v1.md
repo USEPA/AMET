@@ -1801,7 +1801,7 @@ files. Not all of these variables are available in every input file.
 | **aq\_site\_table**      | AQ monitoring site MySQL table. Most likely “**site\_metadata**”.|
 | **aq\_species\_col**     | AQ variables, column names, from AQ project table. |
 | **avg\_func**            | Specify the type of averaging to use for the time series plot. Acceptable values are **mean**, **median** or **sum** |
-| **averaging**            | Average across time: “**n**” – no averaging (default), “**s**” – seasonal averaging (DJF; MAM; JJA; SON), “**m**” – monthly averaging, “**h**” – hourly averaging, “**a**” – entire time period averaging |
+| **averaging**            | Average across time: “**n**” – no averaging (default),  “**a**” – annual averaging, “**s**” – seasonal averaging (DJF; MAM; JJA; SON),  “**ym**” – year-monthly averaging (monthly averaging for multiple years), “**m**” – monthly averaging, “**h**” – hourly averaging |
 | **axis\_max\_limit**     | Axis (x and y) max limit: “**NULL**” – script-defined limit |
 | **axis\_min\_limit**     | Axis (x and y) min limit: “**NULL**” – script-defined limit |
 | **bias\_range\_max**     | Bias range max limit: “**NULL**” – script-defined limit |
