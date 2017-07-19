@@ -1627,7 +1627,8 @@ Configuration and Input Files**
 This is the configuration file for all R scripts used in database
 population—for example, $AMETBASE/configure/amet-config.R.
 
-<span id="_Toc199840996" class="anchor"></span>Table B-1. amet-config.R <a id="Table_B-1"></a>
+<a id="Table_B-1"></a>
+<span id="_Toc199840996" class="anchor"></span>Table B-1. amet-config.R
 
 | **Variable**       | **Description**                                                                                                                                                                                                                                                              |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1647,7 +1648,8 @@ This is the MET input file for all new projects, and sets up an empty
 project—for example,
 $AMETBASE/scripts\_db/wrfExample/setup\_project.input.
 
-<span id="_Toc199840998" class="anchor"></span>Table B‑2. MET setup\_project.R  <a id="Table_B-2"></a>
+<a id="Table_B-2"></a>
+<span id="_Toc199840998" class="anchor"></span>Table B‑2. MET setup\_project.R
 
 | **Variable**     | **Description**                                                                              |
 |------------------|----------------------------------------------------------------------------------------------|
@@ -1663,7 +1665,8 @@ $AMETBASE/scripts\_db/wrfExample/setup\_project.input.
 This is the MET input file for populating new projects—for example,
 $AMETBASE/scripts\_db/wrfExample/populate\_project.input.
 
-<span id="_Toc199841000" class="anchor"></span>Table B‑3. MET populate\_project.input <a id="Table_B-3"></a>
+<a id="Table_B-3"></a>
+<span id="_Toc199841000" class="anchor"></span>Table B‑3. MET populate\_project.input
 
 | **Variable**            | **Description** |
 |-------------------------|-----------------|
@@ -1697,7 +1700,8 @@ The analysis input files are found in
 $AMET/scripts\_analysis/wrfExample. The following is a partial list of
 variables. Not all of these variables are available in every input file.
 
-<span id="_Toc199841002" class="anchor"></span>Table B‑4. MET analysis input variables  <a id="Table_B-4"></a>
+<a id="Table_B-4"></a>
+<span id="_Toc199841002" class="anchor"></span>Table B‑4. MET analysis input variables
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
@@ -1812,7 +1816,8 @@ The analysis input files are found in $AMET/scripts\_analysis/aqExample/input\_f
 The following is a partial list of variables in the AQ analysis input
 files. Not all of these variables are available in every input file.
 
-<span id="_Toc199841003" class="anchor"></span>Table B‑5. AQ analysis input variables  <a id="Table_B-5"></a>
+<a id="Table_B-5"></a>
+<span id="_Toc199841003" class="anchor"></span>Table B‑5. AQ analysis input variables
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
