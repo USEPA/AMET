@@ -1590,7 +1590,8 @@ Overview Flow Diagram**
   
 ==
 
-<img src="media/image2.png" width="624" height="856" />
+<a id="AMET_Flow_Diagram"></a> ![](./images/AMET_Flow_Diagram.png "AMET_Flow_Diagram.png")
+
 
 **Appendix B:  
 Configuration and Input Files**
@@ -1605,20 +1606,13 @@ population—for example, $AMETBASE/configure/amet-config.R.
 | **Variable**       | **Description**                                                                                                                                                                                                                                                              |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **amet\_base**      | Top of AMET directory tree. |
-| **obs\_data\_dir**  | Path to AQ observation data files. Default is **$amet_base/obs/AQ**. |
 | **mysql\_server** | MySQL server location. Examples are “**localhost**” for the same machine as AMET, or “**rama.cempd.unc.edu**” for a server on rama. |
 | **amet\_login**     | MySQL user for adding data to the database and performing queries. “**ametsecure**” is recommended. This user will be created in the database setup. *Note:* To increase system security, users may want to restrict this configuration file to read and write only by user. |
 | **amet\_pass**    | Password for “**ametsecure**”, or your **$amet\_login** (if changed from “**ametsecure**”). This user will be created in the database setup.     |
 | **maxrec**     | Maximum number of records to extract from the database for any one query. No maximum = **-1**.    | 
+| **Bldoverlay_exe**        | Full path to the bldoverlay executable. |
 | **EXEC\_sitex_daily**     | Full path to the site compare daily executable. |
 | **EXEC\_sitex**           | Full path to site compare executable. |
-| **$fslftp\_madis** | MADIS ftp site (needed only if using MET side). |
-| **$login\_madis**  | MADIS-provided login (MET side only). |
-| **$pass\_madis**   | MADIS-provided password (MET side only). |
-| **$fslftp\_ncep**  | NCEP ftp site (needed only if using MET side). |
-| **$login\_ncep**   | NCEP login; most likely “**anonymous**”. |
-| **$pass\_ncep**    | Anonymous password for NCEP, usually your email address. Note the necessary “\\@” (MET side only). |
-| **$amet\_verbose** | Verbose stdout. “**yes**” for more verbose, “**no**” for less verbose. |
 
 
 2.  MET Project Setup Input File
