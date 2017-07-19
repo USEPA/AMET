@@ -234,7 +234,7 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 
 *Note: the root_login and root_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
-Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **root_login** and **root_pass** in amet-config.R to use these settings. If you set up a read-only login *ametread* and *some_other_pass*, those may be used in the amet-config.R instead of the read-write and users can use the secure password for database population. Otherwise, set these variable to login and password that you selected when setting up MySQL.
+Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **root_login** and **root_pass** in amet-config.R to use these settings. If you set up a read-only login *ametread* and *some_other_pass*, those may be used in the amet-config.R instead of the read-write login and users can reserve the secure password for database population when prompted or via queue system. 
 
 Additional AMET configuration is handled in the database loading and plot creation scripts. See the AMET 1.3 User’s Guide on configuring AMET for additional details.
 
