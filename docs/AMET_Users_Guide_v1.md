@@ -1381,22 +1381,22 @@ A brief summary of each of the C-shell scripts is given below.
    - Creates a data file that can be used by the program **bldoverlay** to create an overlay file. This file can be used in PAVE/VERDI to overlay over CMAQ model output. Hourly data only
    - single network; hourly species only; single simulation
 
-**run\_plot\_spatial.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_diff.png))
+**run\_plot\_spatial.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_diff.png))
    - plot\_spatial.input
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
 
-**run\_plot\_spatial\_diff.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_bias_diff.png))
+**run\_plot\_spatial\_diff.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_bias_diff.png))
    - plot\_spatial.input
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; multi simulations required
 
-**run\_plot\_spatial\_mtom.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_mtom_diff_avg.png))
+**run\_plot\_spatial\_mtom.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_mtom_diff_avg.png))
    - plot\_spatial.input
    - Plots the absolute difference between two model simulations at observation sites, regardless if valid observations exist or not. Multiple values for a site are averaged to a single value for plotting purposes.
    - multiple networks; single species; multiple simulations required
 
-**run\_plot\_spatial\_ratio.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatial_plot_ratio_diff.png))
+**run\_plot\_spatial\_ratio.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_ratio_diff.png))
    - plot\_spatial.input
    - Plots the model/obs ratio for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
@@ -1451,7 +1451,7 @@ A brief summary of each of the C-shell scripts is given below.
    - Creates a single model vs. obs scatterplot designed specifically for plotting soil species (e.g. Si, Fe, Al, etc.). This script will plot the soil species from a single network on a single plot
    - single network; multiple soil species; single simulation
 
-**run\_soccerplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_soccer_plot.png))
+**run\_soccerplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_soccerplot.png))
    - soccerplot.input
    - Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines
    - multiple network; multiple species; multiple simulations
