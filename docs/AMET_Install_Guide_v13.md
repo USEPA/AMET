@@ -255,10 +255,11 @@ from Section 2 in the corresponding directories indicated below.
 
  **MPAS** - The example data file for WRF also contains with **MPAS** model output and put in the same **$AMETBASE/model_data/MET/metExample** directory. This tarball contains one month of **MPAS** outputs in netCDF format. The temporal range is July 1 2013 0:00 UTC to July 31 2013 23:00 UTC with a global mesh that ranges from 92 km global to 25 km over the continental U.S.
 
-After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET** will contain the following files.
+After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET** will contain files like the following where DD is day fo the month.
 
 ```
-Add file list
+wrfout.surface.201107DD.nc
+history.2013.07-DD.luf.nc
 ```
 
 #### Air quality output data
@@ -275,10 +276,12 @@ After you untar the tarfiles above, the directory **$AMETBASE/model\_data/AQ/aqE
 
 #### Observational data
 
- **Meteorological observational data**: These data are in the same example data file as the **WRF** and **MPAS** outputs and extracted into the proper **$AMETBASE/obs/MET/point/metar/netcdf** directory automatically. After extracting the model output, make sure these MADIS files are this directory before running the test case. The contents of this directory should now look like the following:
+ **Meteorological observational data**: These data are in the same example data file as the **WRF** and **MPAS** outputs and extracted into the proper **$AMETBASE/obs/MET/point/metar/netcdf** directory automatically. After extracting the model output, make sure these MADIS files are this directory before running the test case. The contents of this directory should now look like the following where YYYY, MM, DD and HH are year, month, day and UTC:
 
  ```
- Add file list
+ 20110701_0000
+ 20130701_0000
+ YYYYMMDD_HHMM
  ```
 
 If the directory where AMET is installed has limited space, we suggest that you move the entire directory structure under **$AMETBASE/obs/MET** (point and LDAD) to another directory with larger capacity, and then create symbolic links from the location that contains the AMET installation to the new location. For the model datasets we have provided, the MADIS observational data that will be dynamically downloaded is on the order of about `1.0 GB` uncompressed. AMET does allow the data to be stored in compressed format, which reduces the size to 109 MB, but the data need to b decompressed before they can be used in AMET.
