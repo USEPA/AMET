@@ -28,9 +28,9 @@ network <- network_names[1]														# When using mutiple networks, units fr
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
 units <- db_Query(units_qs,mysql)													# Query the database for units name
 
-figure_diff	<- paste(run_name1,species,pid,"spatialplot_MtoM_Diff_Avg",sep="_")           # Filename for diff spatial plot
-figure_max	<- paste(run_name1,species,pid,"spatialplot_MtoM_Diff_Max",sep="_")               # Filename for diff spatial plot
-figure_min	<- paste(run_name1,species,pid,"spatialplot_MtoM_Diff_Min",sep="_")               # Filename for diff spatial plot
+figure_diff	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_avg",sep="_")           # Filename for diff spatial plot
+figure_max	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_max",sep="_")               # Filename for diff spatial plot
+figure_min	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_min",sep="_")               # Filename for diff spatial plot
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {

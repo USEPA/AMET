@@ -26,14 +26,14 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 ################################################
 filename_all 	<- paste(run_name1,species,pid,"stats.csv",sep="_")
 filename_sites 	<- paste(run_name1,species,pid,"sites_stats.csv",sep="_")
-filename_nmb	<- paste(run_name1,species,pid,"statsplot_NMB",sep="_")
-filename_nme	<- paste(run_name1,species,pid,"statsplot_NME",sep="_")
-filename_fb	<- paste(run_name1,species,pid,"statsplot_FB",sep="_")
-filename_fe	<- paste(run_name1,species,pid,"statsplot_FE",sep="_")
-filename_rmse	<- paste(run_name1,species,pid,"statsplot_RMSE",sep="_")
-filename_mb	<- paste(run_name1,species,pid,"statsplot_MB",sep="_")
-filename_me	<- paste(run_name1,species,pid,"statsplot_ME",sep="_")
-filename_corr	<- paste(run_name1,species,pid,"statsplot_Corr",sep="_")
+filename_nmb	<- paste(run_name1,species,pid,"stats_plot_NMB",sep="_")
+filename_nme	<- paste(run_name1,species,pid,"stats_plot_NME",sep="_")
+filename_fb	<- paste(run_name1,species,pid,"stats_plot_FB",sep="_")
+filename_fe	<- paste(run_name1,species,pid,"stats_plot_FE",sep="_")
+filename_rmse	<- paste(run_name1,species,pid,"stats_plot_RMSE",sep="_")
+filename_mb	<- paste(run_name1,species,pid,"stats_plot_MB",sep="_")
+filename_me	<- paste(run_name1,species,pid,"stats_plot_ME",sep="_")
+filename_corr	<- paste(run_name1,species,pid,"stats_plot_Corr",sep="_")
 filename_txt 	<- paste(run_name1,species,pid,"stats_data.csv",sep="_")      # Set output file name
 
 ## Create a full path to file

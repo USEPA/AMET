@@ -39,10 +39,10 @@ if (length(units) == 0) {
 filename_stats	<- paste(run_name1,species,pid,"stats.csv",sep="_")
 filename1_pdf	<- paste(run_name1,species,pid,"plot1.pdf",sep="_")
 filename1_png	<- paste(run_name1,species,pid,"plot1.png",sep="_")
-filename2_pdf	<- paste(run_name1,species,pid,"statsplot1.pdf",sep="_")
-filename2_png	<- paste(run_name1,species,pid,"statsplot1.png",sep="_")
-filename3_pdf	<- paste(run_name1,species,pid,"statsplot2.pdf",sep="_")
-filename3_png	<- paste(run_name1,species,pid,"statsplot2.png",sep="_")
+filename2_pdf	<- paste(run_name1,species,pid,"stats_plot1.pdf",sep="_")
+filename2_png	<- paste(run_name1,species,pid,"stats_plot1.png",sep="_")
+filename3_pdf	<- paste(run_name1,species,pid,"stats_plot2.pdf",sep="_")
+filename3_png	<- paste(run_name1,species,pid,"stats_plot2.png",sep="_")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
