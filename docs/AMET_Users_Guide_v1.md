@@ -59,22 +59,25 @@ User’s Guide***
 Tables
 ======
 
-Table 2‑1. Directories under $AMETBASE
+[Table 2‑1. Directories under $AMETBASE](#Table_2-1)
 
-Table 3‑1. Most common variables that need to be changed in
-amet-config.R
+[Table 3‑1. Most common variables that need to be changed in amet-config.R](#Table_3-1)
 
-Table 7‑1. MET analysis scripts
+[Table 6‑3. aqProject.csh script options](#Table_6-3)
 
-Table B‑1. amet-config.R 
+[Table 7‑1. MET analysis scripts](#Table_7-1)
 
-Table B-2. MET setup\_project.input
+[Table 7‑2. AQ analysis script options](#Table_7-2)
 
-Table B‑3. MET populate\_project.input 
+[Table B‑1. amet-config.R](#Table_B-1)
 
-Table B‑4. MET analysis input variables 
+[Table B-2. MET setup\_project.input](#Table_B-2)
 
-Table B‑5. AQ analysis input variables 
+[Table B‑3. MET populate\_project.input](#Table_B-3)
+
+[Table B‑4. MET analysis input variables](#Table_B-4)
+
+[Table B‑5. AQ analysis input variables](#Table_B-5)
 
 <a id="Overview"></a>1. Overview
 ===========
@@ -202,7 +205,7 @@ in your home directory, then $AMETBASE would be ~/AMET.
 Under $AMETBASE are the directories shown in Table 2-1.
 
 <span id="_Toc190070890" class="anchor"><span id="_Toc199840991"
-class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
+class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.<a id="Table_2-1"></a>
 
 | **Directory**         | **Description**                                                       |
 |-----------------------|-----------------------------------------------------------------------|
@@ -243,7 +246,7 @@ need to modify only a few specific lines of this configuration file. The most
 common variables to change are shown in Table 3-1.
 
 <span id="_Toc199840993" class="anchor"></span>Table 3‑1. Most common
-variables that need to be changed in amet-config.R.
+variables that need to be changed in amet-config.R.<a id="Table_3-1"></a>
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
@@ -1097,7 +1100,7 @@ email address is not currenlty used for anything in AMET and is simply stored al
 project information.
 
 The Table 6-3 below describes the other options and file locations that need to be
-specified in the aqProject.csh script.
+specified in the aqProject.csh script.<a id="Table_6-3"></a>
 
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1234,8 +1237,8 @@ You should see a whole series of plots of the form:
 
 A brief summary of each of the C-shell scripts is given below in Table 7-1.
 
-<span id="_Toc199840994" class="anchor"></span>Table ‑. MET analysis
-scripts.
+<span id="_Toc199840994" class="anchor"></span>Table 7‑1. MET analysis
+scripts.<a id="Table_7-1"></a>
 
 | **C-shell Script**        | **Input**            | **Description** |
 |---------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1289,6 +1292,10 @@ there is also an input file called **all_scripts.input**, which contains all
 the options available for all the analysis scripts. This input file can be 
 used instead of script specific input files, thereby eliminating the need to 
 edit each individual input file. This may be a preferred option for some users.
+
+A brief summary of each of the typical options for a AQ analysis script is given
+below in table 7-2.<a id="Table_7-2"></a>
+
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
@@ -1620,7 +1627,7 @@ Configuration and Input Files**
 This is the configuration file for all R scripts used in database
 population—for example, $AMETBASE/configure/amet-config.R.
 
-<span id="_Toc199840996" class="anchor"></span>Table B-1. amet-config.R
+<span id="_Toc199840996" class="anchor"></span>Table B-1. amet-config.R <a id="Table_B-1"></a>
 
 | **Variable**       | **Description**                                                                                                                                                                                                                                                              |
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1640,7 +1647,7 @@ This is the MET input file for all new projects, and sets up an empty
 project—for example,
 $AMETBASE/scripts\_db/wrfExample/setup\_project.input.
 
-<span id="_Toc199840998" class="anchor"></span>Table B‑2. MET setup\_project.R
+<span id="_Toc199840998" class="anchor"></span>Table B‑2. MET setup\_project.R  <a id="Table_B-2"></a>
 
 | **Variable**     | **Description**                                                                              |
 |------------------|----------------------------------------------------------------------------------------------|
@@ -1656,8 +1663,7 @@ $AMETBASE/scripts\_db/wrfExample/setup\_project.input.
 This is the MET input file for populating new projects—for example,
 $AMETBASE/scripts\_db/wrfExample/populate\_project.input.
 
-<span id="_Toc199841000" class="anchor"></span>Table B‑3. MET
-populate\_project.input
+<span id="_Toc199841000" class="anchor"></span>Table B‑3. MET populate\_project.input <a id="Table_B-3"></a>
 
 | **Variable**            | **Description** |
 |-------------------------|-----------------|
@@ -1691,7 +1697,7 @@ The analysis input files are found in
 $AMET/scripts\_analysis/wrfExample. The following is a partial list of
 variables. Not all of these variables are available in every input file.
 
-<span id="_Toc199841002" class="anchor"></span>Table B‑4. MET analysis input variables
+<span id="_Toc199841002" class="anchor"></span>Table B‑4. MET analysis input variables  <a id="Table_B-4"></a>
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
@@ -1806,7 +1812,7 @@ The analysis input files are found in $AMET/scripts\_analysis/aqExample/input\_f
 The following is a partial list of variables in the AQ analysis input
 files. Not all of these variables are available in every input file.
 
-<span id="_Toc199841003" class="anchor"></span>Table B‑5. AQ analysis input variables
+<span id="_Toc199841003" class="anchor"></span>Table B‑5. AQ analysis input variables  <a id="Table_B-5"></a>
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
