@@ -23,7 +23,7 @@ User’s Guide***
 
    4.2 Observational Data
 
-5. Database Setup
+5. [Database Setup](#Database_Setup)
 
    5.1 AMET Setup
 
@@ -694,6 +694,7 @@ files are available for download from the CMAS website.
 > PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)
 
 5. Database Setup
+<a id="Database_Setup"></a>
 ==============
 
 The next step in using AMET is to set up the MySQL database. Please
