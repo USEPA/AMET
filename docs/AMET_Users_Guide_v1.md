@@ -100,36 +100,17 @@ Practically, a user may be interested in using only one of the fields(either MET
 1.2 Concept of an AMET “Project”
 ----------------------------
 
-A central organizing structure for AMET applications is a *project*. A
-project groups a particular model simulation (specific model,
-physics-set, spatial domain, grid scale, etc.) with all of the AMET
-database tables that correspond to that simulation, the scripts
-necessary to populate that database, and the scripts required to analyze
-that project. For example, you might have one project for a 2011 12-km
-continental U.S. simulation, and another project for a 2011 4-km
-Eastern U.S. simulation. A project can be for either MET or AQ, not for
-both. It is essential that you uniquely name each project. It is
-recommended that you follow the directory structure when creating new
-projects, by copying one of the three example directories (aqExample,
-mm5Example, wrfExample) provided with the installation and then renaming
-it to the new project’s name.
+A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2011 12-km continental U.S. simulation, and another project for a 2011 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
 
 <a id="Users_Guide"></a>
 1.3 Organization of This User’s Guide
 ---------------------------------
 
-The Community Modeling and Analysis System (CMAS) Center has created
-this user’s guide to assist you in applying the AMET system in your
-work. CMAS obtained the MET and AQ portions of AMET separately from EPA,
-then integrated the two to create a consistent and integrated AMET
-package that uses the UNIX C-shell interface to perform both MET and AQ
-model evaluation and analyses. After this integration, we tested the 
-integrated AMET package on multiple environments.
+The Community Modeling and Analysis System (CMAS) Center has created this User’s guide to assist you in applying the AMET system in your work. CMAS obtained the MET and AQ portions of AMET separately from the US EPA, then integrated to create a consistent AMET package that uses the UNIX C-shell interface to perform both MET and AQ model evaluation and analyses. After this integration, we tested the AMET package on multiple environments.
 
-Finally, we created this user’s guide. The contents of the remaining
-sections are listed below.
+The contents of the remaining sections of the User's guide are listed below.
 
--   Section 2 describes the overall directory structure of the AMET installation.
+-   Section 2 describes the overall directory structure of the AMET installation.
 
 -   Section 3 gives instructions on how to configure the R configuration files.
 
@@ -187,8 +168,8 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.<a id="Tab
 |-----------------------|-----------------------------------------------------------------------|
 | **bin**               | External executables used by helper scripts.                          |
 | **configure**         | Configuration files for R and php.                                    |
-| **model\_data**       | Model output data (contains field-specific \[i.e., MET and AQ\] subdirectories). |
-| **obs**               | Observational data (e.g., MADIS, discussed in Section 4.2) (contains field-specific \[i.e., MET and AQ\] subdirectories).         |
+| **model\_data**       | Model output data (contains component-specific \[i.e., MET and AQ\] subdirectories). |
+| **obs**               | Observational data (e.g., MADIS, discussed in Section 4.2) (contains component-specific \[i.e., MET and AQ\] subdirectories).         |
 | **output**            | Output of database population and analysis (contains project-specific subdirectories). |
 | **R\_analysis\_code** | R scripts used for statistical analysis.                              |
 | **R\_db\_code**       | R scripts used for user and database setup.                           |
@@ -198,7 +179,7 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.<a id="Tab
 
 *Note:* For large model outputs and for MADIS observations that cover a
 long period of time, it may be prudent to link these data within the
-appropriate AMET directories rather than moving or copying them.
+appropriate AMET directories rather than moving or copying them, especially if users have limited space in a $HOME directory.
 
 <a id="Configuration"></a>
 3. Configuration
@@ -207,10 +188,9 @@ appropriate AMET directories rather than moving or copying them.
 After untarring the AMET code and data and installing/building the
 required two tiers of software components (as discussed in the AMET
 installation guide referenced above), the next stage is to configure the
-AMET system. In the $AMETBASE/configure directory, you will find three
-files:
+AMET system. In the $AMETBASE/configure directory, you will find the R MySQL configuration file:
 
--   An R configuration file (amet-config.R)
+-   amet-config.R
 
 <a id="Configuration_File"></a>
 3.1 R Configuration File (amet-config.R)
@@ -235,9 +215,9 @@ variables that need to be changed in amet-config.R.<a id="Table_3-1"></a>
 | **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
 | **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
 
-A word about specifying the **amet_login** and **amet_pass**. Obviously these are MySQL credentials and are therefore sensitive. The MySQL credentials specified here are always used in the analysis scripts that come with AMET, which require only database read access to function. Therefore, the MySQL user specified here can be limited to read access only. However, these credentials can also be setup to be used by the aqProject.csh and metProject.csh scripts (and by default those scripts are setup to do so). For those scripts to work properly, the MySQL user specified must have permission to create databases and tables, in addition to read access. So, if the setting in the aqProject.csh and/or metProject.csh scripts is to read the **amet_login** and **amet_pass** variables for the amet-config.R file, those credentials must be for a user with full MySQL permissions.
+A word about specifying the amet_login and amet_pass. Obviously these are MySQL credentials and are therefore sensitive. The MySQL credentials specified here are always used in the analysis scripts that come with AMET, which require only database read access to function. Therefore, the MySQL user specified here can be limited to read access only. However, these credentials can also be setup to be used by the aqProject.csh and matching_surface.csh scripts (and by default those scripts are setup to do so). For those scripts to work properly, the MySQL user specified must have permission to create databases and tables, in addition to read access. So, if the setting in the aqProject.csh and/or matching_surface.csh scripts is to read the amet_login and amet_pass variables for the amet-config.R file, those credentials must be for a user with full MySQL permissions.
 
-For simplicity, it is suggested that the MySQL credentials specified in the amet-config.R file be for a user with full database permissions.
+For simplicity, it is suggested that the MySQL credentials specified in the amet-config.R file be for a user with full database permissions and **that file be made read-only by the user**.
 
 <a id="Datasets"></a>
 4. Datasets
