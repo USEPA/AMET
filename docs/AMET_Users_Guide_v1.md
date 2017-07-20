@@ -268,37 +268,13 @@ grid resolution.
 4.2 Observational Data
 ------------------
 
-As with the model data, the observations directory structure is divided
-between MET and AQ fields. On the MET side, all of the observations come
-from the Meteorological Assimilation Data Ingest System (MADIS),
-provided by the National Oceanic and Atmospheric Administration (NOAA).
-If you are going to use AMET for MET analysis, you must first contact
-MADIS to obtain a MADIS account, login, and password (see
-[**http://www-sdd.fsl.noaa.gov/MADIS**](http://www-sdd.fsl.noaa.gov/MADIS)
-for details). You will use this login information in setting up the Perl
-configuration file (discussed in Section 3.1).
+As with the model data, the observations directory structure is divided between MET and AQ fields. On the MET side, all of the observations come from the Meteorological Assimilation Data Ingest System (MADIS), provided by the National Oceanic and Atmospheric Administration (NOAA). If you are going to use AMET for MET analysis, you should first contact MADIS to obtain a MADIS account (see http://www-sdd.fsl.noaa.gov/MADIS for details). The new autoFTP method uses their anonymous FTP, so of that option is used we ask that users acknowledge the MADIS group. The alternative method is that users download all MADIS observations before the model-observation matching step.
 
-In the AMET structure, all of the MADIS data are stored under
-$AMETBASE/obs/MET. The file stations.csv is a metadata file that
-describes the station ID and location of each of the MADIS monitoring
-sites; this file is in comma-separated-value (.csv) format. The AMET
-distribution from CMAS will not include any MET observations from MADIS.
-When you run the database population scripts (Section 6), they will
-automatically call the MADIS system to download the available monitoring
-sites’ observations for the specified time period via ftp. For example,
-the radiosonde data will be downloaded to
+In the AMET structure, all of the MADIS data are stored under $AMETBASE/obs/MET. The MADIS observation directory structure is provided in this directory in the release. The AMET example data distribution from CMAS includes standard MET surface observations from MADIS for the model ouput periods (July 2011 and July 2013).
 
-> $AMETBASE/obs/MET/point/raob/netcdf
+> $AMETBASE/obs/MET/point/metar/netcdf
 
-Each of the observation files is a netCDF file representing one hour’s
-worth of data from all available monitoring sites. The netCDF file can
-be stored in a gzip compressed format to save space, and unzipped
-automatically as needed. Note that the default settings for the MADIS
-obs extraction are set in template files in $AMETBASE/bin/madis\_input.
-You can modify these template files to extract mesonet data if desired.
-Also, you can adjust the quality control level from its current highest
-level. See the MADIS documentation available from their web site for
-more information on how to customize these template files.
+Each of the observation files is a netCDF file representing one hour’s worth of surface meteorological data from all available monitoring sites. The netCDF files can be stored in a gzip compressed format to save space, but should be unzipped before use. These files are now directly read during the model-obs matching step instead of using an external utility (e.g.; sfcdump.exe) to extract into text and parsed by Perl.
 
 On the AQ side, we have included the observational data for a number of
 networks including: Air Quality System (AQS) network, Clean Air Status
