@@ -27,7 +27,7 @@
   setenv AMET_DATABASE2  amet_test2
   setenv MYSQL_SERVER   xxxxxxx.epa.gov
   
-  #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
+  #  AMET project id or simulation id. Note: Project2 allows comparisons of two model
   #  runs with obs including statistics. If left unset, it's ignored.
   setenv AMET_PROJECT1  metExample
   setenv AMET_PROJECT2  metExample
@@ -35,7 +35,7 @@
   #  Directory where figures and text output will be directed
   setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT1/timeseries
   
-  #  Observation site for timeseries. If mulitple sites are specificed like example two below
+  #  Observation site for timeseries. If multiple sites are specified like example two below
   #  Sites and corresponding model values are either averaged into a timeseries if 
   # AMET_GROUPSITES=TRUE or a timeseries plot for each site is generated in a loop over sites
   set SITES=(KILM KORL KRDU KDCA KLAX)
@@ -56,7 +56,7 @@
   setenv AMET_EXTRA1              
   setenv AMET_EXTRA2              
 
-  #  Plot Type, plot options are is "png" or "pdf" are only plot formats
+  #  Plot Type, plot options are "png" or "pdf" are only plot formats
   #  unless user modifies the main script in:
   #  $AMET/R_analysis_code/MET_timeseries.R
   #  For timeseries pdf is recommended.
