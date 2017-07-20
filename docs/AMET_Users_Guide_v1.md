@@ -116,8 +116,8 @@ Practically, a user may be interested in using only one of the fields
 decision is based on the scope of the study. The two main software
 components of AMETv1.3 are **MySQL** (an open-source database software
 system) and **R** (a free software environment for statistical computing
-and graphics). The previous versions of AMET also utilized **perl** (an 
-open-source cross-platform programming language), but the **perl** requirement
+and graphics). The previous versions of AMET also utilized **Perl** (an 
+open-source cross-platform programming language), but the **Perl** requirement
 has been removed from AMETv1.3.
 
 <a id="AMET_Project"></a>
