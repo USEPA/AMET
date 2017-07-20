@@ -85,40 +85,16 @@ Tables
 
 <a id="Basic_Structure"></a>1.1 Overall Objective and Basic Structure
 -------------------------------------
+The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a suite of software designed to facilitate the analysis and evaluation of meteorological and air quality models. AMET matches the model output for particular locations to the corresponding observed values from one or more networks of monitors. These pairings of values (model and observation) are then used to statistically and graphically analyze the model’s performance.
 
-The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a
-suite of software designed to facilitate the analysis and evaluation of
-meteorological and air quality models. AMET matches the model output for
-particular locations to the corresponding observed values from one or
-more networks of monitors. These pairings of values (model and
-observation) are then used to statistically and graphically analyze the
-model’s performance.
+More specifically, AMET is currently designed to analyze outputs from the Weather Research and Forecasting(WRF) model, and the Community Multiscale Air Quality (CMAQ) model, as well as Model for Prediction Across Scales (MPAS) - a new global model developed by NCAR. The basic structure of AMET consists of two *fields* and two *processes*.
 
-More specifically, AMET is currently designed to analyze outputs from
-the PSU/NCAR Mesoscale Model (MM5), the Weather Research and Forecasting
-(WRF) model, and the Community Multiscale Air Quality (CMAQ) model, as
-well as Meteorology-Chemistry Interface Processor (MCIP)-postprocessed
-meteorological data (surface only). The basic structure of AMET consists
-of two *fields* and two *processes*.
+-   The two fields (scientific topics) are **MET** and **AQ**, corresponding to meteorology and air quality data.
 
--   The two fields (scientific topics) are **MET** and **AQ**,
-    corresponding to meteorology and air quality data.
+-   The two processes (actions) are **database population** and **analysis**. Database population refers to the underlying structure of AMET; after the observations and model data are paired in space and time, the pairs are inserted into a database (MySQL). Analysis refers to the statistical evaluation of these pairings and their subsequent plotting.
 
--   The two processes (actions) are **database population** and
-    **analysis**. Database population refers to the underlying structure
-    of AMET; after the observations and model data are paired in space
-    and time, the pairs are inserted into a database (MySQL). Analysis
-    refers to the statistical evaluation of these pairings and their
-    subsequent plotting.
+Practically, a user may be interested in using only one of the fields(either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.3 are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement has been removed from AMETv1.3 in an effort to streamline the tool.
 
-Practically, a user may be interested in using only one of the fields
-(either MET or AQ), or may be interested in using both fields. That
-decision is based on the scope of the study. The two main software
-components of AMETv1.3 are **MySQL** (an open-source database software
-system) and **R** (a free software environment for statistical computing
-and graphics). The previous versions of AMET also utilized **Perl** (an 
-open-source cross-platform programming language), but the **Perl** requirement
-has been removed from AMETv1.3.
 
 <a id="AMET_Project"></a>
 1.2 Concept of an AMET “Project”
