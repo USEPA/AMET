@@ -225,30 +225,25 @@ For simplicity, it is suggested that the MySQL credentials specified in the amet
 
 The AMET release includes both model and observational datasets provided
 as examples. You should have downloaded these into the proper
-directories during the installation process.
+directories during the installation process if an example is desired.
 
 <a id="Model_Data"></a>
 4.1 Model Data
 ----------
 
-For the model data, we have included both meteorological and air quality
-data. We have organized the data into four example projects:
-"metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
-(July 01 2011 00:00 UTC to July 31 2011 23:00 UTC). The WRF data file is
+For the model data, we have included both meteorological and air quality data. We have organized the data into four example projects: "metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation (July 01 2011 00:00 UTC to July 31 2011 23:00 UTC) and 1-month MPAS simulation (July 01 2013 00:00 UTC to July 31 2013 23:00 UTC).
 
-The WRF data consist of five WRF output files in netCDF format:
+The WRF data consist of 31 output files in netCDF format where DD is day of the month:
 
-> $AMETBASE/model\_data/MET/**wrfExample**/
+> $AMETBASE/model\_data/MET/**metExample**/
 >
-> wrfout\_d01\_2002-07-05\_00:00:00
+> wrfout\_d01\_2011-07-DD\_00:00:00
 >
-> wrfout\_d01\_2002-07-06\_00:00:00
+The MPAS data consist of 31 output files in netCDF format where DD is day of the month:
+> $AMETBASE/model\_data/MET/**metExample**/
 >
-> wrfout\_d01\_2002-07-07\_00:00:00
+> history.2013-07-DD.luf.nc
 >
-> wrfout\_d01\_2002-07-08\_00:00:00
->
-> wrfout\_d01\_2002-07-09\_00:00:00
 
 Note that we have bolded “metExample” in the directory name above to
 highlight the fact that we are using the project name to organize the
