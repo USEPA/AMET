@@ -45,7 +45,7 @@ components of AMET are **MySQL** (an open-source database software
 system) and **R** (a free software environment for statistical computing
 and graphics).
 
-*Note that in AMETv1.3, **perl** was deprecated and is not longer used.*
+*Note that in AMETv1.3, **perl** was deprecated and is no longer used.*
 
 This installation guide describes the steps
 involved in the AMET software installation process. This guide describes how to (1) download the AMET scripts and test data, (2) install the AMET source code and scripts, (3) configure AMET, and  (4) install pre-packaged data for testing the AMET installation. Notes are
