@@ -728,11 +728,7 @@ that command will yield a table like this:
 >
 > | stations |
 >
-> | wrfExample\_profiler |
->
-> | wrfExample\_raob |
->
-> | wrfExample\_surface |
+> | metExample\_surface |
 >
 > +---------------------+
 
@@ -753,6 +749,8 @@ network:
 To determine which networks are included in the aqExample project:
 
 > mysql&gt; select distinct network from aqExample;
+
+Note: It is wise for users to understand simple queries like this or to download an interactive MySQL database tool as a means to look at the database, table structure and even sample data therein in the case of problems.
 
 <a id="Project_Creation"></a>
 6. Project Creation and Database Population
@@ -775,29 +773,18 @@ addition to the setup directories described earlier. The projects are
 
 In the following subsections, we describe how to run each project.
 
-<a id="WRF_Project"></a>
-6.1 The wrfExample Project
+<a id="MET_Project"></a>
+6.1 The metExample Project
 ----------------------
 
 Go to the project directory
 
-> $ cd $AMETBASE/scripts\_db/wrfExample
+> $ cd $AMETBASE/scripts\_db/metExample
 
-Here, you will see two input files and two C-shell scripts. The
-setup\_project.input file is the input file for initializing the
-project’s database tables (discussed later in Section 6). The only thing
-you should need to change in this file is the “$email” variable. Note
-that you should use the backslash “escape” character, “\\”, to prevent
-Perl from evaluating the “@” in your e-mail address. The
-populate\_project.input file describes specific flags for the model
-outputs and observations that you want to process. See Appendix B for
-information on the specifics relating to each variable. You will likely
-not need to change anything in this second input file.
-
-The C-shell file metProject.csh is a wrapper script for calling the Perl
-programs that actually populate the AMET database with the project data.
-You will likely only need to verify that the variable AMETBASE has been
-updated for this project. Run the script by typing
+Here, you will see one C-shell script. The C-shell file matching_surface.csh is a wrapper script for calling the R
+MET_matching_surface.R that actually populates the AMET database with the project data.
+You will first need to verify that the variable AMETBASE has been
+updated for this project. The sameple script has detailed instructions on all variables that are passed to R. Modify according to your setup and run the script by typing
 
 > $ ./metProject.csh &gt;& log.populate
 
