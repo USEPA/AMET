@@ -1147,6 +1147,20 @@ A brief summary of each of the C-shell scripts is given below along with an exam
 - Creates maps of statistics at each observation site
 - Creates a csv file of the site specific statistics ([Example csv](./images/metExample.spatial.temp2m.stats.2011-07-01_00.2011-07-31_23.csv))
 
+**run\_timeseries.csh** ([Example Plot](./images/metExample.KRDU.20110701-20110801.pdf))
+- timeseries.input
+- Creates a 4 panel timeseries of model and observed temperature, moisture, wind speed and direction.
+- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample.KRDU.20110701-20110801.txt))
+
+**run\_summary.csh** ([Example Plot](./images/metExample.JULY2013_WRF.T.ametplot.png))
+- summary.input
+- Creates two plots for each met variable. A diurnal statistics plot and summary plot with panels that include scatter plot, stats table, statistics as a function of the observation range.
+- Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample.JULY2013_WRF.csv))
+
+**run\_daily\_barplot.csh** ([Example Plot](./images/metExample.JULY2011_WRF.T.daily_barplot_RMSE.pdf))
+- daily_barplot.input
+- Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
+- Creates a csv file of daily statistics ([Example csv](./images/metExample.JULY2013_MPAS.T.daily_stats.csv))
 
 <a id="aqExample"></a>
 7.2 aqExample
@@ -1532,59 +1546,7 @@ population—for example, $AMETBASE/configure/amet-config.R.
 | **EXEC\_sitex**           | Full path to site compare executable. |
 
 
-2.  MET Project Setup Input File
-
-This is the MET input file for all new projects, and sets up an empty
-project—for example,
-$AMETBASE/scripts\_db/wrfExample/setup\_project.input.
-
-<a id="Table_B-2"></a>
-<span id="_Toc199840998" class="anchor"></span>Table B‑2. MET setup\_project.R
-
-| **Variable**     | **Description**                                                                              |
-|------------------|----------------------------------------------------------------------------------------------|
-| **$run\_id**     | Project name. Must be unique across both MET and AQ project names.                           |
-| **$model**       | MET model. Examples: “**mm5**”, “**wrf**”.                                                   |
-| **$login**       | Your username. Identifier used to populate **user** column in **project\_log** table.        |
-| **$email**       | Your email. Note: use the backslash character “**\\**” to escape the “@” character for Perl. |
-| **$description** | Brief project description.                                                                   |
-
-
-3.  MET Project Populate Input Files
-
-This is the MET input file for populating new projects—for example,
-$AMETBASE/scripts\_db/wrfExample/populate\_project.input.
-
-<a id="Table_B-3"></a>
-<span id="_Toc199841000" class="anchor"></span>Table B‑3. MET populate\_project.input
-
-| **Variable**            | **Description** |
-|-------------------------|-----------------|
-| **$pid**                | Project name. Must be unique across both MET and AQ project names.  |
-| **$model**              | MET model. Examples: “**mm5**”, “**wrf**”, “**mcip**”, or “**eta**”. |
-| **$obs\_format**        | Observation format: “**madis**” – MADIS observations, “**tdl**” – preprocessed nonstandard obs |
-| **$model\_data\_dir**   | Directory of model output. |
-| **$mcip\_grid\_file**   | Path to MCIP GRIDCRO2D file. |
-| **$obs\_dir**           | Top of observation directory. For MADIS, this is the equivalent of **$TOP** and **$MADIS\_DATA**. For typical setup, this will be **$AMETBASE/obs/MET**. |
-| **$tmp\_dir**           | Output directory for temporary MADIS files and MM5 netCDF files.  |
-| **$interp\_method**     | Interpolation technique from model grid to observation location:  **0** – bilinear, **1** – nearest neighbor |
-| **$eval\_class**        | Observation types to include: “**surface**” – surface observations only, “**profiler**” – wind profiler, “**raob**” – rawinsonde only, “**acars**” – aircraft only, “**mesonet**” – mesonet only, “**all**” – all observation types |
-| **$diagnose\_sfc**      | Diagnose surface model: **1** – MM5 with PX surface model, **0** – WRF or MM5 without PX surface model. Note that if you use **0** for MM5, you need to change **$match\_config** to non-PX configuration.  |
-| **$output\_int**        | Model output time step in hours. |
-| **$eval\_int**          | Observations time step in hours. |
-| **$forecast**           | Model is a forecast, so observations may not be available for all hours: **1** – yes (forecast hour is set to time index in model output × output interval), **0** – no (forecast hour is set to zero) |
-| **$auto\_ftp**          | Automatically ftp observations from MADIS: **1** – yes, **0** – no |
-| **$auto\_unzip**        | Automatically unzip MADIS data stored in gzip format: **1** – yes, **0** – no |
-| **$auto\_zip**          | Automatically zip MADIS data in gzip format for storage: **1** – yes, **0** – no |
-| **$time\_index\_start** | Starting index of model output. This can be used to skip a spin-up period. The starting point is index + 1. Example values: **-1** – start at 0th hour, i.e., include all time steps, **0** – skip first time step, start at hour 1, **11** – start at hour 12 |
-| **$process\_npa**       | Match model precip with National Precipitation Analysis (not supported at this time): **1** – yes, **0** – no |
-| **$real\_time **        | Real-time run, use current system date as time range in scripts: **1** – yes, **0** – no |
-| **$file\_date**         | For MM5 data, model data need to be in netCDF format or converted to netCDF. If they have been converted, they need to use the naming convention **mmout.YYYY.MM.DD-NHRS**. For example, **mmout.2001.04.01.00-48** is a model run starting at 4/1/2001 00 UTC and running for 48 hours. MM5 has already been converted to netCDF: **1** – yes, **0** – no |
-| **$rm\_output\_file**   | Remove model output file after matching process: **1** – yes, **0** – no |
-| **$match\_config**      | Full path to configuration file for matching MADIS variables to model variables. Note that if you are using MM5 with a non-PX surface model, you will have to use **MET\_matching\_nonPX.conf** and change the **$diagnose\_sfc** value to **0.** All MCIP output should use the MCIP configuration file. |
-
-
-4.  MET Analysis Input Files
+2.  MET Analysis Input Files
 
 The analysis input files are found in
 $AMET/scripts\_analysis/wrfExample. The following is a partial list of
@@ -1595,13 +1557,7 @@ variables. Not all of these variables are available in every input file.
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
-| **acars.only**           | Either plot only ACARS airport sites on site location plot, or include all profile stations: **TRUE** – only ACARS sites, **FALSE** – All sites |
-| **ametp**                | Flag to generate figures. |
-| **aq\_database**         | Name of air quality database. This is typically the same as the meteorological database (e.g., "**amet**").                                                                                 |
-| **aq\_network**          | Air quality network to be plotted. Default from **csh** script.                                                                                                                             |
-| **aq\_project**          | Air quality project to be used. Default from **csh** script.                                                                                                                                |
-| **aq\_site\_table**      | Table in AMET database that contains metadata of air quality sites.                                                                                                                         |
-| **aq\_species\_col**     | Air quality variables to be included in analysis. Default value is from **csh** script.                                                                                                     |
+| **ametp**                | Flag to generate figures. |                                                                               
 | **checksave**            | Check to see if R datafile exists (i.e., if savefile is activated R datafile is saved, so there is no need to query database).                                                              |
 | **colp**                 | Various color specifications for model evaluation metrics.                                                                                                                                  |
 | **colpRH**               | Color specifications for model evaluation metrics involving relative humidity.                                                                                                              |
@@ -1610,15 +1566,12 @@ variables. Not all of these variables are available in every input file.
 | **convert**              | ImageMagick command. Used to crop margins of images. This variable has been deprecated.                                                                                                     |
 | **date**                 | Either one date used as both starting and ending date (default from **csh** script), or a vector containing starting and ending dates. Format: YYYYMMDD |
 | **datee**                | In **met\_aq\_coupled.input**, used to select ending date of analysis. Default uses value from **csh** script. In **summary.input**, used in the plot header to show the ending date used in the analysis. Does not change dates used in analysis. Format: YYYYMMDD |
-| **dates**                | In **met\_aq\_coupled.input**, used to select starting date of analysis. Default uses value from **csh** script. In **summary.input**, used in the plot header to show the starting date used in the analysis. Does not change dates used in analysis. Format: YYYYMMDD |
-| **Daydelay**             | Used in real-time mode to lag statistics by daydelay days.                                                                                                                                  |
+| **dates**                | In **met\_aq\_coupled.input**, used to select starting date of analysis. Default uses value from **csh** script. In **summary.input**, used in the plot header to show the starting date used in the analysis. Does not change dates used in analysis. Format: YYYYMMDD |                                                                                 |
 | **De**                   | Ending day of time series analysis. Default uses value from **csh** script.                                                                                                                 |
 | **Diurnal**              | Flag to partition and plot statistics as a function of time of day.                                                                                                                         |
 | **Ds**                   | Starting day of time series analysis. Default uses value from **csh** script.                                                                                                               |
-| **elev**                 | Elevation criterion.                                                                                                                                                                        |
 | **extra**                | Additional SQL criterion to use in database query.                                                                                                                                          |
 | **extra2**               | Additional SQL criterion to use in database query. This is for the second site in time series plot.                                                                                         |
-| **fcasthr**              | Forecast hour criteria used to isolate a particular segment of forecast data.                                                                                                               |
 | **figdir**               | Directory where figures will be output. Default value comes from the **csh** script.                                                                                                        |
 | **figid\_sub**           | Secondary figure label.                                                                                                                                                                     |
 | **figure**               | Full figure path and name.                                                                                                                                                                  |
@@ -1674,7 +1627,6 @@ variables. Not all of these variables are available in every input file.
 | **query**                | MySQL query.                                                                                                                                                                                |
 | **queryID**              | A separate identification that is attached to the output. Can be used to distinguish different output subsets for the same project. Default value is transferred from **pid**.              |
 | **querystr**             | Additional SQL criteria that can be used to subset the data used by the analysis. Default value is transferred from the run script.                                                         |
-| **realtime**             | Run script in real-time automated mode.                                                                                                                                                     |
 | **savedir**              | Directory in which plots and other output will be saved. Default value is input from **csh** script.                                                                                        |
 | **savefile**             | Logical to generate an R data file that contains the data used in the statistics plots.                                                                                                     |
 | **saveid**               | Name of R data file.                                                                                                                                                                        |
