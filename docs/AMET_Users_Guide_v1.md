@@ -71,13 +71,9 @@ Tables
 
 [Table B‑1. amet-config.R](#Table_B-1)
 
-[Table B-2. MET setup\_project.input](#Table_B-2)
+[Table B‑2. MET analysis input variables](#Table_B-2)
 
-[Table B‑3. MET populate\_project.input](#Table_B-3)
-
-[Table B‑4. MET analysis input variables](#Table_B-4)
-
-[Table B‑5. AQ analysis input variables](#Table_B-5)
+[Table B‑3. AQ analysis input variables](#Table_B-3)
 
 <a id="Overview"></a>1. Overview
 ===========
@@ -1549,11 +1545,11 @@ population—for example, $AMETBASE/configure/amet-config.R.
 2.  MET Analysis Input Files
 
 The analysis input files are found in
-$AMET/scripts\_analysis/wrfExample. The following is a partial list of
+$AMET/scripts\_analysis/metExample. The following is a partial list of
 variables. Not all of these variables are available in every input file.
 
-<a id="Table_B-4"></a>
-<span id="_Toc199841002" class="anchor"></span>Table B‑4. MET analysis input variables
+<a id="Table_B-2"></a>
+<span id="_Toc199841002" class="anchor"></span>Table B‑2. MET analysis input variables
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
@@ -1652,14 +1648,14 @@ variables. Not all of these variables are available in every input file.
 | **ys**                   | Starting year of analysis default; comes from the **csh** script.                                                                                                                           |
 | **zlims**                | Specification of lower and upper vertical level of profile.                                                                                                                                 |
 
-5.  AQ Analysis Input Files
+3.  AQ Analysis Input Files
 
 The analysis input files are found in $AMET/scripts\_analysis/aqExample/input\_files.
 The following is a partial list of variables in the AQ analysis input
 files. Not all of these variables are available in every input file.
 
-<a id="Table_B-5"></a>
-<span id="_Toc199841003" class="anchor"></span>Table B‑5. AQ analysis input variables
+<a id="Table_B-3"></a>
+<span id="_Toc199841003" class="anchor"></span>Table B‑3. AQ analysis input variables
 
 | **Variable**             | **Description** |
 |--------------------------|-----------------|
