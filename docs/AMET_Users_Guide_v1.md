@@ -106,7 +106,7 @@ The Community Modeling and Analysis System (CMAS) Center has created this Userâ€
 
 The contents of the remaining sections of the User's guide are listed below.
 
-- Â  Section 2 describes the overall directory structure of the AMET installation.
+-   Section 2 describes the overall directory structure of the AMET installation.
 
 -   Section 3 gives instructions on how to configure the R configuration files.
 
