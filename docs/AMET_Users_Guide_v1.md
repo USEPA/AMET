@@ -41,7 +41,7 @@ User’s Guide***
  
 [7. Analysis](#Analysis)
 
-   [7.1 wrfExample](#wrfExample)
+   [7.1 metExample](#metExample)
 
    [7.2 aqExample](#aqExample)
 
@@ -1112,65 +1112,41 @@ $AMETBASE/R and then they run that script. The use of the C-shell interface
 allows users who are not very familiar with R to perform these predefined 
 analyses, shielding them from the actual R code.
 
-<a id="wrfExample"></a>
-7.1 wrfExample
+<a id="metExample"></a>
+7.1 metExample
 ----------
 
 Go to the project directory:
 
-> $ cd $AMETBASE/scripts\_analysis/wrfExample
+> $ cd $AMETBASE/scripts\_analysis/metExample
 
 Here, you will see a series of C-shell scripts and their accompanying
-input files. We will go through an analysis script in detail as an
-example for running each of the scripts in the project.
+input files (./input_files/ directory). There are detailed comments in eacah analysis script of the main configuration options. Other secondary configuration options are in the ./input_files/.input files that usually do not need modification, but users may want to review in case they want to tailor their plots more. Some of these secondary settings include color scales, text output options, QC limits, etc. These are all detailed in the appendix table B-4.
 
-The run\_spatial\_surface.csh script creates a series of maps comparing
-the surface monitors to the model for one or more days. Each plot
-provides color-coded model performance metrics at each of the monitor
-locations. In each map, it plots the particular value at the monitor
-location.
+The run\_spatial\_surface.csh script is used here as an example of how to run the analysis scripts. This particular script creates a series of maps comparing the surface monitors to the model for a specificed period (date start/end). Each plot
+provides color-coded model performance metrics (RMSE, MAE, Bias, Correlation/IOA) at each of the monitor locations. 
 
-First, edit the run\_spatial\_surface.csh file. Change the AMETBASE
-variable to correspond with your setup. The corresponding input file,
-spatial\_surface.input, will likely not need to be changed.
+First, edit the run\_spatial\_surface.csh file. Change the AMETBASE variable to correspond with your setup. Set the location of the users amet-config.R file. The default location is in the $AMETBASE/configure direcory, but users could "hide" this file in $HOME/.amet-config.R as an example. The corresponding input file, input_files/spatial\_surface.input, will likely not need to be changed as primary configuration settings, again, are in the .csh wrapper run script. Other main settings are the AMET database, MySQL server, AMET_PROJECT, text ouput, plot format (pdf is recommended, but png is an option). The key settings are the AMET_DATES and AMET_DATEE (date start and end), threshold (number of samples required for statistics to be computed), and the latitude and longitude bounds of the plot. Many of these settings are used in the other analysis scripts.
 
 Run the script:
 
 > $ ./run\_spatial\_surface.csh
 
-This will run the script and print out the location of the plots. In
-addition to the script outputs, a detailed log file is produced and
-located in the directory $AMETBASE/scripts\_analysis/wrfExample. After
-the script has completed, go to the output directory and view your maps:
+This will run the script and print out the location of the plots, but all plots are in $AMETBASE/output/metExample. A subdirectory is created in this output directory for each analysis (e.g.; spatial_surface, summary, timeseries and daily_barplot). After the script has completed, go to the output directory and view your maps:
 
-> $ cd $AMETBASE/output/wrfExample/spatial\_surface
+> $ cd $AMETBASE/output/metExample/spatial\_surface
 
 You should see a whole series of plots of the form:
 
-> wrfExample.&lt;stats&gt;.&lt;variable&gt;.20020705.20020709.pdf
+> wrfExample.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
 
-A brief summary of each of the C-shell scripts is given below in Table 7-1.
+A brief summary of each of the C-shell scripts is given below along with an example of the ouputs.
 
-<span id="_Toc199840994" class="anchor"></span>Table 7‑1. MET analysis
-scripts.<a id="Table_7-1"></a>
+**run\_spatial_surface.csh** ([Example Plot](./images/metExample.rmse.T.2011-07-01_00.2011-07-31_23.pdf))
+- spatial_surface.input
+- Creates maps of statistics at each observation site
+- Creates a csv file of the site specific statistics ([Example csv](./images/metExample.spatial.temp2m.stats.2011-07-01_00.2011-07-31_23.csv))
 
-| **C-shell Script**        | **Input**            | **Description** |
-|---------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **run\_daily\_barplot.csh**       | **daily\_barplot.input**              | Creates a series of daily barplots for all sites within your domain. |
-| **run\_met\_aq.csh**              | **met\_aq\_coupled.input**            | Compares AQ and MET data. Creates a spatial plot of correlation and a time series plot of bias. *Note*: You need to setup both MET and AQ models and define the MET variables and the AQ species and network of interest. |
-| **run\_plot\_prof.csh**           | **plot\_prof.input**                  | Creates time-height maps of wind direction and speed profiles statistics. Also can create spatial plot of site locations and names to help identify sites in the domain. |
-| **run\_plot\_raob.csh**           | **plot\_raob.input**                  | Creates plots of rawinsonde sites. It creates a series of maps of all sites and vertical profile for user-specified site. |
-| **run\_spatial\_surface.csh**     | **spatial\_surface.input**            | Creates a series of maps comparing surface monitor and model values for one or more days. |
-| **run\_summary.csh**              | **summary.input**                     | Creates a summary plot of a series of MET variables. This includes a time series plot and an “ametplot,” which includes a scatterplot, time series, boxplot, and for wind direction, a histo­gram and directional scatterplot. Note that you may want to change the variable **AMET\_RUNID** to change the file naming convention. Also, the **AMET\_CRITERIA** is an additional SQL command that further limits the data used. This can be customized by the user. |
-| **run\_timeseries.csh**           | **timeseries.input**                  | Creates a time series plot for one or more monitoring stations. Creates a time series plot for temperature, mixing ratio, wind speed and direction. You control which monitors are plotted through the **AMET\_SITEID** variable. You can also control date ranges and provide additional SQL criteria to further limit the data. *Note*: Multiple sites can either be averaged or used to create separate plots.                                                   |
-| **run\_wind\_prof.csh**           | **wind\_prof.input**                  | Creates wind arrow profiles for a set of specific monitoring sites. |
-
-Under the $AMETBASE/scripts\_analysis directory, you will notice that
-there is only a wrfExample project on the MET side. We did not include
-the mm5Example project nor the mcipExample project because the different
-inputs are basically treated the same in terms of analysis. You could
-easily add a new project directory for mm5Example or mcipExample by
-following the instructions in Section 7.3.
 
 <a id="aqExample"></a>
 7.2 aqExample
