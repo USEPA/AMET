@@ -955,7 +955,7 @@ Next you will need to postprocess the raw CMAQ concentration and wet
 deposition files to map the data to the appropriate species names. To do
 this, you will use the combine Fortran program. Instructions on how to 
 obtain, compile and use the combine program can be found here
-[**https://github.com/USEPA/CMAQ/tree/5.2/POST/combine**]. 
+**https://github.com/USEPA/CMAQ/tree/5.2/POST/combine**. 
 
 Next, create a new model data directory and move or link your
 postprocessed model data into it, as follows:
