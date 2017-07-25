@@ -32,8 +32,8 @@
   #  or any desired name to organize their statistics in project output dir.
   setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT/daily_barplot
   
-  #  A seperate identification to be attached to figure/text output
-  #  This is used to distiguish different subset output for the same project
+  #  A separate identification to be attached to figure/text output
+  #  This is used to distinguish different subset output for the same project
   setenv AMET_RUNID    "JULY2013"
                                 
   #-----------------------------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@
   setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110801 ORDER BY d.ob_date"
   #-----------------------------------------------------------------------------------------------------------------------
 
-  #  Plot Type, plot options are is "png" or "pdf" are only plot formats unless user modifies
+  #  Plot Type, plot options are "png" or "pdf" are only plot formats unless user modifies
   #  the main script in $AMET/R_analysis_code/MET_daily_barplot.R
   setenv AMET_PTYPE pdf            
 
