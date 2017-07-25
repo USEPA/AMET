@@ -953,19 +953,9 @@ would use
 
 Next you will need to postprocess the raw CMAQ concentration and wet
 deposition files to map the data to the appropriate species names. To do
-this, you will use the combine Fortran program. Go to the combine
-directory:
-
-> $ cd aqNC2007/combine
-
-Edit the combine\_conc.csh and combine\_dep.csh scripts for your model
-data. For detailed instructions on combine, see
-[**http://www.cmascenter.org/help/model\_docs/cmaq/4.6/EVALUATION\_TOOLS.txt**](http://www.cmascenter.org/help/model_docs/cmaq/4.6/EVALUATION_TOOLS.txt).
-Run the two combine scripts:
-
-> $ ./combine\_conc.csh
->
-> $ ./combine\_dep.csh
+this, you will use the combine Fortran program. Instructions on how to 
+obtain, compile and use the combine program can be found here
+[**https://github.com/USEPA/CMAQ/tree/5.2/POST/combine**]. 
 
 Next, create a new model data directory and move or link your
 postprocessed model data into it, as follows:
