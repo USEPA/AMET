@@ -852,29 +852,29 @@ summary information for the aqExample project.
 --------------------------
 
 When you create your own projects, we recommend that you utilize the
-structure of naming your directories after your projects. If you choose
-not to do this, you will have to modify the provided run scripts.
+AMET convention of naming your directories after your projects. If you choose
+not to do this, you will have to modify the provided run scripts to suite your own needs.
 
 To create a new project, follow these basic steps:
 
-1.  Copy the appropriate example project to a new directory.
+1.  Copy the appropriate example project (metExample) to a new directory name (see below).
 
-2.  Rename it after your new project (use the *exact* project name, as
-    many scripts use the project name to navigate directories).
+2.  Rename these directories after your new project (use the *exact* project name, as
+    many scripts use the project name to navigate directories and organize analyses).
 
 3.  Create a new project directory under $AMETBASE/model\_data/MET for
-    the input model data.
+    the model output files. In most cases you will want to link in model outputs from an archive or work directory. This also serves to keep model outputs organized.
 
 4.  Change the appropriate variables in the project C-shell script.
 
-5.  Run your new populate script.
+5.  Run your new model-observation matching script.
 
 For example, if we were creating a new WRF project called “wrfNC2007”,
 we would use
 
 > $ cd $AMETBASE/scripts\_db
 >
-> $ cp -r wrfExample wrfNC2007
+> $ cp -r metExample wrfNC2007
 >
 > $ cd wrfNC2007
 
@@ -890,22 +890,22 @@ it, as follows:
 > $ ln -s &lt;model data&gt; .
 
 Here, you would replace “&lt;model data&gt;” with the path to your model
-data file(s). The metProject.csh script will perform the model-obs
-matching on all model outputs in this new directory.
+data file(s). The matching_surface.csh script (or soon to come matching_profiler.csh, matching_acars.csh, matching_raob.csh, matching_surfrad.csh and matching_prism.csh) will perform the model-obs
+matching of all model outputs in this new project directory.
 
-Next, edit the $AMETBASE/script\_db/wrfNC2007/metProject.csh variables
-AMET\_PROJECT ("wrfNC2007") and AMET\_PROJ\_DESC (your description of
+Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
+AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
 the project).
 
-Finally, run the populate script:
+Finally, run the surface model-obs matching script (or others):
 
 > $ cd $AMETBASE/scripts\_db/wrfNC2007
 >
-> $ ./metProject.csh
+> $ ./matching_surface.csh
 
-This will create a new MET project in the amet database. Specifically,
-it will create a new row in your project\_log table and three new
-tables: wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface.
+This will automatically create a new MET project in the amet database if the project has not been done before as well as a database that holds the project tables if the one specified in the run script does not exist. Specifically,
+it will create a new row in your project\_log table and new
+table: wrfNC2007\_surface.
 
 <a id="New_AQ_Project"></a>
 6.4 Creating a New AQ Project
