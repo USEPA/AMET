@@ -816,7 +816,7 @@ Go to the project directory:
 
 Here you will see one C-shell script and the combine subdirectory. 
 The combine subdirectory is not used for this example; 
-it is discussed later in Section 6.5, “Creating a New AQ Project”.
+it is discussed later in Section 6.4, “Creating a New AQ Project”.
 
 The C-shell file aqProject.csh is a wrapper script for calling the R
 programs that actually create your project (and database if necessary)
