@@ -105,7 +105,7 @@ for (j in 1:num_runs) {
          aqdat_query.df$POCode <- 1
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name[j]," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="") # Set the rest of the MYSQL query
+         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name[j]," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="") # Set the rest of the MYSQL query
          aqdat_query.df<-db_Query(qs,mysql)
       }
    }
