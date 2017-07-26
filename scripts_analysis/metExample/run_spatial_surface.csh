@@ -75,7 +75,7 @@
   
   R BATCH --no-save < $AMETBASE/R_analysis_code/MET_spatial_surface.R 
 
-  if(-e $AMET_OUT/$AMET_PROJECT.rmse.T.$AMET_DATES.$AMET_DATEE.$AMET_PTYPE) then
+  if(-e $AMET_OUT/$AMET_PROJECT.rmse.T.$AMET_DATES-$AMET_DATEE.$AMET_PTYPE) then
     echo
     echo "Examples of Spatial plots and data files that were produced"
     echo "-----------------------------------------------------------------------------------------"
