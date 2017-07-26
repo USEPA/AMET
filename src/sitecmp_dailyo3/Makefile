@@ -1,6 +1,7 @@
 # make file to build sitecmp_daily program
 
-PROGRAM = sitecmp_dailyo3.exe
+AMETBASE = /proj/ie/apps/AMET/CEMPD_AMET_v13
+PROGRAM = $(AMETBASE)/bin/sitecmp_dailyo3.exe
 
 IOAPI = $(IOAPI_DIR)/lib
 NETCDF = $(NETCDF_DIR)/lib

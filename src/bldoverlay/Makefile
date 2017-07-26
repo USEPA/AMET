@@ -1,6 +1,7 @@
 # make file to build sitecmp_daily program
 
-PROGRAM = bldoverlay.exe
+AMETBASE = /proj/ie/apps/AMET/CEMPD_AMET_v13
+PROGRAM = $(AMETBASE)/bin/bldoverlay.exe
 
 IOAPI = $(IOAPI_DIR)/lib
 NETCDF = $(NETCDF_DIR)/lib

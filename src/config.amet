@@ -28,7 +28,7 @@
  switch ( $compiler )
     case intel:
 #> Intel fortran compiler......................................................
-       setenv myFC mpif90 
+       setenv myFC ifort
        setenv myCC icc
        setenv myFSTD "-O3"
        setenv myDBG  "-g -check bounds -check uninit -fpe0 -fno-alias -ftrapuv -traceback"
@@ -41,7 +41,7 @@
 
     case pgi:
 #> Portland Group fortran compiler.............................................
-       setenv myFC mpif90 
+       setenv myFC pgf90 
        setenv myCC pgcc
        setenv myLINK_FLAG ""
        setenv myFSTD "-Mextend"
@@ -54,7 +54,7 @@
 
     case gcc:
 #> gfortran compiler......................................................
-       setenv myFC mpif90
+       setenv myFC gfortran
        setenv myCC gcc
        setenv myFSTD "-O3 -funroll-loops -finit-character=32"
        setenv myDBG  " -Wall -O0 -g -traceback"
