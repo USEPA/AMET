@@ -111,8 +111,13 @@ while(datex <= datee) {
     d2p      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),"_",dform(he),sep="")
     d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day)," ",dform(hs),":00:00",sep="")
     d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day)," ",dform(he),":00:00",sep="")
-    savefile <-paste(savedir,"/",saveid,".",d1p,".",d2p,".RData",sep="")
-    daterange<-paste(d1p,".",d2p,sep="")
+
+    d1p      <-paste(d1$year,dform(d1$month),dform(d1$day),sep="")
+    d2p      <-paste(d2$year,dform(d2$month),dform(d2$day),sep="")
+    d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),sep="")
+    d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),sep="")
+    savefile <-paste(savedir,"/",saveid,".",d1p,"-",d2p,".RData",sep="")
+    daterange<-paste(d1p,"-",d2p,sep="")
   }
   else {
     d1       <-date.mdy(dates)
@@ -121,9 +126,14 @@ while(datex <= datee) {
     d2p      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),"_",dform(he),sep="")
     d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day)," ",dform(hs),":00:00",sep="")
     d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day)," ",dform(he),":00:00",sep="")
+
+    d1p      <-paste(d1$year,dform(d1$month),dform(d1$day),sep="")
+    d2p      <-paste(d2$year,dform(d2$month),dform(d2$day),sep="")
+    d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),sep="")
+    d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),sep="")
     datex    <-datee       
-    savefile <-paste(savedir,"/",saveid,".",d1p,".",d2p,".RData",sep="")
-    daterange<-paste(d1p,".",d2p,sep="")
+    savefile <-paste(savedir,"/",saveid,".",d1p,"-",d2p,".RData",sep="")
+    daterange<-paste(d1p,"-",d2p,sep="")
   }
   datestr  <-paste("BETWEEN '",d1q,"' AND '",d2q,"'",sep="")
   datestrp <-paste("BETWEEN ",d1q," AND ",d2q,sep="")

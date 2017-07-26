@@ -39,20 +39,23 @@
   # Do you want a CVS files with spatial statistics?
   setenv AMET_TEXTSTATS T
   
-  #  Date range of Spatial statistics YYYYMMDD
+  #  Date range of Spatial statistics YYYYMMDD. Note that newer MySQL versions may see
+  #  an ending date of 20130731 as ending at 00 UTC that day. Users should test this
+  #  by doing spatial plots for one day (20110701 to 20110701) and set threshold to 1
+  #  then look at the text output to see the number of samples. If 1, then you'd have
+  #  to account for this in specifying the end date (i.e.; set to 20110702 for Jul 1 eval).
+  #  One method is to specify the day after your desired end day, but if data is present,
+  #  the statistics will include the first hour of that next day.
+  setenv AMET_DATES "20110701"
+  setenv AMET_DATEE "20110801"
+
   #  And threshold of number of data points at a 
   #  single obs site, below which a sites statistics are NA.
   #  This excludes sites with limited obs. 
   #  24*NDAYS*0.5 would only do sites with 50% of data over
   #  number of days
-  setenv AMET_DATES "20130701 00"
-  setenv AMET_DATEE "20130731 23"
   setenv THRESHOLD 558
 
-  # Option to do daily statistics over the specified period above
-  # Or statistics for the entire period.
-  setenv DAILY F
-  
   # lat-lon plot bounds. Note that all sites in a domain
   # will be considered when stats are calculated, but the
   # spatial plots will only cover the area below.
