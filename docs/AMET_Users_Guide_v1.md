@@ -702,14 +702,11 @@ available to all projects.
 
 Go to the AQ example project directory:
 
-```
-cd $AMETBASE/scripts_db/aqExample
-```
-<!---
-Here you will see one C-shell script and the combine subdirectory.
-The combine subdirectory is not used for this example;
-it is discussed later in Section 6.5, “Creating a New AQ Project”.
---->
+> $ cd $AMETBASE/scripts\_db/aqExample
+
+Here you will see one C-shell script and the combine subdirectory. 
+The combine subdirectory is not used for this example; 
+it is discussed later in Section 6.4, “Creating a New AQ Project”.
 
 The C-shell file aqProject.csh is a wrapper script for calling the R
 programs that actually create an AMET AQ project (and database if necessary)
@@ -745,22 +742,40 @@ summary information for the aqExample project.
 6.3 Creating a New MET Project
 --------------------------
 
-To create a new met project, follow these basic steps:
 
-1.  Copy $AMETBASE/scripts_db/metExample to a new directory with the name of the new project.
+When you create your own projects, we recommend that you utilize the
+AMET convention of naming your directories after your projects. If you choose
+not to do this, you will have to modify the provided run scripts to suite your own needs.
 
-2.  Create a new project directory under $AMETBASE/model\_data/MET for
-    the input model data.
+To create a new project, follow these basic steps:
 
-3.  Configure the C-shell script matching_surface.csh for the new project.
+1.  Copy the appropriate example project (metExample) to a new directory name (see below).
 
-4.  Run the matching_surface.csh script to populate the AMET database.
+2.  Rename these directories after your new project (use the *exact* project name, as
+    many scripts use the project name to navigate directories and organize analyses).
+
+3.  Create a new project directory under $AMETBASE/model\_data/MET for
+    the model output files. In most cases you will want to link in model outputs from an 
+    archive or work directory. This also serves to keep model outputs organized.
+
+4.  Configure the C-shell script matching_surface.csh for the new project.
+
+5.  Run the matching_surface.csh script to populate the AMET database.
+
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
 variable in the database and analysis scripts.*
 
+
 For example, to create a new WRF project called “wrfNC2007”,
 use the following commands:
+
+> $ cd $AMETBASE/scripts\_db
+>
+> $ cp -r metExample wrfNC2007
+>
+> $ cd wrfNC2007
+
 
 ```
 cd $AMETBASE/scripts_db
@@ -776,29 +791,32 @@ cd wrfNC2007
 ln -s <model data directory> .
 ```
 
-Replace “&lt;model data directory&gt;” in this example with the path on your system to model
-data files. The metProject.csh script will perform the model-obs
-matching on all model outputs in this new directory.
+Here, you would replace “&lt;model data&gt;” with the path to your model
+data file(s). The matching_surface.csh script (or soon to come matching_profiler.csh, matching_acars.csh, 
+matching_raob.csh, matching_surfrad.csh and matching_prism.csh) will perform the model-obs
+matching of all model outputs in this new project directory.
 
-Next, edit the $AMETBASE/script\_db/wrfNC2007/metProject.csh variables
-AMET\_PROJECT ("wrfNC2007") and AMET\_PROJ\_DESC (your description of
+Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
+AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
 the project).
 
-Finally, run the populate script:
+Finally, run the surface model-obs matching script (or others):
 
 ```
 cd $AMETBASE/scripts\_db/wrfNC2007
 ./matching_surface.csh |& tee matching.wrfNC2007.log
 ```
 
-The matching_surface.csh script will create a new MET project in the AMET database. Specifically,
-it will create a new row in the AMET project\_log table and three new
-tables: wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface. Once this script completes,
+The matching_surface.csh script will create a new MET project in the AMET database if
+it does not exist (a new database will also be created if it does not already exist). Specifically,
+it will create a new row in the AMET project\_log table and three new tables: 
+wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface. Once this script completes,
 the AMET database will be ready to produce meteorology model performance analysis plots and statistics.
 
 <a id="New_AQ_Project"></a>
 6.4 Creating a New AQ Project
 -------------------------
+
 
 Before illustrating the creation of a new AQ project,
 the relationship between model species and

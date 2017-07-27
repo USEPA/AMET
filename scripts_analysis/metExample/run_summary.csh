@@ -51,7 +51,7 @@
                          38 and 40 AND s.lon BETWEEN -77.8 and -75.0)"
   setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20110701 AND 20110801"
 
-  #  Plot Type, plot options are is "png" or "pdf" are only plot formats unless user modifies
+  #  Plot Type, plot options are "png" or "pdf" are only plot formats unless user modifies
   #  the main script in $AMET/R_analysis_code/MET_summary.R
   setenv AMET_PTYPE png           
 

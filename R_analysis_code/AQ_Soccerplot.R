@@ -37,11 +37,6 @@ filename_pdf <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename
 filename_png <- paste(figdir,filename_png,sep="/")      # Set PNG filenam
 filename_txt <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
-mysql <- list(login=root_login, passwd=root_pass, server=mysql_server, dbase=dbase, maxrec=1000000)
-con             <- dbConnect(MySQL(),user=root_login,password=root_pass,dbname=dbase,host=mysql_server)
-MYSQL_tables    <- dbListTables(con)
-dbDisconnect(con)
-
 ### Retrieve units label from database table ###
 network <- network_names[1]
 #################################################
