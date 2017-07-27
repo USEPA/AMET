@@ -59,7 +59,7 @@
   setenv AMET_BOUNDS_LAT "24 55"
   setenv AMET_BOUNDS_LON "-135 -60"
 
-  #  Plot Type, plot options are is "png" or "pdf" are only plot formats unless user modifies
+  #  Plot Type, plot options are "png" or "pdf" are only plot formats unless user modifies
   #  the main script in $AMET/R_analysis_code/MET_daily_barplot.R
   setenv AMET_PTYPE pdf             
 

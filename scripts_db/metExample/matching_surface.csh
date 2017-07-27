@@ -54,7 +54,7 @@ setenv SKIPIND "2 1"
 # turn on from time to time as new sites around the world are added to the MADIS database. 
 # It is not neccessary to use frequently. It is mandantory to use for a new database if you want
 # the ability to plot spatial statistics or use any windowing of a domain in statistics specs.
-setenv UPDATE_SITES F 
+setenv UPDATE_SITES T 
 
 # Automatic MADIS Obs FTP Option. This requires the FTP server where MADIS observations are location.
 # Warning cira 2017: MADIS obs access has changed over the years, so it's recommended the users check
