@@ -37,7 +37,7 @@ Code documentation are included within this repository (they are version-control
 The release versions of CMAQ that are currently available on Git Hub include:
 
 * [v1.2 (July 2013)](https://github.com/USEPA/AMET/tree/1.2)
-* [v1.3 (June 2017)](https://github.com/USEPA/AMET/tree/1.3)
+* [v1.3 (July 2017)](https://github.com/USEPA/AMET/tree/1.3)
 
 ## Release Notes
 There are a number of changes made to AMETv1.3 from the previous version. Some updates apply to the entire AMETv1.3 system, while other updates are specific to the MET or AQ sides of AMET.
