@@ -3,6 +3,8 @@ Atmospheric Model Evaluation Tool
 
 ## AMET Overview
 
+The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to facilitate the analysis and evaluation of predictions from meteorological and air quality models. AMET matches the model output for particular locations to the corresponding observed values from one or more networks of monitors. These pairings of values (model and observation) are then used to statistically and graphically analyze the model’s performance.
+
 ## Getting the AMET Repository
 This AMET Git archive is organized with each official public release stored as a branch on the main USEPA/AMET repository.
 To clone code from the AMET Git archive, specify the branch (i.e. version number) and issue the following command from within
