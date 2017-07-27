@@ -212,19 +212,14 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 * `EXEC_sitex` - sitecmp executable directory path
 * `obs_data_dir` - observational data directory path; typically $amet_base/obs
 * `mysql_server` - IP Address or name of MySQL server used for AMET
-* `root_login` - login ID to the AMET MySQL database server
-* `root_pass`- password for the AMET MySQL database server
+* `amet_login` - login ID to the AMET MySQL database server
+* `amet_pass`- password for the AMET MySQL database server
 * `maxrec` - the maximum number of records allowed in a single MySQL query
 * `Bldoverlay_exe` - bldoverlay executable directory path
-* `R_dir` - main R installation directory path
-* `R_exe` - R executable directory path
-* `R_script` - Rscript executable directory path
-* `R_lib` - R library directory path
-* `R_proj_lib` - Proj.4 executable directory path
 
-*Note: the root_login and root_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
+*Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
-Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **root_login** and **root_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
+Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **amet_login** and **amet_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
 
 Additional AMET configuration is handled in the database loading and plot creation scripts. See the AMET 1.3 User’s Guide on configuring AMET for additional details.
 
