@@ -802,6 +802,7 @@ the project).
 
 Finally, run the surface model-obs matching script (or others):
 
+```
 cd $AMETBASE/scripts\_db/wrfNC2007
 ./matching_surface.csh |& tee matching.wrfNC2007.log
 ```
