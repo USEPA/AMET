@@ -1,5 +1,5 @@
 
-Unofficial Atmospheric Model Evaluation Tool (AMET) version 1.3
+Atmospheric Model Evaluation Tool (AMET) version 1.3
 =======
 
 
