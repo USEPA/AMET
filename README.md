@@ -29,6 +29,7 @@ Source code and scripts are organized as follows:
 ## Documentation
 Code documentation are included within this repository (they are version-controlled along with the code itself).  
 
+[AMETv1.3 Quick Start Guide](docs/AMET_QuickStart_Guide_v13.md)   
 [AMETv1.3 User Guide](docs/AMET_Users_Guide_v1.md)   
 [AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v13.md )   
 =======
