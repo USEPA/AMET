@@ -12,8 +12,14 @@ To clone the AMET installation directory to a Linux server, use the following co
 
 ## 2.  Download AMET Test Case Data
 
-Download the AMET  test case data from
-the CMAS Center [http://www.cmascenter.org](http://www.cmascenter.org/) as follows:
+1) Download CMAQ test input data by navigating to https://www.cmascenter.org/ and logging into the site using the "Log In" shortcut on the top horizontal menu.
+
+2) Click the Software pulldown menu on the horizontal menu bar and choose CMAQ.
+
+3) Click DOWNLOAD on the right-hand side of the page and choose CMAQv5.2, platform, and compiler for your machine and click submit.
+
+4) Click "Download Datasets" for the CMAQ benchmark input data and CMAQ benchmark output data.
+
 
 ## 3. Check/Install Related Software
 
