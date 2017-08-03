@@ -78,7 +78,7 @@ sitex_names <- as.character(sitex_in2[3,])   # Store species names
 sitex_units <- as.character(sitex_in2[1,])   # Store species units
 sitex_modob <- as.character(sitex_in2[2,])   # Store mod/ob designation
 col_offset <- 18
-if (dtype == 'AQS_Daily_O3') {
+if ((dtype == 'AQS_Daily_O3') || (dtype == 'CASTNET_Daily')) {
    col_offset <- 14
 }
 if (dtype == 'NADP') {
