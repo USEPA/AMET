@@ -100,6 +100,7 @@ spch2 <- apply(matrix(plot.symbols),1,pick.symbol2.fun)
 spch<-plot.symbols
 ########################################
 
+total_networks <- length(network_names)
 for (j in 1:total_networks) {							# Loop through for each network
    sites          	<- NULL							# Set sites vector to NULL
    lats          	<- NULL							# Set lats vector to NULL

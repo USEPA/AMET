@@ -82,7 +82,7 @@ spch2 <- apply(matrix(plot.symbols),1,pick.symbol2.fun)
 spch<-plot.symbols
 ########################################
 
-total_networks <- length(total_networks)
+total_networks <- length(network_names)
 for (j in 1:total_networks) {							# Loop through for each network
    Mod_Obs_Diff   <- NULL							# Set model/ob difference to NULL
    network        <- network_names[[j]]						# Determine network name from loop value
