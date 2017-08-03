@@ -62,6 +62,7 @@ spch2<-c(1,2,0,5)
 symbols<-c("CIRCLE","TRIANGLE","SQUARE","DIAMOND")
 ########################################
 
+total_networks <- length(network_names)
 for (j in 1:total_networks) {							# Loop through for each network
    Mod_Obs_Diff   <- NULL							# Set model/ob difference to NULL
    network        <- network_names[[j]]						# Determine network name from loop value

@@ -225,3 +225,9 @@ remove_other 	<- 'n'
 
 ### File containing list of stations created dynamically by the user ###
 stat_file<-""
+
+##################################
+##### Path of Network Input file ###
+####################################
+ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
+source(ametNetworkInput) # Network related input
