@@ -62,8 +62,8 @@ species_AE6_IMPROVE <- paste("
   setenv AERO_",spec_num[k+9]," \"MNf_val,ug/m3,AMNJ,,Mn\"                            # manganese
   setenv AERO_",spec_num[k+10]," \"2.20*ALf_val+2.49*SIf_val+1.63*CAf_val+2.42*FEf_val+1.94*TIf_val,ug/m3,ASOILJ,,soil\"       # IMPROVE soil eqn.
   setenv AERO_",spec_num[k+11]," \"MF_val-SO4f_val-NO3f_val-0.2903*NO3f_val-0.375*SO4f_val-OCf_val-ECf_val-NAf_val-CHLf_val-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val,ug/m3,AUNSPEC1IJ,,OTHER\"        # PM Other
-  setenv AERO_",spec_num[k+12]," \",ug/m3, ANCOMIJ,,NCOM\"    # PM Other
-  setenv AERO_",spec_num[k+13]," \",ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other
+  setenv AERO_",spec_num[k+12]," \"0.8*OCf_val,ug/m3, ANCOMIJ,,NCOM\"    # PM Other
+  setenv AERO_",spec_num[k+13]," \"MF_val-SO4f_val-NO3f_val-0.2903*NO3f_val-0.375*SO4f_val-OCf_val-ECf_val-NAf_val-CHLf_val-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val,ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other
 ",sep = "")
 
 ################################
@@ -127,7 +127,7 @@ species_AE6_CSN <- paste("
    setenv AERO_",spec_num[k+11]," \"Sodium Ion + chlorine, ug/m3, ANAIJ+ACLIJ,,NaCl\"                                   # NaCl
    setenv AERO_",spec_num[k+12]," \"",CSN_PM_FRM_SPEC," - m_so4 - m_no3 - m_nh4 - ",CSN_OC_SPEC," - ",CSN_EC_SPEC," - [Sodium Ion] - [chlorine] - 2.2*aluminum - 2.49*silicon - 1.63*calcium - 2.42*iron - 1.94*titanium , ug/m3, AUNSPEC1IJ,,OTHER\"        # PM Other
    setenv AERO_",spec_num[k+13]," \"0.8*",CSN_OC_SPEC,", ug/m3, ANCOMIJ,,NCOM\"    # PM Other
-   setenv AERO_",spec_num[k+14]," \"",CSN_PM_FRM_SPEC," - m_so4 - m_no3 - m_nh4 - oc_adj - ec_niosh - [Sodium Ion] - [chlorine] - 2.2*aluminum - 2.49*silicon - 1.63*calcium - 2.42*iron - 1.94*titanium - 0.8*",CSN_OC_SPEC,", ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other no NCOM
+   setenv AERO_",spec_num[k+14]," \"",CSN_PM_FRM_SPEC," - m_so4 - m_no3 - m_nh4 - ",CSN_OC_SPEC," - ",CSN_EC_SPEC," - [Sodium Ion] - [chlorine] - 2.2*aluminum - 2.49*silicon - 1.63*calcium - 2.42*iron - 1.94*titanium - 0.8*",CSN_OC_SPEC,", ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other no NCOM
 ",sep = "")
 
 ############################
