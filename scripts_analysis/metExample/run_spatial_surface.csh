@@ -56,6 +56,10 @@
   #  number of days
   setenv THRESHOLD 558
 
+  # Option to do daily statistics over the specified period above
+  # Or statistics for the entire period.
+  setenv DAILY F
+
   # lat-lon plot bounds. Note that all sites in a domain
   # will be considered when stats are calculated, but the
   # spatial plots will only cover the area below.
