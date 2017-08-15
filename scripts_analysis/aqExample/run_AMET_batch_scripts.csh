@@ -20,7 +20,7 @@ setenv AMET_OUT $AMETBASE/output/$AMET_PROJECT/batch_plots
 
 ### Set the input files to use (full path and file name) ###
 setenv AMETRINPUT 	$AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/AMET_batch.input
-setenv AMET_NET_INPUT 	$AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
+#setenv AMET_NET_INPUT 	$AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
 
 ### Plot Type, options are "pdf","png","both" ###
 setenv AMET_PTYPE both
