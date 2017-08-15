@@ -62,16 +62,11 @@ for (j in 1:length(network_names)) {	# Loop through each network
    nmdne	 <- NULL
    drop_names    <- NULL
    network       <- network_names[[j]]						# Set network name based on loop value
-#   criteria <- paste(" WHERE d.",species[1],"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
    criteria <- paste(" where d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
    qs	<- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,",species_query,",d.precip_ob from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")    # Set the rest of the MYSQL query 
    aqdat_all.df      <- db_Query(qs,mysql)						# Query the database for a specific species
 
    l <- 9
-   if (network == 'AQS_Hourly') {
-      cat(qs)
-      cat(aqdat_all.df$network)
-   }
    for (i in 1:length(species)) { 								# For each species, calculate several statistics
      data_all.df <- data.frame(network=I(aqdat_all.df$network),stat_id=I(aqdat_all.df$stat_id),lat=aqdat_all.df$lat,lon=aqdat_all.df$lon,ob_val=aqdat_all.df[,l],mod_val=aqdat_all.df[,(l+1)],precip_val=aqdat_all.df$precip_ob)	# Create properly formatted dataframe to use with DomainStats function
       good_count <- sum(!is.na(data_all.df$ob_val))		# Count the number of non-missing values
