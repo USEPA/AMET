@@ -229,5 +229,5 @@ stat_file<-""
 ##################################
 ##### Path of Network Input file ###
 ####################################
-ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
-source(ametNetworkInput) # Network related input
+#ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
+#source(ametNetworkInput) # Network related input
