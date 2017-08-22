@@ -136,7 +136,7 @@ write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=","
 write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
 write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
 write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
 ###############################
 
 ###############################################
