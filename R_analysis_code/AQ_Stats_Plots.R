@@ -61,7 +61,7 @@ units <- db_Query(units_qs,mysql)
 #########################
 ## plot text options   ##
 #########################
-dates 		<- paste(start_date,"-",end_date)
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 title_nmb	<- paste(species, " NMB (%) for run ",run_name1," for ", dates,sep="")
 title_fb	<- paste(species, " FB (%) for run ",run_name1," for ", dates,sep="")
 title_nme	<- paste(species, " NME (%) for run ",run_name1," for ", dates,sep="")
