@@ -95,7 +95,6 @@ if (hourly_ozone_analysis == 'y') {
       if (spatial_plots == 'y')	{ try(source(run_script_command2)) }
       if (diff_plots    == 'y')	{ try(source(run_script_command3)) }
       if (mtom_plots    == 'y')	{ try(source(run_script_command4)) }
-      if (ratio_plots   == 'y')	{ try(source(run_script_command5)) }
    }
 }
 
@@ -116,7 +115,6 @@ if (daily_ozone_analysis == 'y') {
       if (spatial_plots == 'y') { try(source(run_script_command2)) }
       if (diff_plots    == 'y') { try(source(run_script_command3)) }
       if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (ratio_plots   == 'y') { try(source(run_script_command5)) }
    }
    for (m in 1:length(batch_query)) {
       species 	<- "O3_8hrmax"
@@ -133,7 +131,6 @@ if (daily_ozone_analysis == 'y') {
       if (spatial_plots == 'y') { try(source(run_script_command2)) }
       if (diff_plots    == 'y') { try(source(run_script_command3)) }
       if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (ratio_plots   == 'y') { try(source(run_script_command5)) }
    }
 }
 
@@ -176,7 +173,6 @@ if (aerosol_analysis == 'y') {
          if (spatial_plots == 'y') { try(source(run_script_command2)) }
          if (diff_plots    == 'y') { try(source(run_script_command3)) }
          if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (ratio_plots   == 'y') { try(source(run_script_command5)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -237,7 +233,6 @@ if (dep_analysis == 'y') {
          if (spatial_plots == 'y') { try(source(run_script_command2)) }
          if (diff_plots    == 'y') { try(source(run_script_command3)) }
          if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (ratio_plots   == 'y') { try(source(run_script_command5)) }
       }
    }      
 }
@@ -261,7 +256,6 @@ if (gas_analysis == 'y') {
          if (spatial_plots == 'y') { try(source(run_script_command2)) }
          if (diff_plots    == 'y') { try(source(run_script_command3)) }
          if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (ratio_plots   == 'y') { try(source(run_script_command5)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -279,7 +273,6 @@ if (gas_analysis == 'y') {
       if (spatial_plots == 'y') { try(source(run_script_command2)) }
       if (diff_plots    == 'y') { try(source(run_script_command3)) }
       if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (ratio_plots   == 'y') { try(source(run_script_command5)) }
    }
 }
 
@@ -323,7 +316,6 @@ if (AOD_analysis == 'y') {
          if (spatial_plots == 'y') { try(source(run_script_command2)) }
          if (diff_plots    == 'y') { try(source(run_script_command3)) }
          if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (ratio_plots   == 'y') { try(source(run_script_command5)) }
       }
    }
 }
@@ -345,7 +337,6 @@ if (PAMS_analysis == 'y') {
          if (spatial_plots == 'y') { try(source(run_script_command2)) }
          if (diff_plots    == 'y') { try(source(run_script_command3)) }
          if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (ratio_plots   == 'y') { try(source(run_script_command5)) }
       }
    }
    species_list <- c("Isoprene","Ethane","Ethylene","Toluene","Acetaldehyde","Formaldehyde")
@@ -361,7 +352,10 @@ if (PAMS_analysis == 'y') {
          pid 		<- paste(run_name1,dates,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         try(source(run_script_command))
+         if (stat_plots    == 'y') { try(source(run_script_command1)) }
+         if (spatial_plots == 'y') { try(source(run_script_command2)) }
+         if (diff_plots    == 'y') { try(source(run_script_command3)) }
+         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
       }
    }
 }
