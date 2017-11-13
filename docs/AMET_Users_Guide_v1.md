@@ -1412,15 +1412,45 @@ NewAQNet_flag           <- Sys.getenv('NEWAQNET')               # Flag to includ
 
 After you've done that, move down to the section titled "Create and Execute Site Compare Scripts". In this section you will again add support for your new network following the format of an existing network as per the example below.
 
-if ((improve\_flag == "y") || (improve\_flag == "Y") || (improve\_flag == "t") || (improve\_flag == "T")) {
-   table_type    <- "SEARCH"
-   network       <- "NewAQNet"
-   site_file     <- paste(obs\_data\_dir,"/site\_files/NewAQNet\_sites.txt",sep="")
-   ob_file       <- paste(obs\_data\_dir,"/",year,"/NewAQNet\_data\_",year,".csv",sep="")
-   EXEC          <- EXEC\_sitex
-   run_sitex(network)
-}
+if ((NewAQNet\_flag == "y") || (NewAQNet\_flag == "Y") || (NewAQNet\_flag == "t") || (NewAQNet\_flag == "T")) {<br>
+   table_type    <- "SEARCH"<br>
+   network       <- "NewAQNet"<br>
+   site_file     <- paste(obs\_data\_dir,"/site\_files/NewAQNet\_sites.txt",sep="")<br>
+   ob_file       <- paste(obs\_data\_dir,"/",year,"/NewAQNet\_data\_",year,".csv",sep="")<br>
+   EXEC          <- EXEC\_sitex<br>
+   run_sitex(network)<br>
+}<br>
 
+Once you've modified the AQ_matching.R code as above, you can save your modified version and move on the step 4.
+
+4.  Modify the aqProject.csh script
+
+The next step is to modify the aqProject.csh script located in $AMETBASE/scripts\_db/aqExample directory. Open the aqProject.csh script and move to the section containing the flags for the networks to include in the analysis. Here you will add your network to the list of network to process using the same formatting as an existing network per the example below.
+
+setenv NEWAQNET T
+
+By setting this flag to true, it will tell AMET you want to process your new network data for analysis. This is all you need to modify in this script. You can now move on step 5.
+
+5.  Modify the analysis script files
+
+The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new newtork is used in the analysis. You will need to modify the other run scripts with the same environment variable.
+
+setenv AMET_NEWAQNET y
+
+Once you've done that, the last step is to modify the Network.input file in the input_files subdirectory. Move to the input_files subdirectory and open the Network.input file. In there you will see a section called "Network selection flags from run script". Here, you will need to add your new network as per the example below.
+
+inc_newaqnet <- Sys.getenv("AMET_NEWAQNET")
+
+Next under the "Setup Network Arrays", you will need to add your new network as per the example below.
+
+if (inc_newaqnet == "y") {<br>
+   network_names <- c(network_names,"NewAQNet")<br>
+   network_label <- c(network_label,"NewAQNet")<br>
+}<br>
+
+Once you've done that, you can save your modified version of the Network.input file.
+
+After you've completed all the steps above, you should be ready to process your new network with AMET. The modifications above will allow you to run site compare to create paired model/ob data files and add those data to the database, and also allow you to run analysis scripts using your new network.
 
 <a id="CMAS_Support"></a>
 9. CMAS Support for AMET
