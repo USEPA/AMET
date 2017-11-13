@@ -1388,7 +1388,7 @@ Adding support for a new AQ network to AMET is relatively simple, but does requi
 **1. Create a properly formatted observation data file for site compare.**
 
 This is generally the first step to setting up a new network for AMET. Format your new network obseration data in a format that site
-compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. 
+compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. In addition to the data file, you will need to create site list for your new network. Site files are available for download from the CMAS website along with the network data for the existing networks. These two files, the data file and site list file, will be referred to in Step 3. The data file is assumed to have the name "NewAQNet\_data\_$year.csv" and the site file is assumed to have the name "NewAQNet\_sites.txt".
 
 **2. Modify the AQ_species_list.input file**
 
@@ -1406,8 +1406,7 @@ Once you've setup the species for your new network as above, move to the bottom 
 
 **3. Add your new network to the AQ_matching.R code**
 
-The third step to adding new network support to AMET is to modify the AQ_matching.R code in the R_db_code directory. Again, the best
-method for adding a new network is to follow the formatting of an existing network. In the AQ_matching.R code you will see a section near the top of the file called "Network Flags". Here you will add your new network, following the format of an existing network as per the example below.
+The third step to adding new network support to AMET is to modify the AQ_matching.R code in the $AMETBASE/R_db_code directory. Again, the best method for adding a new network is to follow the formatting of an existing network. In the AQ_matching.R code you will see a section near the top of the file called "Network Flags". Here you will add your new network, following the format of an existing network as per the example below.
 
 NewAQNet_flag           <- Sys.getenv('NEWAQNET')               # Flag to include NewAQNet data in the analysis
 
