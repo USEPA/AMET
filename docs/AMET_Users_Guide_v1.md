@@ -1402,7 +1402,7 @@ species\_NewAQNet <- paste(\"<br>
 species\_cutoff\_NewAQNet <- ""<br>
 species\_AE6\_NewAQNet <- ""<br>
 
-Once you've setup the species for your new network as above, move to the bottom of the AQ_species_list.input file. There you will see three lists defined containg the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Following the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
+Once you've setup the species for your new network as above, move to the bottom of the AQ_species_list.input file. There you will see three lists defined containg the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Follow the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
 
 **3. Add your new network to the AQ_matching.R code**
 
