@@ -1385,12 +1385,12 @@ analysis dates and custom titles.
 
 Adding support for a new AQ network to AMET is relatively simple, but does require several steps. 
 
-1.  Create a properly formatted observation data file for site compare.
+**1. Create a properly formatted observation data file for site compare.**
 
 This is generally the first step to setting up a new network for AMET. Format your new network obseration data in a format that site
 compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. 
 
-2.  Modify the AQ_species_list.input file
+**2. Modify the AQ_species_list.input file**
 
 The AQ_species_list.input file, located in the input_files subdirectory in the scripts_db directory off the AMET base code directory, is used to setup the observation species to model species mapping. This is a R formatted input script. Again, the best method for setting up a new network is to follow the formatting of an existing network. Start by choosing a name for your new AQ network that does already exist in AMET. The name should be short, but descriptive of your network. In the example below the new network is called NewAQNet. There are three "categories" of species that can be setup with AMET. There is a standard set of species which are always computed, and then there are two optional sets of species call "cutoff" and "AE6". For most users, the "cutoff" and "AE" species can simply be left empty, as in the example below. The example below creates a new network with three species, SO4, NO3 and PM_TOT. Any number of addition species could be added using the same formatting and sequential numbering as below. 
 
@@ -1404,7 +1404,7 @@ species\_AE6\_NewAQNet <- ""<br>
 
 Once you've setup the species for your new network as above, move to the bottom of the AQ_species_list.input file. There you will see three lists defined containg the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Following the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
 
-3.  Add your new network to the AQ_matching.R code
+**3. Add your new network to the AQ_matching.R code**
 
 The third step to adding new network support to AMET is to modify the AQ_matching.R code in the R_db_code directory. Again, the best
 method for adding a new network is to follow the formatting of an existing network. In the AQ_matching.R code you will see a section near the top of the file called "Network Flags". Here you will add your new network, following the format of an existing network as per the example below.
@@ -1424,7 +1424,7 @@ if ((NewAQNet\_flag == "y") || (NewAQNet\_flag == "Y") || (NewAQNet\_flag == "t"
 
 Once you've modified the AQ_matching.R code as above, you can save your modified version and move on the step 4.
 
-4.  Modify the aqProject.csh script
+**4. Modify the aqProject.csh script**
 
 The next step is to modify the aqProject.csh script located in $AMETBASE/scripts\_db/aqExample directory. Open the aqProject.csh script and move to the section containing the flags for the networks to include in the analysis. Here you will add your network to the list of network to process using the same formatting as an existing network per the example below.
 
@@ -1432,7 +1432,7 @@ setenv NEWAQNET T
 
 By setting this flag to true, it will tell AMET you want to process your new network data for analysis. This is all you need to modify in this script. You can now move on step 5.
 
-5.  Modify the analysis script files
+**5. Modify the analysis script files**
 
 The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new newtork is used in the analysis. You will need to modify the other run scripts with the same environment variable.
 
