@@ -65,7 +65,7 @@ run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_soil
 ###############################################################################################
 
 for (m in 1:length(batch_query)) {	# Create a subdirectory for each month
-   mkdir_command <- paste("mkdir ",out_dir,"/",batch_names[m],sep="")
+   mkdir_command <- paste("mkdir -p ",out_dir,"/",batch_names[m],sep="")
    system(mkdir_command)
 }
 for (m in 1:length(batch_query)) {
@@ -75,18 +75,26 @@ for (m in 1:length(batch_query)) {
       dates 		<- batch_names[m]
       sub_dir 		<- batch_names[m]
       figdir            <- paste(out_dir,sub_dir,species,sep="/")
-      mkdir_command     <- paste("mkdir",figdir)
+      mkdir_command     <- paste("mkdir -p",figdir)
       network_names 	<- c("CSN")
       network_label 	<- c("CSN")
       pid 		<- network_names
       query 		<- paste(query_string,"and (",batch_query[m],")",sep="")
-      system(mkdir_command)
       if (species == "PM_TOT") {
-         if (AE5_barplot		== 'y') { try(source(run_script_command1)) }
-         if (AE6_barplot		== 'y') { try(source(run_script_command2)) }
+         if (AE5_barplot == 'y') { 
+            system(mkdir_command) 
+            try(source(run_script_command1)) 
+         }
+         if (AE6_barplot == 'y') {
+            system(mkdir_command)
+            try(source(run_script_command2)) 
+         }
       }
       if (species == "soil") {
-         if (soil_barplot                == 'y') { try(source(run_script_command3)) }
+         if (soil_barplot == 'y') { 
+            system(mkdir_command) 
+            try(source(run_script_command3)) 
+         }
       }
    }
 }
@@ -98,18 +106,26 @@ for (m in 1:length(batch_query)) {
       dates             <- batch_names[m]
       sub_dir           <- batch_names[m]
       figdir            <- paste(out_dir,sub_dir,species,sep="/")
-      mkdir_command     <- paste("mkdir",figdir)
+      mkdir_command     <- paste("mkdir -p",figdir)
       network_names     <- c("IMPROVE")
       network_label     <- c("IMPROVE")
       pid               <- network_names
       query             <- paste(query_string,"and (",batch_query[m],")",sep="")
-      system(mkdir_command)
       if (species == "PM_TOT") {
-         if (AE5_barplot                == 'y') { try(source(run_script_command1)) }
-         if (AE6_barplot                == 'y') { try(source(run_script_command2)) }
+         if (AE5_barplot == 'y') { 
+            system(mkdir_command) 
+            try(source(run_script_command1)) 
+         }
+         if (AE6_barplot == 'y') { 
+            system(mkdir_command) 
+            try(source(run_script_command2)) 
+         }
       }
       if (species == "soil") {
-         if (soil_barplot               == 'y') { try(source(run_script_command3)) }
+         if (soil_barplot == 'y') { 
+            system(mkdir_command) 
+            try(source(run_script_command3)) 
+         }
       }
    }
 }
@@ -121,17 +137,22 @@ for (m in 1:length(batch_query)) {
       dates                <- batch_names[m]
       sub_dir              <- batch_names[m]
       figdir               <- paste(out_dir,sub_dir,species,sep="/")
-      mkdir_command        <- paste("mkdir",figdir)
+      mkdir_command        <- paste("mkdir -p",figdir)
       network_names        <- c("CSN","IMPROVE")
       network_label        <- c("CSN","IMPROVE")
       pid                  <- "multi_network"
       query                <- paste(query_string,"and (",batch_query[m],")",sep="")
-      system(mkdir_command)
       if (species == "soil") {
-         if (soil_multi_barplot       == 'y') { try(source(run_script_command4)) }
+         if (soil_multi_barplot == 'y') { 
+            system(mkdir_command)
+            try(source(run_script_command4)) 
+         }
       }
       if (species == "PM_TOT") {
-#         if (panel_AE6_multi_barplot  == 'y') { try(source(run_script_command7)) }
+#         if (panel_AE6_multi_barplot == 'y') { 
+#             system(mkdir -p_command) 
+#             try(source(run_script_command7)) 
+#         }
       }
    }
 }

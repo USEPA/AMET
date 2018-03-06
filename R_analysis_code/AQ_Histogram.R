@@ -43,36 +43,32 @@ filename_bias_pdf	<- paste(figdir,filename_bias_pdf,sep="/")                  # 
 filename_bias_png	<- paste(figdir,filename_bias_png,sep="/")                  # Set PNG filename
 
 #####################################################   
-
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")                # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
 {
-   if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
-      aqdat.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_stats.df   <- sitex_info$sitex_data
+      aqdat_stats.df   <- aqdat_stats.df[with(aqdat_stats.df,order(network,stat_id)),]
+      units            <- as.character(sitex_info$units[[1]])
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")    # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_stats.df  <- query_result[[1]]
    }
 }
-
 ### If plotting another simulation ###
+run2 <- "False"
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    run2 <- "True"
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-         qs2 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-         aqdat2.df<-db_Query(qs,mysql)
-         aqdat2.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name2,species)
+         aqdat_stats2.df  <- sitex_info$sitex_data
+         aqdat_stats2.df  <- aqdat_stats2.df[with(aqdat_stats2.df,order(network,stat_id)),]
+         units            <- as.character(sitex_info$units[[1]])
       }
       else {
-         qs2 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name2," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")    # Set the rest of the MYSQL query
-         aqdat2.df<-db_Query(qs2,mysql)
+         query_result2    <- query_dbase(run_name2,network,species)
+         aqdat_stats2.df  <- query_result2[[1]]
       }
    }
 }
@@ -82,10 +78,6 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
 #### Calculate statistics for each requested network ####
 #########################################################
 ## Calculate stats using all pairs, regardless of averaging
-indic.nonzero <- aqdat.df[,9] > 0
-aqdat_stats.df <- aqdat.df[indic.nonzero,]
-indic.nonzero <- aqdat_stats.df[,10] > 0
-aqdat_stats.df <- aqdat_stats.df[indic.nonzero,]
 if ((network ==  "NADP_dep") || (network == "NADP_conc")) {                               # If NADP and remove 0 precip obs selected
    if (zeroprecip == 'n') {
       indic.noprecip <- aqdat_stats.df$precip_ob > 0                                                # determine where precipitation obs are 0
@@ -110,8 +102,6 @@ mod.sd.log <- sqrt(var(log(aqdat_stats.df$Mod)) * ((n-1)/n))
 
 ### If plotting another simulation ###
 if (run2 == "True") {
-   indic.nonzero <- aqdat2.df[,9] > 0
-   aqdat_stats2.df <- aqdat2.df[indic.nonzero,]
    if ((network ==  "NADP_dep") || (network == "NADP_conc")) {                               # If NADP and remove 0 precip obs selected
       if (zeroprecip == 'n') {
          indic.noprecip <- aqdat_stats2.df$precip_ob > 0                                                # determine where precipitation obs are 0
@@ -150,9 +140,9 @@ text(x=x.axis.max,y=0.6*ymax, paste("State = ",state,sep=""),cex=1,adj=c(1,.5)) 
 text(x=x.axis.max,y=0.55*ymax, paste("Site = ",site,sep=""),cex=1,adj=c(1,.5))                     # add Site name to plot
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_all_pdf," png:",filename_all_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_all_pdf," png:",filename_all_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -168,9 +158,9 @@ bias_max <- max(abs(bias_hist$breaks))
 hist(bias, col=NULL, border='black', breaks=25, prob=F, xlim=c(-bias_max,bias_max), main=main.title.bias, xlab=paste("Concentration (",units,")"),cex.main=.9)
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_bias_pdf," png:",filename_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_bias_pdf," png:",filename_bias_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

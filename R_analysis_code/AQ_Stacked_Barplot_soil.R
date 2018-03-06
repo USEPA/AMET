@@ -22,8 +22,8 @@ network_name <- network_label[1]
 num_runs <- 1
 
 ### Retrieve units and model labels from database table ###
+units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
 model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
 ################################################
 
 ### Set filenames and titles ###
@@ -73,22 +73,50 @@ rmse_unsys     <- NULL
 rmse_unsys2    <- NULL
 
 criteria <- paste(" WHERE d.Fe_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-  
-qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.Cl_ob,d.Cl_mod,d.Na_ob,d.Na_mod,d.Fe_ob,d.Fe_mod,d.Al_ob,d.Al_mod,d.Si_ob,d.Si_mod,d.Ti_ob,d.Ti_mod,d.Ca_ob,d.Ca_mod,d.Mg_ob,d.Mg_mod,d.K_ob,d.K_mod,d.Mn_ob,d.Mn_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
+species 	<- c("Cl","Na","Fe","Al","Si","Ti","Ca","Mg","K","Mn")
+#############################################
+### Read sitex file or query the database ###
+#############################################
+{
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- sitex_info$sitex_data
+      units            <- as.character(sitex_info$units[[1]])
+   }
+   else {
+      query_result    <- query_dbase(run_name1,network,species,criteria)
+      aqdat_query.df  <- query_result[[1]]
+      units           <- db_Query(units_qs,mysql)
+      model_name      <- db_Query(model_name_qs,mysql)
+      model_name      <- model_name[[1]]
+   }
+}
+#############################################
 
-aqdat_all.df <- db_Query(qs,mysql)
-aqdat_store.df <- aqdat_all.df
 if (num_runs > 1) {
-   qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.Cl_ob,d.Cl_mod,d.Na_ob,d.Na_mod,d.Fe_ob,d.Fe_mod,d.Al_ob,d.Al_mod,d.Si_ob,d.Si_mod,d.Ti_ob,d.Ti_mod,d.Ca_ob,d.Ca_mod,d.Mg_ob,d.Mg_mod,d.K_ob,d.K_mod,d.Mn_ob,d.Mn_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-   aqdat_all2.df <- db_Query(qs,mysql)
+   #############################################
+   ### Read sitex file or query the database ###
+   #############################################
+   {
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         aqdat_query2.df  <- sitex_info$sitex_data
+         units            <- as.character(sitex_info$units[[1]])
+      }
+      else {
+         query_result2   <- query_dbase(run_name2,network,species,criteria)
+         aqdat_query2.df <- query_result2[[1]] 
+      }
+   }
+   #############################################
 }
 
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 8							# offset for first species ob value
+l <- 9							# offset for first species ob value
 
-aqdat_sub.df <- aqdat_all.df
+aqdat_sub.df <- aqdat_query.df
 len <- length(aqdat_sub.df)
 
 while (l < len) { 					# loop through each column
@@ -111,9 +139,9 @@ data.df		<- aqdat_sub.df[8:len]
 }
 ##############################################################
 if (num_runs > 1) {
-   l <- 8                                          # offset for first specie ob value
+   l <- 9                                          # offset for first specie ob value
 
-   aqdat_sub2.df <- aqdat_all2.df
+   aqdat_sub2.df <- aqdat_query2.df
    len <- length(aqdat_sub2.df)
 
    while (l < len) {                                       # loop through each column
@@ -326,8 +354,8 @@ text(2.07,yaxis.max*.23,paste("r:   ",correlation,sep=""),cex=1,adj=c(1,0))
 
 if (num_runs > 1) {
    ### Add statistics to plot area ###
-   text(0,yaxis.max*0.9,paste("Simulation 1:",run_name1),cex=1,adj=c(0,0))
-   text(0,yaxis.max*0.87,paste("Simulation 2:",run_name2),cex=1,adj=c(0,0))
+   text(0,yaxis.max*0.95,paste("Sim 1:",run_name1),cex=1,adj=c(0,0))
+   text(0,yaxis.max*0.92,paste("Sim 2:",run_name2),cex=1,adj=c(0,0))
    text(2.07,yaxis.max*.38,"Simulation 1",cex=1,adj=c(1,0))
    text(2.07,yaxis.max*.16,"Simulation 2",cex=1,adj=c(1,0))
    text(2.07,yaxis.max*.13,paste("RMSE: ",rmse2,sep=""),cex=1,adj=c(1,0))
@@ -339,12 +367,12 @@ if (num_runs > 1) {
 ######################################
 
 ## Put title at top of barplot ##
-title(main=title,cex.main=1.3)
+title(main=title,cex.main=1)
 
 ## Convert pdf to png ##
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

@@ -35,7 +35,7 @@ filename_txt <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
 #################################
 
-run_name	<- NULL
+run_names	<- NULL
 axis.max	<- NULL
 num_obs		<- NULL
 sinfo		<- NULL
@@ -79,98 +79,89 @@ min_diff		<- NULL
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
 model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
-if (length(units) == 0) {
-   units <- ""
-}
 ################################################
 
 run_count <- 1
 num_runs <- 1									# Set number of runs to 1
-run_name[1] <- run_name1
+run_names[1] <- run_name1
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    num_runs <- 2								# If so, set number of runs to 2
-   run_name[2] <- run_name2
+   run_names[2] <- run_name2
 }
 for (j in 1:num_runs) {
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")           # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name[j],"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
+   run_name <- run_names[j]
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name[j]," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="") # Set the rest of the MYSQL query
-         aqdat_query.df<-db_Query(qs,mysql)
-         aqdat_query.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+         aqdat_query.df   <- sitex_info$sitex_data
+         data_exists	  <- sitex_info$data_exists
+         units            <- as.character(sitex_info$units[[1]])
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name[j]," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="") # Set the rest of the MYSQL query
-         aqdat_query.df<-db_Query(qs,mysql)
+         query_result   <- query_dbase(run_name,network,species)
+         aqdat_query.df <- query_result[[1]]
+         data_exists    <- query_result[[2]]
+         units 	        <- db_Query(units_qs,mysql)
+         model_name 	<- db_Query(model_name_qs,mysql)
       }
    }
-   aqdat_query.df<-db_Query(qs,mysql)							# Query the database and store in aqdat.df dataframe     
-   aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
-   ################################################################################
-   ### if plotting all obs, remove missing obs and zero precip obs if requested ###
-   ################################################################################
-   if (remove_negatives == "y") {
-      indic.nonzero <- aqdat_query.df[,9] >= 0                                                  # determine which obs are missing (less than 0); 
-      aqdat_query.df <- aqdat_query.df[indic.nonzero,]                                                        # remove missing obs from dataframe
-      indic.nonzero <- aqdat_query.df[,10] >= 0
-      aqdat_query.df <- aqdat_query.df[indic.nonzero,]
-   }
-   #################################################################################
-
-   if (averaging != "n") {
-      aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob,precip_mod=aqdat_query.df$precip_mod)
-      {
-         if (use_avg_stats == "y") {
-            aqdat.df <- Average(aqdat.df)
-            aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+   {
+      if (data_exists == "n") {
+         num_runs <- (num_runs-1)
+         aqdat_query.df <- "No Data"
+      }
+      else {
+         if (averaging != "n") {
+            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+            {
+               if (use_avg_stats == "y") {
+                  aqdat.df <- Average(aqdat.df)
+                  aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+               }
+               else {
+                  aqdat_stats.df <- aqdat.df
+                  aqdat.df <- Average(aqdat.df)
+               }
+            }
          }
          else {
+            aqdat.df <- aqdat_query.df
+            aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
             aqdat_stats.df <- aqdat.df
-            aqdat.df <- Average(aqdat.df)
          }
-      }
-   }
-   else {
-      aqdat.df <- aqdat_query.df
-      aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month,precip_ob=aqdat.df$precip_ob)      # Create dataframe of network values to be used to create a list
-      aqdat_stats.df <- aqdat.df
-   }
-   sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics 
+         sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics 
    
-   #########################################################
-   #### Calculate statistics for each requested network ####
-   #########################################################
-   data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value,precip_val=aqdat_stats.df$precip_ob)
-   stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
-   num_pairs   		<- stats.df$NUM_OBS
-   nmb[j]         	<- round(stats.df$Percent_Norm_Mean_Bias,1)
-   nme[j]         	<- round(stats.df$Percent_Norm_Mean_Err,1)
-   nmdnb[j]       	<- round(stats.df$Norm_Median_Bias,1)
-   nmdne[j]       	<- round(stats.df$Norm_Median_Error,1)
-   mean_obs[j]		<- round(stats.df$MEAN_OBS,2)
-   mean_mod[j]		<- round(stats.df$MEAN_MODEL,2)
-   mb[j]          	<- round(stats.df$Mean_Bias,2)
-   me[j]          	<- round(stats.df$Mean_Err,2)
-   median_obs[j]	<- round(stats.df$Median_obs,2)
-   median_mod[j]	<- round(stats.df$Median_model,2)
-   med_bias[j]    	<- round(stats.df$Median_Bias,2)
-   med_error[j]   	<- round(stats.df$Median_Error,2)
-   fb[j]          	<- round(stats.df$Frac_Bias,2)
-   fe[j]          	<- round(stats.df$Frac_Err,2)
-   corr[j]        	<- round(stats.df$Correlation,2)
-   rmse[j]        	<- round(stats.df$RMSE,2)
-   rmse_sys[j]    	<- round(stats.df$RMSE_systematic,2)
-   rmse_unsys[j]  	<- round(stats.df$RMSE_unsystematic,2)
-   index_agr[j]   	<- round(stats.df$Index_of_Agree,2)
-   max_diff[j]          <- round(stats.df$Max_Diff,2)
-   min_diff[j]		<- round(stats.df$Min_Diff,2)
-   #########################################################
- 
+         #########################################################
+         #### Calculate statistics for each requested network ####
+         #########################################################
+         data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
+         stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
+         num_pairs	<- stats.df$NUM_OBS
+         nmb[j]       	<- round(stats.df$Percent_Norm_Mean_Bias,1)
+         nme[j]        	<- round(stats.df$Percent_Norm_Mean_Err,1)
+         nmdnb[j]      	<- round(stats.df$Norm_Median_Bias,1)
+         nmdne[j]      	<- round(stats.df$Norm_Median_Error,1)
+         mean_obs[j]	<- round(stats.df$MEAN_OBS,2)
+         mean_mod[j]	<- round(stats.df$MEAN_MODEL,2)
+         mb[j]         	<- round(stats.df$Mean_Bias,2)
+         me[j]         	<- round(stats.df$Mean_Err,2)
+         median_obs[j]	<- round(stats.df$Median_obs,2)
+         median_mod[j]	<- round(stats.df$Median_model,2)
+         med_bias[j]   	<- round(stats.df$Median_Bias,2)
+         med_error[j]  	<- round(stats.df$Median_Error,2)
+         fb[j]         	<- round(stats.df$Frac_Bias,2)
+         fe[j]         	<- round(stats.df$Frac_Err,2)
+         corr[j]       	<- round(stats.df$Correlation,2)
+         rmse[j]       	<- round(stats.df$RMSE,2)
+         rmse_sys[j]   	<- round(stats.df$RMSE_systematic,2)
+         rmse_unsys[j] 	<- round(stats.df$RMSE_unsystematic,2)
+         index_agr[j]  	<- round(stats.df$Index_of_Agree,2)
+         max_diff[j]    <- round(stats.df$Max_Diff,2)
+         min_diff[j]	<- round(stats.df$Min_Diff,2)
+         #########################################################
+      } # End no data if/else statement
+   }	# End if/else wrapper
    ##############################
    ### Write Data to CSV File ###
    ##############################
@@ -262,7 +253,7 @@ for (k in 1:num_runs) {
    ### Plot points and stats for each network ###
    point_color <- plot_colors[1]
    points(sinfo[[k]]$plotval_obs,sinfo[[k]]$plotval_mod,pch=plot_chars[1],col=plot_colors[1],cex=1)  # plot points for each network
-   legend_names <- c(legend_names,paste(network_label[1],species,"(",run_name[k],")",sep=" "))
+   legend_names <- c(legend_names,paste(network_label[1],species,"(",run_names[k],")",sep=" "))
    legend_cols  <- c(legend_cols,plot_colors[1])
    legend_chars <- c(legend_chars,plot_chars[1])
    if (k == 1) {
@@ -314,7 +305,7 @@ for (k in 1:num_runs) {
       y_stats[9] <- axis.max - (axis.length * 1.020)
       y_stats[15] <- axis.max - (axis.length * 0.690)
       y_stats[14] <- axis.max - (axis.length * 0.740)
-      text(x=x_stats[9],y=y_stats[15],run_name[k],cex=1)
+      text(x=x_stats[9],y=y_stats[15],run_names[k],cex=1)
    }
    ##############################################
    text(x=x_stats[7],y=y_stats[14],paste("(",units,")",sep=""),adj=c(0,0),cex=.8)
@@ -425,9 +416,9 @@ legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1
 ##############################
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

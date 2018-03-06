@@ -19,18 +19,18 @@ spec_num <- seq(1,50,1)
 ## IMPROVE Species List ##
 ##########################
 
-k <- 10
+k <- 11
 species_IMPROVE <- paste("
   setenv AERO_1 \"SO4f_val,ug/m3,ASO4IJ,,SO4\"                         # sulfate
   setenv AERO_2 \"NO3f_val,ug/m3,ANO3IJ,,NO3\"                         # nitrate
   setenv AERO_3 \"0.2903*NO3f_val+0.375*SO4f_val,ug/m3,ANH4IJ,,NH4\"   # ammonium (estimated assuming fully neutralized SO4 and NO3)
-  setenv AERO_4 \"MF_val,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"                     # Total PM2.5 mass 
+  setenv AERO_4 \"MF_val,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"          # Total PM2.5 mass 
   setenv AERO_5 \"OCf_val,ug/m3,AOCIJ,,OC\"                            # Organic Carbon
   setenv AERO_6 \"ECf_val,ug/m3,AECIJ,,EC\"                            # Elemental Carbon
   setenv AERO_7 \"OCf_val+ECf_val,ug/m3,AOCIJ+AECIJ,,TC\"              # Total Carbon
   setenv AERO_8 \"CHLf_val,ug/m3,ACLIJ,ug/m3,Cl\"                      # CL Ion
-  setenv AERO_9 \"MT_val,ug/m3,PM10,ug/m3,PM10\"                       # PM10
-  setenv AERO_10 \"CM_calculated_val,ug/m3,PMC_TOT,ug/m3,PMC_TOT\"	 # PM Course
+  setenv AERO_9 \"MT_val,ug/m3,",PM10_MOD_SPEC,",ug/m3,PM10\"              # PM10
+  setenv AERO_10 \"CM_calculated_val,ug/m3,ATOTK,ug/m3,PMC_TOT\"     # PM Course
 ",sep="")
 
 species_cutoff_IMPROVE <- "
@@ -44,8 +44,9 @@ species_cutoff_IMPROVE <- "
   setenv AERO_16 \"OCf_val+ECf_val,ug/m3,PM25_OC+PM25_EC,,PM25_TC\"    	# Total Carbon (< 2.5um)
   setenv AERO_17 \"MF_val,ug/m3,PM25_TOT,ug/m3,PM25_TOT\"              	# Total PM2.5 mass (< 2.5um)
   setenv AERO_18 \"CHLf_val,ug/m3,PM25_CL,ug/m3,PM25_Cl\"              	# CL Ion (< 2.5um)
+  setenv AERO_19  \"CM_calculated_val,ug/m3,PMC_TOT,ug/m3,PMC_TOT_CUT\" # PM Course
 "
-if ((cutoff == "y") || (cutoff == "Y") || (cutoff == "t") || (cutoff == "T")) { k <- 19 }
+if ((cutoff == "y") || (cutoff == "Y") || (cutoff == "t") || (cutoff == "T")) { k <- 20 }
 species_AE6_IMPROVE <- paste("
 # new AE6 species
 ## note: we use XRF sodium because there is not IC sodium mesaurement
@@ -62,8 +63,8 @@ species_AE6_IMPROVE <- paste("
   setenv AERO_",spec_num[k+9]," \"MNf_val,ug/m3,AMNJ,,Mn\"                            # manganese
   setenv AERO_",spec_num[k+10]," \"2.20*ALf_val+2.49*SIf_val+1.63*CAf_val+2.42*FEf_val+1.94*TIf_val,ug/m3,ASOILJ,,soil\"       # IMPROVE soil eqn.
   setenv AERO_",spec_num[k+11]," \"MF_val-SO4f_val-NO3f_val-0.2903*NO3f_val-0.375*SO4f_val-OCf_val-ECf_val-NAf_val-CHLf_val-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val,ug/m3,AUNSPEC1IJ,,OTHER\"        # PM Other
-  setenv AERO_",spec_num[k+12]," \"0.8*OCf_val,ug/m3, ANCOMIJ,,NCOM\"    # PM Other
-  setenv AERO_",spec_num[k+13]," \"MF_val-SO4f_val-NO3f_val-0.2903*NO3f_val-0.375*SO4f_val-OCf_val-ECf_val-NAf_val-CHLf_val-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val,ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other
+  setenv AERO_",spec_num[k+12]," \"0.8*OCf_val,ug/m3, ANCOMIJ,,NCOM\"    # NCOM
+  setenv AERO_",spec_num[k+13]," \"MF_val-SO4f_val-NO3f_val-0.2903*NO3f_val-0.375*SO4f_val-OCf_val-ECf_val-NAf_val-CHLf_val-2.2*ALf_val-2.49*SIf_val-1.63*CAf_val-2.42*FEf_val-1.94*TIf_val,ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other remaining
 ",sep = "")
 
 ################################
@@ -85,16 +86,16 @@ if (year > 2009) {
    CSN_PM_FRM_SPEC <- "PM2.5 Mass"
 }
 
-k <- 8
+k <- 9
 species_CSN <- paste("
   setenv AERO_1 \"m_so4,ug/m3, ASO4IJ,,SO4\"                                  # sulfate
   setenv AERO_2 \"m_no3,ug/m3, ANO3IJ,,NO3\"                                  # nitrate
   setenv AERO_3 \"m_nh4,ug/m3, ANH4IJ,,NH4\"                                  # ammonium
-  setenv AERO_4 \"",CSN_PM_FRM_SPEC,",ug/m3,",PM_MOD_SPEC,",,PM_TOT\"		        # PM2.5
-  setenv AERO_5 \"",CSN_PM_FRM_SPEC,",ug/m3,PMIJ_FRM,,PM_FRM\"	        # FRM Equivalent PM2.5
-  setenv AERO_6 \"",CSN_OC_SPEC,",ug/m3, AOCIJ,,OC\"			        # Organic Carbon
-  setenv AERO_7 \"",CSN_EC_SPEC,",ug/m3, AECIJ,,EC\"			        # Elemental Carbon
-  setenv AERO_8 \"",CSN_OC_SPEC,"+",CSN_EC_SPEC,",ug/m3,AOCIJ+AECIJ,,TC\"	# Total Carbon
+  setenv AERO_4 \"",CSN_PM_FRM_SPEC,",ug/m3,",PM_MOD_SPEC,",,PM_TOT\"         # PM2.5
+  setenv AERO_5 \"",CSN_PM_FRM_SPEC,",ug/m3,PMIJ_FRM,,PM_FRM\"	              # FRM Equivalent PM2.5
+  setenv AERO_6 \"",CSN_OC_SPEC,",ug/m3, AOCIJ,,OC\"			      # Organic Carbon
+  setenv AERO_7 \"",CSN_EC_SPEC,",ug/m3, AECIJ,,EC\"			      # Elemental Carbon
+  setenv AERO_8 \"",CSN_OC_SPEC,"+",CSN_EC_SPEC,",ug/m3,AOCIJ+AECIJ,,TC\"     # Total Carbon
 ",sep = "")
 species_cutoff_CSN <-paste("
 ## PM2.5 Sharp Cutoff Species
@@ -151,7 +152,7 @@ if (year > 2013) {
 }
 
 if (year > 2010) {
-   k <- 8
+   k <- 9
    species_CSN <- paste(" 
      setenv AERO_1 \"SO4f_val,ug/m3, ASO4IJ,,SO4\"                     # sulfate
      setenv AERO_2 \"NO3f_val,ug/m3, ANO3IJ,,NO3\"                     # nitrate
@@ -202,6 +203,57 @@ if (year > 2010) {
 ##################################
 ### End CSN VIEWS Species List ###
 ##################################
+
+###################################
+#### Start CSN AQS Species List ###
+###################################
+
+k <- 9
+   species_CSN <- paste("
+     setenv AERO_1 \"SO4,ug/m3, ASO4IJ,,SO4\"                     # sulfate
+     setenv AERO_2 \"NO3,ug/m3, ANO3IJ,,NO3\"                     # nitrate
+     setenv AERO_3 \"NH4,ug/m3, ANH4IJ,,NH4\"                     # ammonium
+     setenv AERO_4 \"88502,ug/m3,",PM_MOD_SPEC,",,PM_TOT\"          # PM2.5
+     setenv AERO_5 \"88502,ug/m3,PMIJ_FRM,,PM_FRM\"      # FRM Equivalent PM2.5
+     setenv AERO_6 \"88370-OC_Blank,ug/m3, AOCIJ,,OC\"                   # Organic Carbon
+     setenv AERO_7 \"88380,ug/m3, AECIJ,,EC\"                      # Elemental Carbon
+     setenv AERO_8 \"88370-OC_Blank+88380,ug/m3,AOCIJ+AECIJ,,TC\"    # Total Carbon
+   ",sep = "")
+
+   species_cutoff_CSN <- paste("
+   ## PM2.5 Sharp Cutoff Species
+   ## Requires preprocessing using setenv AERODIAM file
+   setenv AERO_9 \"SO4,ug/m3, PM25_SO4,,PM25_SO4\"                    # sulfate (sharp cutoff)
+     setenv AERO_10 \"NO3,ug/m3, PM25_NO3,,PM25_NO3\"                   # nitrate (sharp cutoff)
+     setenv AERO_11 \"NH4,ug/m3, PM25_NH4,,PM25_NH4\"                   # ammonium (sharp cutoff)
+     setenv AERO_12 \"88370-OC_Blank,ug/m3, PM25_OC,,PM25_OC\"              # Organic Carbon (sharp cutoff)
+     setenv AERO_13 \"88380,ug/m3, PM25_EC,,PM25_EC\"              # Elemental Carbon (sharp cutoff)
+     setenv AERO_14 \"88370-OC_Blank+88380,ug/m3,PM25_OC+PM25_EC,,PM25_TC\"    # Total Carbon (sharp cutoff)
+     setenv AERO_15 \"88502,ug/m3,PM25_TOT,ug/m3,PM25_TOT\"      # Total PM2.5 (sharp cutoff)
+     setenv AERO_16 \"88502,ug/m3,PM25_FRM,ug/m3,PM25_FRM\"      # FRM Equivalent PM2.5 (sharp cutoff)
+   ",sep = "")
+
+   if ((cutoff == "y") || (cutoff == "Y") || (cutoff == "t") || (cutoff == "T")) { k <- 17 }
+   species_AE6_CSN <- paste("
+   # setenv AERO6 species
+   ## note we use Sodium Ion instead of sodium (XRF) becasue XRF is not reliable for sodium
+   ## all other elemental concentrations (including Cl and K) come from XRF
+      setenv AERO_",spec_num[k+0]," \"Na,ug/m3, ANAIJ,,Na\"          # sodium
+      setenv AERO_",spec_num[k+1]," \"Cl,ug/m3, ACLIJ,,Cl\"        # chlorine
+      setenv AERO_",spec_num[k+2]," \"Fe,ug/m3, AFEJ,,Fe\"         # iron
+      setenv AERO_",spec_num[k+3]," \"Al,ug/m3,AALJ,,Al\"          # aluminum
+      setenv AERO_",spec_num[k+4]," \"Si,ug/m3, ASIJ,,Si\"         # silicon
+      setenv AERO_",spec_num[k+5]," \"Ti,ug/m3, ATIJ,,Ti\"         # titanium
+      setenv AERO_",spec_num[k+6]," \"Ca,ug/m3,ACAJ,,Ca\"          # calcium
+      setenv AERO_",spec_num[k+7]," \"Mg,ug/m3,AMGJ,,Mg\"          # magnesium
+      setenv AERO_",spec_num[k+8]," \"K,ug/m3,AKJ,,K\"             # potassium
+      setenv AERO_",spec_num[k+9]," \"Mn,ug/m3,AMNJ,,Mn\"          # manganese
+      setenv AERO_",spec_num[k+10]," \"2.2*Al+2.49*Si+1.63*Ca+2.42*Fe+1.94*Ti,ug/m3,ASOILJ,,soil\" # SOIL_OLD
+      setenv AERO_",spec_num[k+11]," \"Na + Cl, ug/m3, ANAIJ+ACLIJ,,NaCl\"                                   # NaCl
+      setenv AERO_",spec_num[k+12]," \"88502-SO4-NO3-NH4-88370-OC_Blank-88380-[Na]-[Cl]-2.2*Al-2.49*Si-1.63*Ca-2.42*Fe-1.94*Ti , ug/m3, AUNSPEC1IJ,,OTHER\"        # PM Other
+      setenv AERO_",spec_num[k+13]," \"0.8*88370-0.8*OC_Blank,ug/m3, ANCOMIJ,,NCOM\"    # PM Other
+      setenv AERO_",spec_num[k+14]," \"88502-SO4-NO3-NH4-88370-OC_Blank-88380-[Na]-[Cl]-2.2*Al-2.49*Si-1.63*Ca-2.42*Fe-1.94*Ti-0.8*88370-0.8*OC_Blank,ug/m3, AUNSPEC2IJ,,OTHER_REM\"    # PM Other no NCOM
+   ",sep = "")
 
 
 #########################################
@@ -491,7 +543,7 @@ species_AQS_Hourly <- paste("
      setenv GAS_7 \"SO2,ppb,SO2,ppb,SO2\"                        # SO2
      setenv GAS_8 \"PM25,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"    # PM25
      setenv GAS_9 \"PM25,ug/m3,PMIJ_FRM,ug/m3,PM_FRM\"           # PM25
-     setenv GAS_10 \"PM10,ug/m3,PM10,ug/m3,PM10\"                # PM10
+     setenv GAS_10 \"PM10,ug/m3,",PM10_MOD_SPEC,",ug/m3,PM10\"       # PM10
      setenv GAS_11 \"Isoprene,ppb,ISOP,ppb,Isoprene\"            # Isoprene
      setenv GAS_12 \"Ethylene,ppb,ETH,ppb,Ethylene\"             # Ethene (Ethylene)
      setenv GAS_13 \"Ethane,ppb,ETHA,ppb,Ethane\"                # Ethane
@@ -524,7 +576,7 @@ k <- 19
    species_AQS_Daily <- paste("
      setenv AERO_1 \"PM25,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"              # PM2.5 Total Mass
      setenv AERO_2 \"PM25,ug/m3,PMIJ_FRM,ug/m3,PM_FRM\"          # PM2.5 Total Mass (I+J with FRM adjustment)
-     setenv AERO_3 \"PM10,ug/m3,PM10,ug/m3,PM10\"                # PM10 Total Mass
+     setenv AERO_3 \"PM10,ug/m3,",PM10_MOD_SPEC,",ug/m3,PM10\"       # PM10 Total Mass
      setenv AERO_4 \"Isoprene,ppb,ISOP,ppb,Isoprene\"            # Isoprene
      setenv AERO_5 \"Ethylene,ppb,ETH,ppb,Ethylene\"             # Ethene (Ethylene)
      setenv AERO_6 \"Ethane,ppb,ETHA,ppb,Ethane\"                # Ethane
@@ -800,7 +852,7 @@ species_AE6_FLUXNET <- ""
 species_NAPS <- paste("
    setenv AERO_1 \"O3,ppb,O3,ppb,O3\"				
    setenv AERO_2 \"TEOMPM25,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"		
-   setenv AERO_3 \"TEOMPM10,ug/m3,PM10,ug/m3,PM10\"		
+   setenv AERO_3 \"TEOMPM10,ug/m3,",PM10_MOD_SPEC,",ug/m3,PM10\"		
    setenv AERO_4 \"CO,ppb,CO,ppb,CO\"				
    setenv AERO_5 \"NO,ppb,NO,ppb,NO\"                         
    setenv AERO_6 \"NO2,ppb,NO2,ppb,NO2\"                      
@@ -814,6 +866,49 @@ species_AE6_NAPS <- ""
 ### End NAPS Hourly Species List ###
 ####################################
 
+#########################################
+#### Start NAPS Daily O3 Species List ###
+#########################################
+#
+species_NAPS_Daily_O3 <- paste("
+### define model species
+ setenv OZONE \"",O3_mod_factor,"*O3,",O3_units,"\"
+
+ ## define obs species
+ setenv OBS_SPECIES O3
+
+ ## indicate whether or not to check QA flag
+ setenv QA_FLAG_CHECK N
+
+ ## Indicates whether the Lambert x/y information should be included in the output file
+ setenv LAMBXY N
+
+ ## Ozone observation conversion factor
+ setenv OBS_FACTOR \"",O3_obs_factor,"\"
+ ",sep = "")
+ species_cutoff_NAPS_Daily_O3 <- ""
+ species_AE6_NAPS_Daily_O3 <- ""
+
+######################################
+### End NAPS Daily O3 Species List ###
+######################################
+
+
+#######################################
+#### Start NOAA ESRL Hourly O3 List ###
+#######################################
+
+species_NOAA_ESRL_O3 <- paste("
+   setenv AERO_1 \"O3,ppb,O3,ppb,O3\"
+",sep="")
+species_cutoff_NOAA_ESRL_O3 <- ""
+species_AE6_NOAA_ESRL_O3 <- ""
+
+######################################
+#### End NOAA ESRL Hourly  O3 List ###
+######################################
+
+
 ################################################
 ### Start EMEPS (Europe) Hourly Species List ###
 ################################################
@@ -821,7 +916,7 @@ species_AE6_NAPS <- ""
 species_EMEP_Hourly <- paste("
    setenv AERO_1 \"O3,ppb,O3,ppb,O3\"                         
    setenv AERO_2 \"TEOMPM25,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"         
-   setenv AERO_3 \"TEOMPM10,ug/m3,PM10,ug/m3,PM10\"           
+   setenv AERO_3 \"TEOMPM10,ug/m3,",PM10_MOD_SPEC,",ug/m3,PM10\"           
    setenv AERO_4 \"CO,ppb,CO,ppb,CO\"                         
    setenv AERO_5 \"NO,ppb,NO,ppb,NO\"                         
    setenv AERO_6 \"NO2,ppb,NO2,ppb,NO2\"                      
@@ -835,6 +930,33 @@ species_AE6_EMEP_Hourly <- ""
 ### End EMEP Hourly Species List ###
 ####################################
 
+#########################################
+#### Start EMEP Daily O3 Species List ###
+#########################################
+#
+species_EMEP_Daily_O3 <- paste("
+### define model species
+  setenv OZONE \"",O3_mod_factor,"*O3,",O3_units,"\"
+
+## define obs species
+  setenv OBS_SPECIES O3
+
+## indicate whether or not to check QA flag
+  setenv QA_FLAG_CHECK N
+
+## Indicates whether the Lambert x/y information should be included in the output file
+  setenv LAMBXY N
+
+## Ozone observation conversion factor
+ setenv OBS_FACTOR \"",O3_obs_factor,"\"
+ ",sep = "")
+ species_cutoff_EMEP_Daily_O3 <- ""
+ species_AE6_EMEP_Daily_O3 <- ""
+
+######################################
+### End EMEP Daily O3 Species List ###
+######################################
+
 ###############################################
 ### Start EMEPS (Europe) Daily Species List ###
 ###############################################
@@ -842,7 +964,7 @@ species_AE6_EMEP_Hourly <- ""
 species_EMEP_Daily <- paste("
    setenv AERO_1 \"O3,ppb,O3,ppb,O3\"                         
    setenv AERO_2 \"TEOMPM25,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"         
-   setenv AERO_3 \"TEOMPM10,ug/m3,PM10,ug/m3,PM10\"           
+   setenv AERO_3 \"TEOMPM10,ug/m3,",PM10_MOD_SPEC,",ug/m3,PM10\"           
    setenv AERO_4 \"CO,ppb,CO,ppb,CO\"                         
    setenv AERO_5 \"NO,ppb,NO,ppb,NO\"                         
    setenv AERO_6 \"NO2,ppb,NO2,ppb,NO2\"                      
@@ -856,9 +978,9 @@ species_AE6_EMEP_Daily <- ""
 ### End EMEP Daily Species List ###
 ###################################
 
-species_list <- list(IMPROVE=species_IMPROVE,CSN=species_CSN,CASTNET=species_CASTNET,CASTNET_Hourly=species_CASTNET_Hourly,CASTNET_Daily=species_CASTNET_Daily_O3,CASTNET_Drydep=species_CASTNET_Drydep,NADP=species_NADP,AQS_Daily=species_AQS_Daily,AQS_Hourly=species_AQS_Hourly,AQS_Daily_O3=species_AQS_Daily_O3,SEARCH_Hourly=species_SEARCH_Hourly,SEARCH_Daily=species_SEARCH_Daily,AERONET=species_AERONET,NAPS=species_NAPS,AMON=species_AMON,FLUXNET=species_FLUXNET)
+species_list <- list(IMPROVE=species_IMPROVE,CSN=species_CSN,CASTNET=species_CASTNET,CASTNET_Hourly=species_CASTNET_Hourly,CASTNET_Daily=species_CASTNET_Daily_O3,CASTNET_Drydep=species_CASTNET_Drydep,NADP=species_NADP,AQS_Daily=species_AQS_Daily,AQS_Hourly=species_AQS_Hourly,AQS_Daily_O3=species_AQS_Daily_O3,SEARCH_Hourly=species_SEARCH_Hourly,SEARCH_Daily=species_SEARCH_Daily,AERONET=species_AERONET,NAPS=species_NAPS,NOAA_ESRL_O3=species_NOAA_ESRL_O3,AMON=species_AMON,FLUXNET=species_FLUXNET,EMEP_Hourly=species_EMEP_Hourly,EMEP_Daily_O3=species_EMEP_Daily_O3,EMEP_Daily=species_EMEP_Daily,NAPS_Daily_O3=species_NAPS_Daily_O3)
 
-species_list_cutoff <- list(IMPROVE=species_cutoff_IMPROVE,CSN=species_cutoff_CSN,CASTNET=species_cutoff_CASTNET,CASTNET_Hourly=species_cutoff_CASTNET_Hourly,CASTNET_Daily=species_cutoff_CASTNET_Daily_O3,CASTNET_Drydep=species_cutoff_CASTNET_Drydep,NADP=species_cutoff_NADP,AQS_Daily=species_cutoff_AQS_Daily,AQS_Hourly=species_cutoff_AQS_Hourly,AQS_Daily_O3=species_cutoff_AQS_Daily_O3,SEARCH_Hourly=species_cutoff_SEARCH_Hourly,SEARCH_Daily=species_cutoff_SEARCH_Daily,AERONET=species_cutoff_AERONET,NAPS=species_cutoff_NAPS,AMON=species_cutoff_AMON,FLUXNET=species_cutoff_FLUXNET)
+species_list_cutoff <- list(IMPROVE=species_cutoff_IMPROVE,CSN=species_cutoff_CSN,CASTNET=species_cutoff_CASTNET,CASTNET_Hourly=species_cutoff_CASTNET_Hourly,CASTNET_Daily=species_cutoff_CASTNET_Daily_O3,CASTNET_Drydep=species_cutoff_CASTNET_Drydep,NADP=species_cutoff_NADP,AQS_Daily=species_cutoff_AQS_Daily,AQS_Hourly=species_cutoff_AQS_Hourly,AQS_Daily_O3=species_cutoff_AQS_Daily_O3,SEARCH_Hourly=species_cutoff_SEARCH_Hourly,SEARCH_Daily=species_cutoff_SEARCH_Daily,AERONET=species_cutoff_AERONET,NAPS=species_cutoff_NAPS,NOAA_ESRL_O3=species_NOAA_ESRL_O3,AMON=species_cutoff_AMON,FLUXNET=species_cutoff_FLUXNET,EMEP_Hourly=species_cutoff_EMEP_Hourly,EMEP_Daily_O3=species_cutoff_EMEP_Daily_O3,EMEP_Daily=species_cutoff_EMEP_Daily,NAPS_Daily_O3=species_cutoff_NAPS_Daily_O3)
 
-species_list_AE6 <- list(IMPROVE=species_AE6_IMPROVE,CSN=species_AE6_CSN,CASTNET=species_AE6_CASTNET,CASTNET_Hourly=species_AE6_CASTNET_Hourly,CASTNET_Daily=species_AE6_CASTNET_Daily_O3,CASTNET_Drydep=species_AE6_CASTNET_Drydep,NADP=species_AE6_NADP,AQS_Daily=species_AE6_AQS_Daily,AQS_Hourly=species_AE6_AQS_Hourly,AQS_Daily_O3=species_AE6_AQS_Daily_O3,SEARCH_Hourly=species_AE6_SEARCH_Hourly,SEARCH_Daily=species_AE6_SEARCH_Daily,AERONET=species_AE6_AERONET,NAPS=species_AE6_NAPS,AMON=species_AE6_AMON,FLUXNET=species_AE6_FLUXNET)
+species_list_AE6 <- list(IMPROVE=species_AE6_IMPROVE,CSN=species_AE6_CSN,CASTNET=species_AE6_CASTNET,CASTNET_Hourly=species_AE6_CASTNET_Hourly,CASTNET_Daily=species_AE6_CASTNET_Daily_O3,CASTNET_Drydep=species_AE6_CASTNET_Drydep,NADP=species_AE6_NADP,AQS_Daily=species_AE6_AQS_Daily,AQS_Hourly=species_AE6_AQS_Hourly,AQS_Daily_O3=species_AE6_AQS_Daily_O3,SEARCH_Hourly=species_AE6_SEARCH_Hourly,SEARCH_Daily=species_AE6_SEARCH_Daily,AERONET=species_AE6_AERONET,NAPS=species_AE6_NAPS,NOAA_ESRL=species_NOAA_ESRL_O3,AMON=species_AE6_AMON,FLUXNET=species_AE6_FLUXNET,EMEP_Hourly=species_AE6_EMEP_Hourly,EMEP_Daily_O3=species_AE6_EMEP_Daily_O3,EMEP_Daily=species_AE6_EMEP_Daily,NAPS_Daily_O3=species_AE6_NAPS_Daily_O3)
 

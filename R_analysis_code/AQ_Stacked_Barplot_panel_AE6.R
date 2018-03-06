@@ -104,21 +104,11 @@ for (n in 1:4) {
       species_names  <- NULL
       species_names2 <- NULL
       criteria <- paste(" WHERE d.SO4_ob is not NULL and d.network='",network,"' ",season[p],pca[n],sep="")          # Set part of the MYSQL query
-      check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-      query_table_info.df <-db_Query(check_POCode,mysql)
-      {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {    # Check to see if POCode column exists or not
-         qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.SO4_ob,d.SO4_mod,d.NO3_ob,d.NO3_mod,d.NH4_ob,d.NH4_mod,d.PM_TOT_ob,d.PM_TOT_mod,d.PM_FRM_ob,PM_FRM_mod,d.EC_ob,d.EC_mod,d.OC_ob,d.OC_mod,d.TC_ob,d.TC_mod,d.soil_ob,d.soil_mod,d.ncom_mod,d.NaCl_ob,d.NaCl_mod,d.other_ob,d.other_mod,d.other_rem_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-         aqdat_all.df<-db_Query(qs,mysql)
-         aqdat_all.df$POCode <- 1
+      species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","ncom","NaCl","other","other_rem")
+      query_result      <- query_dbase(run_name1,network,species,criteria)
+      aqdat_query.df    <- query_result[[1]]
+      aqdat_all.df      <- aggregate_query(aqdat_query.df)
 
-         }
-         else {
-            qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.SO4_ob,d.SO4_mod,d.NO3_ob,d.NO3_mod,d.NH4_ob,d.NH4_mod,d.PM_TOT_ob,d.PM_TOT_mod,d.PM_FRM_ob,PM_FRM_mod,d.EC_ob,d.EC_mod,d.OC_ob,d.OC_mod,d.TC_ob,d.TC_mod,d.soil_ob,d.soil_mod,d.ncom_mod,d.NaCl_ob,d.NaCl_mod,d.other_ob,d.other_mod,d.other_rem_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-            aqdat_all.df <- db_Query(qs,mysql)
-         }
-      }
-      aqdat_all.df$stat_id <- paste(aqdat_all.df$stat_id,aqdat_all.df$POCode,sep='')      # Create unique site using site ID and PO Code
       blank_mod  <- 0.4
       blank_mod2 <- 0.4
       blank_ob   <- 0.4
@@ -227,7 +217,8 @@ for (n in 1:4) {
       if (length(y_axis_max) > 0) {
            yaxis.max <- y_axis_max
       }
- 
+
+      simulations <- paste(network,run_name1,sep="") 
       if ((n == 1) && (p == 1)) {
          if (network == 'CSN') {
             write.table(paste(simulations,season[p],pca[n],sep=" "),file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
@@ -327,9 +318,9 @@ for (n in 1:4) {
 }          # End Season loop
 
 ## Convert pdf to png ##
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

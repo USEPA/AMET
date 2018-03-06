@@ -3,16 +3,16 @@
 #                                                                 ################################
 #     AMET Read Observations Functions Library                    ###############################
 #                                                                 ###############################
-#       Version 1.3                                               ###############################
+#       Version 2.0                                               ###############################
 #       Date: April 18, 2017                                      ###############################
 #       Contributors:Robert Gilliam                               ###############################
 #                                                                 ###############################
-#     Developed by the US Environmental Protection Agency         ###############################
+#	Developed by the US Environmental Protection Agency	            ###############################
 #                                                                 ################################
 #####################################################################################################
 #######################################################################################################
 #
-#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
+#  V2.0, 2017Apr18, Robert Gilliam: Initial Development
 #
 #######################################################################################################
 #######################################################################################################
@@ -50,7 +50,7 @@
 #  sfc_met<-list(t2=stemp,q2=smixr,u10=su10,v10=sv10)
 
 
- madis_surface <-function(madisbase, madis_dset, datetime, autoftp, madis_server, lonc=0.0, conef=0.0) {
+ madis_surface <-function(madisbase, madis_dset, datetime, lonc=0.0, conef=0.0) {
 
   madisdir  <-paste(madisbase,"/point/",madis_dset,"/netcdf",sep="")
   madis_file<-paste(madisdir,"/",datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
@@ -59,24 +59,9 @@
     madis_file<-paste(madisdir,"/",datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
   }
 
-  if(madis_dset != "sao" & madis_dset != "metar" & madis_dset != "maritime" & madis_dset != "mesonet") {
+  if(madis_dset != "sao" & madis_dset != "metar" & madis_dset != "maritime") {
     stop("Check MADISDSET setting. Only metar, sao or maritime are acceptable ids.")
   }
-
-  if(!file.exists(madis_file) & autoftp) {
-    madispath   <-paste("/point/",madis_dset,"/netcdf/",sep="")
-    if(madis_dset == "mesonet") {
-      madispath   <-"/LDAD/mesonet/netCDF/"
-    }
-    gzname      <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00.gz",sep="")
-    nogzname    <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
-    remote_file <- paste(madis_server,"/",datetime$yc,"/",datetime$mc,"/",datetime$dc,
-                         madispath,gzname,sep="")
-    writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
-    download.file(remote_file,gzname,"wget")
-    system(paste("gunzip",gzname))
-    system(paste("mv",nogzname,madis_file))
-  }  
 
   if(!file.exists(madis_file)) { 
     writeLines(paste("MADIS FILE *NOT* Found: ",madis_file," for time:",datetime$modeldate,datetime$modeltime))
@@ -86,40 +71,28 @@
   writeLines(paste("Opening MADIS",madis_dset," for time:",datetime$modeldate,datetime$modeltime))
   writeLines(paste(madis_file))
 
-  unix_time_str<-paste(datetime$yc,"-",datetime$mc,"-",datetime$dc," ",datetime$hc,":00:00",sep="")
-  epoch_time   <-as.integer(as.POSIXct(unix_time_str,tz="UTC"))
-
   f2     <-nc_open(madis_file)
-    if(madis_dset != "mesonet"){
-      site   <- ncvar_get(f2, varid="stationName")
-      stime  <- ncvar_get(f2, varid="timeObs")
-    } else {
-      site   <- ncvar_get(f2, varid="stationId")
-      stime  <- ncvar_get(f2, varid="observationTime")    
-    }  
+    site   <- ncvar_get(f2, varid="stationName")
     slat   <- ncvar_get(f2, varid="latitude")
     slon   <- ncvar_get(f2, varid="longitude")
     selev  <- ncvar_get(f2, varid="elevation")
+    stime  <- ncvar_get(f2, varid="timeObs")
 
-    stime2 <- array(epoch_time,c(length(site)))
-    
     # Some MADIS file types have different specs, so logic required for each
     if(madis_dset == "sao") {
+        stime2       <- ncvar_get(f2, varid="timeNominal")
         report_type  <- array("SAO",c(length(site)))
         site_locname <- array("NULL",c(length(site)))
         altm         <- ncvar_get(f2, varid="altimeter")/100
     } else if (madis_dset == "maritime") {
+        stime2       <- stime
         report_type  <- array("MARITIME",c(length(site)))
         site_locname <- array("NULL",c(length(site)))
         altm         <- ncvar_get(f2, varid="seaLevelPress")/100
     } else if (madis_dset == "metar") {
+        stime2       <- ncvar_get(f2, varid="timeNominal")
         site_locname <- ncvar_get(f2, varid="locationName")
         report_type  <- ncvar_get(f2, varid="reportType")
-        altm         <- ncvar_get(f2, varid="altimeter")/100
-    } else if (madis_dset == "mesonet") {
-        report_type  <- array("MESONET",c(length(site)))
-        site_locname <- ncvar_get(f2, varid="homeWFO")
-        report_type  <- ncvar_get(f2, varid="dataProvider")
         altm         <- ncvar_get(f2, varid="altimeter")/100
     }
     site_locname<- gsub("'"," ",site_locname)  # replace any ' with space

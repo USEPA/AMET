@@ -3,16 +3,16 @@
 #                                                                 ################################
 #     AMET Database Functions Library for Meteorology             ###############################
 #                                                                 ###############################
-#       Version 1.3                                               ###############################
+#       Version 2.0                                               ###############################
 #       Date: April 18, 2017                                      ###############################
 #       Contributors:Robert Gilliam                               ###############################
 #                                                                 ###############################
-#     Developed by the US Environmental Protection Agency         ###############################
+#	Developed by the US Environmental Protection Agency	            ###############################
 #                                                                 ################################
 #####################################################################################################
 #######################################################################################################
 #
-#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
+#  V2.0, 2017Apr18, Robert Gilliam: Initial Development
 #
 #######################################################################################################
 #######################################################################################################
@@ -92,12 +92,12 @@
  new_dbase_tables <-function(mysql) {
 
    dbaseq<-paste("CREATE DATABASE IF NOT EXISTS ",mysql$dbase,";")
-   writeLines(paste("Creating new database if it does not exist:",dbaseq))
-   db   <-dbDriver("MySQL")
-   con  <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server)
-   rs   <-dbSendQuery(con,dbaseq)
-   dbClearResult(rs)
-   dbDisconnect(con)
+   ametQuery(dbaseq,mysql,get=0)
+   #db   <-dbDriver("MySQL")
+   #con  <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server)
+   #rs   <-dbSendQuery(con,dbaseq)
+   #dbClearResult(rs)
+   #dbDisconnect(con)
 
    # Check to see if stations table exist. If not create a new stations table in new database
    check_table<-paste("SHOW TABLES FROM `",mysql$dbase,"` LIKE 'stations'",sep="")

@@ -127,7 +127,7 @@ for (y in 1:num_years) {
       ###########################################
       ####        Set Initial Values         ####
       ###########################################
-      data_all.df				<- NULL
+#      data_all.df				<- NULL
       stats_all.df				<- NULL
       stats_all.df$NUM_OBS			<- NA 
       stats_all.df$Percent_Norm_Mean_Bias	<- NA
@@ -142,31 +142,14 @@ for (y in 1:num_years) {
       stats_all.df$RMSE				<- NA
       ###########################################
       query			<- paste(query_in," and month = ",m,sep="")
-      criteria 			<- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")	# Set part of the MYSQL query
-      check_POCode		<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-      query_table_info.df	<-db_Query(check_POCode,mysql)
-      {
-         if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-            aqdat_query.df<-db_Query(qs,mysql)
-            aqdat_query.df$POCode <- 1
-         }
-         else {
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, d.POCode, precip_ob from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")   # Set rest of the MYSQL criteria
-            aqdat_query.df<-db_Query(qs,mysql)
-         }
-      }
-      aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep="")
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
       ###################################################################################################################
       ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
       ###################################################################################################################
       if (length(aqdat_query.df$stat_id) > 0) {
-         data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,9],mod_val=aqdat_query.df[,10],precip_val=aqdat_query.df$precip_ob)
-         stats_all.df 	<- try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
-         indic.nonzero 	<- data_all.df$ob_val > 0
-         data_stats.df 	<- data_all.df[indic.nonzero,]
-         indic.nonzero 	<- data_stats.df$mod_val > 0
-         data_stats.df 	<- data_stats.df[indic.nonzero,]
+         data_stats.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,9],mod_val=aqdat_query.df[,10],precip_val=aqdat_query.df$precip_ob)
+         stats_all.df 	<- try(DomainStats(data_stats.df))      # Compute stats using DomainStats function for entire domain
          mod_obs_diff 	<- data_stats.df$mod_val-data_stats.df$ob_val
       }
       monthly_OBS		<- c(monthly_OBS,stats_all.df$NUM_OBS)
@@ -264,9 +247,9 @@ title(main=main.title,cex=1.5)
 ######
 
 ### Finish up ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename1_pdf," png:",filename1_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename1_pdf," png:",filename1_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -326,9 +309,9 @@ title(main=main.title,cex=1.5)
 #######################################################
 
 ### Finish Up ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename2_pdf," png:",filename2_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename2_pdf," png:",filename2_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -386,9 +369,9 @@ title(main=main.title,cex=1.5)
 ######
 
 ### Finish Up ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename3_pdf," png:",filename3_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename3_pdf," png:",filename3_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

@@ -77,12 +77,16 @@ sitex_in2   <- read.csv(sitex_file,skip=3,header=F,colClasses="character",nrows=
 sitex_names <- as.character(sitex_in2[3,])   # Store species names
 sitex_units <- as.character(sitex_in2[1,])   # Store species units
 sitex_modob <- as.character(sitex_in2[2,])   # Store mod/ob designation
-col_offset <- 18
-if ((dtype == 'AQS_Daily_O3') || (dtype == 'CASTNET_Daily')) {
-   col_offset <- 14
+col_offset <- which(sitex_names=="Emm")
+cat(col_offset)
+#col_offset <- 18
+if ((dtype == 'AQS_Daily_O3') || (dtype == 'CASTNET_Daily') || (dtype == 'EMEP_Daily_O3') || (dtype == 'NAPS_Daily_O3')) {
+   col_offset <- which(sitex_names=="EYYYY" )
+#   col_offset <- 14
 }
 if (dtype == 'NADP') {
-  col_offset <- 20
+  col_offset <- which(sitex_names=="Invalcode_ob")
+#  col_offset <- 20
 }
 cat(paste("Successfully read ",sitex_file,"\n",sep=""))
 num_cols    <- ncol(sitex_in)
@@ -267,10 +271,10 @@ proj_time    <- info_all[,8]
 min_date_old <- info_all[,9]
 max_date_old <- info_all[,10]
 
-if (is.na(min_date_old)) {        # override the initial value of 0 for the earliest date record
+if ((is.na(min_date_old)) || (min_date_old == '00000000')) {        # override the initial value of 0 for the earliest date record
    min_date_old <- min_date
 }
-if (is.na(max_date_old)) {        # override the initial value of 0 for the earliest date record
+if ((is.na(max_date_old)) || (max_date_old == '00000000')) {        # override the initial value of 0 for the earliest date record
    max_date_old <- min_date
 }
 if (min_date > min_date_old)  {

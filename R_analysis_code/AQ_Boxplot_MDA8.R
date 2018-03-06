@@ -19,7 +19,6 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ### Retrieve units label from database table ###
 network <- network_names[1]
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
 ################################################
 
 ### Set file names and titles ###
@@ -38,16 +37,19 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 label <- "MDA8 Ozone (ppb)"
 #################################
-
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")	# Set the rest of the MYSQL query
-aqdat.df<-db_Query(qs,mysql)	# Query the database and store in aqdat.df dataframe
-
-indic.nonzero <- aqdat.df[,9] >= 0						# Determine the missing obs 
-aqdat.df <- aqdat.df[indic.nonzero,]						# Remove missing obs/mod pairs from dataframe
-indic.nonzero <- aqdat.df[,10] >= 0
-aqdat.df <- aqdat.df[indic.nonzero,]
-
+{
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- (sitex_info$sitex_data)
+      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+      units            <- as.character(sitex_info$units[[1]])
+   }
+   else {
+      units <- db_Query(units_qs,mysql)
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
+   }
+}
 hr_avg_ob   <- NULL
 hr_avg_mod  <- NULL
 max_hour    <- NULL
@@ -57,7 +59,7 @@ hour <- NULL
 day  <- NULL
 stat_id <- NULL
 
-split_sites <- split(aqdat.df,aqdat.df$stat_id)
+split_sites <- split(aqdat_query.df,aqdat_query.df$stat_id)
 for (s in 1:length(split_sites)) {
    sub.df <- split_sites[[s]]
    for (i in 1:(length(sub.df$stat_id)-7)) {
@@ -71,21 +73,21 @@ for (s in 1:length(split_sites)) {
    }
 }
 
-aqdat2.df <- data.frame(ob_val=hr_avg_ob,mod_val=hr_avg_mod,hour=hour,day=day,stat_id=stat_id)
+aqdat.df <- data.frame(ob_val=hr_avg_ob,mod_val=hr_avg_mod,hour=hour,day=day,stat_id=stat_id)
 
 #######################
 
 ### Find q1, median, q2 for each group of both species ###
-q1.spec1 <- tapply(aqdat2.df$ob_val, aqdat2.df$hour, quantile, 0.25, na.rm=T)    # Compute ob 25% quartile
-q1.spec2 <- tapply(aqdat2.df$mod_val, aqdat2.df$hour, quantile, 0.25, na.rm=T)   # Compute model 25% quartile
-median.spec1 <- tapply(aqdat2.df$ob_val, aqdat2.df$hour, median, na.rm=T)                # Compute ob median value
-median.spec2 <- tapply(aqdat2.df$mod_val, aqdat2.df$hour, median, na.rm=T)       # Compute model median value
-q3.spec1 <- tapply(aqdat2.df$ob_val, aqdat2.df$hour, quantile, 0.75, na.rm=T)    # Compute ob 75% quartile
-q3.spec2 <- tapply(aqdat2.df$mod_val, aqdat2.df$hour, quantile, 0.75, na.rm=T)   # Compute model 75% quartile
+q1.spec1 <- tapply(aqdat.df$ob_val, aqdat.df$hour, quantile, 0.25, na.rm=T)    # Compute ob 25% quartile
+q1.spec2 <- tapply(aqdat.df$mod_val, aqdat.df$hour, quantile, 0.25, na.rm=T)   # Compute model 25% quartile
+median.spec1 <- tapply(aqdat.df$ob_val, aqdat.df$hour, median, na.rm=T)                # Compute ob median value
+median.spec2 <- tapply(aqdat.df$mod_val, aqdat.df$hour, median, na.rm=T)       # Compute model median value
+q3.spec1 <- tapply(aqdat.df$ob_val, aqdat.df$hour, quantile, 0.75, na.rm=T)    # Compute ob 75% quartile
+q3.spec2 <- tapply(aqdat.df$mod_val, aqdat.df$hour, quantile, 0.75, na.rm=T)   # Compute model 75% quartile
 ################################################
 
 ### Set up axes so that they will be big enough for both data species  that will be added ###
-num.groups <- length(unique(aqdat2.df$hour))					# Count the number of sites used in each month
+num.groups <- length(unique(aqdat.df$hour))					# Count the number of sites used in each month
 y.axis.min <- min(c(0,0))							# Set y-axis minimum values
 y.axis.max.value <- max(c(q3.spec1, q3.spec2))					# Determine y-axis maximum value
 y.axis.max <- c(sum((y.axis.max.value * 0.3),y.axis.max.value))			# Add 30% of the y-axis maximum value to the y-axis maximum value
@@ -96,10 +98,10 @@ y.axis.max <- c(sum((y.axis.max.value * 0.3),y.axis.max.value))			# Add 30% of t
 pdf(filename_pdf, width=8, height=8)						# Set output device with options
 
 par(mai=c(1,1,0.5,0.5), lab=c(12,10,10), mar=c(5,4,4,5))								# Set plot margins
-boxplot(split(aqdat2.df$ob_val, aqdat2.df$hour), range=0, border="transparent", col="transparent", ylim=c(y.axis.min, y.axis.max), xlab="Hour LST", ylab=label, cex.axis=1.3, cex.lab=1.3)	# Create boxplot
+boxplot(split(aqdat.df$ob_val, aqdat.df$hour), range=0, border="transparent", col="transparent", ylim=c(y.axis.min, y.axis.max), xlab="Hour LST", ylab=label, cex.axis=1.3, cex.lab=1.3)	# Create boxplot
 
 ## Do the same thing for model values.  Use a different color for the background.
-boxplot(split(aqdat2.df$mod_val,aqdat2.df$hour), range=0, border="transparent", col="transparent", boxwex=0.5, add=T, cex.axis=1.3, cex.lab=1.3)	# Plot model values on existing plot
+boxplot(split(aqdat.df$mod_val,aqdat.df$hour), range=0, border="transparent", col="transparent", boxwex=0.5, add=T, cex.axis=1.3, cex.lab=1.3)	# Plot model values on existing plot
 
 ### Put title at top of boxplot ###
 title(main=title)
@@ -121,7 +123,7 @@ legend("topleft", c(network_label[1], "CMAQ"), pch=plot_symbols, fill =plot_colo
 ##############################
 
 ### Count number of samples per hour ###
-nsamples.table <- table(aqdat2.df$hour)
+nsamples.table <- table(aqdat.df$hour)
 #########################################
 
 ### Put text on plot ###
@@ -137,9 +139,9 @@ text(x=18,y=y.axis.max*0.90,paste("Site: ",site,sep=""),cex=1.2,adj=c(0,0))
 text(x=1:24,y=y.axis.min,labels=nsamples.table,cex=.75,srt=90)
 
 ### Convert pdf to png ###
+dev.off
 if ((ametptype == "png") || (ametptype == "both")) {   
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

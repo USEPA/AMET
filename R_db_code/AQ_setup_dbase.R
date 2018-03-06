@@ -92,6 +92,9 @@ aq_new_3  <- "create table site_metadata (stat_id varchar(25) UNIQUE KEY, num_st
    }
 }
 
+reload_meta <- 'F'
+reload_meta <- Sys.getenv('RELOAD_METADATA')
+
 {
    if (!("site_metadata" %in% MYSQL_tables)) {
       cat("Table site_metadata does not exist, creating...")
@@ -108,7 +111,17 @@ aq_new_3  <- "create table site_metadata (stat_id varchar(25) UNIQUE KEY, num_st
       }
    }
    else {
-      cat("Table site_metadata exists, doing nothing. \n")
+      {
+         if (reload_meta != 'F') {
+            cat("Re-populating AQ db with site metadata...")
+            populate.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_sitemeta_dbase.R ",mysql_login," ",mysql_pass," ",sep="")
+            system(populate.command)
+            cat("done. \n")
+         }
+         else {
+            cat("Table site_metadata exists, doing nothing. \n")
+         }
+      }
    }
 }
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

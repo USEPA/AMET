@@ -51,10 +51,8 @@ point_color  <- NULL
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
 model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 model_name <- db_Query(model_name_qs,mysql)
-model_name <- model_name[[1]]
 ################################################
 
 run_names <- NULL
@@ -81,23 +79,21 @@ labels <- c(network,run_names)
 for (j in 1:length(run_names)) {
    source(ametRinput)
    run_name <- run_names[j]
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")		# Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set the rest of the MYSQL query
-         aqdat_query.df        <- db_Query(qs,mysql)
-         aqdat_query.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info      <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+         aqdat_query.df  <- sitex_info$sitex_data
+         units           <- as.character(sitex_info$units[[1]])
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod,d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")   # Set the rest of the MYSQL query
-         aqdat_query.df        <- db_Query(qs,mysql)  
+         query_result    <- query_dbase(run_name,network,species)
+         aqdat_query.df  <- query_result[[1]]
+         units 		 <- db_Query(units_qs,mysql)
+         model_name 	 <- model_name[[1]]         
       }
-   }
-
+    }
    if (averaging != "n") {
-      aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob,precip_mod=aqdat_query.df$precip_mod)
+      aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
       {
          if (use_avg_stats == "y") {
             aqdat.df <- Average(aqdat.df)
@@ -111,16 +107,7 @@ for (j in 1:length(run_names)) {
    }
    else { 
       aqdat.df <- aqdat_query.df
-   ### if plotting all obs, remove missing obs and zero precip obs if requested ###
-      ####################### 
-      if (remove_negatives == "y") {
-         indic.nonzero <- aqdat.df[,9] >= 0		# determine which obs are missing (less than 0); 
-         aqdat.df <- aqdat.df[indic.nonzero,]	# remove missing obs from dataframe
-         indic.nonzero <- aqdat.df[,10] >= 0          # determine which obs are missing (less than 0); 
-         aqdat.df <- aqdat.df[indic.nonzero,]        # remove missing obs from dataframe
-      }
-      ######################
-      aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month,precip_ob=aqdat.df$precip_ob)      # Create dataframe of network values to be used to create a list
+      aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
       aqdat_stats.df <- aqdat.df
    }
    axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value),na.rm=T) 
@@ -128,7 +115,7 @@ for (j in 1:length(run_names)) {
    #### Calculate statistics for each requested network ####
    #########################################################
    ## Calculate stats using all pairs, regardless of averaging
-   data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value,precip_val=aqdat_stats.df$precip_ob)
+   data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
    stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
    num_pairs   <- NULL
    mean_mod    <- NULL
@@ -323,9 +310,9 @@ legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1
 ##############################
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

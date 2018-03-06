@@ -27,15 +27,11 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 network <- network_names[1] 
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
 units <- db_Query(units_qs,mysql) 
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- unlist(db_Query(model_name_qs,mysql))
-model_name <- model_name[[1]]
 run2 <- "False"
 run3 <- "False"
 ################################################
 
 ### Set file names and titles ###
-label <- paste(species," (",units,")",sep="")
 network<-network_names[[1]]
 filename_all_pdf	<- paste(run_name1,species,pid,"boxplot_all.pdf",sep="_")
 filename_all_png	<- paste(run_name1,species,pid,"boxplot_all.png",sep="_")
@@ -59,21 +55,19 @@ filename_norm_bias_pdf   <- paste(figdir,filename_norm_bias_pdf,sep="/")
 filename_norm_bias_png   <- paste(figdir,filename_norm_bias_png,sep="/")
 
 #################################
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"'",query,sep="")			# Set first part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
 {
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
-      aqdat_query.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- (sitex_info$sitex_data)
+      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+      units            <- as.character(sitex_info$units[[1]])
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod,POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
+      units	      <- db_Query(units_qs,mysql)
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
    }
 }
-aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
 years   <- substr(aqdat_query.df$ob_dates,1,4)
 months  <- substr(aqdat_query.df$ob_dates,6,7)
 yearmonth <- paste(years,months,sep="_")
@@ -82,20 +76,17 @@ aqdat_query.df$YearMonth <- yearmonth
 
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    run2 <- "True"
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs2 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-         aqdat_query2.df<-db_Query(qs,mysql)
-         aqdat_query2.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         aqdat_query2.df   <- sitex_info$sitex_data
+         aqdat_query2.df   <- aqdat_query2.df[with(aqdat_query2.df,order(stat_id,ob_dates,ob_hour)),]
       }
       else {
-         qs2 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")            # Set the rest of the MYSQL query
-         aqdat_query2.df<-db_Query(qs2,mysql)
+         query_result2    <- query_dbase(run_name2,network,species)
+         aqdat_query2.df  <- query_result2[[1]]
       }
    }
-   aqdat_query2.df$stat_id <- paste(aqdat_query2.df$stat_id,aqdat_query2.df$POCode,sep='')      # Create unique site using site ID and PO Code
    years2   <- substr(aqdat_query2.df$ob_dates,1,4)
    months2  <- substr(aqdat_query2.df$ob_dates,6,7)
    yearmonth2 <- paste(years2,months2,sep="_")
@@ -105,20 +96,17 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
 
 if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
    run3 <- "True" 
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name3,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs3 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name3," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-         aqdat_query3.df<-db_Query(qs,mysql)
-         aqdat_query3.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info        <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name3,species)
+         aqdat_query3.df   <- sitex_info$sitex_data
+         aqdat_query3.df   <- aqdat_query3.df[with(aqdat_query3.df,order(stat_id,ob_dates,ob_hour)),]
       }
       else {
-         qs3 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name3," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")            # Set the rest of the MYSQL query
-         aqdat_query3.df<-db_Query(qs3,mysql)
+         query_result3    <- query_dbase(run_name3,network,species)
+         aqdat_query3.df  <- query_result3[[1]]
       }
    }
-   aqdat_query3.df$stat_id <- paste(aqdat_query3.df$stat_id,aqdat_query3.df$POCode,sep='')      # Create unique site using site ID and PO Code
    years3   <- substr(aqdat_query3.df$ob_dates,1,4)
    months3  <- substr(aqdat_query3.df$ob_dates,6,7)
    yearmonth3 <- paste(years3,months3,sep="_")
@@ -131,44 +119,20 @@ x.axis.min <- min(aqdat_query.df$month)	# Find the first month available from th
 
 {
 if ((total_days <= 31) && (averaging == "n")) {	# If only plotting one month, plot all times instead of averaging to a single month
-   indic.nonzero <- aqdat_query.df[,9] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,]
-   indic.nonzero <- aqdat_query.df[,10] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,]
    aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Month=aqdat_query.df$month,Split_On=aqdat_query.df$ob_dates)
 if (run2 == "True") {
-      indic.nonzero <- aqdat_query2.df[,9] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query2.df[,10] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
       aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[,9],Mod_Value=aqdat_query2.df[,10],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$ob_dates)
    }
    if (run3 == "True") {
-      indic.nonzero <- aqdat_query3.df[,9] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query3.df[,10] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
       aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[,9],Mod_Value=aqdat_query3.df[,10],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$ob_dates)
    }
 }
 else {
-   indic.nonzero <- aqdat_query.df[,9] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,] 
-   indic.nonzero <- aqdat_query.df[,10] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,]
    aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Month=aqdat_query.df$month,Split_On=aqdat_query.df$YearMonth)
    if (run2 == "True") {
-      indic.nonzero <- aqdat_query2.df[,9] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query2.df[,10] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
       aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[,9],Mod_Value=aqdat_query2.df[,10],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$YearMonth)
    }
    if (run3 == "True") {
-      indic.nonzero <- aqdat_query3.df[,9] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query3.df[,10] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
       aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[,9],Mod_Value=aqdat_query3.df[,10],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$YearMonth)
    }
 }
@@ -334,6 +298,7 @@ legend_names  <- c(network_label[1], run_name1)
 legend_fill   <- c(plot_colors[1],plot_colors[2])
 legend_colors <- c(plot_colors2[1],plot_colors2[2])
 legend_type   <- c(0,1,2,3,4)
+label 	      <- paste(species," (",units,")",sep="")
 
 ### User option to remove boxes and only plot median lines ###
 boxplot(split(aqdat.df$Obs_Value, aqdat.df$Split_On), range=0, border=plot_colors[1], whiskcol=whisker_color[1], staplecol=whisker_color[1], col=plot_colors[1], boxwex=bar_width[1], ylim=c(y.axis.min, y.axis.max), xlab="Months", ylab=label, cex.axis=1.0, cex.lab=1.3)
@@ -390,7 +355,7 @@ if (run3 == "True") {
 
 
 ### Put legend on the plot ###
-legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_type, col=plot_colors2, merge=F, cex=1)
+legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_type, col=plot_colors2, merge=F, cex=1, bty="n")
 ##############################
 
 ### Put text stating coverage limit used ###
@@ -414,9 +379,9 @@ if (run_info_text == "y") {
 ############################################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_all_pdf," png:",filename_all_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_all_pdf," png:",filename_all_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -513,9 +478,9 @@ num_months <- length(nsamples.table)
 ##############################################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_bias_pdf," png:",filename_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_bias_pdf," png:",filename_bias_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -603,9 +568,9 @@ num_months <- length(nsamples.table)
 ##############################################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_norm_bias_pdf," png:",filename_norm_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_norm_bias_pdf," png:",filename_norm_bias_png,sep="")
    system(convert_command)
    
    if (ametptype == "png") {
