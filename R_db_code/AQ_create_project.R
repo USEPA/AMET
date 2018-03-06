@@ -53,7 +53,7 @@ MYSQL_tables    <- dbListTables(con)
 ##################################################
 create_table<-function()
 {
-   aq_new_1 <- paste("create table ",run_id," (proj_code varchar(50), POCode integer, valid_code character(10), invalid_code character(10), network varchar(25), stat_id varchar(25), stat_id_POCode varchar(100), lat double, lon double, i integer(4), j integer(4), ob_dates date, ob_datee date, ob_hour integer(2), month integer(2), precip_ob double, precip_mod double)",sep="")
+   aq_new_1 <- paste("create table ",run_id," (proj_code varchar(100), POCode integer, valid_code character(10), invalid_code character(10), network varchar(25), stat_id varchar(25), stat_id_POCode varchar(100), lat double, lon double, i integer(4), j integer(4), ob_dates date, ob_datee date, ob_hour integer(2), month integer(2), precip_ob double, precip_mod double)",sep="")
    aq_new_2 <- paste("alter table ",run_id," add UNIQUE(network, stat_id,POCode,ob_dates,ob_datee,ob_hour)",sep="")
    aq_new_3 <- paste("alter table ",run_id," add INDEX(month)",sep="")
    create_table_log1 <- dbSendQuery(con,aq_new_1)

@@ -64,6 +64,7 @@ run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_bins.R",
 run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_percentiles.R",sep="")
 run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_skill.R",sep="")
 run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_mtom.R",sep="")
+run_script_command8 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_soil.R",sep="")
 
 #######################################################################################
 ### This portion of the code will create monthly stat plots for the various species ###
@@ -74,6 +75,7 @@ for (m in 1:length(batch_query)) {
    system(mkdir_command)
 }
 if (hourly_ozone_analysis == 'y') {
+   max_limit <- O3_max_limit
    averaging <- ozone_averaging
    for (m in 1:length(batch_query)) {
       species_list <- c("O3")
@@ -81,7 +83,7 @@ if (hourly_ozone_analysis == 'y') {
          species 		<- species_list[i]
          sub_dir 		<- batch_names[m]
          figdir 		<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          dates 		<- batch_names[m]
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
@@ -99,6 +101,7 @@ if (hourly_ozone_analysis == 'y') {
    }
 }
 if (daily_ozone_analysis == 'y') {  
+   max_limit <- O3_max_limit
    averaging <- ozone_averaging
    species_list <- c("O3_1hrmax","O3_8hrmax")
    for (m in 1:length(batch_query)) {
@@ -106,7 +109,7 @@ if (daily_ozone_analysis == 'y') {
          species 	<- species_list[i]
          sub_dir 	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          dates 		<- batch_names[m]
          network_names 	<- c("AQS_Daily_O3")
          network_label 	<- c("AQS_Daily")
@@ -125,6 +128,7 @@ if (daily_ozone_analysis == 'y') {
 }
 
 if (aerosol_analysis == 'y') {
+   max_limit      <- PM_max_limit
    averaging <- aerosol_averaging
    for (m in 1:length(batch_query)) {
       species_list <- c("SO4","NO3","EC","OC","TC","PM_TOT")
@@ -133,7 +137,7 @@ if (aerosol_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE")
          network_label 	<- c("IMPROVE")
          pid            <- network_label
@@ -154,7 +158,7 @@ if (aerosol_analysis == 'y') {
          species 	<- species_list[i]
          sub_dir 	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          dates 		<- batch_names[m]
          network_names 	<- c("CSN")
          network_label 	<- c("CSN")
@@ -176,7 +180,7 @@ if (aerosol_analysis == 'y') {
          species 	<- species_list[i]
          sub_dir 	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          dates 		<- batch_names[m]
          network_names 	<- c("CASTNET")
          network_label 	<- c("CASTNET")
@@ -197,7 +201,7 @@ if (aerosol_analysis == 'y') {
          species 	<- species_list[i]
          sub_dir 	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          system(mkdir_command)
          dates 		<- batch_names[m]
          network_names 	<- c("AQS_Daily")
@@ -220,7 +224,7 @@ if (aerosol_analysis == 'y') {
          species 	<- species_list[i]
          sub_dir 	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          dates 		<- batch_names[m]
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
@@ -237,7 +241,8 @@ if (aerosol_analysis == 'y') {
       }
    }
 }
-if (dep_analysis == 'y') {	
+if (dep_analysis == 'y') {
+   max_limit <- dep_max_limit	
    averaging <- deposition_averaging
    species_list <- c("SO4_dep","NO3_dep","NH4_dep","Precip")
    for (m in 1:length(batch_query)) {
@@ -246,7 +251,7 @@ if (dep_analysis == 'y') {
          dates		<- batch_names[m]
          sub_dir	<- batch_names[m]
          figdir 	<- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command 	<- paste("mkdir",figdir)
+         mkdir_command 	<- paste("mkdir -p",figdir)
          network_names	<- c("NADP") 
          network_label	<- c("NADP")
          pid            <- network_label
@@ -263,6 +268,7 @@ if (dep_analysis == 'y') {
    }
 }
 if (gas_analysis == 'y') {	
+   max_limit <- gas_max_limit
    averaging <- gas_averaging 
    species_list <- c("O3","SO2","NO2","NOY","CO")
    for (m in 1:length(batch_query)) {
@@ -271,7 +277,7 @@ if (gas_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("SEARCH")
          network_label 	<- c("SEARCH")
          pid            <- network_label
@@ -293,7 +299,7 @@ if (gas_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
          pid            <- network_label
@@ -310,6 +316,7 @@ if (gas_analysis == 'y') {
    }
 }
 if (AE6_analysis == 'y') {
+   max_limit <- AE6_max_limit
    averaging <- AE6_averaging
    species_list <- c("Na","Cl","Fe","Al","Si","Ti","Ca","Mg","K","Mn","soil","NaCl","other","ncom","other_rem")
    for (m in 1:length(batch_query)) {
@@ -318,12 +325,14 @@ if (AE6_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("CSN")
          network_label 	<- c("CSN")
          pid            <- network_label         
 	 query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
-         system(mkdir_command)
+         if ((scatter_plot == 'y') || (scatter_single_plot == 'y') || (scatter_density_plot == 'y') || (scatter_bins_plot == 'y') || (scatter_percentiles_plot == 'y') || (scatter_skill_plot == 'y') || (scatter_mtom_plot == 'y')) {
+            system(mkdir_command)
+         }
          if (scatter_plot               == 'y') { try(source(run_script_command1)) }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
          if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
@@ -331,8 +340,11 @@ if (AE6_analysis == 'y') {
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
          if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
-         if (species == "soil") {
-            if (scatter_soil_plot       == 'y') { try(source(run_script_command1)) }
+         if (species == 'soil') { 
+            if (scatter_soil_plot          == 'y') { 
+               system(mkdir_command)
+               try(source(run_script_command8)) 
+            } 
          }
       }
    }
@@ -343,12 +355,14 @@ if (AE6_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE")
          network_label 	<- c("IMPROVE")
          pid            <- network_label
          query		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
-         system(mkdir_command)
+         if ((scatter_plot == 'y') || (scatter_single_plot == 'y') || (scatter_density_plot == 'y') || (scatter_bins_plot == 'y') || (scatter_percentiles_plot == 'y') || (scatter_skill_plot == 'y') || (scatter_mtom_plot == 'y')) {
+            system(mkdir_command)
+         }
          if (scatter_plot               == 'y') { try(source(run_script_command1)) }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
          if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
@@ -356,13 +370,17 @@ if (AE6_analysis == 'y') {
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
          if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
-         if (species == "soil") {
-            if (scatter_soil_plot       == 'y') { try(source(run_script_command1)) }
+         if (species == 'soil') { 
+            if (scatter_soil_plot          == 'y') { 
+               system(mkdir_command)
+               try(source(run_script_command8)) 
+            }
          }
       }
    }
 }
 if (AOD_analysis == 'y') {
+   max_limit <- AOD_max_limit
    averaging <- AOD_averaging
    species_list <- c("AOD_500")
    for (m in 1:length(batch_query)) {
@@ -371,7 +389,7 @@ if (AOD_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          system(mkdir_command)
          network_names 	<- c("AERONET")
          network_label 	<- c("AERONET")
@@ -397,7 +415,7 @@ if (PAMS_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
          pid            <- network_label
@@ -419,7 +437,7 @@ if (PAMS_analysis == 'y') {
          dates 		<- batch_names[m]
          sub_dir 	<- batch_names[m]
          figdir         <- paste(out_dir,sub_dir,species,sep="/")
-         mkdir_command  <- paste("mkdir",figdir)
+         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Daily")
          network_label 	<- c("AQS_Daily")
          pid            <- network_label

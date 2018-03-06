@@ -63,10 +63,7 @@ point_color  <- NULL
 
 ### Retrieve units and model labels from database table ###
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
 model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
-model_name <- model_name[[1]]
 ################################################
 
 run_count <- 1
@@ -85,23 +82,27 @@ run_name <- run_name1
 network <- network_names[[1]]
    for (j in 1:length(run_names)) {
       run_name <- run_names[j]						# Set network
-      criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")		# Set part of the MYSQL query
-      check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
-      query_table_info.df <-db_Query(check_POCode,mysql)
+      #############################################
+      ### Read sitex file or query the database ###
+      #############################################
       {
-         if (length(query_table_info.df$COLUMN_NAME)==0) {
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set the rest of the MYSQL query
-            aqdat_query.df        <- db_Query(qs,mysql)
-            aqdat_query.df$POCode <- 1
+         if (Sys.getenv("AMET_DB") == 'F') {
+            sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+            aqdat_query.df   <- sitex_info$sitex_data
+            units            <- as.character(sitex_info$units[[1]])
          }
          else {
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod,d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")        # Set the rest of the MYSQL query
-            aqdat_query.df <- db_Query(qs,mysql)
+            query_result    <- query_dbase(run_name,network,species)
+            aqdat_query.df  <- query_result[[1]]
+            units           <- db_Query(units_qs,mysql)
+            model_name      <- db_Query(model_name_qs,mysql)
+            model_name      <- model_name[[1]]
          }
       }
+      #############################################
 
       if (averaging != "n") {
-         aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob,precip_mod=aqdat_query.df$precip_mod)
+         aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
          {
             if (use_avg_stats == "y") {
                aqdat.df <- Average(aqdat.df)
@@ -114,22 +115,11 @@ network <- network_names[[1]]
          }
       }
       else { 
-         aqdat.df <- aqdat_query.df
-      ### if plotting all obs, remove missing obs and zero precip obs if requested ###
-         ####################### 
-         if (remove_negatives == "y") {
-            indic.nonzero <- aqdat.df[,9] >= 0		# determine which obs are missing (less than 0); 
-            aqdat.df <- aqdat.df[indic.nonzero,]	# remove missing obs from dataframe
-            indic.nonzero <- aqdat.df[,10] >= 0          # determine which obs are missing (less than 0); 
-            aqdat.df <- aqdat.df[indic.nonzero,]        # remove missing obs from dataframe
-         }
-         ######################
-         aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month,precip_ob=aqdat.df$precip_ob)      # Create dataframe of network values to be used to create a list
+         aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Month=aqdat_query.df$month)      # Create dataframe of network values to be used to create a list
          aqdat_stats.df <- aqdat.df
       }
       axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value)) 
-
-         sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics
+      sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics
    }				# End for loop for networks
 #######################################################
 
@@ -168,9 +158,9 @@ if (run_info_text == "y") {
 }
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_ecdf_pdf," png:",filename_ecdf_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_ecdf_pdf," png:",filename_ecdf_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -194,9 +184,9 @@ while (i < num_runs) {
 legend("bottomright",legend=leg_names,pch=1,col=plot_colors,bty='n')
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_taylor_pdf," png:",filename_taylor_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_taylor_pdf," png:",filename_taylor_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -222,9 +212,9 @@ for (i in 1:num_runs) {
    title(main=paste("Periodogram for",run_name1,"/",network_label[1],species,"for",dates,sep=" "),cex.main=1)
 
    ### Convert pdf file to png file ###
+   dev.off()
    if ((ametptype == "png") || (ametptype == "both")) {
-      convert_command<-paste("convert -flatten -density 150x150 ",filename_spectral_pdf," png:",filename_spectral_png,sep="")
-      dev.off()
+      convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_spectral_pdf," png:",filename_spectral_png,sep="")
       system(convert_command)
 
       if (ametptype == "png") {
@@ -275,9 +265,9 @@ if (run_info_text == "y") {
 }
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_qq_pdf," png:",filename_qq_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_qq_pdf," png:",filename_qq_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

@@ -19,7 +19,7 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ### Retrieve units label from database table ###
 network <- network_names[1]
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
+model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set file names and titles ###
@@ -67,34 +67,27 @@ write.table("Time Series Data",file=filename_txt,append=F,row.names=F,sep=",")  
 
 for (j in 1:total_networks) {	# For each simulation being plotted
    network <- network_names[j]
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
+   #############################################
+   ### Read sitex file or query the database ###
+   #############################################
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")
-         aqdat_query.df		<- db_Query(qs,mysql)
-         aqdat_query.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+         aqdat_query.df   <- sitex_info$sitex_data
+         units            <- as.character(sitex_info$units[[1]])
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")
-         aqdat_query.df		<- db_Query(qs,mysql)
+         query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
+         aqdat_query.df  <- query_result[[1]]
+         units           <- db_Query(units_qs,mysql)
+         model_name      <- db_Query(model_name_qs,mysql)
+         model_name      <- model_name[[1]]
       }
    }
-   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob)
-   if (obs_per_day_limit > 0) {
-      num_obs_value <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,function(x)sum(!is.na(x)))
-      drop_days <- names(num_obs_value)[num_obs_value < obs_per_day_limit]
-      aqdat_new.df <- subset(aqdat.df,!(Start_Date%in%drop_days))
-      aqdat.df <- aqdat_new.df
-   }
+   #############################################
 
-   ### Remove Missing Data ###
-   indic.nonzero        <- aqdat.df$Obs_Value >= 0      # determine which obs are missing (less than 0); 
-   aqdat.df             <- aqdat.df[indic.nonzero,]     # remove missing obs from dataframe
-   indic.nonzero        <- aqdat.df$Mod_Value >= 0      # determine which obs are missing (less than 0); 
-   aqdat.df             <- aqdat.df[indic.nonzero,]     # remove missing obs from dataframe
-   ###########################
+#   aqdat_query.df <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
+   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month)
 
    Date_Hour            <- paste(aqdat.df$Start_Date," ",aqdat.df$Hour,":00:00",sep="") # Create unique Date/Hour field
    Date_Hour_Factor     <- factor(Date_Hour,levels=unique(Date_Hour))                   # Create unique levels so tapply maintains correct time order 
@@ -265,7 +258,7 @@ if (total_networks > 1) {
 
 abline(h=0,col="black")
 usr <- par("usr")
-text(usr[2],usr[4],paste("# of Sites: ",num_sites,sep=""),adj=c(1.1,1.1),cex=1)
+text(max(Dates[[1]]),bias_max,paste("# of ",network_names[1]," Sites: ",num_sites[1],sep=""),cex=1,adj=c(1,1))
 if (total_networks > 1) {
    text(max(Dates[[1]]),(bias_max-(0.10*(bias_max-bias_min))),paste("# of ",network_names[2]," Sites: ",num_sites[2],sep=""),cex=1,adj=c(1,1))
 }
@@ -289,9 +282,9 @@ if (run_info_text == "y") {
 }
 
 ### Create PNG Plot ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

@@ -19,10 +19,7 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ### Retrieve units label from database table ###
 network <- network_names[1]
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-if (is.na(units)) {
-   units <- 'missing'
-}
+model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set file names and titles ###
@@ -48,55 +45,53 @@ filename_pdf    <- paste(figdir,filename_pdf,sep="/")           # Filename for d
 filename_png    <- paste(figdir,filename_png,sep="/")           # Filename for diff spatial plot
 filename_txt    <- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
-Obs_Mean	<- NULL
-Mod_Mean	<- NULL
-Obs_Period_Mean	<- NULL
-Mod_Period_Mean	<- NULL
-Bias_Mean	<- NULL
-Dates		<- NULL
-All_Data	<- NULL
-Num_Obs		<- NULL
-ymin		<- NULL
-ymax		<- NULL
-bias_min        <- NULL
-bias_max        <- NULL
-x_label		<- "Date"
+Obs_Mean	 <- NULL
+Mod_Mean	 <- NULL
+Obs_Period_Mean	 <- NULL
+Mod_Period_Mean	 <- NULL
+Bias_Mean	 <- NULL
+Dates		 <- NULL
+All_Data	 <- NULL
+Num_Obs		 <- NULL
+ymin		 <- NULL
+ymax		 <- NULL
+bias_min         <- NULL
+bias_max         <- NULL
+x_label	 	 <- "Date"
+remove_negatives <- "n"
 
-criteria <- paste(" WHERE d.",species,"_mod is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
+#############################################
+### Read sitex file or query the database ###
+#############################################
 {
-   if (length(query_table_info.df$COLUMN_NAME)==0) {  # Check to see if individual project tables exist
-      qs1    <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_mod,precip_ob,precip_mod,s.state from ",run_name1," as d, site_metadata as s",criteria," ORDER BY ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-      aqdat1.df        <- db_Query(qs1,mysql)     # query database for 1st run
-      aqdat1.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- sitex_info$sitex_data
+      data_exists      <- sitex_info$data_exists
+      units            <- as.character(sitex_info$units[[1]])
+      sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+      aqdat_query2.df  <- sitex_info2$sitex_data
+      data_exists2     <- sitex_info2$data_exists
    }
    else {
-      qs1    <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_mod,precip_ob,precip_mod,s.state,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-      aqdat1.df        <- db_Query(qs1,mysql)     # query database for 1st run
+      query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour"))
+      aqdat_query.df  <- query_result[[1]]
+      query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"))
+      aqdat_query2.df <- query_result2[[1]]
+      units           <- db_Query(units_qs,mysql)
+      model_name      <- db_Query(model_name_qs,mysql)
+      model_name      <- model_name[[1]]
    }
 }
-{
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
-   if (length(query_table_info.df$COLUMN_NAME)==0) {      # Check to see if individual project tables exist
-      qs2       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_mod,precip_ob,precip_mod,s.state from ",run_name2," as d, site_metadata as s",criteria," ORDER BY ob_dates",sep="")                                           # Second par of MYSQL query for run name 2
-      aqdat2.df        <- db_Query(qs2,mysql)     # query database for 2nd run
-      aqdat2.df$POCode <- 1
-   }
-   else {
-      qs2       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_mod,precip_ob,precip_mod,s.state,d.POCode from ",run_name2," as d, site_metadata as s",criteria," ORDER BY ob_dates",sep="")                                                 # Second par of MYSQL query for run name 2
-      aqdat2.df <- db_Query(qs2,mysql)	# query database for 2nd run
-   }
-}
+#############################################
+
+aqdat1.df <- aqdat_query.df
+aqdat2.df <- aqdat_query2.df
 
 if ((site != "All") && (custom_title == "")) {
    main.title      <- paste(run_name1,species,"for",network,"Site:",site,"in",aqdat1.df$state[1],sep=" ")
    main.title.bias <- paste("Bias for",run_name1,species,"for",network,"Site:",site,"in",aqdat1.df$state[1],sep=" ")
 }
-
-aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
 
 ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
 aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
@@ -104,15 +99,15 @@ aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour
 {
    if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
       match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Hour=aqdat1.df$ob_hour, Mod1_Value=aqdat1.df[,9], Mod2_Value=aqdat2.df[match.ind,9], month=aqdat1.df$month, precip_ob=aqdat1.df$precip_ob, precip_mod=aqdat1.df$precip_mod)       # eliminate points that are not common between the two runs
+      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Hour=aqdat1.df$ob_hour, Mod1_Value=aqdat1.df[,9], Mod2_Value=aqdat2.df[match.ind,9], month=aqdat1.df$month)       # eliminate points that are not common between the two runs
    }
    else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Hour=aqdat2.df$ob_hour, Mod1_Value=aqdat1.df[match.ind,9], Mod2_Value=aqdat2.df[,9], month=aqdat2.df$month, precip_ob=aqdat2.df$precip_ob, precip_mod=aqdat2.df$precip_mod)       # eliminate points that are not common between the two runs
+      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Hour=aqdat2.df$ob_hour, Mod1_Value=aqdat1.df[match.ind,9], Mod2_Value=aqdat2.df[,9], month=aqdat2.df$month)       # eliminate points that are not common between the two runs
    }
 }
    #######################################################################################################################
 
-aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Mod_Value1=aqdat.df$Mod1_Value,Mod_Value2=aqdat.df$Mod2_Value,Start_Date=aqdat.df$ob_dates,Hour=aqdat.df$Hour,Month=aqdat.df$month,precip_ob=aqdat.df$precip_ob,precip_mod=aqdat.df$precip_mod)
+aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Mod_Value1=aqdat.df$Mod1_Value,Mod_Value2=aqdat.df$Mod2_Value,Start_Date=aqdat.df$ob_dates,Hour=aqdat.df$Hour,Month=aqdat.df$month)
 
 indic.na <- is.na(aqdat.df$Mod_Value1)        # Indentify NA records
 aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
@@ -327,9 +322,9 @@ if (run_info_text == "y") {
 }
 
 ### Create PNG Plot ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

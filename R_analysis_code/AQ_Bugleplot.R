@@ -22,9 +22,8 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ### Retrieve units label from database table ###
-network <- network_names[1] 
+network  <- network_names[1] 
 units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql) 
 ################################################
 
 ### Set file names and titles ###
@@ -60,21 +59,18 @@ for (j in 1:length(network_names)) {
    drop_names <- NULL
    species_names <- NULL
    network<-network_names[[j]]
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-            aqdat.df <- db_Query(qs,mysql)               # Query the database 
-            aqdat.df$POCode <- 1
-         }
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         aqdat.df         <- sitex_info$sitex_data
+         units            <- as.character(sitex_info$units[[1]])
+      }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set the rest of the database query
-         aqdat.df <- db_Query(qs,mysql)               # Query the database
+         query_result    <- query_dbase(run_name1,network,species)
+         aqdat_query.df  <- query_result[[1]]
+         units		 <- db_Query(units_qs,mysql)
       }
    }
-   cat(qs)
    if (soccerplot_opt == 1) { 			# If using NMB/NME, set appropriate axis labels
       ylabel1 <- "Normalized Mean Bias (%)"
       ylabel2 <- "Normalized Mean Error (%)"
@@ -136,9 +132,9 @@ legend("topright", legend_names, pch=leg_chars, lty=leg_types,col=leg_cols, merg
 ##############################
 
 ### Create png format file from pdf file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_error_pdf," png:",filename_error_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_error_pdf," png:",filename_error_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -197,9 +193,9 @@ legend("topright", legend_names, pch=leg_chars, lty=leg_types,col=leg_cols, merg
 ##############################
 
 ### Create png format file from pdf file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_bias_pdf," png:",filename_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_bias_pdf," png:",filename_bias_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
