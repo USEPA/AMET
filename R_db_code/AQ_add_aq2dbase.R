@@ -88,6 +88,11 @@ if (dtype == 'NADP') {
   col_offset <- which(sitex_names=="Invalcode_ob")
 #  col_offset <- 20
 }
+if (dtype == 'AMON') {
+  if ("QR_ob" %in% sitex_names) {
+     col_offset <- which(sitex_names=="QR_ob")
+  }
+}
 cat(paste("Successfully read ",sitex_file,"\n",sep=""))
 num_cols    <- ncol(sitex_in)
 start_month <- as.numeric(substr(sitex_in$Time.On,1,2))
@@ -228,6 +233,9 @@ q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, 
 if (dtype == 'NADP') {
    q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, j, ob_dates, ob_datee, ob_hour, month, valid_code, invalid_code"
 }
+if (dtype == 'AMON') {
+   q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, j, ob_dates, ob_datee, ob_hour, month, valid_code"
+}
 for (i in 1:length(database_species_names)) {
    q2_main <- paste(q2_main,database_species_names[i],sep=", ")
 }
@@ -235,6 +243,9 @@ for (i in 1:length(database_species_names)) {
 q3_main <- data.frame(run_id=paste("'",sitex_in$run_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,sitex_in[(col_offset+1):num_cols])
 if (dtype == 'NADP') {
    q3_main <- data.frame(run_id=paste("'",sitex_in$run_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,valid_code=paste("'",sitex_in$Valcode,"'",sep=""),invalid_code=paste("'",sitex_in$Invalcode,"'",sep=""),sitex_in[(col_offset+1):num_cols])
+}
+if (dtype == 'AMON') {
+   q3_main <- data.frame(run_id=paste("'",sitex_in$run_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,valid_code=paste("'",sitex_in$QR,"'",sep=""),sitex_in[(col_offset+1):num_cols])
 }
 q3_main2 <- apply(q3_main,1,reformat)
 query <- paste("REPLACE INTO ",run_id,q2_main,") VALUES (",q3_main2,"); ",sep="")

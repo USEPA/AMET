@@ -46,6 +46,7 @@ filename_mod      <- paste(figdir,filename_mod,sep="/")           # Filename for
 filename_diff     <- paste(figdir,filename_diff,sep="/")          # Filename for diff spatial plot
 filename_rat      <- paste(figdir,filename_rat,sep="/")           # Filename for diff spatial plot
 
+print(filename_obs)
 ########################################
 ### Set NULL values and plot symbols ###
 ########################################
@@ -113,7 +114,6 @@ for (j in 1:total_networks) {							# Loop through for each network
 #   len   <- length(aqdat_query.df[,9])
 
 #   if (count != len) {	# Continue if query returned non-missing data
-
    { 
       if (data_exists == "n") {
 #            stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
@@ -290,7 +290,6 @@ for (k in 1:total_networks) {
    sinfo_diff[[k]]<-list(lat=sinfo_diff_data[[k]]$lat,lon=sinfo_diff_data[[k]]$lon,plotval=sinfo_diff_data[[k]]$plotval,levs=levs_diff,levcols=levcols_diff,levs_legend=levs_legend_diff,cols_legend=leg_colors_diff,convFac=.01)	# Create diff list to be used with PlotSpatial fuction
    sinfo_rat[[k]]<-list(lat=sinfo_rat_data[[k]]$lat,lon=sinfo_rat_data[[k]]$lon,plotval=sinfo_rat_data[[k]]$plotval,levs=levs_rat,levcols=levcols_rat,levs_legend=levs_legend_rat,cols_legend=leg_colors_rat,convFac=.01)  # Create ratio list to be used with PlotSpatial fuction
 }
-
 ###########################
 ### plot text options   ###
 ###########################

@@ -221,15 +221,15 @@ while (run_count <= num_runs) {
       x3 <- axis.max - (axis.length * 0.290)                    # define right justification for RMSEs
       x2 <- axis.max - (axis.length * 0.370)                    # define right justification for Index of Agreement
       x1 <- axis.max - (axis.length * 0.490)                    # define right justification for Network
-      y1 <- axis.max - (axis.length * 0.890)                    # define y for labels
-      y2 <- axis.max - (axis.length * 0.850)                    # define y for run name
-      y3 <- axis.max - (axis.length * 0.920)                    # define y for network 1
-      y4 <- axis.max - (axis.length * 0.950)                    # define y for network 2
-      y5 <- axis.max - (axis.length * 0.980)                    # define y for network 3
-      y6 <- axis.max - (axis.length * 0.700)                    # define y for species text
-      y7 <- axis.max - (axis.length * 0.660)                    # define y for timescale (averaging)
-      y8 <- axis.max - (axis.length * 0.740)
-      y9 <- axis.max - (axis.length * 0.780)
+      y1 <- axis.max - (axis.length * 0.810)                    # define y for labels
+      y2 <- axis.max - (axis.length * 0.770)                    # define y for run name
+      y3 <- axis.max - (axis.length * 0.840)                    # define y for network 1
+      y4 <- axis.max - (axis.length * 0.870)                    # define y for network 2
+      y5 <- axis.max - (axis.length * 0.900)                    # define y for network 3
+      y6 <- axis.max - (axis.length * 0.660)                    # define y for species text
+      y7 <- axis.max - (axis.length * 0.620)                    # define y for timescale (averaging)
+      y8 <- axis.max - (axis.length * 0.700)
+      y9 <- axis.max - (axis.length * 0.740)
       y10 <- axis.max*0.82
       y11 <- axis.max*0.78
       x <- c(x1,x2,x3,x4,x5,x6,x7)                              # set vector of x offsets
@@ -282,19 +282,20 @@ while (run_count <= num_runs) {
       x2 <- axis.max * 0.200                    		# define right justification for RMSE
       x1 <- axis.max * 0.090                    		# define right justification for Network
       y1 <- axis.max * 0.940                    		# define y for labels
-      y2 <- axis.max * 0.980                    		# define y for run name
-      y3 <- axis.max * 0.900                    		# define y for network 1
-      y4 <- axis.max * 0.870                    		# define y for network 2
-      y5 <- axis.max * 0.840                    		# define y for network 3
-      y6 <- axis.max * 0.810
+      y2 <- axis.max * 0.900                    		# define y for run name
+      y3 <- axis.max * 0.860                    		# define y for network 1
+      y4 <- axis.max * 0.830                    		# define y for network 2
+      y5 <- axis.max * 0.810                    		# define y for network 3
+      y6 <- axis.max * 0.770
+      y7 <- axis.max * 0.730
       x2 <- c(x1,x2,x3,x4,x5,x6,x7)                    		# set vector of x offsets
-      y2 <- c(y1,y2,y3,y4,y5,y6)					# set vector of y offsets
-      text(x2[7],y2[2], run_name, cex=1)				# add run name to stats box
-      text(x2[2],y2[1], stats_names_include[1] ,font=3,cex=0.8)
-      text(x2[3],y2[1], stats_names_include[2] ,font=3,cex=0.8)	# write RMSE title
-      text(x2[4],y2[1], stats_names_include[3] ,font=3,cex=0.8)                   # write NMB title
-      text(x2[5],y2[1], stats_names_include[4] ,font=3,cex=0.8)                   # write NME title
-      text(x2[6],y2[1], stats_names_include[5] ,font=3,cex=0.8)
+      y2 <- c(y1,y2,y3,y4,y5,y6,y7)					# set vector of y offsets
+      text(x2[7],y2[1], run_name, cex=1)				# add run name to stats box
+      text(x2[2],y2[2], stats_names_include[1] ,font=3,cex=0.8)	
+      text(x2[3],y2[2], stats_names_include[2] ,font=3,cex=0.8)		# write RMSE title
+      text(x2[4],y2[2], stats_names_include[3] ,font=3,cex=0.8)         # write NMB title
+      text(x2[5],y2[2], stats_names_include[4] ,font=3,cex=0.8)         # write NME title
+      text(x2[6],y2[2], stats_names_include[5] ,font=3,cex=0.8)
       ##############################################
    }   
 
@@ -302,13 +303,15 @@ while (run_count <= num_runs) {
    for (n in 1:total_networks) {									# loop through each network
       point_color <- plot_colors[n]
       if (run_count == 1) { 
+         offset <- c(0.84,0.87,0.90,0.93,0.96)
          points(sinfo[[n]]$plotval_obs,sinfo[[n]]$plotval_mod,pch=plot_chars[n],col=plot_colors[n],cex=1)	# plot points for each network
-         text(x[1],y[n+2], network_label[n], cex=0.9)								# add network text to stats box
-         text(x[2],y[n+2], sinfo[[n]]$stat1, cex=0.9)								# write network stat1
-         text(x[3],y[n+2], sinfo[[n]]$stat2, cex=0.9)								# write network stat2
-         text(x[4],y[n+2], sinfo[[n]]$stat3, cex=0.9)                          					# write network stat3
-         text(x[5],y[n+2], sinfo[[n]]$stat4, cex=0.9)       	                    				# write netowrk stat4
-         text(x[6],y[n+2], sinfo[[n]]$stat5, cex=0.9)								# write network stat5
+         y_val <- axis.max-(axis.length * offset[n])
+         text(x[1],y_val, network_label[n], cex=0.9)								# add network text to stats box
+         text(x[2],y_val, sinfo[[n]]$stat1, cex=0.9)								# write network stat1
+         text(x[3],y_val, sinfo[[n]]$stat2, cex=0.9)								# write network stat2
+         text(x[4],y_val, sinfo[[n]]$stat3, cex=0.9)                          					# write network stat3
+         text(x[5],y_val, sinfo[[n]]$stat4, cex=0.9)       	                    				# write netowrk stat4
+         text(x[6],y_val, sinfo[[n]]$stat5, cex=0.9)								# write network stat5
       }
       else {
          points(sinfo2[[n]]$plotval_obs,sinfo2[[n]]$plotval_mod,pch=plot_chars[n],col=plot_colors[n],cex=1)	# plot points for each network
@@ -365,7 +368,7 @@ if (run_info_text == "y") {
 ### Put legend on the plot ###
 {
    if (num_runs < 2) {
-      legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1.2, bty="n")
+      legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1, bty="n")
    }
    else {
       legend(0,y2[6], legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1, bty="n")
