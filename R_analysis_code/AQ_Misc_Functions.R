@@ -320,7 +320,6 @@ if (length(cols) != (length(bounds)-1)) {
   legoffset3<- (1/100)*(lone-lonw)
   textoffset<- (1/63)*(lone-lonw)
   legend.size <- (3*(latn-lats))/(lone-lonw)
-  print(length(levLab))
   if (legend.size > 1) {
      if (plotopts$plotfmt == "png") {
         legend.size <- 1 
@@ -1177,6 +1176,8 @@ aggregate_query <- function(data_in.df)
    agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour),FUN=function(x)mean(x,na.rm=T))
    agg_data[is.na(agg_data)] <- -999
    agg_data <- cbind(network=network,agg_data)
+   #Order the outgoing data by start date and hour. Required for time series plots since the sorting is lost after the aggregate is run
+   agg_data <- agg_data[order(agg_data$ob_dates,agg_data$ob_hour),]
    return(agg_data)
 }
 ########################################

@@ -31,7 +31,7 @@ filename_png <- paste(figdir,filename_png,sep="/")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
-   if (custom_title == "") { title <- paste(run_name1,"MDA8 Ozone for",dates,sep="") }
+   if (custom_title == "") { title <- paste(run_name1,"MDA8 Ozone for",dates,sep=" ") }
    else { title <- custom_title }
 }
 
@@ -97,25 +97,33 @@ y.axis.max <- c(sum((y.axis.max.value * 0.3),y.axis.max.value))			# Add 30% of t
 ### To get a new graphics window (linux systems), use X11() ###
 pdf(filename_pdf, width=8, height=8)						# Set output device with options
 
+if (inc_ranges != "y") {
+   plot_colors <- "transparent"
+}
+whisker_color <- "transparent"
+if (inc_whiskers == 'y') {
+   whisker_color <- plot_colors
+}
+
 par(mai=c(1,1,0.5,0.5), lab=c(12,10,10), mar=c(5,4,4,5))								# Set plot margins
-boxplot(split(aqdat.df$ob_val, aqdat.df$hour), range=0, border="transparent", col="transparent", ylim=c(y.axis.min, y.axis.max), xlab="Hour LST", ylab=label, cex.axis=1.3, cex.lab=1.3)	# Create boxplot
+boxplot(split(aqdat.df$ob_val, aqdat.df$hour), range=0, border=plot_colors[1], whiskcol=whisker_color[1], staplecol=whisker_color[1], col=plot_colors[1], ylim=c(y.axis.min, y.axis.max), xlab="Hour LST", ylab=label, cex.axis=1.3, cex.lab=1.3)	# Create boxplot
 
 ## Do the same thing for model values.  Use a different color for the background.
-boxplot(split(aqdat.df$mod_val,aqdat.df$hour), range=0, border="transparent", col="transparent", boxwex=0.5, add=T, cex.axis=1.3, cex.lab=1.3)	# Plot model values on existing plot
+boxplot(split(aqdat.df$mod_val,aqdat.df$hour), range=0, border=plot_colors[2], whiskcol=whisker_color[2], staplecol=whisker_color[2],col=plot_colors[2], boxwex=0.5, add=T, cex.axis=1.3, cex.lab=1.3)	# Plot model values on existing plot
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.8)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###
 x.loc <- 1:num.groups								# Set number of median points to plot
-points(x.loc, median.spec1,pch=plot_symbols[1],col=plot_colors[1])						# Plot median points
-lines(x.loc, median.spec1,col=plot_colors[1])							# Connect median points with a line
+points(x.loc, median.spec1,pch=plot_symbols[1],col=plot_colors2[1])						# Plot median points
+lines(x.loc, median.spec1,col=plot_colors2[1])							# Connect median points with a line
 
 ### Second species ###								# As above, except for model values
 x.loc <- 1:num.groups
-points(x.loc, median.spec2, pch=plot_symbols[2], col=plot_colors[2])
-lines(x.loc, median.spec2, lty=2, col=plot_colors[2])
+points(x.loc, median.spec2, pch=plot_symbols[2], col=plot_colors2[2])
+lines(x.loc, median.spec2, lty=2, col=plot_colors2[2])
 #########################################################################
 
 ### Put legend on the plot ###
@@ -127,19 +135,39 @@ nsamples.table <- table(aqdat.df$hour)
 #########################################
 
 ### Put text on plot ###
-text(x=18,y=y.axis.max,paste("RPO: ",rpo,sep=""),cex=1.2,adj=c(0,0))
-text(x=18,y=y.axis.max*0.95,paste("PCA: ",pca,sep=""),cex=1.2,adj=c(0,0))
-if (state != "All") {
-   text(x=18,y=y.axis.max*0.85,paste("State: ",state,sep=""),cex=1.2,adj=c(0,0))
-}
-text(x=18,y=y.axis.max*0.90,paste("Site: ",site,sep=""),cex=1.2,adj=c(0,0))
+#text(x=18,y=y.axis.max,paste("RPO: ",rpo,sep=""),cex=1.2,adj=c(0,0))
+#text(x=18,y=y.axis.max*0.95,paste("PCA: ",pca,sep=""),cex=1.2,adj=c(0,0))
+#if (state != "All") {
+#   text(x=18,y=y.axis.max*0.85,paste("State: ",state,sep=""),cex=1.2,adj=c(0,0))
+#}
+#text(x=18,y=y.axis.max*0.90,paste("Site: ",site,sep=""),cex=1.2,adj=c(0,0))
 ########################
+
+### Put text stating coverage limit used ###
+if (averaging == "m") {
+   text(topright,paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
+}
+if (run_info_text == "y") {
+   if (rpo != "None") {
+      text(x.axis.max,y.axis.max*.93,paste("RPO = ",rpo,sep=""),adj=c(0.5,.5),cex=.9)
+   }
+   if (pca != "None") {
+      text(x.axis.max,y.axis.max*.90,paste("PCA = ",pca,sep=""),adj=c(0.5,.5),cex=.9)
+   }
+   if (site != "All") {
+      text(x.axis.max,y.axis.max*.87,paste("Site = ",site,sep=""),adj=c(0.5,.5),cex=.9)
+   }
+   if (state != "All") {
+      text(x.axis.max,y.axis.max*.84,paste("State = ",state,sep=""),adj=c(0.5,.5),cex=.9)
+   }
+}
+############################################
 
 ### Put number of samples above each hour ###
 text(x=1:24,y=y.axis.min,labels=nsamples.table,cex=.75,srt=90)
 
 ### Convert pdf to png ###
-dev.off
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {   
    convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)

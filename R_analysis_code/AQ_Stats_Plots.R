@@ -408,10 +408,10 @@ plotsize<-1.50													# Set plot size
 symb<-15														# Set symbol to use
 symbsiz<-1                                                                         # Set symbol size
 if (length(unique(aqdat.df$Stat_ID)) > 500) {
-   symbsiz <- 0.6
+   symbsiz <- 0.7
 }
 if (length(unique(aqdat.df$Stat_ID)) > 10000) {
-   symbsiz <- 0.3
+   symbsiz <- 0.4
 }
 ##################################### 
       
