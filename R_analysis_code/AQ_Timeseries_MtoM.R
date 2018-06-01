@@ -63,6 +63,7 @@ remove_negatives <- "n"
 #############################################
 ### Read sitex file or query the database ###
 #############################################
+criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",network,"'",query,sep="")
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
@@ -74,9 +75,9 @@ remove_negatives <- "n"
       data_exists2     <- sitex_info2$data_exists
    }
    else {
-      query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour"))
+      query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour"),criteria=criteria)
       aqdat_query.df  <- query_result[[1]]
-      query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"))
+      query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"),criteria=criteria)
       aqdat_query2.df <- query_result2[[1]]
       units           <- db_Query(units_qs,mysql)
       model_name      <- db_Query(model_name_qs,mysql)
@@ -99,10 +100,10 @@ aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour
 {
    if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
       match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Hour=aqdat1.df$ob_hour, Mod1_Value=aqdat1.df[,9], Mod2_Value=aqdat2.df[match.ind,9], month=aqdat1.df$month)       # eliminate points that are not common between the two runs
+      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Hour=aqdat1.df$ob_hour, Mod1_Value=aqdat1.df[,10], Mod2_Value=aqdat2.df[match.ind,10], month=aqdat1.df$month)       # eliminate points that are not common between the two runs
    }
    else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Hour=aqdat2.df$ob_hour, Mod1_Value=aqdat1.df[match.ind,9], Mod2_Value=aqdat2.df[,9], month=aqdat2.df$month)       # eliminate points that are not common between the two runs
+      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Hour=aqdat2.df$ob_hour, Mod1_Value=aqdat1.df[match.ind,10], Mod2_Value=aqdat2.df[,10], month=aqdat2.df$month)       # eliminate points that are not common between the two runs
    }
 }
    #######################################################################################################################
@@ -297,7 +298,8 @@ if (inc_points == 'y') {
 #      axis.POSIXct(side=1, at=Dates)
    }
 }
-legend_names <- paste(run_name1,"-",run_name2,sep=" ")
+#legend_names <- paste(run_name1,"-",run_name2,sep=" ")
+legend_names <- paste("Run1 - Run2",sep="")
 legend_colors <- plot_colors[2]
 abline(h=0,col="black")
 usr <- par("usr")

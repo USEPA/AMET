@@ -31,16 +31,16 @@ ametRinput      <- Sys.getenv("AMETRINPUT")                     # input file for
 ametptype       <- Sys.getenv("AMET_PTYPE")                     # Prefered output type
 config_file     <- Sys.getenv("MYSQL_CONFIG")                   # MySQL configuration file 
 
-## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
-## and not specified via AMET_OUT, then set figdir to the current directory
-if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
-if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
-
 ## source some configuration files, AMET libs, and input
 source (config_file)
 if(ametRinput != "") {
    source (ametRinput)  # Anaysis configuration/input file
 }
+
+## Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
+## and not specified via AMET_OUT, then set figdir to the current directory
+if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")       }
+if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 }
 
 ## Load Required Libraries
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
@@ -1172,12 +1172,14 @@ if(!exists("run_name1")) {
 
 aggregate_query <- function(data_in.df)
 {
+#   print(data_in.df)
    data_in.df[data_in.df==-999] <- NA
    agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour),FUN=function(x)mean(x,na.rm=T))
    agg_data[is.na(agg_data)] <- -999
    agg_data <- cbind(network=network,agg_data)
    #Order the outgoing data by start date and hour. Required for time series plots since the sorting is lost after the aggregate is run
-   agg_data <- agg_data[order(agg_data$ob_dates,agg_data$ob_hour),]
+   agg_data <- agg_data[order(agg_data$ob_dates,agg_data$ob_hour),]	
+   agg_data$POCode <- 1
    return(agg_data)
 }
 ########################################
@@ -1311,9 +1313,10 @@ query_dbase <- function(run_name,network,species,criteria="Default",orderby=c("s
       mod_col <- 10+2*k
       {
          if (length(aqdat_query.df$stat_id > 0)) {
-            count <- sum(is.na(aqdat_query.df[,ob_col]))
+            count_na <- sum(is.na(aqdat_query.df[,ob_col]))	# Check for all data not available
+            count_missing <- sum(aqdat_query.df[,ob_col] < -90)	# Check for all data missing
             len   <- length(aqdat_query.df[,mod_col])
-            if (count == len) {
+            if ((count_na == len) || (count_missing == len)) {
                data_exists_flag <- "n"
             }
             else {

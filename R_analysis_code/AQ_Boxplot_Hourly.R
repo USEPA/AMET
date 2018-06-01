@@ -66,7 +66,7 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
       }
       else {
          query_result2    <- query_dbase(run_name2,network,species)
-         aqdat_query2.df  <- query_result[[1]]
+         aqdat_query2.df  <- query_result2[[1]]
       }
    }
    aqdat2.df <- aqdat_query2.df
@@ -84,7 +84,7 @@ if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
       }
       else {
          query_result3    <- query_dbase(run_name3,network,species)
-         aqdat_query3.df  <- query_result[[1]]
+         aqdat_query3.df  <- query_result2[[1]]
       }
    }
    aqdat3.df <- aqdat_query3.df
@@ -139,12 +139,14 @@ if (remove_mean == 'y') {
 #################################
 
 ### Find q1, median, q2 for each group of both species ###
-q1.spec1 <- tapply(aqdat.df$Obs_Value, aqdat.df$ob_hour, quantile, 0.25, na.rm=T)	# Compute ob 25% quartile
-q1.spec2 <- tapply(aqdat.df$Mod_Value, aqdat.df$ob_hour, quantile, 0.25, na.rm=T)	# Compute model 25% quartile
+q1.spec1     <- tapply(aqdat.df$Obs_Value, aqdat.df$ob_hour, quantile, 0.25, na.rm=T)	# Compute ob 25% quartile
+q1.spec2     <- tapply(aqdat.df$Mod_Value, aqdat.df$ob_hour, quantile, 0.25, na.rm=T)	# Compute model 25% quartile
 median.spec1 <- tapply(aqdat.df$Obs_Value, aqdat.df$ob_hour, median, na.rm=T)		# Compute ob median value
 median.spec2 <- tapply(aqdat.df$Mod_Value, aqdat.df$ob_hour, median, na.rm=T)	# Compute model median value
-q3.spec1 <- tapply(aqdat.df$Obs_Value, aqdat.df$ob_hour, quantile, 0.75, na.rm=T)	# Compute ob 75% quartile
-q3.spec2 <- tapply(aqdat.df$Mod_Value, aqdat.df$ob_hour, quantile, 0.75, na.rm=T)	# Compute model 75% quartile
+mean.spec1   <- tapply(aqdat.df$Obs_Value, aqdat.df$ob_hour, mean, na.rm=T)           # Compute ob median value
+mean.spec2   <- tapply(aqdat.df$Mod_Value, aqdat.df$ob_hour, mean, na.rm=T)   # Compute model median value
+q3.spec1     <- tapply(aqdat.df$Obs_Value, aqdat.df$ob_hour, quantile, 0.75, na.rm=T)	# Compute ob 75% quartile
+q3.spec2     <- tapply(aqdat.df$Mod_Value, aqdat.df$ob_hour, quantile, 0.75, na.rm=T)	# Compute model 75% quartile
 ################################################
 
 q1.spec3     <- NULL

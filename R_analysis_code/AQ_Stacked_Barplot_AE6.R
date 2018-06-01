@@ -313,7 +313,9 @@ if (num_runs > 1) {
       out_matrix <- matrix(c(medians.df$SO4_ob,medians.df$SO4_mod,SO4_ob_percent,SO4_mod_percent,medians.df$NO3_ob,medians.df$NO3_mod,NO3_ob_percent,NO3_mod_percent,medians.df$NH4_ob,medians.df$NH4_mod,NH4_ob_percent,NH4_mod_percent,medians.df$EC_ob,medians.df$EC_mod,EC_ob_percent,EC_mod_percent,medians.df$OC_ob,medians.df$OC_mod,OC_ob_percent,OC_mod_percent,medians.df$soil_ob,medians.df$soil_mod,soil_ob_percent,soil_mod_percent,medians.df$NaCl_ob,medians.df$NaCl_mod,NaCl_ob_percent,NaCl_mod_percent,NCOM_ob,medians.df$NCOM_mod,NCOM_ob_percent,NCOM_mod_percent,other_ob,medians.df$OTHER_REM_mod,other_ob_percent,other_rem_mod_percent,blank_ob,blank_mod,blank_ob_percent,blank_mod_percent,water_ob,FRM_adj_median,water_ob_percent,FRM_adj_mod_percent),byrow=T,ncol=4)
    }
    else if (network == 'CSN') {
-      data_matrix <- matrix(c(medians.df$SO4_ob,medians.df$SO4_mod,medians.df$NO3_ob,medians.df$NO3_mod,medians.df$NH4_ob,medians.df$NH4_mod,medians.df$EC_ob,medians.df$EC_mod,medians.df$OC_ob,medians.df$OC_mod,medians.df$soil_ob,medians.df$soil_mod,medians.df$NaCl_ob,medians.df$NaCl_mod,NCOM_ob,medians.df$NCOM_mod,other_ob,medians.df$OTHE_REM_mod,blank_ob,blank_mod,water_ob,0),byrow=T,ncol=2)  # create matrix of average values needed by barplot, 2 columns (ob,model) and species by row
+      data_matrix <- matrix(c(medians.df$SO4_ob,medians.df$SO4_mod,medians.df$NO3_ob,medians.df$NO3_mod,medians.df$NH4_ob,medians.df$NH4_mod,medians.df$EC_ob,medians.df$EC_mod,medians.df$OC_ob,medians.df$OC_mod,medians.df$soil_ob,medians.df$soil_mod,medians.df$NaCl_ob,medians.df$NaCl_mod,NCOM_ob,medians.df$NCOM_mod,other_ob,medians.df$OTHER_REM_mod,blank_ob,blank_mod,0,0),byrow=T,ncol=2)  # create matrix of average values needed by barplot, 2 columns (ob,model) and species by row
+      out_matrix <- matrix(c(medians.df$SO4_ob,medians.df$SO4_mod,SO4_ob_percent,SO4_mod_percent,medians.df$NO3_ob,medians.df$NO3_mod,NO3_ob_percent,NO3_mod_percent,medians.df$NH4_ob,medians.df$NH4_mod,NH4_ob_percent,NH4_mod_percent,medians.df$EC_ob,medians.df$EC_mod,EC_ob_percent,EC_mod_percent,medians.df$OC_ob,medians.df$OC_mod,OC_ob_percent,OC_mod_percent,medians.df$soil_ob,medians.df$soil_mod,soil_ob_percent,soil_mod_percent,medians.df$NaCl_ob,medians.df$NaCl_mod,NaCl_ob_percent,NaCl_mod_percent,NCOM_ob,medians.df$NCOM_mod,NCOM_ob_percent,NCOM_mod_percent,other_ob,medians.df$OTHER_REM_mod,other_ob_percent,other_rem_mod_percent,blank_ob,blank_mod,blank_ob_percent,blank_mod_percent,water_ob,water_ob_percent),byrow=T,ncol=4)
+      
    } 
    else {
       data_matrix <- matrix(c(medians.df$SO4_ob,medians.df$SO4_mod,medians.df$NO3_ob,medians.df$NO3_mod,medians.df$NH4_ob,medians.df$NH4_mod,medians.df$EC_ob,medians.df$EC_mod,medians.df$OC_ob,medians.df$OC_mod,medians.df$soil_ob,medians.df$soil_mod,medians.df$NaCl_ob,medians.df$NaCl_mod,NCOM_ob,medians.df$NCOM_mod,other_ob,medians.df$OTHER_REM_mod),byrow=T,ncol=2)  # create matrix of average values needed by barplot, 2 columns (ob,model) and species by row
@@ -349,8 +351,11 @@ yaxis.max   <- round(yaxis.max*1.2,1)  # find the max of the average values to s
       sim_names		<- c(network_label,run_name1)
    }
 }
+
+
 write.table(paste(simulations,": ",dates,sep=""),file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
 write.table(aqdat_all.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
+write.table("Values used to create figure:",file=filename_txt,append=T,row.names=F)
 {
    if (num_runs == 1) {
       write.table("Observed(ug/m3),Modeled(ug/m3),Observed(%),Modeled(%)",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
@@ -412,7 +417,9 @@ text(x1,(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+
 text(x1,(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+medians.df$soil_ob+medians.df$NaCl_ob+NCOM_ob+(other_ob/2)),paste(other_ob_percent,"% --",sep=""),cex=1.2,adj=c(1,0.5))
 if (network == 'CSN') {
    text(x1,(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+medians.df$soil_ob+medians.df$NaCl_ob+NCOM_ob+other_ob+(blank_ob/2)),paste(blank_ob_percent,"% --",sep=""),cex=1.2,adj=c(1,0.5))
-   text(x1,(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+medians.df$soil_ob+medians.df$NaCl_ob+NCOM_ob+other_ob+blank_ob+(water_ob/2)),paste(water_ob_percent,"% --",sep=""),cex=1.2,adj=c(1,0.5))
+   if (inc_FRM_adj == 'y') {
+      text(x1,(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+medians.df$soil_ob+medians.df$NaCl_ob+NCOM_ob+other_ob+blank_ob+(water_ob/2)),paste(water_ob_percent,"% --",sep=""),cex=1.2,adj=c(1,0.5))
+   }
 }
 
 {

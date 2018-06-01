@@ -164,37 +164,46 @@ for (j in 1:total_networks) {							# Loop through for each network
          }
          remove(aqdat1.df,aqdat2.df)
 
-         split_sites_all  <- split(aqdat.df, aqdat.df$stat_id)				# Split all data by site
-         for (i in 1:length(split_sites_all)) {                     				# Run averaging for each site for each month
-            sub_all.df  <- split_sites_all[[i]]						# Store current site i in sub_all.df dataframe
-            num_total_obs <- length(sub_all.df[,9])					# Count the total number of obs available for the site
-            num_good_obs <- 0								# Set number of good obs to 0
-            for (k in 1:length(sub_all.df[,9])) { 						# Count the number of non-missing obs (good obs)
-               if (sub_all.df[k,9] >= -90) {							# If ob value is >= 0, count as good
-                  num_good_obs <- num_good_obs+1						# Increment good ob count by one
+         ### Remove NAs from paired dataset ###
+         indic.na <- !is.na(aqdat.df$Mod_Value_1)
+         aqdat.df <- aqdat.df[indic.na,]
+         indic.na <- !is.na(aqdat.df$Mod_Value_2)
+         aqdat.df <- aqdat.df[indic.na,]
+         indic.na <- !is.na(aqdat.df$Ob_Value_1)
+         aqdat.df <- aqdat.df[indic.na,]
+         ######################################
+
+         split_sites_all  <- split(aqdat.df, aqdat.df$stat_id)	# Split all data by site
+         for (i in 1:length(split_sites_all)) {	# Run averaging for each site for each month
+            sub_all.df  <- split_sites_all[[i]]	# Store current site i in sub_all.df dataframe
+            num_total_obs <- length(sub_all.df[,9])	# Count the total number of obs available for the site
+            num_good_obs <- 0				# Set number of good obs to 0
+            for (k in 1:length(sub_all.df[,9])) { 	# Count the number of non-missing obs (good obs)
+               if (sub_all.df[k,9] >= -90) {		# If ob value is >= 0, count as good
+                  num_good_obs <- num_good_obs+1	# Increment good ob count by one
                }
             }
-            coverage <- (num_good_obs/num_total_obs)*100					# Compute coverage value for good_obs/total_obs
-            if (coverage >= coverage_limit) {  						# determine if the number of non-missing obs is >= to the coverage limit
-               indic.nonzero <- sub_all.df[,6] >= -90						# Identify good obs in dataframe
-               sub_good.df <- sub_all.df[indic.nonzero,]					# Update dataframe to only include good obs (remove missing obs)
+            coverage <- (num_good_obs/num_total_obs)*100	# Compute coverage value for good_obs/total_obs
+            if (coverage >= coverage_limit) {  			# determine if the number of non-missing obs is >= to the coverage limit
+               indic.nonzero <- sub_all.df[,6] >= -90		# Identify good obs in dataframe
+               sub_good.df <- sub_all.df[indic.nonzero,]	# Update dataframe to only include good obs (remove missing obs)
                indic.nonzero <- sub_good.df[,7] >= -90
                sub_good.df <- sub_good.df[indic.nonzero,]
                indic.nonzero <- sub_good.df[,8] >= -90
                sub_good.df <- sub_good.df[indic.nonzero,] 
-               sites        <- c(sites, unique(sub_good.df$stat_id))					# Add current site to site list	
-               lats         <- c(lats, unique(sub_good.df$lat))					# Add current lat to lat list
-               lons         <- c(lons, unique(sub_good.df$lon))					# Add current lon to lon list
-               mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  		# Compute the site mean bias for simulation 1
-               mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  		# Compute the site mean bias for simulation 2
-               mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  					# Store site bias for simulation 1 in an array
-               mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  					# Store site bias for simulation 2 in an array
-               bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))			# Compute difference in site mean bias between two simulations
-               mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))		# Compute the site mean error for simulation 1
-               mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))		# Compute the site mean error for simulation 2
-               mod_error_1_all    <- c(mod_error_1_all, mod_error_1)					# Store site mean error for simulation 1 in an array
-               mod_error_2_all    <- c(mod_error_2_all, mod_error_2)					# Store site mean error for simulation 2 in an array
-               error_diff     <- c(error_diff, (mod_error_1-mod_error_2))				# Compute difference in site mean error between two simulations
+               sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
+               lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
+               lons         <- c(lons, unique(sub_good.df$lon))				# Add current lon to lon list
+               mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  	# Compute the site mean bias for simulation 1
+               mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  	# Compute the site mean bias for simulation 2
+               mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  			# Store site bias for simulation 1 in an array
+               mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  			# Store site bias for simulation 2 in an array
+               bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))	# Compute diff in site mean bias between two simulations
+               mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
+               mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
+               mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
+               mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
+               error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
             }
          }
 
@@ -458,46 +467,46 @@ for (k in 1:total_networks) {
 ###############################
 
 ### Plot Run 1 Bias ###
-unique_labels <- "y"												# Do not use unique labels
+unique_labels <- "y"	# Do not use unique labels
 levLab  <- leg_labels_bias
 if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <-"png" 
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_1,figure=filename_bias_1,varlab=title_bias_1,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for obs values
 }
 if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"												# Set plot format as pdf
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "pdf"	# Set plot format as pdf
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_1,figure=filename_bias_1,varlab=title_bias_1,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for ob values
 }
 #########################
 
 ### Plot Run 2 Bias ###
 if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"												# Set plot format as png
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "png"								# Set plot format as png
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_2,figure=filename_bias_2,varlab=title_bias_2,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for model values
 }
 if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"												# Set plot format as pdf
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "pdf"								# Set plot format as pdf
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_2,figure=filename_bias_2,varlab=title_bias_2,bounds=bounds,plotopts=plotopts,plot_units=units)   	# Call PlotSpatial function for model values
 }
 ###########################
 
 ### Plot Bias Difference ###
-plotfmt <- "png" 												# Set plot format as png
-unique_labels <- "y"												# Flag within Misc_Functions.R to use predefined labels
-#levLab <- levels_label_diff_bias						# Set lables to be ones defined above by levels_label_diff
+plotfmt <- "png" 			# Set plot format as png
+unique_labels <- "y"			# Flag within Misc_Functions.R to use predefined labels
+#levLab <- levels_label_diff_bias	# Set lables to be ones defined above by levels_label_diff
 levLab <- leg_labels_diff_bias
 if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 					# Set plot options list to use with PlotSpatial function
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_diff,figure=filename_bias_diff,varlab=title_bias_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
 if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf" 												# Set plot format as pdf
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "pdf" 								# Set plot format as pdf
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_diff,figure=filename_bias_diff,varlab=title_bias_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
 #########################################
