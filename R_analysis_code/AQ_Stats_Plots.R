@@ -140,7 +140,6 @@ for (j in 1:total_networks) {
       write.table(aqdat_query.df,file=filename_txt,append=T,row.names=F,sep=",")
    } 
    #######################
-
    #################################################################
    ### Check to see if there is any data from the database query ###
    #################################################################
