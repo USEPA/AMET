@@ -21,8 +21,8 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network		<- network_names[1]
-units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units		<- db_Query(units_qs,mysql)
+#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units		<- db_Query(units_qs,mysql)
 #################################
 
 ### Set file names and titles ###
@@ -46,6 +46,7 @@ label <- paste(species,"(",units,")",sep=" ")
 
 query_result   	<- query_dbase(run_name,network,species)
 aqdat.df 	<- query_result[[1]]
+units		<- query_result[[3]]
 
 ## test that the query worked
 if (length(aqdat.df) == 0){

@@ -20,7 +20,7 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1] 														# Use first network to set units
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Query to be used 
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Query to be used 
 ################################################
 
 ### Set file names and titles ###
@@ -61,7 +61,7 @@ for (j in 1:length(network_names)) {						# Loop through for each network
          aqdat1.df      <- query_result[[1]]
          query_result2  <- query_dbase(run_name2,network,species)
          aqdat2.df 	<- query_result2[[1]]
-         units 		<- db_Query(units_qs,mysql)
+         units 		<- query_result[[3]]
       }
    }
    aqdat1.df$ob_dates	<- aqdat1.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
@@ -73,10 +73,10 @@ for (j in 1:length(network_names)) {						# Loop through for each network
    {
       if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {				# If more obs in run 1 than run 2
          match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)					# Match the unique column (statdate) between the two runs
-         aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, aqdat1.df[,9], aqdat2.df[match.ind,9], month=aqdat1.df$month)	# eliminate points that are not common between the two runs
+         aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, aqdat1.df[,10], aqdat2.df[match.ind,10], month=aqdat1.df$month)	# eliminate points that are not common between the two runs
       }
       else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate) 				# If more obs in run 2 than run 1
-         aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,9], aqdat2.df[,9], month=aqdat2.df$month)	# eliminate points that are not common between the two runs
+         aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,10], aqdat2.df[,10], month=aqdat2.df$month)	# eliminate points that are not common between the two runs
       }
    }
    #######################################################################################################################

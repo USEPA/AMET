@@ -25,8 +25,8 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1] 
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql) 
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units <- db_Query(units_qs,mysql) 
 run2 <- "False"
 run3 <- "False"
 ################################################
@@ -63,9 +63,10 @@ filename_norm_bias_png   <- paste(figdir,filename_norm_bias_png,sep="/")
       units            <- as.character(sitex_info$units[[1]])
    }
    else {
-      units	      <- db_Query(units_qs,mysql)
+#      units	      <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
+      units	      <- query_result[[3]]
    }
 }
 years   <- substr(aqdat_query.df$ob_dates,1,4)
@@ -314,7 +315,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.9)
 
 ### Count number of samples per month ###
 nsamples.table <- obs.stats$n
@@ -416,7 +417,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.9)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###
@@ -507,7 +508,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.9)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###

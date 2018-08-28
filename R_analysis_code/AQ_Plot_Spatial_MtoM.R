@@ -25,7 +25,7 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
 
 figure_diff	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_avg",sep="_")           # Filename for diff spatial plot
 figure_max	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_max",sep="_")               # Filename for diff spatial plot
@@ -105,7 +105,7 @@ for (j in 1:total_networks) {                                            # Loop 
          data_exists2     <- query_result2[[2]]
          aqdat1.df	  <- aqdat_query.df
          aqdat2.df 	  <- aqdat_query2.df
-         units     	  <- db_Query(units_qs,mysql)
+         units     	  <- query_result[[3]]
       }
    }
    {

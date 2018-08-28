@@ -1275,8 +1275,9 @@ read_sitex <- function(directory,network,run_name,species)
 ### Function to query database ###
 ##################################
 
-query_dbase <- function(run_name,network,species,criteria="Default",orderby=c("stat_id","ob_dates","ob_hour"))
+query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_dates","ob_hour"))
 {
+   run_name     <- gsub("[.]","_",project_id)
    if (!exists("aggregate_data")) { aggregate_data <- "y" }
    data_order <- orderby[1]
    i <- 2 
@@ -1347,6 +1348,14 @@ query_dbase <- function(run_name,network,species,criteria="Default",orderby=c("s
       }
       aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')
    }
-   return(list(aqdat_query.df,data_exists_flag))
+   units_qs        <- paste("SELECT ",species[1]," from project_units where proj_code = '",run_name,"' and network = '",network,"'", sep="")
+   units           <- db_Query(units_qs,mysql)
+   if (length(units) == 0) {
+      units <- ""
+   }
+   model_name_qs   <- paste("SELECT model from aq_project_log where proj_code ='",run_name,"'", sep="")
+   model_name_out  <- db_Query(model_name_qs,mysql)
+   model_name      <- model_name_out[[1]]
+   return(list(aqdat_query.df,data_exists_flag,units,model_name))
 }
 ########################################

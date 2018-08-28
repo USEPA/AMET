@@ -18,8 +18,8 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set file names and titles ###
@@ -79,9 +79,8 @@ for (j in 1:total_networks) {	# For each simulation being plotted
       else {
          query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
          aqdat_query.df  <- query_result[[1]]
-         units           <- db_Query(units_qs,mysql)
-         model_name      <- db_Query(model_name_qs,mysql)
-         model_name      <- model_name[[1]]
+         units           <- query_result[[3]]
+         model_name      <- query_result[[4]]
       }
    }
    #############################################

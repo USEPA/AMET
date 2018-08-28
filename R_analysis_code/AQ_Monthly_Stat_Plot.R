@@ -23,14 +23,14 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ### Retrieve units label from database table ###
 ################################################
 network		<- network_names[1]
-units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units 		<- db_Query(units_qs,mysql)
-model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name 	<- db_Query(model_name_qs,mysql)
-model_name 	<- model_name[[1]]
-if (length(units) == 0) {
- units <- ""
-}
+#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units 		<- db_Query(units_qs,mysql)
+#model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name 	<- db_Query(model_name_qs,mysql)
+#model_name 	<- model_name[[1]]
+#if (length(units) == 0) {
+# units <- ""
+#}
 ################################################
 
 ################################################
@@ -92,8 +92,10 @@ network_name<-network_label[[1]]
 #######################################
 ### Compute total number of  months ###
 #######################################
-start_month     <- month_start
-end_month       <- month_end
+#start_month     <- month_start
+#end_month       <- month_end
+start_month     <- substr(start_date,5,6)
+end_month       <- substr(end_date,5,6)
 num_years       <- (year_end-year_start)+1
 years           <- seq(year_start,year_end,by=1)
 months          <- NULL
@@ -141,9 +143,11 @@ for (y in 1:num_years) {
       stats_all.df$Median_Error			<- NA
       stats_all.df$RMSE				<- NA
       ###########################################
-      query			<- paste(query_in," and month = ",m,sep="")
+      query	      <- paste(query_in," and month = ",m,sep="")
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
+      units	      <- query_result[[3]]
+      model_name      <- query_result[[4]]
       ###################################################################################################################
       ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
       ###################################################################################################################

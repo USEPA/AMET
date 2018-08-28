@@ -25,7 +25,7 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
 
 ### Set file names and titles ###
 figure_obs<-paste(run_name1,species,pid,"spatialplot_ratio_obs",sep="_")             # Filename for obs spatial plot
@@ -76,8 +76,8 @@ for (j in 1:total_networks) {							# Loop through for each network
          if (data_exists == "y") {
             aqdat_query.df                 <- sitex_info$sitex_data
             aqdat_query.df                 <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
-            aqdat_query.df$PM_TOT_ob       <- aqdat_query2.df[,9]
-            aqdat_query.df$PM_TOT_mod      <- aqdat_query2.df[,10]
+            aqdat_query.df$PM_TOT_ob       <- aqdat_query.df[,9]
+            aqdat_query.df$PM_TOT_mod      <- aqdat_query.df[,10]
             units                          <- as.character(sitex_info$units[[1]])
          }
          sitex_info2                    <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,"PM_TOT")
@@ -92,7 +92,7 @@ for (j in 1:total_networks) {							# Loop through for each network
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
          data_exists2   <- "y"
-         units 	        <- db_Query(units_qs,mysql)
+         units 	        <- query_result[[3]]
       }
    }
    #######################

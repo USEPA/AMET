@@ -36,9 +36,9 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name <- db_Query(model_name_qs,mysql)
 ################################################
 run_name <- run_name1
 j <- 1
@@ -57,9 +57,8 @@ network <- network_names[[j]]                                             # Set 
    else {
       query_result    <- query_dbase(run_name,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units           <- db_Query(units_qs,mysql)
-      model_name      <- db_Query(model_name_qs,mysql)
-      model_name      <- model_name[[1]]
+      units           <- query_result[[3]]
+      model_name      <- query_result[[4]]
    }
 }
 #############################################

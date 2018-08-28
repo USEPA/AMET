@@ -8,7 +8,7 @@
 ### The script will also allow a second run to plotted on top of the
 ### first run. 
 ###
-### Last Updated by Wyat Appel: June, 2017
+### Last Updated by Wyat Appel: June, 2018
 ################################################################
 
 # get some environmental variables and setup some directories
@@ -51,8 +51,8 @@ point_color  <- NULL
 
 ### Retrieve units and model labels from database table ###
 network 	<- network_names[1]
-units_qs 	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#units_qs 	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 run_count <- 1
@@ -77,9 +77,8 @@ while (run_count <= num_runs) {
             query_result   <- query_dbase(run_name,network,species)
             aqdat_query.df <- query_result[[1]]
             data_exists    <- query_result[[2]]
-            units 	   <- db_Query(units_qs,mysql)
-            model_name 	   <- db_Query(model_name_qs,mysql)
-            model_name     <- model_name[[1]]
+            units 	   <- query_result[[3]]
+            model_name 	   <- query_result[[4]]
          }
       }
       {
@@ -170,18 +169,16 @@ while (run_count <= num_runs) {
       ##############################
       ### Write Data to CSV File ###
       ##############################
-      if (j == 1) {
-         write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
-         write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+      if ((j == 1) && (run_count == 1)){
+         write.table(run_name,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
       }
       else {
          write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+         write.table(run_name,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       }
+      write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+      write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+      write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
       ###############################
    }	# End for loop for networks
    run_count <- run_count+1

@@ -55,8 +55,8 @@ filename_zip    <- paste(figdir,filename_zip,sep="/")
 ###########################
 ### Retrieve units label from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 if (length(num_ints) == 0) {
@@ -123,9 +123,8 @@ for (j in 1:total_networks) {
          query_result   <- query_dbase(run_name1,network,species)
          aqdat_query.df <- query_result[[1]]
          data_exists	<- query_result[[2]]
-         units          <- db_Query(units_qs,mysql)
-         model_name     <- db_Query(model_name_qs,mysql)
-         model_name     <- model_name[[1]]
+         units          <- query_result[[3]]
+         model_name     <- query_result[[4]]
       }
    }
    #############################################

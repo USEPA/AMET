@@ -65,9 +65,8 @@ for (j in 1:length(network_names)) {	# Loop through each network
       else {
          query_result    <- query_dbase(run_name1,network,species)
          aqdat_query.df  <- query_result[[1]]
-         units           <- db_Query(units_qs,mysql)
-         model_name      <- db_Query(model_name_qs,mysql)
-         model_name      <- model_name[[1]]
+         units           <- query_result[[3]]
+         model_name      <- query_result[[4]]
       }
    }
    #############################################

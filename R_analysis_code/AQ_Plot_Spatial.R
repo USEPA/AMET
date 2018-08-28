@@ -25,7 +25,7 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 ### Retrieve units label from database table ###
 network		<- network_names[1] # When using mutiple networks, units from network 1 will be used
-units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="") # Create MYSQL query from units table
+#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="") # Create MYSQL query from units table
 ################################################
 
 ### Set file names and titles ###
@@ -101,10 +101,10 @@ for (j in 1:total_networks) {							# Loop through for each network
          }
       }
       else {
-         units          <- db_Query(units_qs,mysql) # Query the database for units name
          query_result   <- query_dbase(run_name1,network,species)
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
+         units		<- query_result[[3]]
       }
    }
    #######################
