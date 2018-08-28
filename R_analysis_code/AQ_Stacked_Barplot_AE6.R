@@ -22,8 +22,8 @@ network_name <- network_label[1]
 num_runs <- 1
 
 ### Retrieve units and model labels from database table ###
-units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set filenames and titles ###
@@ -83,9 +83,9 @@ species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NCOM","N
    else {
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units           <- db_Query(units_qs,mysql)
-      model_name      <- db_Query(model_name_qs,mysql)
-      model_name      <- model_name[[1]]
+      units           <- query_result[[3]]
+      model_name      <- query_result[[4]]
+      print("got here")
    }
 }
 #############################################
@@ -102,13 +102,16 @@ if (num_runs > 1) {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
          aqdat_query2.df  <- sitex_info2$sitex_data
-         units            <- as.character(sitex_info$units[[1]])
+#         units            <- as.character(sitex_info$units[[1]])
       }
       else {
-         aqdat_query2.df <- query_dbase(run_name2,network,species)
-         units           <- db_Query(units_qs,mysql)
-         model_name      <- db_Query(model_name_qs,mysql)
-         model_name      <- model_name[[1]]
+         query_result2   <- query_dbase(run_name2,network,species)
+         aqdat_query2.df <- query_result2[[1]]
+#         units           <- db_Query(units_qs,mysql)
+#         model_name      <- db_Query(model_name_qs,mysql)
+#         model_name      <- model_name[[1]]
+         print("got here")
+
       }
    }
    #############################################

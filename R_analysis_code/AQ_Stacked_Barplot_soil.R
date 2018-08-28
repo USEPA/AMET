@@ -22,8 +22,8 @@ network_name <- network_label[1]
 num_runs <- 1
 
 ### Retrieve units and model labels from database table ###
-units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set filenames and titles ###
@@ -86,9 +86,8 @@ species 	<- c("Cl","Na","Fe","Al","Si","Ti","Ca","Mg","K","Mn")
    else {
       query_result    <- query_dbase(run_name1,network,species,criteria)
       aqdat_query.df  <- query_result[[1]]
-      units           <- db_Query(units_qs,mysql)
-      model_name      <- db_Query(model_name_qs,mysql)
-      model_name      <- model_name[[1]]
+      units           <- query_result[[3]]
+      model_name      <- query_result[[4]]
    }
 }
 #############################################

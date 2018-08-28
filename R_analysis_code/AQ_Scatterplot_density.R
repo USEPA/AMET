@@ -43,7 +43,8 @@ dens_zlim     <- NULL
 
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs   <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 run_name 	<- run_name1
@@ -57,7 +58,8 @@ network 	<- network_names[[1]]						# Set network
    else {
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units 	      <- db_Query(units_qs,mysql)
+      units 	      <- query_result[[3]]
+      model_name      <- query_result[[4]]
    }
 }
 aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Month=aqdat_query.df$month)      # Create dataframe of network values to be used to create a list

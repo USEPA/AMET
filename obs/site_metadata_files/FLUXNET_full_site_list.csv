@@ -1,0 +1,150 @@
+"stat_id","num_stat_id","stat_name","network","state","city","start_date","end_date","lat","lon","timezone","elevation","IGBP","CLIMATE_KOEPPEN","MAT","MAP","GMT_offset"
+"BR-SA1",1,"Santarem-Km67-Primary Forest","FLUXNET",NA,NA,NA,NA,-2.8567,-54.9589,4,88,"EBF","Am",26.13,"2075",4
+"BR-SA3",2,"Santarem-Km83-Logged Forest","FLUXNET",NA,NA,NA,NA,-3.018,-54.9714,4,100,"EBF","Am",26.12,"2044",4
+"CA-GRO",3,"Ontario - Groundhog River, Boreal Mixedwood Forest","FLUXNET",NA,NA,NA,NA,48.2167,-82.1556,5,340,"MF","Dfb",1.3,"831",5
+"CA-MAN",4,"Manitoba - Northern Old Black Spruce (former BOREAS Northern Study Area)","FLUXNET",NA,NA,NA,NA,55.8796,-98.4808,6,259,"ENF","Dfc",-3.2,"520",6
+"CA-NS1",5,"UCI-1850 burn site","FLUXNET",NA,NA,NA,NA,55.8792,-98.4839,6,260,"ENF","Dfc",-2.89,"500",6
+"CA-NS2",6,"UCI-1930 burn site","FLUXNET",NA,NA,NA,NA,55.9058,-98.5247,6,260,"ENF","Dfc",-2.88,"500",6
+"CA-NS3",7,"UCI-1964 burn site","FLUXNET",NA,NA,NA,NA,55.9117,-98.3822,6,260,"ENF","Dfc",-2.87,"502",6
+"CA-NS4",8,"UCI-1964 burn site wet","FLUXNET",NA,NA,NA,NA,55.9117,-98.3822,6,260,"ENF","Dfc",-2.87,"502",6
+"CA-NS5",9,"UCI-1981 burn site","FLUXNET",NA,NA,NA,NA,55.8631,-98.485,6,260,"ENF","Dfc",-2.86,"500",6
+"CA-NS6",10,"UCI-1989 burn site","FLUXNET",NA,NA,NA,NA,55.9167,-98.9644,6,244,"OSH","Dfc",-3.08,"495",6
+"CA-NS7",11,"UCI-1998 burn site","FLUXNET",NA,NA,NA,NA,56.6358,-99.9483,6,297,"OSH","Dfc",-3.52,"483",6
+"CA-NS8",12,"UCI-2003 burn site","FLUXNET",NA,NA,NA,NA,55.8981,-98.2161,6,274,"ENF","Dfc",-2.71,"507",6
+"CA-QCU",13,"Quebec - Eastern Boreal, Black Spruce/Jack Pine Cutover","FLUXNET",NA,NA,NA,NA,49.2671,-74.0365,5,392.3,"ENF","Dfc",0.13,"950",5
+"CA-QFO",14,"Quebec - Eastern Boreal, Mature Black Spruce","FLUXNET",NA,NA,NA,NA,49.6925,-74.3421,5,382,"ENF","Dfc",-0.36,"962",5
+"CA-SF1",15,"Saskatchewan - Western Boreal, forest burned in 1977","FLUXNET",NA,NA,NA,NA,54.485,-105.8176,6,536,"ENF","Dfc",0.4,"470",6
+"CA-SF2",16,"Saskatchewan - Western Boreal, forest burned in 1989","FLUXNET",NA,NA,NA,NA,54.2539,-105.8775,6,520,"ENF","Dfc",0.4,"470",6
+"CA-SF3",17,"Saskatchewan - Western Boreal, forest burned in 1998","FLUXNET",NA,NA,NA,NA,54.0916,-106.0053,6,540,"OSH","Dfc",0.4,"470",6
+"CA-TP1",18,"Ontario - Turkey Point 2002 Plantation White Pine","FLUXNET",NA,NA,NA,NA,42.6609,-80.5595,5,265,"ENF","Dfb",8,"1036",5
+"CA-TP2",19,"Ontario - Turkey Point 1989 Plantation White Pine","FLUXNET",NA,NA,NA,NA,42.7744,-80.4588,5,212,"ENF","Dfb",8,"1036",5
+"CA-TP3",20,"Ontario - Turkey Point 1974 Plantation White Pine","FLUXNET",NA,NA,NA,NA,42.7068,-80.3483,5,184,"ENF","Dfb",8,"1036",5
+"CA-TP4",21,"Ontario - Turkey Point 1939 Plantation White Pine","FLUXNET",NA,NA,NA,NA,42.7102,-80.3574,5,184,"ENF","Dfb",8,"1036",5
+"CA-TPD",22,"Ontario - Turkey Point Mature Deciduous","FLUXNET",NA,NA,NA,NA,42.6353,-80.5577,5,260,"DBF","Dfb",8,"1036",5
+"CR-LSE",23,"La Selva","FLUXNET",NA,NA,NA,NA,10.4233,-84.0211,6,100,"EBF","Am",25.9,"3966",6
+"MX-LPA",24,"La Paz","FLUXNET",NA,NA,NA,NA,24.1293,-110.438,7,21,"OSH","Bwh",23.6,"182",7
+"US-AKN",25,"Aiken","FLUXNET",NA,NA,NA,NA,33.3833,-81.5656,5,92,"MF","",NA,"US-AN1",5
+"US-AN2",26,"Anaktuvuk River Moderate Burn","FLUXNET",NA,NA,NA,NA,68.95,-150.21,9,600,"OSH","",NA,"US-AN3",9
+"US-AR1",27,"ARM USDA UNL OSU Woodward Switchgrass 1","FLUXNET",NA,NA,NA,NA,36.4267,-99.42,6,611,"GRA","Dsa",NA,"US-AR2",6
+"US-ARB",28,"ARM Southern Great Plains burn site- Lamont","FLUXNET",NA,NA,NA,NA,35.5497,-98.0402,6,424,"GRA","Cfa",NA,"US-ARC",6
+"US-ARM",29,"ARM Southern Great Plains site- Lamont","FLUXNET",NA,NA,NA,NA,36.6058,-97.4888,6,314,"CRO","Cfa",14.76,"843",6
+"US-ATQ",30,"Atqasuk","FLUXNET",NA,NA,NA,NA,70.4696,-157.4089,9,15,"WET","ET",-9.7,"93",9
+"US-AUD",31,"Audubon Research Ranch","FLUXNET",NA,NA,NA,NA,31.5907,-110.5104,7,1469,"GRA","Bsk",14.85,"438",7
+"US-BAR",32,"Bartlett Experimental Forest","FLUXNET",NA,NA,NA,NA,44.0646,-71.2881,5,272,"DBF","Dfb",5.61,"1246",5
+"US-BKG",33,"Brookings","FLUXNET",NA,NA,NA,NA,44.3453,-96.8362,6,510,"GRA","Dfa",6.03,"586",6
+"US-BLK",34,"Black Hills","FLUXNET",NA,NA,NA,NA,44.158,-103.65,7,1718,"ENF","Dfb",6.23,"574",7
+"US-BLO",35,"Blodgett Forest","FLUXNET",NA,NA,NA,NA,38.8953,-120.6328,8,1315,"ENF","Csa",11.09,"1226",8
+"US-BN1",36,"Bonanza Creek, 1920 Burn site near Delta Junction","FLUXNET",NA,NA,NA,NA,63.9198,-145.3782,9,518,"ENF","Dsc",NA,"US-BN2",9
+"US-BN3",37,"Bonanza Creek, 1999 Burn site near Delta Junction","FLUXNET",NA,NA,NA,NA,63.9227,-145.7442,9,469,"OSH","Dsc",NA,"US-BO1",9
+"US-BO2",38,"Bondville (companion site)","FLUXNET",NA,NA,NA,NA,40.009,-88.29,6,219,"CRO","Dfa",11.02,"991",6
+"US-BR1",39,"Brooks Field Site 10- Ames","FLUXNET",NA,NA,NA,NA,41.6915,-93.6914,6,313,"CRO","Dfa",8.95,"842",6
+"US-BR3",40,"Brooks Field Site 11- Ames","FLUXNET",NA,NA,NA,NA,41.9747,-93.6936,6,313,"CRO","Dfa",8.9,"847",6
+"US-BRW",41,"Barrow","FLUXNET",NA,NA,NA,NA,71.3225,-156.6259,10,1,"WET","ET",-12.6,"85",10
+"US-CAV",42,"Canaan Valley","FLUXNET",NA,NA,NA,NA,39.0633,-79.4208,5,994,"GRA","Cfb",7.97,"1317",5
+"US-CED",43,"Cedar Bridge","FLUXNET",NA,NA,NA,NA,39.8379,-74.3791,5,58,"CSH","Cfa",11.04,"1138",5
+"US-CHR",44,"Chestnut Ridge","FLUXNET",NA,NA,NA,NA,35.9311,-84.3324,5,286,"DBF","Cfa",13.91,"1359",5
+"US-COP",45,"Corral Pocket","FLUXNET",NA,NA,NA,NA,38.09,-109.39,7,1520,"GRA","",NA,"US-CPK",7
+"US-CRT",46,"Curtice Walter-Berger cropland","FLUXNET",NA,NA,NA,NA,41.6285,-83.3471,5,180,"CRO","Dfa",10.1,"849",5
+"US-CTN",47,"Cottonwood","FLUXNET",NA,NA,NA,NA,43.95,-101.8466,7,744,"GRA","",NA,"US-DIA",7
+"US-DIX",48,"Fort Dix","FLUXNET",NA,NA,NA,NA,39.9712,-74.4346,5,48,"MF","Cfa",11.07,"1127",5
+"US-DK1",49,"Duke Forest-open field","FLUXNET",NA,NA,NA,NA,35.9712,-79.0934,5,168,"GRA","Cfa",14.36,"1170",5
+"US-DK2",50,"Duke Forest-hardwoods","FLUXNET",NA,NA,NA,NA,35.9736,-79.1004,5,168,"DBF","Cfa",14.36,"1169",5
+"US-DK3",51,"Duke Forest - loblolly pine","FLUXNET",NA,NA,NA,NA,35.9782,-79.0942,5,163,"ENF","Cfa",14.36,"1170",5
+"US-ELM",52,"Everglades (long hydroperiod marsh)","FLUXNET",NA,NA,NA,NA,25.5519,-80.7826,5,0.8,"WET","",NA,"US-ESM",5
+"US-FMF",53,"Flagstaff - Managed Forest","FLUXNET",NA,NA,NA,NA,35.1426,-111.7273,7,2160,"ENF","Csb",9.5,"546",7
+"US-FPE",54,"Fort Peck","FLUXNET",NA,NA,NA,NA,48.3077,-105.1019,7,634,"GRA","Bsk",5.48,"335",7
+"US-FR2",55,"Freeman Ranch- Mesquite Juniper","FLUXNET",NA,NA,NA,NA,29.9495,-97.9962,6,271.9,"WSA","Cfa",19.48,"864",6
+"US-FR3",56,"Freeman Ranch- Woodland","FLUXNET",NA,NA,NA,NA,29.94,-97.99,6,232,"CSH","Cfa",19.59,"869",6
+"US-FUF",57,"Flagstaff - Unmanaged Forest","FLUXNET",NA,NA,NA,NA,35.089,-111.762,7,2180,"ENF","Csb",8.7,"562",7
+"US-FWF",58,"Flagstaff - Wildfire","FLUXNET",NA,NA,NA,NA,35.4454,-111.7718,7,2270,"GRA","Csb",8.4,"557",7
+"US-GLE",59,"GLEES","FLUXNET",NA,NA,NA,NA,41.3665,-106.2399,7,3197,"ENF","Dfc",0.8,"1200",7
+"US-GMF",60,"Great Mountain Forest","FLUXNET",NA,NA,NA,NA,41.9667,-73.2333,5,380,"MF","Dfb",6.08,"1259",5
+"US-GOO",61,"Goodwin Creek","FLUXNET",NA,NA,NA,NA,34.2547,-89.8735,6,87,"GRA","Cfa",15.89,"1426",6
+"US-HA1",62,"Harvard Forest EMS Tower (HFR1)","FLUXNET",NA,NA,NA,NA,42.5378,-72.1715,5,340,"DBF","Dfb",6.62,"1071",5
+"US-HA2",63,"Harvard Forest Hemlock Site","FLUXNET",NA,NA,NA,NA,42.5393,-72.1779,5,360,"ENF","Dfb",6.56,"1071",5
+"US-HO1",64,"Howland Forest (main tower)","FLUXNET",NA,NA,NA,NA,45.2041,-68.7402,5,60,"ENF","Dfb",5.27,"1070",5
+"US-HO2",65,"Howland Forest (west tower)","FLUXNET",NA,NA,NA,NA,45.2091,-68.747,5,91,"ENF","Dfb",5.13,"1064",5
+"US-HO3",66,"Howland Forest (harvest site)","FLUXNET",NA,NA,NA,NA,45.2072,-68.725,5,61,"ENF","Dfb",5.31,"1072",5
+"US-HVA",67,"Happy Valley","FLUXNET",NA,NA,NA,NA,69.1423,-148.8412,9,298,"WET","Dfc",-10.3,"217",9
+"US-IB1",68,"Fermi National Accelerator Laboratory- Batavia (Agricultural site)","FLUXNET",NA,NA,NA,NA,41.8593,-88.2227,6,226.5,"CRO","Dfa",9.18,"929",6
+"US-IB2",69,"Fermi National Accelerator Laboratory- Batavia (Prairie site)","FLUXNET",NA,NA,NA,NA,41.8406,-88.241,6,226.5,"GRA","Dfa",9.04,"930",6
+"US-ICH",70,"Imnavait Creek Watershed Heath Tundra","FLUXNET",NA,NA,NA,NA,68.6068,-149.2958,9,940,"OSH","ET",-7.4,"318",9
+"US-ICS",71,"Imnavait Creek Watershed Wet Sedge Tundra","FLUXNET",NA,NA,NA,NA,68.6058,-149.311,9,920,"WET","ET",-7.4,"318",9
+"US-ICT",72,"Imnavait Creek Watershed Tussock Tundra","FLUXNET",NA,NA,NA,NA,68.6063,-149.3041,9,930,"OSH","ET",-7.4,"318",9
+"US-IVO",73,"Ivotuk","FLUXNET",NA,NA,NA,NA,68.4865,-155.7503,9,568,"WET","ET",-8.28,"304",9
+"US-KFS",74,"Kansas Field Station","FLUXNET",NA,NA,NA,NA,39.0561,-95.1907,6,310,"GRA","Cfa",12,"1014",6
+"US-KON",75,"Konza Prairie LTER (KNZ)","FLUXNET",NA,NA,NA,NA,39.0824,-96.5603,6,330,"GRA","Cfa",12.77,"867",6
+"US-KS1",76,"Kennedy Space Center (slash pine)","FLUXNET",NA,NA,NA,NA,28.4583,-80.6709,5,1,"ENF","Cwa",21.9,"1266",5
+"US-KS2",77,"Kennedy Space Center (scrub oak)","FLUXNET",NA,NA,NA,NA,28.6086,-80.6715,5,3,"CSH","Cwa",21.66,"1294",5
+"US-KUT",78,"KUOM Turfgrass Field","FLUXNET",NA,NA,NA,NA,44.995,-93.1863,6,301,"GRA","Dfa",7.9,"777",6
+"US-LIN",79,"Lindcove Orange Orchard","FLUXNET",NA,NA,NA,NA,36.3566,-119.8423,8,131,"CRO","",NA,"US-LOS",8
+"US-LPH",80,"Little Prospect Hill","FLUXNET",NA,NA,NA,NA,42.5419,-72.185,5,377.5,"DBF","Dfb",6.73,"1071",5
+"US-LWW",81,"Little Washita Watershed","FLUXNET",NA,NA,NA,NA,34.9604,-97.9789,6,365,"GRA","Cfa",16.09,"805",6
+"US-ME1",82,"Metolius - Eyerly burn","FLUXNET",NA,NA,NA,NA,44.5794,-121.5,8,896,"ENF","Csb",7.88,"705",8
+"US-ME2",83,"Metolius-intermediate aged ponderosa pine","FLUXNET",NA,NA,NA,NA,44.4523,-121.5574,8,1253,"ENF","Csb",6.28,"523",8
+"US-ME3",84,"Metolius-second young aged pine","FLUXNET",NA,NA,NA,NA,44.3154,-121.6078,8,1005,"ENF","Csb",7.07,"719",8
+"US-ME4",85,"Metolius-old aged ponderosa pine","FLUXNET",NA,NA,NA,NA,44.4992,-121.6224,8,922,"ENF","Csb",7.61,"1039",8
+"US-ME5",86,"Metolius-first young aged pine","FLUXNET",NA,NA,NA,NA,44.4372,-121.5668,8,1188,"ENF","Csb",6.47,"591",8
+"US-ME6",87,"Metolius Young Pine Burn","FLUXNET",NA,NA,NA,NA,44.3233,-121.6078,8,998,"ENF","Csb",7.59,"494",8
+"US-MMS",88,"Morgan Monroe State Forest","FLUXNET",NA,NA,NA,NA,39.3232,-86.4131,5,275,"DBF","Cfa",10.85,"1032",5
+"US-MOZ",89,"Missouri Ozark Site","FLUXNET",NA,NA,NA,NA,38.7441,-92.2,6,219.4,"DBF","Cfa",12.11,"986",6
+"US-MPJ",90,"Mountainair Pinyon-Juniper Woodland","FLUXNET",NA,NA,NA,NA,34.4385,-106.2377,7,2196,"WSA","",14.8,"418",7
+"US-MRF",91,"Marys River (Fir) site","FLUXNET",NA,NA,NA,NA,44.6465,-123.5515,8,263,"ENF","Csb",10.24,"1820",8
+"US-MYB",92,"Mayberry Wetland","FLUXNET",NA,NA,NA,NA,38.0498,-121.7651,8,-1,"WET","Csa",15.9,"338",8
+"US-NC1",93,"NC_Clearcut","FLUXNET",NA,NA,NA,NA,35.8118,-76.7119,5,5,"ENF","Cfa",16.6,"1320",5
+"US-NC2",94,"NC_Loblolly Plantation","FLUXNET",NA,NA,NA,NA,35.803,-76.6685,5,5,"ENF","Cfa",16.6,"1320",5
+"US-NE1",95,"Mead - irrigated continuous maize site","FLUXNET",NA,NA,NA,NA,41.1651,-96.4766,6,361,"CRO","Dfa",10.07,"790",6
+"US-NE2",96,"Mead - irrigated maize-soybean rotation site","FLUXNET",NA,NA,NA,NA,41.1649,-96.4701,6,362,"CRO","Dfa",10.08,"789",6
+"US-NE3",97,"Mead - rainfed maize-soybean rotation site","FLUXNET",NA,NA,NA,NA,41.1797,-96.4397,6,363,"CRO","Dfa",10.11,"784",6
+"US-NMJ",98,"Northern Michigan Jack Pine Stand","FLUXNET",NA,NA,NA,NA,46.6465,-88.5194,5,394,"ENF","Dfb",4.73,"854",5
+"US-NR1",99,"Niwot Ridge Forest (LTER NWT1)","FLUXNET",NA,NA,NA,NA,40.0329,-105.5464,7,3050,"ENF","Dfc",1.5,"800",7
+"US-OHO",100,"Oak Openings","FLUXNET",NA,NA,NA,NA,41.5545,-83.8438,5,230,"DBF","Dfa",10.1,"849",5
+"US-ORV",101,"Olentangy River Wetland Research Park","FLUXNET",NA,NA,NA,NA,40.0201,-83.0183,5,221,"WET","Cfa",11.63,"1499",5
+"US-PFA",102,"Park Falls/WLEF","FLUXNET",NA,NA,NA,NA,45.9459,-90.2723,6,470,"MF","Dfb",4.33,"823",6
+"US-PON",103,"Ponca City","FLUXNET",NA,NA,NA,NA,36.7667,-97.1333,6,310,"CRO","Cfa",14.94,"866",6
+"US-PRR",104,"Poker Flat Research Range Black Spruce Forest","FLUXNET",NA,NA,NA,NA,65.1237,-147.4876,9,210,"ENF","Dwc",-2,"275",9
+"US-RO1",105,"Rosemount- G21","FLUXNET",NA,NA,NA,NA,44.7143,-93.0898,6,290,"CRO","Dfa",6.4,"879",6
+"US-RO3",106,"Rosemount- G19","FLUXNET",NA,NA,NA,NA,44.7217,-93.0893,6,260,"CRO","Dfa",6.4,"879",6
+"US-SDH",107,"Nebraska SandHills Dry Valley","FLUXNET",NA,NA,NA,NA,42.0693,-101.4072,7,1081,"GRA","Dsb",NA,"US-SEG",7
+"US-SES",108,"Sevilleta shrubland","FLUXNET",NA,NA,NA,NA,34.3349,-106.7442,7,1604,"OSH","Bsk",17.7,"250",7
+"US-SFP",109,"Sioux Falls Portable","FLUXNET",NA,NA,NA,NA,43.2408,-96.902,6,386,"CRO","",NA,"US-SHD",6
+"US-SKR",110,"Shark River Slough (Tower SRS-6) Everglades","FLUXNET",NA,NA,NA,NA,25.3629,-81.0776,5,0,"EBF","Cwa",23.77,"1259",5
+"US-SLT",111,"Silas Little- New Jersey","FLUXNET",NA,NA,NA,NA,39.9138,-74.596,5,30,"DBF","Dfa",11.04,"1138",5
+"US-SND",112,"Sherman Island","FLUXNET",NA,NA,NA,NA,38.0373,-121.7537,8,-5,"GRA","Csa",15.6,"358",8
+"US-SO2",113,"Sky Oaks- Old Stand","FLUXNET",NA,NA,NA,NA,33.3738,-116.6228,8,1394,"CSH","Csa",13.63,"553",8
+"US-SO3",114,"Sky Oaks- Young Stand","FLUXNET",NA,NA,NA,NA,33.3771,-116.6226,8,1429,"CSH","Csa",13.29,"576",8
+"US-SO4",115,"Sky Oaks- New Stand","FLUXNET",NA,NA,NA,NA,33.3845,-116.6406,8,1429,"CSH","Csa",NA,"US-SP1",8
+"US-SP2",116,"Slashpine-Mize-clearcut-3yr,regen","FLUXNET",NA,NA,NA,NA,29.7648,-82.2448,5,50,"ENF","Cfa",20.07,"1314",5
+"US-SP3",117,"Slashpine-Donaldson-mid-rot- 12yrs","FLUXNET",NA,NA,NA,NA,29.7548,-82.1633,5,50,"ENF","Cfa",20.25,"1312",5
+"US-SP4",118,"Slashpine-Rayonier-mid-rot- 12yrs","FLUXNET",NA,NA,NA,NA,29.8028,-82.2032,5,47,"ENF","Cfa",20,"1320",5
+"US-SRC",119,"Santa Rita Creosote","FLUXNET",NA,NA,NA,NA,31.9083,-110.8395,7,991,"OSH","",NA,"US-SRG",7
+"US-SRM",120,"Santa Rita Mesquite","FLUXNET",NA,NA,NA,NA,31.8214,-110.8661,7,1120,"WSA","Bsk",17.92,"380",7
+"US-STA",121,"Saratoga","FLUXNET",NA,NA,NA,NA,41.3966,-106.8024,7,2069,"OSH","Bsh",5.1,"US-SUM",7
+"US-SUS",122,"Maui Sugarcane Lee/Sheltered","FLUXNET",NA,NA,NA,NA,20.7847,-156.4039,10,203,"CRO","Aw",24.4,"334",10
+"US-SUW",123,"Maui Sugarcane Windy","FLUXNET",NA,NA,NA,NA,20.8246,-156.4913,10,44,"CRO","Aw",24.4,"366",10
+"US-SYV",124,"Sylvania Wilderness Area","FLUXNET",NA,NA,NA,NA,46.242,-89.3477,6,540,"MF","Dfb",3.81,"826",6
+"US-TON",125,"Tonzi Ranch","FLUXNET",NA,NA,NA,NA,38.4316,-120.966,8,177,"WSA","Csa",15.8,"559",8
+"US-TW1",126,"Twitchell Wetland West Pond","FLUXNET",NA,NA,NA,NA,38.1074,-121.6469,8,-9,"WET","Csa",15.5,"421",8
+"US-TW2",127,"Twitchell Corn","FLUXNET",NA,NA,NA,NA,38.1047,-121.6433,8,-5,"CRO","Csa",15.5,"421",8
+"US-TW3",128,"Twitchell Alfalfa","FLUXNET",NA,NA,NA,NA,38.1159,-121.6467,8,-9,"CRO","Csa",15.6,"421",8
+"US-TW4",129,"Twitchell East End Wetland","FLUXNET",NA,NA,NA,NA,38.103,-121.6414,8,-5,"WET","Csa",15.6,"421",8
+"US-TWT",130,"Twitchell Island","FLUXNET",NA,NA,NA,NA,38.1087,-121.653,8,-999,"CRO","Csa",15.6,"421",8
+"US-UMB",131,"Univ. of Mich. Biological Station","FLUXNET",NA,NA,NA,NA,45.5598,-84.7138,5,234,"DBF","Dfb",5.83,"803",5
+"US-UMD",132,"UMBS Disturbance","FLUXNET",NA,NA,NA,NA,45.5625,-84.6975,5,239,"DBF","Dfb",5.83,"803",5
+"US-UPA",133,"Upad","FLUXNET",NA,NA,NA,NA,70.2815,-148.8848,9,5,"WET","Dsc",-13.6,"124",9
+"US-VAR",134,"Vaira Ranch- Ione","FLUXNET",NA,NA,NA,NA,38.4133,-120.9507,8,129,"GRA","Csa",15.8,"559",8
+"US-VCM",135,"Valles Caldera Mixed Conifer","FLUXNET",NA,NA,NA,NA,35.8884,-106.5321,7,3030,"ENF","Dfb",6.4,"646",7
+"US-VCP",136,"Valles Caldera Ponderosa Pine","FLUXNET",NA,NA,NA,NA,35.8642,-106.5967,7,2500,"ENF","Dfb",9.8,"550",7
+"US-WBW",137,"Walker Branch Watershed","FLUXNET",NA,NA,NA,NA,35.9588,-84.2874,5,283,"DBF","Cfa",13.71,"1372",5
+"US-WCR",138,"Willow Creek","FLUXNET",NA,NA,NA,NA,45.8059,-90.0799,6,520,"DBF","Dfb",4.02,"787",6
+"US-WDN",139,"Walden","FLUXNET",NA,NA,NA,NA,40.7838,-106.2618,7,2469,"OSH","Bsh",3.3,"US-WHS",7
+"US-WI0",140,"Young red pine (YRP)","FLUXNET",NA,NA,NA,NA,46.6188,-91.0814,6,349,"ENF","Dfb",NA,"US-WI1",6
+"US-WI2",141,"Intermediate red pine (IRP)","FLUXNET",NA,NA,NA,NA,46.6869,-91.1528,6,395,"ENF","Dfb",NA,"US-WI3",6
+"US-WI4",142,"Mature red pine (MRP)","FLUXNET",NA,NA,NA,NA,46.7393,-91.1663,6,352,"ENF","Dfb",NA,"US-WI5",6
+"US-WI6",143,"Pine barrens #1 (PB1)","FLUXNET",NA,NA,NA,NA,46.6249,-91.2982,6,371,"OSH","Dfb",NA,"US-WI7",6
+"US-WI8",144,"Young hardwood clearcut (YHW)","FLUXNET",NA,NA,NA,NA,46.7223,-91.2524,6,348,"DBF","Dfb",NA,"US-WI9",6
+"US-WJS",145,"Willard Juniper Savannah","FLUXNET",NA,NA,NA,NA,34.4255,-105.8615,7,1931,"SAV","Bsk",15.2,"361",7
+"US-WKG",146,"Walnut Gulch Kendall Grasslands","FLUXNET",NA,NA,NA,NA,31.7365,-109.9419,7,1531,"GRA","Bsk",15.64,"407",7
+"US-WLR",147,"Walnut River Watershed (Smileyburg)","FLUXNET",NA,NA,NA,NA,37.5208,-96.855,6,408,"GRA","Cfa",13.52,"881",6
+"US-WPT",148,"Winous Point North Marsh","FLUXNET",NA,NA,NA,NA,41.4646,-82.9962,5,175,"WET","Dfa",10.1,"849",5
+"US-WRC",149,"Wind River Crane Site","FLUXNET",NA,NA,NA,NA,45.8205,-121.9519,8,371,"ENF","Csb",9.45,"2452",8

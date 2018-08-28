@@ -44,8 +44,9 @@ args              <- commandArgs(2)
 mysql_login        <- args[1]
 mysql_pass         <- args[2]
 
-#site_file_name <- "_sites.txt"
-site_file_name <- "_full_site_list.csv"
+site_file_name <- "_sites.txt"
+site_file_format <- Sys.getenv('SITE_FILE_FORMAT')
+if (site_file_format == "csv") { site_file_name <- "_full_site_list.csv" }
 
 ### Use MySQL login/password from config file if requested ###
 if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
@@ -97,7 +98,9 @@ airbase_daily_flag     <- Sys.getenv('AIRBASE_DAILY')	      # Flag to include Eu
 aganet_flag	       <- Sys.getenv('AGANET')		      # Flag to include Europe AGANET data in analysis
 admn_flag	       <- Sys.getenv('ADMN')		      # Flag to include Europe ADMN data in analysis
 namn_flag	       <- Sys.getenv('NAMN')		      # Flag to include Europe NAMN data in analysis
-toar_daily_flag	       <- Sys.getenv('TOAR_DAILY')
+toar_flag	       <- Sys.getenv('TOAR')
+
+#project_id <- gsub("[.]","_",project_id)
 
 ### Check if using old definition names in run script ###
 if (castnet_daily_o3_flag == "") {
@@ -139,15 +142,17 @@ PM_FRM_MOD_SPEC <- "ATOTIJ_FRM"
 PM10_MOD_SPEC   <- "ATOTIJK"
 if (Sys.getenv("WRITE_SITEX") == "T") {
    M3_FILE <- Sys.getenv("CONC_FILE_1")
-   m3_file_in <- nc_open(M3_FILE)
-   var_list <- ncatt_get(m3_file_in,0,"VAR-LIST")
-   var_list <- var_list$value
-   if(var_list != 0 ) {
-      vars <- strsplit(var_list," +")
-      if ("PMIJ" %in% vars[[1]]) {
-         PM_MOD_SPEC <- "PMIJ"
-         PM_FRM_MOD_SPEC <- "PMIJ_FRM"
-         PM10_MOD_SPEC <- "PM10"
+   if (file.exists(M3_FILE)) {
+      m3_file_in <- nc_open(M3_FILE)
+      var_list <- ncatt_get(m3_file_in,0,"VAR-LIST")
+      var_list <- var_list$value
+      if(var_list != 0 ) {
+         vars <- strsplit(var_list," +")
+         if ("PMIJ" %in% vars[[1]]) {
+            PM_MOD_SPEC <- "PMIJ"
+            PM_FRM_MOD_SPEC <- "PMIJ_FRM"
+            PM10_MOD_SPEC <- "PM10"
+         }
       }
    }
 }
@@ -245,6 +250,10 @@ run_sitex <- function(network) {
    if ((network == "NADP") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3")) {
       M3_FILE <- Sys.getenv('DEP_FILE_1')
    }
+   else if (network == "TOAR") {
+      M3_FILE_IN <- Sys.getenv('HR2DAY_FILE_1')
+#      M3_FILE <- paste(M3_FILE_IN,".hr2day",sep="")
+   }
    else {
       M3_FILE <- Sys.getenv('CONC_FILE_1')
    }
@@ -253,6 +262,7 @@ run_sitex <- function(network) {
 ",sep="")
 
       j <- j+1
+       
       if ((network == "NADP") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3")) {
          m3_file_name <- paste("DEP_FILE_",j,sep="")
          M3_FILE <- Sys.getenv(m3_file_name)
@@ -261,6 +271,13 @@ run_sitex <- function(network) {
          m3_file_name <- paste("CONC_FILE_",j,sep="")
          M3_FILE <- Sys.getenv(m3_file_name)
       }
+#      if ((network == "TOAR") && (M3_FILE != "")) {
+      if (network == "TOAR") {
+         m3_file_name <- paste("HR2DAY_FILE_",j,sep="")
+         M3_FILE <- Sys.getenv(m3_file_name)
+#         M3_FILE <- paste(M3_FILE,".hr2day",sep="")
+      }
+#      else { M3_FILE <- M3_FILE_IN }
    }
    dat <- paste(dat,time_settings,m3_files,final_wrapup,sep="")
 
@@ -329,7 +346,8 @@ cat('\nAURN Daily Flag = ',aurn_daily_flag)
 cat('\nAIRBASE Hourly Flag = ',airbase_hourly_flag)
 cat('\nAIRBASE Daily Flag = ',airbase_daily_flag)
 cat('\nADMN Flag = ',admn_flag)
-cat('\nNAMN Flag = ',namn_flag,'\n')
+cat('\nNAMN Flag = ',namn_flag)
+cat('\nTOAR Flag = ',toar_flag,'\n')
 
 if ((improve_flag == "y") || (improve_flag == "Y") || (improve_flag == "t") || (improve_flag == "T")) {
    table_type    <- "IMPROVE"
@@ -649,11 +667,11 @@ if ((namn_flag == "y") || (namn_flag == "Y") || (namn_flag == "t") || (namn_flag
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
-if ((toar_daily_flag == "y") || (toar_daily_flag == "Y") || (toar_daily_flag == "t") || (toar_daily_flag == "T")) {
+if ((toar_flag == "y") || (toar_flag == "Y") || (toar_flag == "t") || (toar_flag == "T")) {
    table_type    <- "CASTNET"
-   network       <- "TOAR_Daily"
-   site_file     <- paste(obs_data_dir,"/site_files/TOAR",site_file_name,sep="")
-#   site_file     <- paste(obs_data_dir,"/site_files/NAMN_sites.txt",sep="")
+   network       <- "TOAR"
+#   site_file     <- paste(obs_data_dir,"/site_files/TOAR",site_file_name,sep="")
+   site_file     <- paste(obs_data_dir,"/site_files/TOAR_sites.txt",sep="")
    ob_file       <- paste(obs_data_dir,"/",year,"/TOAR_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)

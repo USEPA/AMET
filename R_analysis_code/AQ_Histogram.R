@@ -11,8 +11,8 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units <- db_Query(units_qs,mysql)
 ################################################
 
 
@@ -53,6 +53,7 @@ filename_bias_png	<- paste(figdir,filename_bias_png,sep="/")                  # 
    else {
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_stats.df  <- query_result[[1]]
+      units	      <- query_result[[3]]
    }
 }
 ### If plotting another simulation ###
