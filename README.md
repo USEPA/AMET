@@ -1,5 +1,7 @@
-Atmospheric Model Evaluation Tool
-======
+
+Atmospheric Model Evaluation Tool (AMET) version 1.3
+=======
+
 
 ## AMET Overview
 
@@ -13,11 +15,35 @@ a working directory on your server:
 git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
 ```
 
+
+## AMET 1.3 Repository Guide
+Source code and scripts are organized as follows:
+* **configure:** AMET configuration scripts
+* **docs:** AMET documentation
+* **obs:** air quality and meteorology observational data
+* **output:** output from AMET analysis scripts
+* **R_db_code:** R code for loading data to the AMET MySQL database
+* **R_analysis_code:** R codes for generating AMET analysis plots
+* **scripts_analysis:** scripts for running AMET analyses
+* **scripts_db:** scripts for loading the AMET database
+* **src:** source code of the AMET model->obs utility programs
+
+## Documentation
+Code documentation are included within this repository (they are version-controlled along with the code itself).  
+
+[AMETv1.3 Quick Start Guide](docs/AMET_QuickStart_Guide_v13.md)   
+[AMETv1.3 User Guide](docs/AMET_Users_Guide_v1.md)   
+[AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v13.md )   
+=======
+
 The release versions of CMAQ that are currently available on Git Hub include:
 
 * [v1.2 (July 2013)](https://github.com/USEPA/AMET/tree/1.2)
 * [v1.3 (July 2017)](https://github.com/USEPA/AMET/tree/1.3)
 
+
+- Surface meteorology evaluation is currently the only driver released, but it will be followed in quick succession with a model-obs driver for SurfRAD (surface radiation), wind profiler, raob, ACARS, VAD wind profiler and PRISM precipitation.
+   
+   
 ## EPA Disclaimer
-The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.    [<img src="https://licensebuttons.net/p/mark/1.0/88x31.png" width="50" height="15">](https://creativecommons.org/publicdomain/zero/1.0/)
- 
+The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity, confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.    [<img src="https://licensebuttons.net/p/mark/1.0/88x31.png" width="50" height="15">](https://creativecommons.org/publicdomain/zero/1.0/)

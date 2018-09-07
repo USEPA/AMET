@@ -1,0 +1,90 @@
+#########################################################################
+#------         INPUT FILE      INPUT FILE      INPUT FILE         -----#
+#-----------------------------------------------------------------------#
+#                                                                       #
+#               PLOT OBSERVATION-MODEL TIMESERIES                       #
+#                                                                       #
+#       Version:        1.1                                             #
+#       Date:           July 05, 2004                                   #
+#       Contributors:   Robert Gilliam                                  #
+#                                                                       #
+#-----------------------------------------------------------------------#
+# Change LOG
+# timeseries1.1 (06/15/2004)
+#       Initial deveopment: The program currently reads a configuration file
+#       that is placed in the directory where timeseries is executed, or in the
+#       instance of web use, the input file is modified with web specs. Additionally
+#       an option is allowed to let the users compare two model simulations with
+#       observation for sensitivity experiments.
+#
+# Version 1.3, May 6, 2013, Rob Gilliam
+#  - better formatting of script
+#########################################################################
+#---------------------------------------------------##
+#       Configurable DATE Definitions
+#---------------------------------------------------##
+ hs   <-0
+ he   <-23
+ ds   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_DD")," ")))[1]
+ de   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_DD")," ")))[2]
+ ms   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_MM")," ")))[1]
+ me   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_MM")," ")))[2]
+ ys   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_YY")," ")))[1]
+ ye   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_YY")," ")))[2]
+ dates<-list(y=ys,m=ms,d=ds,h=hs)
+ datee<-list(y=ye,m=me,d=de,h=he)
+
+#########################################################################
+#       Database/Tables/Query Specifications
+#########################################################################
+ statid     <-unlist(strsplit(Sys.getenv("AMET_SITEID")," "))
+ model1     <-Sys.getenv("AMET_PROJECT1")
+ model2     <-Sys.getenv("AMET_PROJECT2")
+ extra      <-Sys.getenv("AMET_EXTRA1")
+ extra2     <-Sys.getenv("AMET_EXTRA2")
+ wdweightws <-T
+ savefile   <-T
+ textout    <-T
+
+ figdir     <-Sys.getenv("AMET_OUT")
+
+#########################################################################
+#       Plot/Output Format
+#########################################################################
+ plotfmt  <-Sys.getenv("AMET_PTYPE")
+ symb     <-15
+ symbsiz  <-2
+ plotsize <-1
+ scex     <-0.65
+ maxrec   <-10000
+
+#########################################################################
+# GROSS	QC/QA limits for T (K), WS (m/s), and Q (g/kg): Min, Max
+#########################################################################
+ qcT   <-c(240,315)
+ qcQ   <-c(0,30)
+ qcWS  <-c(0.5,25)
+ qclims<-list(qcT=qcT,qcQ=qcQ,qcWS=qcWS)                                                                   
+
+ # This is the maximum allowable number of data points
+ # allowed to be extracted from database. Used as check
+ # against unruly extraction such as via web interface.
+ # 10 million is about the number of data extracted for
+ # 2/3rds of a year.
+ maxrec   <- 10E4	
+
+#########################################################################
+#-----                  END OF INPUT FILE       ------------------------#
+#########################################################################
+#---------------------------------------------------##
+#       Script Prep. Do not modify
+
+ statstr<-paste(" stat_id='",statid,"' ",sep="")
+
+ table1<-paste(model1,"_surface",sep="")
+ table2<-paste(model2,"_surface",sep="")        
+     
+ groupstat    <-as.logical(Sys.getenv("AMET_GROUPSITES"))
+ comp <-F
+ if(model1 != model2 & model2 != "") { comp  <- T }    
+ window          <-0
