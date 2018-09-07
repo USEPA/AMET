@@ -1,9 +1,0 @@
-model_data
-obs
-output
-**/*.o
-**/*.exe
-**/*.mod
-**/*.orig
-scripts_analysis/aqExample_UNC/
-
