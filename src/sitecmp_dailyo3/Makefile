@@ -10,7 +10,7 @@ FC = ${myFC}
 FC_FLAGS = ${myFFLAGS} -I${IOAPI} -I. 
 
 #   Libraries
- LIBRARIES = -L${IOAPI} -lioapi -L${NETCDF} -lnetcdf $(extra_lib)
+ LIBRARIES = -L${IOAPI} -lioapi -L${NETCDF} -lnetcdf -L${NETCDF} -lnetcdff $(extra_lib)
 
 OBJS=   \
  module_envvar.o \
