@@ -23,7 +23,7 @@ maxrec		<- -1			## Set MySQL maximum records for queries (-1 for no maximum)
 
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## Misc Executables 
-Bldoverlay_exe   	 <- paste(amet_base,"/bin/bldoverlay.exe",sep="")	## Full path to build overlay executable
+Bldoverlay_exe_config  	 <- paste(amet_base,"/bin/bldoverlay.exe",sep="")	## Full path to build overlay executable
 EXEC_sitex_daily_config  <- paste(amet_base,"/bin/sitecmp_dailyo3.exe",sep="") ## Full path to site compare daily executable
 EXEC_sitex_config        <- paste(amet_base,"/bin/sitecmp.exe",sep="")		## Full path to site compare executable
 

@@ -77,11 +77,12 @@ Note that this command assumes that git is installed on the Linux system.
 * Navigate to the CMAS Software Clearinghouse by selected Download -> Software from the drop-down menu at the top of the CMAS Center home page.
 * Use the Select Software to Download box, select AMET, and click on the “**Submit”** button.
 * Choose “AMET 1.3” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
-* In the table that appears, follow the links to download:
- * a PDF version of the installation guide (this document)
- * a PDF version of the the AMET 1.3 User’s Guide
- * a tarball of CMAQ model test data (**aqExample.tar.gz**)
- * a tarball of WRF model test data (**wrfExample.tar.gz**).
+* The following items are available for download:
+ * a link to the AMET 1.3 Installation Guide (this document)
+ * a link to the AMET 1.3 User’s Guide
+ * a link to the AMET 1.3 Quick Start Guide
+ * a tarball of CMAQ model test data and air quality observations (**AMETv13_aqExample.tar.gz**)
+ * a tarball of WRF model test data and meteorology observations (**AMETv13_metExample.tar.gz**)
 
 
 <a id=Install3></a>
@@ -107,8 +108,7 @@ The versions of these packages that were used by the CMAS Center in their instal
 
 Tier 2 software includes scientific software utilities for accessing and storing data, calculating statistics, and creating graphics. Web links are provided here to the download the software. Refer to the documentation provided by the software distributors for installation instructions. Notes specific to the installation of these packages for use with AMET are provided here.
 
-#### Network Common Data Form (netCDF)
- [**http://www.unidata.ucar.edu/downloads/netcdf/index.jsp**](http://www.unidata.ucar.edu/downloads/netcdf/index.jsp)
+#### [Network Common Data Form (netCDF)](http://www.unidata.ucar.edu/downloads/netcdf/index.jsp)
 
 *Notes*:
 * Installation needs to include a static library and include files.
@@ -117,15 +117,13 @@ Tier 2 software includes scientific software utilities for accessing and storing
 * When using the **gcc** compilers, make sure **g++** is set up to use **gcc,** as the **c++** compiler will not work correctly.
 * For netCDF versions later than 4.1, the C and Fortran versions of the library are distributed and built separately.
 
-#### Input/Output Applications Programming Interface (I/O API)
-[**http://www.cmascenter.org/ioapi**](http://www.cmascenter.org/ioapi)
+#### [Input/Output Applications Programming Interface (I/O API)](http://www.cmascenter.org/ioapi)
 
  *Notes*:
  * If I/O API and netCDF are already installed on your system, use those packages for AMET.
  * Build the nocpl version of the I/O API for the data formats used with AMET.
 
-#### MySQL
-[**http://dev.mysql.com/downloads**](http://dev.mysql.com/downloads)
+#### [MySQL](http://dev.mysql.com/downloads)
 
 *Notes*:
 * Install both the MySQL server and client. At a minimum, the MySQL client must be on the same machine that will host the AMET scripts. The MySQL server can either be installed on the AMET host or an a remote host.
@@ -146,8 +144,7 @@ mysql> grant all privileges on \*.\* to 'ametsecure'@'localhost' with grant opti
 mysql> \q
 ```
 
-#### R
-[***http://cran.us.r-project.org/index.html***](http://cran.us.r-project.org/index.html).
+#### [R](http://cran.us.r-project.org/index.html)
 
 After you have installed the basic R software, AMET also requires the following additional R packages:
 
@@ -166,13 +163,8 @@ The easiest way to install R packages, is through the R package manager.  Once R
 > install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "Fields"))
 ```
 
-#### MADIS
-[***https://madis.ncep.noaa.gov/madis_api.shtml***](https://madis.ncep.noaa.gov/madis_api.shtml)
 
-Follow the installation instructions for the MADIS API. The AMET scripts will need to be configured to point to the compiled binaries for this utility.  
-
-#### WGRIB
-[**http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html**](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
+#### [WGRIB](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
 
 *Note:* The tarball from the above link does not contain its own directory, so we recommend that you create a **wgrib** directory before untarring.
 
@@ -200,41 +192,14 @@ In the **src** directory there are three Fortran programs for pairing model and 
 * **sitecmp** - pairs hourly and daily observation and model data for many of the networks compatible with AMET
 * **sitecmp_dailyo3** - calculates daily maximum 1-hour and 8-hour ozone pairs for analysis with AMET
 
-For the AMET scripts, there is nothing further to do during
-installation. Below are instructions to complete the
-installation of Tier 3 software, and directions for linking the Tier 2
-and Tier 3 executables into the AMET **bin** directory.
-
-#### Meteorological model utility: mm5tonetcdf
-
-*Notes:*
-
-* If NetCDF was installed in a nonstandard directory (i.e., not under
- **/usr/local)**, see **$AMETBASE/src/mm5tonetcdf\_1.2/README** for
- instructions on how to set corresponding paths to the include files
- and libraries.
-* The default install location of **mm5tonetcdf** in **/usr/local**
- can be changed by the same process as for NetCDF; see the above
- **README** file.
-* Make sure that you compile **mm5tonetcdf** with the appropriate LFS
- (large file support) flags. The flags for the **gcc** compiler are:
-
- **-D\_FILE\_OFFSET\_BITS=64**
-
- **-D\_LARGEFILE64\_SOURCE**
-
-#### Air quality model utilities
-
-The following three AMET Tier 3 software components must be compiled before using the AMET database and analyis scripts. The source code and Fortran Makefiles for these programs are located in the AMET **src** directory.
-
-* **bldoverlay**
-* **sitecmp**
-* **sitecmp_dailyo3**
-
 To compile these programs, edit the **config.amet** file that is located in the **src** directory.  Point this script to the location of the local I/O API (IOAPI_DR) and netCDF (NETCDF_DIR) installation directories.  Use the following command to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
 
 ```
+cd $AMETBASE/src
 source config.amet
+cd bldoverlay; make
+cd ../sitecmp; make
+cd ../sitecmp_dailyo3; make
 ```
 
 <a id=Install4></a>
@@ -247,19 +212,14 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 * `EXEC_sitex` - sitecmp executable directory path
 * `obs_data_dir` - observational data directory path; typically $amet_base/obs
 * `mysql_server` - IP Address or name of MySQL server used for AMET
-* `root_login` - login ID to the AMET MySQL database server
-* `root_pass`- password for the AMET MySQL database server
+* `amet_login` - login ID to the AMET MySQL database server
+* `amet_pass`- password for the AMET MySQL database server
 * `maxrec` - the maximum number of records allowed in a single MySQL query
 * `Bldoverlay_exe` - bldoverlay executable directory path
-* `R_dir` - main R installation directory path
-* `R_exe` - R executable directory path
-* `R_script` - Rscript executable directory path
-* `R_lib` - R library directory path
-* `R_proj_lib` - Proj.4 executable directory path
 
-*Note: the root_login and root_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
+*Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
-Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **root_login** and **root_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
+Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **amet_login** and **amet_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
 
 Additional AMET configuration is handled in the database loading and plot creation scripts. See the AMET 1.3 User’s Guide on configuring AMET for additional details.
 
@@ -270,25 +230,44 @@ The final step in the installation process is to install the test case
 data sets. These include sample model output data and observational
 data.
 
-### Install sample model output data
+### Install sample data
 
-In this step, you will untar the previously downloaded model outputs
+In this step, you will untar the previously downloaded model outputs and observational data
 from Section 2 in the corresponding directories indicated below.
 
-#### Meteorological output data
-**WRF** (4.6 GB uncompressed, 2.4 GB compressed) - Untar the file **wrfExample.tar.gz** in the directory **$AMETBASE/model\_data/MET**. This tarball contains five days’ worth of **WRF** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 8 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. The spatial domain of the
+#### Meteorological data
+(25 GB uncompressed, 16 GB compressed)
 
- **MCIP** (455 MB uncompressed, 340 MB compressed) - Untar the file **mcipExample.tar.gz** in the directory **$AMETBASE/model\_data/MET.** This tarball contains five days’ worth of **MCIP** outputs in netCDF format. The temporal range is July 5 2002 0:00 UTC to July 9 2002 23:00 UTC with a spatial domain covering the continental U.S. at 36-km resolution. Additionally, there is a **GRIDCRO2D** file for July 6 that is also used by AMET.
+Untar the file **AMETv13_metExample.tar.gz** in the directory **$AMETBASE**. This tarball contains 31 days’ worth of **WRF** and **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
 
-After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET** will contain the following files.
+After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET/metExample** will contain the following files.
 
 ```
-Add file list
+history.2013-07-01.luf.nc  history.2013-07-17.luf.nc   wrfout.surface.20110702.nc  wrfout.surface.20110718.nc
+history.2013-07-02.luf.nc  history.2013-07-18.luf.nc   wrfout.surface.20110703.nc  wrfout.surface.20110719.nc
+history.2013-07-03.luf.nc  history.2013-07-19.luf.nc   wrfout.surface.20110704.nc  wrfout.surface.20110720.nc
+history.2013-07-04.luf.nc  history.2013-07-20.luf.nc   wrfout.surface.20110705.nc  wrfout.surface.20110721.nc
+history.2013-07-05.luf.nc  history.2013-07-21.luf.nc   wrfout.surface.20110706.nc  wrfout.surface.20110722.nc
+history.2013-07-06.luf.nc  history.2013-07-22.luf.nc   wrfout.surface.20110707.nc  wrfout.surface.20110723.nc
+history.2013-07-07.luf.nc  history.2013-07-23.luf.nc   wrfout.surface.20110708.nc  wrfout.surface.20110724.nc
+history.2013-07-08.luf.nc  history.2013-07-24.luf.nc   wrfout.surface.20110709.nc  wrfout.surface.20110725.nc
+history.2013-07-09.luf.nc  history.2013-07-25.luf.nc   wrfout.surface.20110710.nc  wrfout.surface.20110726.nc
+history.2013-07-10.luf.nc  history.2013-07-26.luf.nc   wrfout.surface.20110711.nc  wrfout.surface.20110727.nc
+history.2013-07-11.luf.nc  history.2013-07-27.luf.nc   wrfout.surface.20110712.nc  wrfout.surface.20110728.nc
+history.2013-07-12.luf.nc  history.2013-07-28.luf.nc   wrfout.surface.20110713.nc  wrfout.surface.20110729.nc
+history.2013-07-13.luf.nc  history.2013-07-29.luf.nc   wrfout.surface.20110714.nc  wrfout.surface.20110730.nc
+history.2013-07-14.luf.nc  history.2013-07-30.luf.nc   wrfout.surface.20110715.nc  wrfout.surface.20110731.nc
+history.2013-07-15.luf.nc  history.2013-07-31.luf.nc   wrfout.surface.20110716.nc
+history.2013-07-16.luf.nc  wrfout.surface.20110701.nc  wrfout.surface.20110717.nc
+
 ```
 
-#### Air quality output data
+Meteorology observational data are installed under **$AMETBASE/obs/MET**.
 
- **CMAQ** (7.9 GB uncompressed; 6.3 GB compressed) - Untar the **aqExample.tar.gz** file in the directory **$AMETBASE/model\_data/AQ**. For CMAQ, we have provided an **ACONC** and a **WETDEP** output file from a CMAQ simulation to demonstrate new analysis capabilities involving the AERO6 suite of species. These two files are netCDF outputs from the **combine** postprocessing step. The  temporal range is from July 1 2011 00:00 UTC to July 31 2011 00:00 UTC  with a spatial domain covering the continental U.S at 12-km resolution. To demonstrate the analysis of statistical correlations of meteorological and air quality model data we have also provided a **CONC** and **WETDEP** output file from a 2002 CMAQ simulation with the temporal range from July 1 2002 00:00 UTC to July 11 2002 00:00 UTC and a spatial domain covering the continental U.S at 36-km resolution; these data were included in the previous AMET release.
+#### Air quality data
+(35 GB uncompressed; 30 GB compressed)
+
+Untar the **AMETv13_aqExample.tar.gz** file in the directory **$AMETBASE**. For CMAQ, we have provided an **ACONC** and a **WETDEP** output file from a CMAQ simulation to demonstrate analysis capabilities involving the AERO6 suite of species. The model output files are netCDF outputs from the **combine** postprocessing step. The  temporal range is from July 1 2011 00:00 UTC to July 31 2011 00:00 UTC  with a spatial domain covering the continental U.S at 12-km resolution. This archive also contains surface air quality observations for 2011 and sample AMET analysis plots.
 
 After you untar the tarfiles above, the directory **$AMETBASE/model\_data/AQ/aqExample** will contain the following files.
 
@@ -298,44 +277,24 @@ After you untar the tarfiles above, the directory **$AMETBASE/model\_data/AQ/aqE
 
 ```
 
-#### Observational data
-
- Change directory to **$AMETBASE/obs**, and untar the contents of the file **AMET\_obs\_data.tar.gz** that you downloaded in Section 1. This will populate the air quality observations as well as provide the necessary directory structure for storing meteorological data.
-
- **Meteorological observational data**: These data are not included as part of this distribution, because AMET dynamically downloads them as needed from the Meteorological Assimilation Data Ingest System (MADIS) web site to **$AMETBASE/obs/MET**. The contents of this directory should now look like the following:
-
- ```
- Add file list
- ```
-
-If the directory where AMET is installed has limited space, we suggest that you move the entire directory structure under **$AMETBASE/obs/MET** (point and LDAD) to another directory with larger capacity, and then create symbolic links from the location that contains the AMET installation to the new location. For the model datasets we have provided, the MADIS observational data that will be dynamically downloaded is on the order of about `1.0 GB` uncompressed. AMET does allow the data to be stored in compressed format, which reduces the size to 109 MB, but the data need to b decompressed before they can be used in AMET.
-
-**Air quality observational data** (32 KB uncompressed; 0.2KB compressed):  We provided data from several networks to use for testing the AMET installation:
+Air quality observational data for the following networks are installed under **$AMETBASE/obs/AQ**:
 
 *North America*
 * Air Quality System (AQS) network
 * Clean Air Status and Trends Network (CASTNET)
 * Interagency Monitoring of Protected Visual Environments (IMPROVE)
 * Chemical Speciation Network (CSN)
-* Mercury Deposition Network (MDN)
 * National Atmospheric Deposition Program (NADP) network
 * SouthEastern Aerosol Research and Characterization Study (SEARCH)
-* Ammonia Monitoring Network (AMON)
-* Atmospheric Integrated Research Monitoring Network (AIRMON)
-* National Air Pollution Surveillance Program (NAPS) (speciated measurements from Canada)
-* Canadian Air and Precipitation Monitoring Network (CAPMON)
 
 *Global/Europe*
 * Aerosol Robotic Network (AERONET)
 * Regional and global analysis of CO2, water vapor and energy (FLUXNET)
-* TOXICS
 
-
-A brief description of data from each of these networks is provided in the AMET User’s Guide included in this release. Refer to the respective web sites for additional information on these datasets, monitoring protocols, updates, etc. The observational datasets have been preprocessed and reformatted (in some instances from their original sources) for access by AMET. We have also provided the monitoring station locations in a set of .csv files in the subdirectory **$AMETBASE/obs/AQ/site\_lists**. The site lists are an important set of metadata files that allow AMET to match modeled and observed data at the available locations from each network, and is critical to the database loading.
+A brief description of data from each of these networks is provided in the AMET User’s Guide included in this release. Refer to the respective web sites for additional information on these datasets, monitoring protocols, updates, etc. The observational datasets have been preprocessed and reformatted (in some instances from their original sources) for access by AMET. We have also provided the monitoring station locations in a set of .csv files in the subdirectory **$AMETBASE/obs/AQ/site\_files**. The site lists are an important set of metadata files that allow AMET to match modeled and observed data at the available locations from each network, and is critical to the database loading.
 
  Please see the *Atmospheric Model Evaluation Tool (AMET) User’s Guide*  for instructions on how to
  load new data, configure and create plots.
-
 
 ----
 <a id=InstallRef></a>
