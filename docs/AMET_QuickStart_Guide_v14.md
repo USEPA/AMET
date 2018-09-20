@@ -1,14 +1,14 @@
-# Atmospheric Model Evaluation Tool (AMET) v1.3  
+# Atmospheric Model Evaluation Tool (AMET) v1.4 beta  
 ## Quick Start Guide
 -----
-This guide provides a quick start to getting AMET version 1.3 installed and running on a Linux system.
-Additional details of the steps outlined here are available in the AMET [Installation Guide](https://github.com/USEPA/AMET/blob/1.3/docs/AMET_Install_Guide_v13.md) and [User's Guide](https://github.com/USEPA/AMET/blob/1.3/docs/AMET_Users_Guide_v1.md).
+This guide provides a quick start to getting AMET version 1.4 beta installed and running on a Linux system.
+Additional details of the steps outlined here are available in the AMET [Installation Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Install_Guide_v14b.md) and [User's Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Users_Guide_v14b.md).
 
 ## 1.  Install AMET source code and scripts using Git
 
 To clone the AMET installation directory to a Linux server, use the following command:
 
-``git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13``
+``git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b``
 
 ## 2.  Download AMET Test Case Data
 
@@ -16,7 +16,7 @@ To clone the AMET installation directory to a Linux server, use the following co
 
 2) Click the Software pulldown menu on the horizontal menu bar and choose CMAQ.
 
-3) Click DOWNLOAD on the right-hand side of the page and choose CMAQv5.2, platform, and compiler for your machine and click submit.
+3) Click DOWNLOAD on the right-hand side of the page and choose CMAQv5.3b, platform, and compiler for your machine and click submit.
 
 4) Click "Download Datasets" for the CMAQ benchmark input data and CMAQ benchmark output data.
 
@@ -46,6 +46,9 @@ Tier 2 software includes scientific software utilities for accessing and storing
 * **[MySQL](http://dev.mysql.com/downloads)**
 * **[R](http://cran.us.r-project.org/index.html)**
 * **[WGRIB](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)**
+* **[Pandoc](https://pandoc.org/)**
+
+Note that Pandoc is used by several AMET-AQ scripts to create self-contained html files for several interactive plots. As such, Pandoc is in not required, but is recommended. Also, it is recommended that latest version of Pandoc be installed on the system, which may not be accessable using the CRAN installer.
 
 After installing MySQL, [initialize a data directory for AMET](https://dev.mysql.com/doc/refman/5.7/en/data-directory-initialization.html) and then [start the server](https://dev.mysql.com/doc/refman/5.7/en/starting-server.html), and [connect to the server](https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-connecting), per the MySQL instructions.
 
@@ -66,7 +69,9 @@ AMET also requires the following additional R packages:
 * mapdata
 * stats
 * plotrix
-* Fields
+* fields
+* leaflet
+* htmlwidgets
 
 The easiest way to install R packages, is through the R package manager.  Once R is installed, use the following commands to install these packages (note that the ">" denotes the Linux command prompt):
 
@@ -101,13 +106,13 @@ cd ../sitecmp_dailyo3; make
 AMET uses a centralized R script to set up the AMET environment for loading data into the database and for producing plots.  The AMET configuration script is located in the `configure` directory under the base AMET installation area. The following environment variables in the **amet-config.R** script must be set before using any of the other AMET scripts.
 
 * `amet_base` - base AMET installation directory path
-* `EXEC_sitex_daily` - sitecmp_dailyo3 executable directory path
-* `EXEC_sitex` - sitecmp executable directory path
+* `EXEC_sitex_daily_config` - sitecmp_dailyo3 executable directory path
+* `EXEC_sitex_config` - sitecmp executable directory path
 * `mysql_server` - IP Address or name of MySQL server used for AMET
 * `amet_login` - login ID to the AMET MySQL database server
 * `amet_pass`- password for the AMET MySQL database server
 * `maxrec` - the maximum number of records allowed in a single MySQL query
-* `Bldoverlay_exe` - bldoverlay executable directory path
+* `Bldoverlay_exe_config` - bldoverlay executable directory path
 
 *Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
