@@ -249,9 +249,9 @@ variables that need to be changed in amet-config.R.
 | **amet\_login**         | Login for the AMET MySQL user. For the purposes of this tutorial, we assume **amet\_login** is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
 | **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
 | **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1. |
-| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
-| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
-| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_config**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_daily_config**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
+| **bldoverlay\_exe_config**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
 
 A word about specifying the **amet_login** and **amet_pass**. Obviously these are MySQL credentials and are therefore sensitive. The MySQL credentials specified here are always used in the analysis scripts that come with AMET, which require only database read access to function. Therefore, the MySQL user specified here can be limited to read access only. However, these credentials can also be setup to be used by the aqProject.csh and metProject.csh scripts (and by default those scripts are setup to do so). For those scripts to work properly, the MySQL user specified must have permission to create databases and tables, in addition to read access. So, if the setting in the aqProject.csh and/or metProject.csh scripts is to read the **amet_login** and **amet_pass** variables for the amet-config.R file, those credentials must be for a user with full MySQL permissions.
 
@@ -270,21 +270,21 @@ directories during the installation process.
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into four example projects:
 "metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
-(July 01 2011 00:00 UTC to July 31 2011 23:00 UTC). The WRF data file is
+(July 01 2016 00:00 UTC to July 31 2016 23:00 UTC) and 1-month MPAS simulation provided. 
 
 The WRF data consist of five WRF output files in netCDF format:
 
 > $AMETBASE/model\_data/MET/**wrfExample**/
 >
-> wrfout\_d01\_2002-07-05\_00:00:00
+> wrfout\_d01\_2016-07-05\_00:00:00
 >
-> wrfout\_d01\_2002-07-06\_00:00:00
+> wrfout\_d01\_2016-07-06\_00:00:00
 >
-> wrfout\_d01\_2002-07-07\_00:00:00
+> wrfout\_d01\_2016-07-07\_00:00:00
 >
-> wrfout\_d01\_2002-07-08\_00:00:00
+> wrfout\_d01\_2016-07-08\_00:00:00
 >
-> wrfout\_d01\_2002-07-09\_00:00:00
+> wrfout\_d01\_2016-07-09\_00:00:00
 
 Note that we have bolded “metExample” in the directory name above to
 highlight the fact that we are using the project name to organize the
@@ -295,9 +295,9 @@ July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
 
 > $AMETBASE/model\_data/AQ/**aqExample**/
 >
-> AMET_CMAQ_July_2011_Test_Data.aconc
+> AMET_CMAQ_July_2016_Test_Data.aconc
 >
-> AMET_CMAQ_July_2011_Test_Data.dep
+> AMET_CMAQ_July_2016_Test_Data.dep
 
 correspond to the concentration and wet deposition output files from
 CMAQ, after they have been postprocessed with the combine utility.
@@ -346,15 +346,15 @@ and Trends Network (CASTNET), Interagency Monitoring of PROtected Visual
 Environments (IMPROVE) network, Mercury Deposition Network (MDN),
 National Atmospheric Deposition Program (NADP) network, SouthEastern
 Aerosol Research and Characterization Study (SEARCH) network, and the
-Speciated Trends Network (STN). The observational datasets have been
+Chemical Speciation Network (CSN). The observational datasets have been
 preprocessed and reformatted (in some instances from their original
 sources) for access by AMET. The temporal range is network dependent,
-and ranges from 2001 to 2006. The monitoring station locations are
-provided by a series of .csv files under the subdirectory
-$AMETBASE/obs/AQ/site\_lists. A brief synopsis of each network, along
-with the steps taken to create these data for AMET, is given below. Note
-that in the species lists, each line is of the format “observed species
-name; model species name (units)”.
+but data are generally available from the late 1980s to present. The 
+monitoring station location and metadata are provided by a series of .csv 
+files under the subdirectory $AMETBASE/obs/AQ/site_metadata_files. A brief 
+synopsis of each network, along with the steps taken to create these data 
+for AMET, is given below. Note that in the species lists, each line is of 
+the format “observed species name; model species name (units)”.
 
 ### Clean Air Status and Trends Network (CASTNET) Weekly
 
@@ -1249,8 +1249,7 @@ Go to the project directory:
 
 > $ cd $AMETBASE/scripts\_analysis/aqExample
 
-Here, you will see a series of C-shell scripts and their accompanying
-input files in the subdirectory **input\_files**. We will go through an 
+Here, you will see a series of C-shell scripts. We will go through an 
 analysis script in detail as a example for running each of the scripts 
 in the project.
 
@@ -1270,20 +1269,30 @@ species selected is SO4 and you are plotting two networks: IMPROVE and
 CASTNET. The corresponding input file, scatterplot.input, will likely not 
 need to be changed for this example. 
 
-Note that while each script has its own individual corresponding input file, 
-there is also an input file called **all_scripts.input**, which contains all 
-the options available for all the analysis scripts. This input file can be 
-used instead of script specific input files, thereby eliminating the need to 
-edit each individual input file. This may be a preferred option for some users.
+Each script requires an input file, located in the subdirectory **input\_files**.
+The input file contains all the options available for each script, and allows
+the user to customize scripts to their liking. Unlike previous version of AMET 
+where each script had its own individual input file, for AMETv1.4b and beyond, 
+all scripts by default will use the **all_scripts.input** file, which contains 
+all the options available for all the analysis scripts. This eliminates the need 
+to edit each individual input file. 
+
 
 | **Variable**   | **Description** |
 |----------------|-----------------|
 | **AMETBASE**                     | Base directory where AMET is installed. |
 | **AMET\_DATABASE**               | MySQL database containing your project. |
 | **AMET\_PROJECT**                | Name of the AMET project to analyze. |
+| **MYSQL\_CONFIG**                | Location of the amet-config.R file. This should be in $AMETBASE/configure |
+| **AMET\_DB**                     | Flag to indicate whether or not to get data from the MySQL database. If T, data
+will be retrieved from the database. If F, the site compare files will be read directly. If AMET_DB=F, the environment
+variable OUTDIR must be set indicating where the site compare files are located. |
+| **OUTDIR**                       | Location of the site compare output files. |
+| **AMET\_PROJECT2**               | Name of AMET project to compare AMET_PROJECT against. Comment out if not doing model to model comparisons. |
+| **OUTDIR2**                      | Location of site compare output files for AMET_PROJECT2 if AMET_DB=F. |
 | **AMET\_OUT**                    | Location to which to write output files (e.g. plots). By default this is set to $AMETBASE/output/$AMET_PROJECT/$analysis_script_type. |
-| **AMET\_SDATE**                  | Start date in the form YYYYMMDD from which to begin the analysis. |
-| **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
+| **AMET\_SDATE**                  | Start date in the form YYYY-MM-DD from which to begin the analysis. |
+| **AMET\_EDATE**                  | End date in the form YYYY-MM-DD to which to end the analysis.|
 | **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
 | **AMET\_PTYPE**                  | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
 | **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species choosen must be one that is measured by the specified network (or networks if multiple networks are choosen). 
@@ -1299,6 +1308,7 @@ edit each individual input file. This may be a preferred option for some users.
 | **AMET\_SEARCH\_HOURLY**         | y/n; Flag to include the SEARCH hourly data in the analysis |
 | **AMET\_SEARCH\_DAILY**          | y/n; Flag to include the SEARCH daily data in the analysis |
 | **AMET\_NAPS\_HOURLY**           | y/n; Flag to include the NAPS hourly data in the analysis |
+| **AMET\_NAPS\_DAILY_O3**         | y/n; Flag to include the NAPS daily ozone (e.g. MDA8) in the analysis |
 | **AMET\_CASTNET\_DRYDEP**        | y/n; Flag to include the CASTNET dry deposition data in the analysis |
 | **AMET\_AIRMON**                 | y/n; Flag to include the AIRMON data in the analysis |
 | **AMET\_AMON**                   | y/n; Flag to include the AMON data in the analysis |
@@ -1313,6 +1323,8 @@ edit each individual input file. This may be a preferred option for some users.
 | **AMET\_AGANET**                 | y/n; Flag to include the AGANET data in the analysis |
 | **AMET\_ADMN**                   | y/n; Flag to include the ADMN data in the analysis |
 | **AMET\_NAMN**                   | y/n; Flag to include the NAMN data in the analysis |
+| **AMET\_NOAA\_ESRL\_O3**         | y/n; Flag to include the NOAA ESLR ozone data in the analysis |
+| **AMET\_TOAR**                   | y/n; Flag to include the TOAR global network data in the analysis |
 
 Also note that all AQ analysis scripts make use of the Network.input
 input file. This file contains information about each observational
