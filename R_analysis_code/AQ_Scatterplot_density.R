@@ -54,6 +54,7 @@ network 	<- network_names[[1]]						# Set network
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
       aqdat_query.df   <- sitex_info$sitex_data
       units            <- as.character(sitex_info$units[[1]])
+      model_name       <- "Model"
    }
    else {
       query_result    <- query_dbase(run_name1,network,species)

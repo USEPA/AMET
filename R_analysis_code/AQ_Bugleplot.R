@@ -62,7 +62,7 @@ for (j in 1:length(network_names)) {
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         aqdat.df         <- sitex_info$sitex_data
+         aqdat_query.df   <- sitex_info$sitex_data
          units            <- as.character(sitex_info$units[[1]])
       }
       else {
@@ -81,7 +81,7 @@ for (j in 1:length(network_names)) {
    }
 
    ### Create properly formatted dataframe and then call DomainStats and SitesStats to create statistics ###
-   data_all.df <- data.frame(network=I(aqdat.df$network),stat_id=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df[,9],mod_val=aqdat.df[,10],precip_val=aqdat.df$precip_ob)
+   data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,9],mod_val=aqdat_query.df[,10])
    stats_all.df <- DomainStats(data_all.df)
    #########################################################################################################
 

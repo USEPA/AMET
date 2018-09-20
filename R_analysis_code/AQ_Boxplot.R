@@ -114,7 +114,6 @@ if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
    aqdat_query3.df$Year <- years3
    aqdat_query3.df$YearMonth <- yearmonth3
 }
-
 total_days <- as.numeric(max(as.Date(aqdat_query.df$ob_datee))-min(as.Date(aqdat_query.df$ob_dates)))	# Calculate the total length, in days, of the period being plotted
 x.axis.min <- min(aqdat_query.df$month)	# Find the first month available from the query
 

@@ -1,55 +1,61 @@
 #!/bin/csh -f
 # --------------------------------
-# Box plot - Hourly
+# Interactive Spatial plot - Difference
 # -----------------------------------------------------------------------
 # Purpose:
 #
-# This is an example c-shell script to run the R-script that generates
-# hourly box plots.  It draws side-by-side boxplots for the various
-# groups, without median value.  This particular code uses hourly data
-# to create a diurnal average curve showing the data trend throughout
-# the course of a 24-hr period.  The code is designed to use AQS ozone
-# data, but can be used with any hourly data (SEARCH, TEOM, etc).
+# This code is part of the AMET-AQ system.  The Plot Spatial code
+# takes a MYSQL database query for a single species from one or more
+# networks and plots the minimum, maximum and average difference between
+# two model simulations at each site location for each network.  
+# Mutiple values for a site are averaged to a single value for 
+# plotting purposes.  The map area plotted is dynamically generated 
+# from the input data. This version of the AMET spatial plot creates an
+# interactive plot with zoom capability.
 #
-# Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-# Revised version:  Wyat Appel - Dec, 2012
-# Revised version:  Wyat Appel - Jun, 2017
-#
+# Initial version:  Wyat Appel - Sep, 2018
 # -----------------------------------------------------------------------
 
   
   #--------------------------------------------------------------------------
   # These are the main controlling variables for the R script
   
-  #  Top of AMET directory
-  setenv AMETBASE       /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
+  ###  Top of AMET directory
+  setenv AMETBASE       ~/AMET
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
+  ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
+  setenv AMET_DB  T
+
+  ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
+
   ### Set the project name to be used for model-to-model comparisons ###
   setenv AMET_PROJECT2  aqExample
 
-  #  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_hourly
+  ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
+  #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/
 
-  #  Start and End Dates of plot (YYYYMMDD)- must match available dates in db
-  setenv AMET_SDATE "20110701"
-  setenv AMET_EDATE "20110711"
+  ###  Directory where figures and text output will be directed
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/plot_spatial_diff_interactive
 
-  # Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
-  # The PID is particularly important if using the AMET web interface and is determined there through
-  # a random number generator.
+  ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
+  setenv AMET_SDATE "2016-05-01"
+  setenv AMET_EDATE "2016-05-11"
+  
+  ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
+  ### The PID is particularly important if using the AMET web interface and is determined there through
+  ### a random number generator.
   setenv AMET_PID 1
 
-  #  Custom title (if not set will autogenerate title based on variables 
-  #  and plot type)
-  setenv AMET_TITLE "Hourly boxplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
+  ###  Custom title (if not set will autogenerate title based on variables 
+  ###  and plot type)
+  setenv AMET_TITLE "Difference spatial plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
-
-  #  Plot Type, options are "pdf" or "png"
-  setenv AMET_PTYPE pdf             
-
+  ###  Plot Type, options are only "html" for the interactive plots
+  setenv AMET_PTYPE html
 
   ### Species to Plot ###
   ### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM_TOT,PM25_TOT,PM_FRM,PM25_FRM,EC,OC,TC,O3,O3_1hrmax,O3_8hrmax
@@ -57,20 +63,20 @@
   ### AE6 (CMAQv5.0) Species
   ### Na,Cl,Al,Si,Ti,Ca,Mg,K,Mn,Soil,Other,Ca_dep,Ca_conc,Mg_dep,Mg_conc,K_dep,K_conc
 
-  setenv AMET_AQSPECIES O3
+  setenv AMET_AQSPECIES SO4
 
   ### Observation Network to plot -- One only
   ###  set to 'y' to turn on, default is off
   ###  NOTE: species are not available in every network
-#  setenv AMET_CSN y
-#  setenv AMET_IMPROVE y
-#  setenv AMET_CASTNET y
-#  setenv AMET_CASTNET_Daily_O3 y
+  setenv AMET_CSN y
+  setenv AMET_IMPROVE y
+  setenv AMET_CASTNET y
 #  setenv AMET_CASTNET_Hourly y
+#  setenv AMET_CASTNET_Daily_O3 y
 #  setenv AMET_CASTNET_Drydep y 
 #  setenv AMET_NADP y 
 #  setenv AMET_AIRMON y 
-  setenv AMET_AQS_Hourly y
+#  setenv AMET_AQS_Hourly y
 #  setenv AMET_AQS_Daily_O3 y
 #  setenv AMET_AQS_Daily y
 #  setenv AMET_SEARCH y 
@@ -91,14 +97,14 @@
 #  setenv AMET_NAMN y
 
   # Log File for R script
-  setenv AMET_LOG boxplot_hourly.log
+  setenv AMET_LOG plot_spatial_diff_interactive.log
 
 ##--------------------------------------------------------------------------##
 ##                Most users will not need to change below here
 ##--------------------------------------------------------------------------##
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/boxplot_hourly.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scripts.input  
   setenv AMET_NET_INPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
   
   # Check for plot and text output directory, create if not present
@@ -107,18 +113,19 @@
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Boxplot_Hourly.R $AMET_LOG
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Plot_Spatial_Diff_interactive.R $AMET_LOG
   setenv AMET_R_STATUS $status
   
   if($AMET_R_STATUS == 0) then
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_hourlyboxplot.$AMET_PTYPE
+		echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatial_plot_<TYPE>.$AMET_PTYPE"
 		echo "-----------------------------------------------------------------------------------------"
-		exit(0)
+		exit 0
   else
      echo "The AMET R script did not produce any output, please check the LOGFILE $AMET_LOG for more details on the error."
      echo "Often, this indicates no data matched the specified criteria (e.g., wrong dates for project). Please check and re-run!"
-  		exit(1)
-  endif  
+  		exit 1  
+  endif
+

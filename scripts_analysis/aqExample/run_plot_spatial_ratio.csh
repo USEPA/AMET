@@ -1,50 +1,55 @@
 #!/bin/csh -f
 # --------------------------------
-# Spatial plot
+# Ratio Spatial plot
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
-# a series of spatial plots. It takes a single species from one or more
-# networks and plots the observation value, model value, and 
-# difference between the model and ob for each site for each 
-# corresponding network.  Mutiple values for a site are averaged
-# to a single value for plotting purposes.  The map area plotted
-# is dynamically generated from the input data. Multiple network, single
-# species, single simulation.
+# a series of spatial plots, taking the ratio of one species to another,
+# specifically PM2.5. The script takes a single species from one or more
+# networks and plots the ratio of that species to total PM2.5. 
+# Mutiple values for a site are averaged to a single value for plotting 
+# purposes.  The map area plotted is dynamically generated from the input 
+# data. Multiple network, single species, single simulation.
 #
-# Initial version:  Alexis Zubrow IE UNC - Nov, 2007
-# Revised version:  Wyat Appel - Dec, 2012
-# Revised version:  Wyat Appel - Jun, 2017
+# Initial version:  Wyat Appel - Dec, 2012
+#
+# Revised version:  Wyat Appel - Sep, 2018
 # -----------------------------------------------------------------------
 
   
   #--------------------------------------------------------------------------
   # These are the main controlling variables for the R script
   
-  #  Top of AMET directory
+  ###  Top of AMET directory
   setenv AMETBASE       ~/AMET
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
-  #  Directory where figures and text output will be directed
+  ###  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/plot_spatial_ratio
 
-  #  Start and End Dates of plot (YYYYMMDD)
-  setenv AMET_SDATE "20110701"
-  setenv AMET_EDATE "20110731"
+  ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
+  setenv AMET_DB  T
 
-  # Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
-  # The PID is particularly important if using the AMET web interface and is determined there through
-  # a random number generator.
+  ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
+
+  ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
+  setenv AMET_SDATE "2016-05-01"
+  setenv AMET_EDATE "2016-05-11"
+
+  ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
+  ### The PID is particularly important if using the AMET web interface and is determined there through
+  ### a random number generator.
   setenv AMET_PID 1
 
-  #  Custom title (if not set will autogenerate title based on variables 
-  #  and plot type)
+  ###  Custom title (if not set will autogenerate title based on variables 
+  ###  and plot type)
   setenv AMET_TITLE "Spatial plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
-#  Plot Type, options are "pdf","png" or "both"
+  ###  Plot Type, options are "pdf","png", or "both"
   setenv AMET_PTYPE both
 
   ### Species to Plot ###
@@ -93,7 +98,7 @@
 ##--------------------------------------------------------------------------##
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/plot_spatial_ratio.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scripts.input  
   setenv AMET_NET_INPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
   
   # Check for plot and text output directory, create if not present

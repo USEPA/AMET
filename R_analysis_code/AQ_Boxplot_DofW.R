@@ -19,11 +19,7 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")	# R directory
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
-### Retrieve units label from database table ###
 network		<- network_names[1]
-#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-#units		<- db_Query(units_qs,mysql)
-#################################
 
 ### Set file names and titles ###
 filename_pdf <- paste(run_name1,species,pid,"boxplot_dow.pdf",sep="_")
@@ -40,13 +36,27 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
    if (custom_title == "") { title <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ") }
    else { title <- custom_title }
 }
-
-label <- paste(species,"(",units,")",sep=" ") 
 #################################
 
-query_result   	<- query_dbase(run_name,network,species)
-aqdat.df 	<- query_result[[1]]
-units		<- query_result[[3]]
+#################################
+{
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- (sitex_info$sitex_data)
+      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+      units            <- as.character(sitex_info$units[[1]])
+   }
+   else {
+#      units          <- db_Query(units_qs,mysql)
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      units           <- query_result[[3]]
+   }
+}
+
+aqdat.df 	<- aqdat_query.df 
+
+label <- paste(species,"(",units,")",sep=" ")
 
 ## test that the query worked
 if (length(aqdat.df) == 0){

@@ -1,16 +1,17 @@
 ################################################################
-### AMET CODE: PLOT SPATIAL DIFF
+### AMET CODE: INTERACTIVE PLOT SPATIAL DIFF
 ###
 ### This code is part of the AMET-AQ system.  The Plot Spatial Diff code
 ### takes a MYSQL database query for a single species from one or more
 ### networks and two simulations and plots the bias and error for each
-### simulation, and the difference in bias and error between each simulation,
-### and provides a histogram of the distribution of differences in bias and
-### error. Cool colors indicate lower bias/error in simulation 1 versus
-### simulation 2, while warm colors indicate higher bias/error in simulation
-### 1 versus simulation 2. 
+### simulation, and the difference in bias and error between each simulation.
+### This particular code utilizes the leaflet package to create an inter-
+### active plot with zoom capability. PANDOC is used to create a self-
+### contained HTML file. Cool colors indicate lower bias/error in simulation 
+### 1 versus simulation 2, while warm colors indicate higher bias/error in 
+### simulation 1 versus simulation 2. 
 ###
-### Last modified by Wyat Appel; January 4, 2017
+### Last modified by Wyat Appel, Septempber 2018
 ################################################################
 
 ## get some environmental variables and setup some directories
@@ -21,25 +22,24 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required Libraries
-if(!require(maps)){stop("Required Package maps was not loaded")}
-if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
+if(!require(maps))		{stop("Required Package maps was not loaded")}
+if(!require(mapdata))		{stop("Required Package mapdata was not loaded")}
+if(!require(leaflet))		{stop("Required package leaflet was not loaded")}
+if(!require(htmlwidgets))	{stop("Required package htmlwidgets was not loaded")}
 
 ### Retrieve units label from database table ###
-network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
-#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
+network <- network_names[1]	# When using mutiple networks, units from network 1 will be used
 ################################################
 
 filename <- NULL
 
 ### Set file names and titles ###
-filename_bias_1		 <- paste(run_name1,species,pid,"spatialplot_bias_1",sep="_")       # Filename for obs spatial plot
-filename_bias_2		 <- paste(run_name1,species,pid,"spatialplot_bias_2",sep="_")       # Filename for model spatial plot
+filename_bias_1		 <- paste(run_name1,species,pid,"spatialplot_bias_1.html",sep="_")       # Filename for obs spatial plot
+filename_bias_2		 <- paste(run_name1,species,pid,"spatialplot_bias_2.html",sep="_")       # Filename for model spatial plot
 filename_bias_diff	 <- paste(run_name1,species,pid,"spatialplot_bias_diff.html",sep="_") # Filename for diff spatial plot
-filename_bias_diff_hist	 <- paste(run_name1,species,pid,"spatialplot_bias_diff_hist",sep="_") # Filename for diff spatial plot
-filename_error_1	 <- paste(run_name1,species,pid,"spatialplot_error_1",sep="_")     # Filename for obs spatial plot
-filename_error_2	 <- paste(run_name1,species,pid,"spatialplot_error_2",sep="_")     # Filename for model spatial plot
+filename_error_1	 <- paste(run_name1,species,pid,"spatialplot_error_1.html",sep="_")     # Filename for obs spatial plot
+filename_error_2	 <- paste(run_name1,species,pid,"spatialplot_error_2.html",sep="_")     # Filename for model spatial plot
 filename_error_diff	 <- paste(run_name1,species,pid,"spatialplot_error_diff.html",sep="_")       # Filename for diff spatial plot
-filename_error_diff_hist <- paste(run_name1,species,pid,"spatialplot_error_diff_hist",sep="_")       # Filename for diff spatial plot
 filename_csv  		 <- paste(run_name1,species,pid,"spatialplot_diff.csv",sep="_")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
@@ -49,15 +49,13 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 }
 
 ## Create a full path to file
-filename_bias_1           <- paste(figdir,filename_bias_1,sep="/")		# Filename for obs spatial plot
-filename_bias_2           <- paste(figdir,filename_bias_2,sep="/")       	# Filename for model spatial plot
-filename[1]	          <- paste(figdir,filename_bias_diff,sep="/") 		# Filename for diff spatial plot
-filename_bias_diff_hist   <- paste(figdir,filename_bias_diff_hist,sep="/") 	# Filename for diff spatial plot
-filename_error_1          <- paste(figdir,filename_error_1,sep="/")     	# Filename for obs spatial plot
-filename_error_2          <- paste(figdir,filename_error_2,sep="/")     	# Filename for model spatial plot
-filename[2]	          <- paste(figdir,filename_error_diff,sep="/")     	# Filename for diff spatial plot
-filename_error_diff_hist  <- paste(figdir,filename_error_diff_hist,sep="/")	# Filename for diff spatial plot
-filename_csv	 	  <- paste(figdir,filename_csv,sep="/")
+filename[1]          <- paste(figdir,filename_bias_1,sep="/")		# Filename for obs spatial plot
+filename[2]          <- paste(figdir,filename_bias_2,sep="/")       	# Filename for model spatial plot
+filename[3]          <- paste(figdir,filename_bias_diff,sep="/") 		# Filename for diff spatial plot
+filename[4]          <- paste(figdir,filename_error_1,sep="/")     	# Filename for obs spatial plot
+filename[5]          <- paste(figdir,filename_error_2,sep="/")     	# Filename for model spatial plot
+filename[6]          <- paste(figdir,filename_error_diff,sep="/")     	# Filename for diff spatial plot
+filename_csv	     <- paste(figdir,filename_csv,sep="/")
 
 #################################
 
@@ -235,39 +233,6 @@ for (j in 1:total_networks) {							# Loop through for each network
    }
 }
 
-for (k in 1:total_networks) {
-
-#   sinfo_bias_1[[k]]<-list(lat=sinfo_bias_1_data[[k]]$lat,lon=sinfo_bias_1_data[[k]]$lon,plotval=sinfo_bias_1_data[[k]]$plotval,levs=levs_bias,levcols=colors_bias,levs_legend=levs_legend_bias,cols_legend=leg_colors_bias,convFac=.01)			# Create list to be used with PlotSpatial function
-#   sinfo_bias_2[[k]]<-list(lat=sinfo_bias_2_data[[k]]$lat,lon=sinfo_bias_2_data[[k]]$lon,plotval=sinfo_bias_2_data[[k]]$plotval,levs=levs_bias,levcols=colors_bias,levs_legend=levs_legend_bias,cols_legend=leg_colors_bias,convFac=.01)			# Create model list to be used with PlotSpatial fuction
-#   sinfo_bias_diff[[k]]<-list(lat=sinfo_bias_diff_data[[k]]$lat,lon=sinfo_bias_diff_data[[k]]$lon,plotval=sinfo_bias_diff_data[[k]]$plotval,levs=levels_diff_bias,levcols=colors_diff_bias,levs_legend=levs_legend_diff_bias,cols_legend=leg_colors_diff_bias,convFac=.01)	# Create diff list to be used with PlotSpatial fuction
-#   sinfo_error_1[[k]]<-list(lat=sinfo_error_1_data[[k]]$lat,lon=sinfo_error_1_data[[k]]$lon,plotval=sinfo_error_1_data[[k]]$plotval,levs=levs,levcols=colors_error,levs_legend=levs_legend_error,cols_legend=leg_colors_error,convFac=.01)                    # Create list to be used with PlotSpatial function
-#   sinfo_error_2[[k]]<-list(lat=sinfo_error_2_data[[k]]$lat,lon=sinfo_error_2_data[[k]]$lon,plotval=sinfo_error_2_data[[k]]$plotval,levs=levs,levcols=colors_error,levs_legend=levs_legend_error,cols_legend=leg_colors_error,convFac=.01)                    # Create model list to be used with PlotSpatial fuction
-#   sinfo_error_diff[[k]]<-list(lat=sinfo_error_diff_data[[k]]$lat,lon=sinfo_error_diff_data[[k]]$lon,plotval=sinfo_error_diff_data[[k]]$plotval,levs=levels_diff_error,levcols=colors_diff_error,levs_legend=levs_legend_diff_error,cols_legend=leg_colors_diff_error,convFac=.01)      # Create diff list to be used with PlotSpatial fuction
-}
-
-###########################
-### plot text options   ###
-###########################
-{
-   if (custom_title == "") {
-      title_bias_1	<-paste(species, " Bias for Run ",run_name1," for ", dates,sep="")		# Title for obs spatial plot
-      title_bias_2	<-paste(species, " Bias for Run ",run_name2," for ", dates,sep="")		# Title for model spatial plot
-      title_bias_diff	<-paste(run_name1,"-",run_name2,species,"bias difference for", dates,sep=" ")	# Title for diff spatial plot
-      title_error_1      <-paste(species, " Error for Run ",run_name1," for ", dates,sep="")              # Title for obs spatial plot
-      title_error_2      <-paste(species, " Error for Run ",run_name2," for ", dates,sep="")              # Title for model spatial plot
-      title_error_diff   <-paste(run_name1,"-",run_name2,species,"Error Difference for", dates,sep=" ")      # Title for diff spatial plot
-   }
-   else {
-      title_bias_1	<- custom_title
-      title_bias_2	<- custom_title
-      title_bias_diff	<- custom_title
-      title_error_1	<- custom_title
-      title_error_2	<- custom_title
-      title_error_diff	<- custom_title
-   }
-}
-###########################
-
 library(leaflet)
 library(maps)
 library(htmlwidgets)
@@ -277,11 +242,20 @@ my.diff.colors <- colorRampPalette(c("darkorchid4","purple", "#002FFF", "deepsky
 my.colors <- colorRampPalette(c(grey(.8),"mediumpurple","darkorchid4", "#002FFF", "green", "yellow", "orange", "red", "brown"))
 
 plot_data <- NULL
-plot_data[[1]] <- all_bias_diff
-plot_data[[2]] <- all_error_diff
+plot_data[[1]] <- all_bias
+plot_data[[2]] <- all_bias2
+plot_data[[3]] <- all_bias_diff
+plot_data[[4]] <- all_error
+plot_data[[5]] <- all_error2
+plot_data[[6]] <- all_error_diff
 #plot_data[[3]] <- all_diff
 
-for (i in 1:2) {
+{
+   if (custom_title == "") { title <- paste(species," (",units,")",sep="") }
+   else { title <- custom_title }
+}
+
+for (i in 1:6) {
 #  aqs.dat <- subset(o3.obs.df,date==pick.days[i])
 #  xyz <- data.frame(x=expand.grid(x.proj.12,y.proj.12)[,1]*1000,y=expand.grid(x.proj.12,y.proj.12)[,2]*1000,z=matrix(o3.mod.array[,,i]))
 #  o3.mod.raster <- rasterFromXYZ(xyz,crs="+proj=lcc +lat_1=33 +lat_2=45 +lat_0=40 +lon_0=-97 +a=6370000 +b=6370000")
@@ -289,14 +263,19 @@ for (i in 1:2) {
 
   data.df <- data.frame(site.id=all_sites,latitude=all_lats,longitude=all_lons,o3.obs=plot_data[[i]])
 
-  o3.seq <- pretty(seq(0,max(plot_data[[i]],na.rm=T)),n=20)
-  max.o3 <- max(o3.seq)
-  n.bins <- length(o3.seq)
-  binpal2 <- colorBin(my.colors(10), c(0,max.o3), n.bins-1 , pretty = FALSE)
 
-  contents <- paste("Site: ", all_sites,
-                  "<br/>",
-                  "Bias: ", round(plot_data[[i]], 2), " ppb", sep="")
+  data.seq <- pretty(seq(min(plot_data[[i]]),max(plot_data[[i]],na.rm=T)),n=20)
+  if ((length(diff_range_min) != 0) || (length(diff_range_max) != 0)) {
+     data.seq <- pretty(seq(diff_range_min,diff_range_max,na.rm=T),n=20)
+  }
+  if (i < 4) { name <- "Bias" }
+  if (i > 3) { name <- "Error" }
+  min.data <- min(data.seq)
+  max.data <- max(data.seq)
+  n.bins <- length(data.seq)
+  binpal2 <- colorBin(my.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
+
+  contents <- paste("Site:",all_sites,"<br/>",name,"Value:",round(plot_data[[i]],2),units,sep=" ")
 
 #  Other available maps: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 #my.leaf <- leaflet(data=mapStates) %>% addTiles() %>% addProviderTiles("MapQuestOpen.Aerial")  %>%
@@ -304,11 +283,11 @@ my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik") 
 
 #        addRasterImage(o3.mod.raster,colors=binpal2,opacity=.5) %>%
         addCircles(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=60,data=data.df,opacity=1,fillOpacity=1,popup=contents)%>%
-    addLegend("bottomright", pal = binpal2, values = c(0,max.o3),
-    title = "Max 8hr Ozone Bias (ppb)",
+    addLegend("bottomright", pal = binpal2, values = c(min.data,max.data),
+    title = title,
     opacity = 2)
 
 
-saveWidget(my.leaf, file=filename[i],selfcontained=F)
+saveWidget(my.leaf, file=filename[i],selfcontained=T)
 }
 

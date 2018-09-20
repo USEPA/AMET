@@ -1,7 +1,32 @@
-#!/bin/csh -f	
+#!/bin/csh -f
+# --------------------------------
+# AMET Batch Plots
+# -----------------------------------------------------------------------
+# Purpose:
+#
+# This script is used to run the AMET batch processing of plots, which allows
+# the user to run the various AMET-AQ plots in a hands-off batch mode. The
+# script will attempt to run the various AMET-AQ scripts available, with user
+# able to control the scripts being run using the AMET_batch.input file. The
+# AMET_batch.input file also allows the user to control the normal options
+# available for each script. The batch plotting is intended to be a quick, 
+# first run option to analyze an air quality simulation. After which, the user
+# can modify the individual plot run scripts to fully customize any plot.
+#
+# Initial version:  Wyat Appel - Jul, 2017
+#
+# Revised version:  Wyat Appel - Sep, 2018
+# -----------------------------------------------------------------------
+#
 
 ### Location of the R executable ###
 setenv R_EXEC_LOC /share/linux86_64/bin
+
+### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
+setenv AMET_DB	T
+
+### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
+#setenv OUTDIR	$AMETBASE/output/$AMET_PROJECT/
 
 ### Set the location of the base AMET installation, database name and project name ###
 setenv AMETBASE 	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
@@ -9,8 +34,15 @@ setenv AMET_DATABASE 	amet
 setenv AMET_PROJECT	aqExample
 setenv MYSQL_CONFIG	$AMETBASE/configure/amet-config.R
 
+###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
+setenv AMET_SDATE "2016-05-01"
+setenv AMET_EDATE "2016-05-31"
+
 ### Set the project name to be used for model-to-model comparisons ###
 setenv AMET_PROJECT2 aqExample 
+
+### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR2
+#setenv OUTDIR2	$AMETBASE/output/$AMET_PROJECT2/
 
 ### Set the run directory (where the batch scripts are located) ###
 setenv AMET_RUN_DIR $AMETBASE/R_analysis_code/batch_scripts

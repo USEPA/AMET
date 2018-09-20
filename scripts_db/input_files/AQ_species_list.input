@@ -341,7 +341,7 @@ species_CASTNET_Daily_O3 <- paste("
   setenv OBS_SPECIES OZONE 
 
 ## indicate whether or not to check QA flag
-  setenv QA_FLAG_CHECK N 
+  setenv QA_FLAG_CHECK Y 
 
 ## Indicates whether the Lambert x/y information should be included in the output file
   setenv LAMBXY N 
@@ -744,7 +744,7 @@ if (year > 2005) {
 ######################################
 
 #################################################
-### Start SEARCH Hourly Species List (2011- ) ###
+### Start SEARCH Hourly Species List (2013- ) ###
 #################################################
 
 if (year > 2012) {
@@ -764,7 +764,15 @@ if (year > 2012) {
       setenv AERO_13 \"25.4*Average RAINFALL[Inches],mm,precip,mm,precip\"       
       setenv AERO_14 \"Average SR[W/m2],w/m2,SOL_RAD,watts/m2,Solar_Rad\"        
    "
-   species_cutoff_SEARCH_Hourly <- ""
+   species_cutoff_SEARCH_Hourly <- "
+      setenv AERO_15 \"Average OptEC[ug/m3],ug/m3,PM25_EC,ug/m3,PM25_EC\"
+      setenv AERO_16 \"Average OC[ug/m3],ug/m3,PM25_OC,ug/m3,PM25_OC\"
+      setenv AERO_17 \"Average TC[ug/m3],ug/m3,PM25_EC+PM25_OC,ug/m3,PM25_TC\"
+      setenv AERO_18 \"Average NH4[ug/m3],ug/m3,PM25_NH4,,PM25_NH4\"
+      setenv AERO_19 \"Average NO3[ug/m3],ug/m3,PM25_NO3,,PM25_NO3\"
+      setenv AERO_20 \"Average SO4[ug/m3],ug/m3,PM25_SO4,,PM25_SO4\"
+   "
+   species_AE6_SEARCH_Hourly <- ""
 }
 
 ######################################
@@ -784,7 +792,9 @@ species_SEARCH_Daily <- paste("
    setenv AERO_5 \"pcm3 oc,ug/m3,AOCIJ,ug/m3,OC\"                               
    setenv AERO_6 \"pcm1 mass,ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"                          
 ",sep="")
-species_cutoff_SEARCH_Daily <- ""
+species_cutoff_SEARCH_Daily <- "
+      
+"
 species_AE6_SEARCH_Daily <- ""
 
 #####################################
@@ -795,6 +805,7 @@ species_AE6_SEARCH_Daily <- ""
 ### Start SEARCH Daily Species List (2008 and beyond) ###
 #########################################################
 
+k<-9
 if (year > 2007) {
    species_SEARCH_Daily <- paste("
       setenv AERO_1 \"PM25_Tef_Sulfate [ug/m3],ug/m3,ASO4IJ,ug/m3,SO4\"                  
@@ -806,16 +817,26 @@ if (year > 2007) {
       setenv AERO_7 \"ECTC [ug/m3],ug/m3,AECIJ,ug/m3,EC\"                                
       setenv AERO_8 \"FRM PM2.5 Mass [ug/m3],ug/m3,",PM_MOD_SPEC,",ug/m3,PM_TOT\"                   
    ",sep="")
-   species_cutoff_SEARCH_Daily <- ""
-   species_AE6_SEARCH_Daily <- "
-       setenv AERO_9 \"XRF Al [ug/m3],ug/m3,AALJ,ug/m3,Al\"                              
-       setenv AERO_10 \"XRF Si [ug/m3],ug/m3,ASIJ,ug/m3,Si\"                             
-       setenv AERO_11 \"XRF K [ug/m3],ug/m3,AKJ,ug/m3,K\"                                
-       setenv AERO_12 \"XRF Ca [ug/m3],ug/m3,ACAJ,ug/m3,Ca\"                             
-       setenv AERO_13 \"XRF Ti [ug/m3],ug/m3,ATIJ,ug/m3,Ti\"                                
-       setenv AERO_14 \"XRF Mn [ug/m3],ug/m3,AMNJ,ug/m3,Mn\"                             
-       setenv AERO_15 \"XRF Fe [ug/m3],ug/m3,AFEJ,ug/m3,Fe\"                             
-   "
+   species_cutoff_SEARCH_Daily <- paste("
+      setenv AERO_9 \"PM25_Tef_Sulfate [ug/m3],ug/m3,PM25_SO4,ug/m3,PM25_SO4\"
+      setenv AERO_10 \"PM25_Tef_Nitrate [ug/m3],ug/m3,PM25_NO3,ug/m3,PM25_NO3\"
+      setenv AERO_11 \"PM25_Tef_Ammonium [ug/m3],ug/m3,PM25_NH4,ug/m3,PM25_NH4\"
+      setenv AERO_12 \"PM25_Total_Nitrate [ug/m3],ug/m3,PM25_NO3+HNO3_UGM3,ug/m3,PM25_TNO3\"
+      setenv AERO_13 \"PM25_Tef_Sodium [ug/m3],ug/m3,PM25_NA,ug/m3,PM25_Na\"
+      setenv AERO_14 \"OCTC [ug/m3],ug/m3,PM25_OC,ug/m3,PM25_OC\"
+      setenv AERO_15 \"ECTC [ug/m3],ug/m3,PM25_EC,ug/m3,PM25_EC\"
+      setenv AERO_16 \"FRM PM2.5 Mass [ug/m3],ug/m3,",PM_MOD_SPEC,",ug/m3,PM25_TOT\"
+",sep="")
+   if ((cutoff == "y") || (cutoff == "Y") || (cutoff == "t") || (cutoff == "T")) { k <- 17 }
+   species_AE6_SEARCH_Daily <-paste("
+      setenv AERO_",spec_num[k+0]," \"XRF Al [ug/m3],ug/m3,AALJ,ug/m3,Al\"
+      setenv AERO_",spec_num[k+1]," \"XRF Si [ug/m3],ug/m3,ASIJ,ug/m3,Si\"
+      setenv AERO_",spec_num[k+2]," \"XRF K [ug/m3],ug/m3,AKJ,ug/m3,K\"
+      setenv AERO_",spec_num[k+3]," \"XRF Ca [ug/m3],ug/m3,ACAJ,ug/m3,Ca\"
+      setenv AERO_",spec_num[k+4]," \"XRF Ti [ug/m3],ug/m3,ATIJ,ug/m3,Ti\"
+      setenv AERO_",spec_num[k+5]," \"XRF Mn [ug/m3],ug/m3,AMNJ,ug/m3,Mn\"
+      setenv AERO_",spec_num[k+6]," \"XRF Fe [ug/m3],ug/m3,AFEJ,ug/m3,Fe\"
+   ",sep="")
 }
 
 #####################################
@@ -1002,19 +1023,6 @@ species_AE6_EMEP_Daily <- ""
 ### End EMEP Daily Species List ###
 ###################################
 
-###############################################
-#### Start EMEPS (Europe) Daily Species List ###
-################################################
-species_TOAR_Daily <- paste("
- setenv GAS_1 \"O3_MDA8,ppb,1000.*O3MDA8,ppb,O3_8hravg\"  # MDA8 Ozone, Old Definition (24 8-hr blocks)
- setenv GAS_2 \"O3_DAILYAV,ppb,1000.*O3AVG,ppb,O3\"       # Daily Mean Ozone
-",sep="")
-species_cutoff_TOAR_Daily <- ""
-species_AE6_TOAR_Daily <- ""
-####################################
-#### End EMEP Daily Species List ###
-####################################
-
 ###################################
 ### Start EMEP Dep Species List ###
 ###################################
@@ -1067,10 +1075,23 @@ species_AE6_EMEP_Dep <- "
 ### End EMEP Dep Species List ###
 #################################
 
+######################################
+##### Start TOAR Daily Species List ###
+#######################################
+species_TOAR <- paste("
+ setenv GAS_1 \"O3_MDA8,ppb,O3_MDA8,ppb,O3_8hrmax\"  # MDA8 Ozone, Old Definition (24 8-hr blocks)
+ setenv GAS_2 \"O3_DAILYAV,ppb,O3_DAILYAV,ppb,O3\"       # Daily Mean Ozone
+  ",sep="")
+species_cutoff_TOAR <- ""
+species_AE6_TOAR <- ""
+####################################
+#### End TOAR Daily Species List ###
+####################################
 
-species_list <- list(IMPROVE=species_IMPROVE,CSN=species_CSN,CASTNET=species_CASTNET,CASTNET_Hourly=species_CASTNET_Hourly,CASTNET_Daily=species_CASTNET_Daily_O3,CASTNET_Drydep=species_CASTNET_Drydep,CASTNET_Drydep_O3=species_CASTNET_O3_Drydep,NADP=species_NADP,AQS_Daily=species_AQS_Daily,AQS_Hourly=species_AQS_Hourly,AQS_Daily_O3=species_AQS_Daily_O3,SEARCH_Hourly=species_SEARCH_Hourly,SEARCH_Daily=species_SEARCH_Daily,AERONET=species_AERONET,NAPS=species_NAPS,NOAA_ESRL_O3=species_NOAA_ESRL_O3,AMON=species_AMON,FLUXNET=species_FLUXNET,EMEP_Hourly=species_EMEP_Hourly,EMEP_Daily_O3=species_EMEP_Daily_O3,EMEP_Daily=species_EMEP_Daily,NAPS_Daily_O3=species_NAPS_Daily_O3,TOAR_Daily=species_TOAR_Daily,EMEP_Dep=species_EMEP_Dep)
 
-species_list_cutoff <- list(IMPROVE=species_cutoff_IMPROVE,CSN=species_cutoff_CSN,CASTNET=species_cutoff_CASTNET,CASTNET_Hourly=species_cutoff_CASTNET_Hourly,CASTNET_Daily=species_cutoff_CASTNET_Daily_O3,CASTNET_Drydep=species_cutoff_CASTNET_Drydep,CASTNET_Drydep_O3=species_cutoff_CASTNET_O3_Drydep,NADP=species_cutoff_NADP,AQS_Daily=species_cutoff_AQS_Daily,AQS_Hourly=species_cutoff_AQS_Hourly,AQS_Daily_O3=species_cutoff_AQS_Daily_O3,SEARCH_Hourly=species_cutoff_SEARCH_Hourly,SEARCH_Daily=species_cutoff_SEARCH_Daily,AERONET=species_cutoff_AERONET,NAPS=species_cutoff_NAPS,NOAA_ESRL_O3=species_NOAA_ESRL_O3,AMON=species_cutoff_AMON,FLUXNET=species_cutoff_FLUXNET,EMEP_Hourly=species_cutoff_EMEP_Hourly,EMEP_Daily_O3=species_cutoff_EMEP_Daily_O3,EMEP_Daily=species_cutoff_EMEP_Daily,NAPS_Daily_O3=species_cutoff_NAPS_Daily_O3,TOAR_Daily=species_cutoff_TOAR_Daily,EMEP_Dep=species_cutoff_EMEP_Dep)
+species_list <- list(IMPROVE=species_IMPROVE,CSN=species_CSN,CASTNET=species_CASTNET,CASTNET_Hourly=species_CASTNET_Hourly,CASTNET_Daily=species_CASTNET_Daily_O3,CASTNET_Drydep=species_CASTNET_Drydep,CASTNET_Drydep_O3=species_CASTNET_O3_Drydep,NADP=species_NADP,AQS_Daily=species_AQS_Daily,AQS_Hourly=species_AQS_Hourly,AQS_Daily_O3=species_AQS_Daily_O3,SEARCH_Hourly=species_SEARCH_Hourly,SEARCH_Daily=species_SEARCH_Daily,AERONET=species_AERONET,NAPS=species_NAPS,NOAA_ESRL_O3=species_NOAA_ESRL_O3,AMON=species_AMON,FLUXNET=species_FLUXNET,EMEP_Hourly=species_EMEP_Hourly,EMEP_Daily_O3=species_EMEP_Daily_O3,EMEP_Daily=species_EMEP_Daily,NAPS_Daily_O3=species_NAPS_Daily_O3,TOAR=species_TOAR,EMEP_Dep=species_EMEP_Dep)
 
-species_list_AE6 <- list(IMPROVE=species_AE6_IMPROVE,CSN=species_AE6_CSN,CASTNET=species_AE6_CASTNET,CASTNET_Hourly=species_AE6_CASTNET_Hourly,CASTNET_Daily=species_AE6_CASTNET_Daily_O3,CASTNET_Drydep=species_AE6_CASTNET_Drydep,CASTNET_Drydep_O3=species_AE6_CASTNET_O3_Drydep,NADP=species_AE6_NADP,AQS_Daily=species_AE6_AQS_Daily,AQS_Hourly=species_AE6_AQS_Hourly,AQS_Daily_O3=species_AE6_AQS_Daily_O3,SEARCH_Hourly=species_AE6_SEARCH_Hourly,SEARCH_Daily=species_AE6_SEARCH_Daily,AERONET=species_AE6_AERONET,NAPS=species_AE6_NAPS,NOAA_ESRL=species_NOAA_ESRL_O3,AMON=species_AE6_AMON,FLUXNET=species_AE6_FLUXNET,EMEP_Hourly=species_AE6_EMEP_Hourly,EMEP_Daily_O3=species_AE6_EMEP_Daily_O3,EMEP_Daily=species_AE6_EMEP_Daily,NAPS_Daily_O3=species_AE6_NAPS_Daily_O3,TOAR_Daily=species_AE6_TOAR_Daily,EMEP_Dep=species_AE6_EMEP_Dep)
+species_list_cutoff <- list(IMPROVE=species_cutoff_IMPROVE,CSN=species_cutoff_CSN,CASTNET=species_cutoff_CASTNET,CASTNET_Hourly=species_cutoff_CASTNET_Hourly,CASTNET_Daily=species_cutoff_CASTNET_Daily_O3,CASTNET_Drydep=species_cutoff_CASTNET_Drydep,CASTNET_Drydep_O3=species_cutoff_CASTNET_O3_Drydep,NADP=species_cutoff_NADP,AQS_Daily=species_cutoff_AQS_Daily,AQS_Hourly=species_cutoff_AQS_Hourly,AQS_Daily_O3=species_cutoff_AQS_Daily_O3,SEARCH_Hourly=species_cutoff_SEARCH_Hourly,SEARCH_Daily=species_cutoff_SEARCH_Daily,AERONET=species_cutoff_AERONET,NAPS=species_cutoff_NAPS,NOAA_ESRL_O3=species_NOAA_ESRL_O3,AMON=species_cutoff_AMON,FLUXNET=species_cutoff_FLUXNET,EMEP_Hourly=species_cutoff_EMEP_Hourly,EMEP_Daily_O3=species_cutoff_EMEP_Daily_O3,EMEP_Daily=species_cutoff_EMEP_Daily,NAPS_Daily_O3=species_cutoff_NAPS_Daily_O3,TOAR=species_cutoff_TOAR,EMEP_Dep=species_cutoff_EMEP_Dep)
+
+species_list_AE6 <- list(IMPROVE=species_AE6_IMPROVE,CSN=species_AE6_CSN,CASTNET=species_AE6_CASTNET,CASTNET_Hourly=species_AE6_CASTNET_Hourly,CASTNET_Daily=species_AE6_CASTNET_Daily_O3,CASTNET_Drydep=species_AE6_CASTNET_Drydep,CASTNET_Drydep_O3=species_AE6_CASTNET_O3_Drydep,NADP=species_AE6_NADP,AQS_Daily=species_AE6_AQS_Daily,AQS_Hourly=species_AE6_AQS_Hourly,AQS_Daily_O3=species_AE6_AQS_Daily_O3,SEARCH_Hourly=species_AE6_SEARCH_Hourly,SEARCH_Daily=species_AE6_SEARCH_Daily,AERONET=species_AE6_AERONET,NAPS=species_AE6_NAPS,NOAA_ESRL=species_NOAA_ESRL_O3,AMON=species_AE6_AMON,FLUXNET=species_AE6_FLUXNET,EMEP_Hourly=species_AE6_EMEP_Hourly,EMEP_Daily_O3=species_AE6_EMEP_Daily_O3,EMEP_Daily=species_AE6_EMEP_Daily,NAPS_Daily_O3=species_AE6_NAPS_Daily_O3,TOAR=species_AE6_TOAR,EMEP_Dep=species_AE6_EMEP_Dep)
 

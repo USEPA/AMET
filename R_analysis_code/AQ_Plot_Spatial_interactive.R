@@ -182,10 +182,21 @@ for (i in 1:3) {
 
 
   data.df <- data.frame(site.id=all_site,latitude=all_lats,longitude=all_lons,data.obs=plot_data[[i]])
-
+  
   data.seq <- pretty(seq(min(plot_data[[i]]),max(plot_data[[i]],na.rm=T)),n=20)
+  if (i < 3) {
+     if ((length(abs_range_min) != 0) || (length(abs_range_max) != 0)) {
+        data.seq <- pretty(seq(abs_range_min,abs_range_max,na.rm=T),n=20)
+     }
+  }
+  if (i == 3) {
+     if ((length(diff_range_min) != 0) || (length(diff_range_max) != 0)) {
+        data.seq <- pretty(seq(diff_range_min,diff_range_max,na.rm=T),n=20)
+     }
+  }
   min.data <- min(data.seq)
   max.data <- max(data.seq)
+  
   n.bins <- length(data.seq)
   binpal2 <- colorBin(my.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
 
@@ -194,7 +205,8 @@ for (i in 1:3) {
                   "Value: ", round(plot_data[[i]], 2), units, sep=" ")
 
 #  Other available maps: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
-#my.leaf <- leaflet(data=mapStates) %>% addTiles() %>% addProviderTiles("MapQuestOpen.Aerial")  %>%
+#my.leaf <- leaflet(data=mapStates)  %>% addProviderTiles("MapQuestOpen.Aerial")  %>%
+#my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.BlackAndWhite")  %>%
 my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik")  %>%
 
 #        addRasterImage(o3.mod.raster,colors=binpal2,opacity=.5) %>%
@@ -204,6 +216,6 @@ my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik") 
     opacity = 2)
 
 
-saveWidget(my.leaf, file=filename[i],selfcontained=F)
+saveWidget(my.leaf, file=filename[i],selfcontained=T)
 }
 

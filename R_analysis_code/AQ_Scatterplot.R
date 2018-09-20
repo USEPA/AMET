@@ -72,6 +72,7 @@ while (run_count <= num_runs) {
             aqdat_query.df   <- sitex_info$sitex_data
             data_exists	     <- sitex_info$data_exists
             units            <- as.character(sitex_info$units[[1]])
+            model_name	     <- "Model"
          }
          else {
             query_result   <- query_dbase(run_name,network,species)
@@ -84,7 +85,7 @@ while (run_count <= num_runs) {
       {
          if (data_exists == "n") {
             total_networks <- (total_networks-1)
-            aqdat_query.df <- "No Data" 
+            aqdat_query.df <- "No data from file or database query." 
          }
          else {
             if (averaging != "n") {
@@ -184,6 +185,13 @@ while (run_count <= num_runs) {
    run_count <- run_count+1
    run_name <- run_name2
 }	# End while loop multiple runs
+
+### Error check for no data ###
+if (length(sinfo[[1]]) == 0) {
+   stop("No data were returned from either files or database queries. Perhaps you have a error in your query setup.")
+}
+###############################
+
 axis.min <- axis.max * .033
 
 ### If user sets axis maximum, compute axis minimum ###

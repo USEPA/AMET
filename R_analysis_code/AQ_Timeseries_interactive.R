@@ -1,12 +1,16 @@
 ################################################################
-### AMET CODE: TIMESERIES PLOT
+### AMET CODE: INTERACTIVE TIMESERIES PLOT
 ###
 ### This script is part of the AMET-AQ system.  It plots a timeseries 
 ### plot.  The script can accept multiple sites, as they will be
 ### time averaged to create the timeseries plot, and mutiple runs.  
-### The script also plots the bias between the obs and model.
+### The script also plots the bias and RMSE between the obs and model.
+### This particular version of the Timeseries plot uses the R dyngraphs
+### package to create an interactive plot with zoom and mouse-over
+### capabilities. A self-contained html file is created using the 
+### saveWidget command from the R htmlwidgets package.
 ###
-### Last updated by Wyat Appel: June, 2017
+### Last updated by Wyat Appel: September 2018
 ################################################################
 
 library(dygraphs)
@@ -230,12 +234,42 @@ for (j in 1:num_runs) {	# For each simulation being plotted
 
    #####################################
 
+   {
+      if (j == 1) {
+         col_name1               <- paste(run_names[1],"_Obs_Average",sep="")
+         col_name2               <- paste(run_names[1],"_Model_Average",sep="")
+         col_name3               <- paste(run_names[1],"_Bias_Average",sep="")
+         col_name4               <- paste(run_names[1],"_RMSE_Average",sep="")
+         col_name5               <- paste(run_names[1],"_Corr_Average",sep="")
+         All_Data.df             <- data.frame(Date=Dates[[j]])
+         All_Data.df[,col_name1] <- signif((Obs_Mean[[j]]),6)
+         All_Data.df[,col_name2] <- signif((Mod_Mean[[j]]),6)
+         All_Data.df[,col_name3] <- signif((Bias_Mean[[j]]),6)
+         All_Data.df[,col_name4] <- signif((RMSE[[j]]),6)
+         All_Data.df[,col_name5] <- signif((CORR[[j]]),3)
+      }
+      else {
+         col_name1 <- paste(run_names[j],"_Obs_Average",sep="")
+         col_name2 <- paste(run_names[j],"_Model_Average",sep="")
+         col_name3 <- paste(run_names[j],"_Bias_Average",sep="")
+         col_name4 <- paste(run_names[j],"_RMSE_Average",sep="")
+         col_name5 <- paste(run_names[j],"_Corr_Average",sep="")
+         temp.df <- data.frame(Date=Dates[[j]])
+         temp.df[,col_name1] <- signif((Obs_Mean[[j]]),6)
+         temp.df[,col_name2] <- signif((Mod_Mean[[j]]),6)
+         temp.df[,col_name3] <- signif((Bias_Mean[[j]]),6)
+         temp.df[,col_name4] <- signif((RMSE[[j]]),6)
+         temp.df[,col_name5] <- signif((CORR[[j]]),3)
+         All_Data.df <- merge(All_Data.df,temp.df,by="Date",all.x=T)
+      }
+   }
+
 } # Close else statement
 } # Close if/else statement
 } # End num_runs loop
 
 ### Write data to be plotted to file ###
-#write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
+write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
 ########################################
 
 #####################################
@@ -261,10 +295,11 @@ if (j > 1) {
    ts.combine <- cbind(obs.ts,mod.ts,bias.ts,rmse.ts,mod2.ts,bias2.ts,rmse2.ts,zero.ref.ts)
 }
 
-filename_html         <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
+filename_html	<- paste(run_name1,species,pid,"timeseries.html",sep="_")	# Set output filename
+filename_html	<- paste(figdir,filename_html,sep="/")   		        # Set output filename location
 
 #Use dygraph to make interactive html plot. (https://rstudio.github.io/dygraphs/ has examples of other features to try out.)
-if (j < 2) {
+if (j == 1) {
    plot.ts <- dygraph(ts.combine, main=main.title, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
      dySeries("..1",label=,network,strokeWidth=3) %>%
      dySeries("..2",label=,run_name1,strokeWidth=2) %>%
@@ -276,7 +311,7 @@ if (j < 2) {
      dyLegend(width=800)
 }
 
-if (j > 1) {
+if (j != 1) {
    plot.ts <- dygraph(ts.combine, main=main.title, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
      dySeries("..1",label=,network,strokeWidth=3) %>%
      dySeries("..2",label=,run_name1,strokeWidth=2) %>%
@@ -292,7 +327,9 @@ if (j > 1) {
 }
 #On Newton:
 #saveWidget(plot.ts, file="/home/kfoley/LINKS/tools/Rcode/dygraphs/sitecompare_time_series_example_on_newton.html",selfcontained=F)
+
 saveWidget(plot.ts, file=filename_html,selfcontained=T)
+#saveWidget(plot.ts, file=filename_html,selfcontained=T,title=main.title)	# Need to update to latest version of htmlwidgets to implement title option
 
 #On windows:
 #saveWidget(plot.ts, file="B:/LINKS/tools/Rcode/dygraphs/sitecompare_time_series_example_selfcontained.html",selfcontained=T)
