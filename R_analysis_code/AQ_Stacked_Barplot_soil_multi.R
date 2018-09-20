@@ -76,6 +76,7 @@ species <- c("Cl","Na","Fe","Al","Si","Ti","Ca","Mg","K","Mn")
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network_names[1],run_name1,species)
       aqdat_query.df   <- sitex_info$sitex_data
       units            <- as.character(sitex_info$units[[1]])
+      model_name       <- "Model"
    }
    else {
      query_result   <- query_dbase(run_name1,network_names[1],species,criteria)
@@ -108,7 +109,7 @@ if (total_networks > 1) {
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 8							# offset for first species ob value
+l <- 9							# offset for first species ob value
 
 aqdat_sub.df <- aqdat_query.df
 len <- length(aqdat_sub.df)
@@ -134,7 +135,7 @@ data.df		<- aqdat_sub.df[8:len]
 ##############################################################
 total_networks <- length(network_names)
 if (total_networks > 1) {
-   l <- 8                                          # offset for first specie ob value
+   l <- 9                                          # offset for first specie ob value
 
    aqdat_sub2.df <- aqdat_query2.df
    len <- length(aqdat_sub2.df)

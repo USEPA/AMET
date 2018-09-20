@@ -98,6 +98,7 @@ for (j in 1:num_runs) {
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
          units            <- as.character(sitex_info$units[[1]])
+         model_name	  <- "Model"
       }
       else {
          query_result   <- query_dbase(run_name,network,species)

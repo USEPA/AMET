@@ -19,11 +19,13 @@ plot_all <- 'y'
 
 filename1_pdf <- paste(run_name1,species,pid,"spectrum.pdf",sep="_")                                # Set PDF filename
 filename1_png <- paste(run_name1,species,pid,"spectrum.png",sep="_")                                # Set PNG filename
+filename2_png <- paste(run_name1,species,pid,"spectrum_all.png",sep="_")
 filename2_pdf <- paste(run_name1,species,pid,"spectrum_all.pdf",sep="_")                                # Set PDF filename
 
 ## Create a full path to file
 filename1_pdf <- paste(figdir,filename1_pdf,sep="/")                                # Set PDF filename
 filename1_png <- paste(figdir,filename1_png,sep="/")                                # Set PNG filename
+filename2_png <- paste(figdir,filename2_png,sep="/")                                # Set PNG filename
 filename2_pdf <- paste(figdir,filename2_pdf,sep="/")                                # Set PDF filename
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
@@ -252,14 +254,14 @@ if (plot_all == 'y') {
 
    ### Convert pdf to png ###
    dev.off()
-   if ((ametptype == "png") || (ametptype == "both")) {
-      convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename2_pdf," png:",filename2_png,sep="")
-      system(convert_command)
-      if (ametptype == "png") {
-         remove_command <- paste("rm ",filename2_pdf,sep="")
-         system(remove_command)
-      }
-   }
+#   if ((ametptype == "png") || (ametptype == "both")) {
+#      convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename2_pdf," png:",filename2_png,sep="")
+#      system(convert_command)
+#      if (ametptype == "png") {
+#         remove_command <- paste("rm ",filename2_pdf,sep="")
+#         system(remove_command)
+#      }
+#   }
 ##########################
  
 }

@@ -75,7 +75,7 @@ spch<-plot.symbols
 ########################################
 
 remove_negatives <- "n"
-total_network <- length(network_names)
+total_networks <- length(network_names)
 for (j in 1:total_networks) {                                            # Loop through for each network
    sites	<- NULL
    lats		<- NULL

@@ -426,7 +426,14 @@ if (length(cols) != (length(bounds)-1)) {
       }
       ########################################################################
       if (length(na.omit(plotval_tot)) > 0){
-            hist(plotval_tot,breaks=sinfo[[1]]$levs,col=sinfo[[1]]$levcols,freq=T,ylab="Number of Mode/Ob Pairs",xlab=plot_units,main=varlab,sub=sub_title,cex.main=0.8)
+         {
+            if (length(hist_max > 0)) {
+               hist(plotval_tot,breaks=sinfo[[1]]$levs,col=sinfo[[1]]$levcols,freq=T,ylab="Number of Mode/Ob Pairs",xlab=plot_units,main=varlab,sub=sub_title,cex.main=0.8,ylim=c(0,hist_max))
+            }
+            else {
+               hist(plotval_tot,breaks=sinfo[[1]]$levs,col=sinfo[[1]]$levcols,freq=T,ylab="Number of Mode/Ob Pairs",xlab=plot_units,main=varlab,sub=sub_title,cex.main=0.8)
+            }
+         }
      }
 
      dev.off()
@@ -1307,6 +1314,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
          aqdat_query.df<-db_Query(qs,mysql)
       }
    }
+   print(qs)
    data_exists_flag <- "y"
    num_specs <- length(species)-1
    for (k in 0:num_specs) {

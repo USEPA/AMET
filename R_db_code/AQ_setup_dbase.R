@@ -92,7 +92,7 @@ aq_new_3  <- "create table site_metadata (stat_id varchar(25) UNIQUE KEY, num_st
    }
 }
 
-reload_meta <- 'F'
+reload_meta <- 'T'
 reload_meta <- Sys.getenv('RELOAD_METADATA')
 
 {
@@ -112,7 +112,7 @@ reload_meta <- Sys.getenv('RELOAD_METADATA')
    }
    else {
       {
-         if (reload_meta != 'F') {
+         if ((reload_meta == 'T') || (reload_meta == 't') || (reload_meta == 'Y') || (reload_meta == 'y')) {
             cat("Re-populating AQ db with site metadata...")
             populate.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_sitemeta_dbase.R ",mysql_login," ",mysql_pass," ",sep="")
             system(populate.command)

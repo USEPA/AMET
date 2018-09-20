@@ -1,12 +1,20 @@
 #!/bin/csh -f
 # --------------------------------
-# Scatterplot - Multi-network
+# Boxplot
 # -----------------------------------------------------------------------
 # Purpose:
 #
 # This is an example c-shell script to run the R-script that generates
-# scatter plots for multiple networks. Multiple network, single species,
-# multiple simulations (up to two). 
+# a box plot without whiskers.  The script is designed to create a box
+# plot with on monthly boxes.  Individual observation/model pairs are
+# provided through a MYSQL query, from which the script computes the
+# 25% and 75% quartiles, as well as the median values for both obs and
+# model values.  The script then plots these values as a box plot.
+# While the script is designed to be used with an entire year of data,
+# it can be used with a shorter time period.  However, no less than
+# three months should be used, since any period of time shorter than
+# that can cause elements of the plot (text) to be misplaced on the
+# plot area. Designed for one species and one network.
 #
 # Initial version:  Alexis Zubrow IE UNC - Nov, 2007
 #
@@ -17,11 +25,11 @@
   #--------------------------------------------------------------------------
   # These are the main controlling variables for the R script
   
-  ###  Top of AMET directory
-  setenv AMETBASE       ~/AMET
-  setenv AMET_DATABASE  amet
-  setenv AMET_PROJECT   aqExample
-  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
+  ###  AMET base directory, database, project and configure file location
+  setenv AMETBASE	/home/kappel/AMET_Code/GitHub_Code/AMET_Dev	
+  setenv AMET_DATABASE  amad_AMAD_AQ
+  setenv AMET_PROJECT	AMET_test	
+  setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R  
 
   ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
   setenv AMET_DB  T
@@ -30,18 +38,18 @@
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
 
   ### Set the project name to be used for model-to-model comparisons ###
-  setenv AMET_PROJECT2  aqExample
+  setenv AMET_PROJECT2 	AMET_test
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/
  
   ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot
   
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-05-01"
   setenv AMET_EDATE "2016-05-11"
-  
+
   ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
   ### The PID is particularly important if using the AMET web interface and is determined there through
   ### a random number generator.
@@ -49,7 +57,7 @@
 
   ###  Custom title (if not set will autogenerate title based on variables 
   ###  and plot type)
-  #  setenv AMET_TITLE "Scatterplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
+  setenv AMET_TITLE "Boxplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
 
   ###  Plot Type, options are "pdf", "png", or "both"
@@ -62,22 +70,22 @@
   ### AE6 (CMAQv5.0) Species
   ### Na,Cl,Al,Si,Ti,Ca,Mg,K,Mn,Soil,Other,Ca_dep,Ca_conc,Mg_dep,Mg_conc,K_dep,K_conc
 
-  setenv AMET_AQSPECIES SO4
+  setenv AMET_AQSPECIES PM_TOT
 
   ### Observation Network to plot -- One only
   ###  set to 'y' to turn on, default is off
   ###  NOTE: species are not available in every network
 #  setenv AMET_CSN y
-  setenv AMET_IMPROVE y
-  setenv AMET_CASTNET y
+#  setenv AMET_IMPROVE y
+#  setenv AMET_CASTNET y
 #  setenv AMET_CASTNET_Hourly y
-#  setenv AMET_CASTNET_Drydep y 
-#  setenv AMET_NADP y 
-#  setenv AMET_AIRMON y 
+#  setenv AMET_CASTNET_Drydep y
+#  setenv AMET_NADP y
+#  setenv AMET_AIRMON y
 #  setenv AMET_AQS_Hourly y
 #  setenv AMET_AQS_Daily_O3 y
-#  setenv AMET_AQS_Daily_PM y
-#  setenv AMET_SEARCH y 
+  setenv AMET_AQS_Daily y
+#  setenv AMET_SEARCH y
 #  setenv AMET_SEARCH_Daily y
 #  setenv AMET_CAPMON y
 #  setenv AMET_NAPS_Hourly y
@@ -95,7 +103,7 @@
 #  setenv AMET_NAMN y
 
   # Log File for R script
-  setenv AMET_LOG scatterplot.log
+  setenv AMET_LOG boxplot.log
 
 ##--------------------------------------------------------------------------##
 ##                Most users will not need to change below here
@@ -111,20 +119,24 @@
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Scatterplot.R $AMET_LOG
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Boxplot.R $AMET_LOG 
   setenv AMET_R_STATUS $status
   
-  if($AMET_R_STATUS == 0) then
-		echo
+  if($AMET_R_STATUS == 0) then		
+  echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_SITE_${AMET_PID}_scatterplot.$AMET_PTYPE"
-		echo "Text  -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_SITE_${AMET_PID}_scatterplot.csv"
+		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_boxplot.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_boxplot_bias.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_boxplot_norm_bias.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
-		exit 0
+		exit(0)
   else
      echo "The AMET R script did not produce any output, please check the LOGFILE $AMET_LOG for more details on the error."
      echo "Often, this indicates no data matched the specified criteria (e.g., wrong dates for project). Please check and re-run!"
-  		exit 1  
+  		exit(1)
   endif
-
+  
+  
+  
+  

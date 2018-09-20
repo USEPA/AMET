@@ -1,0 +1,4 @@
+stat_id,num_stat_id,stat_name,network,state,city,start_date,end_date,lat,lon,elevation,county
+LAG1,1,,calnex,,,,,34.140582,-118.122455,,
+SJV1,2,,calnex,,,,,35.34632,-118.965433,,
+
