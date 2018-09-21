@@ -189,8 +189,8 @@ Before using AMET and this user’s guide, you must first install the AMET packa
 system. For information on the installation process, please see the separate *Atmospheric 
 Model Evaluation Tool (AMET) Installation Guide* that can be downloaded from the CMAS web site.
 
-2. Directory Structure
-===================
+2.  Directory Structure
+    ========
 
 In our discussions, we refer to the top of the AMET directory structure
 as “AMETBASE”. This environment variable is actually set in many of the
@@ -219,8 +219,8 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
 long period of time, it may be prudent to link these data within the
 appropriate AMET directories rather than moving or copying them.
 
-3. Configuration
-=============
+3.  Configuration
+    ========
 
 After untarring the AMET code and data and installing/building the
 required two tiers of software components (as discussed in the AMET
@@ -257,8 +257,8 @@ A word about specifying the **amet_login** and **amet_pass**. Obviously these ar
 
 For simplicity, it is suggested that the MySQL credentials specified in the amet-config.R file be for a user with full database permissions.
 
-4. Datasets
-========
+4.  Datasets
+    ========
 
 The AMET release includes both model and observational datasets provided
 as examples. You should have downloaded these into the proper
@@ -694,8 +694,8 @@ files are available for download from the CMAS website.
 >
 > PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)
 
-5. Database Setup
-==============
+5.  Database Setup
+    ========
 
 The next step in using AMET is to set up the MySQL database. Please
 refer to the flow diagram in Appendix A to understand the overall flow
@@ -817,8 +817,8 @@ To determine which networks are included in the aqExample project:
 
 > mysql&gt; select distinct network from aqExample;
 
-6. Project Creation and Database Population
-========================================
+6.  Project Creation and Database Population
+    ========
 
 The database population phase of AMET must be performed for each new
 project. As discussed in Section 1.2, the *project* is the organizing
@@ -1149,8 +1149,8 @@ will create a new row in your aq\_project\_log table, a series of new
 rows (one for each network) in your project\_units table, and a new
 project table: aqNC2007.
 
-7. Analysis
-========
+7.  Analysis
+    ========
 
 The analysis phase of AMET consists of performing statistical analyses
 on the model-obs pairs and creating plots of the resulting statistics.
@@ -1565,8 +1565,8 @@ titles in many of the scripts.
 
 Run the desired analysis scripts from your new project directory.
 
-8. CMAS Support for AMET
-=====================
+8.  CMAS Support for AMET
+    ========
 
 We have added AMET to Bugzilla, the CMAS bug-tracking and support
 request software system. You are encouraged to contact CMAS via bugzilla
