@@ -39,8 +39,8 @@
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot_panel
   
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
-  setenv AMET_SDATE "2016-05-01"
-  setenv AMET_EDATE "2016-05-11"
+  setenv AMET_SDATE "2016-07-01"
+  setenv AMET_EDATE "2016-07-31"
 
   ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
   ### The PID is particularly important if using the AMET web interface and is determined there through
@@ -57,12 +57,45 @@
 
   setenv AMET_AQSPECIES PM_TOT
 
-  ### Observation Network to plot
-  ###  set to 'y' to turn on, default is off
-  ###  NOTE: species are not available in every network
-#  setenv AMET_CSN y
-  setenv AMET_IMPROVE y
-#  setenv AMET_SEARCH y
+  ### Observation Network to plot -- One only
+  ### Uncomment to set to 'T' and process that nework,
+  ### default is off (commented out)
+  ### NOTE: species are not available in every network
+  ### See AMET User's guide for details on each network
+
+  ### North America Networks ###
+
+  #  setenv AMET_CSN            T
+    setenv AMET_IMPROVE        T
+  #  setenv AMET_CASTNET        T
+  #  setenv AMET_CASTNET_Hourly T
+  #  setenv AMET_CASTNET_Drydep T
+  #  setenv AMET_NADP           T
+  #  setenv AMET_AIRMON         T
+  #  setenv AMET_AQS_Hourly     T
+  #  setenv AMET_AQS_Daily_O3   T
+  #  setenv AMET_AQS_Daily      T
+  #  setenv AMET_SEARCH         T
+  #  setenv AMET_SEARCH_Daily   T
+  #  setenv AMET_NAPS_Hourly    T
+  #  setenv AMET_NAPS_Daily_O3  T
+
+  ### Europe Networks ###
+
+  #  setenv AMET_AirBase_Hourly T
+  #  setenv AMET_AirBase_Daily  T
+  #  setenv AMET_AURN_Hourly    T
+  #  setenv AMET_AURN_Daily     T
+  #  setenv AMET_EMEP_Hourly    T
+  #  setenv AMET_EMEP_Daily     T
+  #  setenv AMET_AGANET         T
+  #  setenv AMET_ADMN           T
+  #  setenv AMET_NAMN           T
+
+  ### Gloabl Networks ###
+
+  # setenv AMET_NOAA_ESRL_O3    T
+  # setenv AMET_TOAR            T
 
   ###  Plot Type, options are "pdf", "png", or "both"
   setenv AMET_PTYPE png 
