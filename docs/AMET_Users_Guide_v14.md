@@ -697,7 +697,7 @@ files are available for download from the CMAS website.
 5.  Database Setup
     ========
 
-The next step in using AMET is to set up the MySQL database. Please
+The next step in using AMET is to set up the MySQL database. Please 
 refer to the flow diagram in Appendix A to understand the overall flow
 of data among the various modules within AMET. This section must be
 completed before you populate the database with your project-specific
@@ -713,6 +713,26 @@ in the directory $AMETBASE/configure (see Section 3). Before you run
 the setup scripts, you will need to know the “root” password for the 
 MySQL administrator. Note that this is not the same as the “ametsecure” 
 password that will be created using the scripts discussed below.
+
+Note that the database is required for the meteorological side of AMET. 
+However, as of AMETv1.4, the database is no longer required to process and 
+analyze air quality data. An option has been added to read the csv output 
+files directly, bypassing the need to use the database. This has both advantages 
+and disadvantages. The primary advantage is that an AMET user would not be 
+required to install and setup the MySQL database for AMET, eliminating and 
+streamlining the AMET install process somewhat. The primary disadvantages 
+is that all output files must be retained and organized, as they are needed 
+to do any analysis. Also, the use of the database provides the ability to fully 
+query and subset the AQ data in the database using the metadata provided. This 
+functionality would be highly limited without the use of the database. It is up 
+to the user to choose whether or not to install and utilize the database. However, 
+keep in mind that the database is still required to process and analyze 
+meteorological data.
+
+The instructions provided below assume the use of the MySQL database. If only
+processing AQ data and not employing the use of the database, those portions of
+the instructions that deal with setuping up and interfacing with the database
+can be ignored.
 
 5.1 AMET Setup
 ---------
@@ -1096,7 +1116,7 @@ specified in the aqProject.csh script.
 | **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT/sitex_output** |
 | **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
 | **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
-| **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. |
+| **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. This flag can be set to false in not using the database for AQ analysis. |
 | **UPDATE\_PROJECT**        | T/F; Flag to update project. Setting to T will re-write project info (i.e. description, user_name, email) but not affect any existing data in the database. |
 | **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. |
 | **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. |
