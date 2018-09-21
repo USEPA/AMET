@@ -36,8 +36,8 @@
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_skill
   
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
-  setenv AMET_SDATE "2016-05-01"
-  setenv AMET_EDATE "2016-05-11"
+  setenv AMET_SDATE "2016-07-01"
+  setenv AMET_EDATE "2016-07-31"
 
   ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
   ### The PID is particularly important if using the AMET web interface and is determined there through
@@ -61,34 +61,44 @@
   setenv AMET_AQSPECIES O3_8hrmax
 
   ### Observation Network to plot -- One only
-  ###  set to 'y' to turn on, default is off
-  ###  NOTE: species are not available in every network
-#  setenv AMET_CSN y
-#  setenv AMET_IMPROVE y
-#  setenv AMET_CASTNET y
-#  setenv AMET_CASTNET_Hourly y
-#  setenv AMET_CASTNET_Drydep y 
-#  setenv AMET_NADP y 
-#  setenv AMET_AIRMON y 
-#  setenv AMET_AQS_Hourly y
-  setenv AMET_AQS_Daily_O3 y
-#  setenv AMET_AQS_Daily_PM y
-#  setenv AMET_SEARCH y 
-#  setenv AMET_SEARCH_Daily y
-#  setenv AMET_CAPMON y
-#  setenv AMET_NAPS_Hourly y
+  ### Uncomment to set to 'T' and process that nework,
+  ### default is off (commented out)
+  ### NOTE: species are not available in every network
+  ### See AMET User's guide for details on each network
 
-### Europe Networks ###
+  ### North America Networks ###
 
-#  setenv AMET_AirBase_Hourly y
-#  setenv AMET_AirBase_Daily y
-#  setenv AMET_AURN_Hourly y
-#  setenv AMET_AURN_Daily y
-#  setenv AMET_EMEP_Hourly y
-#  setenv AMET_EMEP_Daily y
-#  setenv AMET_AGANET y
-#  setenv AMET_ADMN y
-#  setenv AMET_NAMN y
+  #  setenv AMET_CSN            T
+  #  setenv AMET_IMPROVE        T
+  #  setenv AMET_CASTNET        T
+  #  setenv AMET_CASTNET_Hourly T
+  #  setenv AMET_CASTNET_Drydep T
+  #  setenv AMET_NADP           T
+  #  setenv AMET_AIRMON         T
+  #  setenv AMET_AQS_Hourly     T
+    setenv AMET_AQS_Daily_O3   T
+  #  setenv AMET_AQS_Daily      T
+  #  setenv AMET_SEARCH         T
+  #  setenv AMET_SEARCH_Daily   T
+  #  setenv AMET_NAPS_Hourly    T
+  #  setenv AMET_NAPS_Daily_O3  T
+
+  ### Europe Networks ###
+
+  #  setenv AMET_AirBase_Hourly T
+  #  setenv AMET_AirBase_Daily  T
+  #  setenv AMET_AURN_Hourly    T
+  #  setenv AMET_AURN_Daily     T
+  #  setenv AMET_EMEP_Hourly    T
+  #  setenv AMET_EMEP_Daily     T
+  #  setenv AMET_AGANET         T
+  #  setenv AMET_ADMN           T
+  #  setenv AMET_NAMN           T
+
+  ### Gloabl Networks ###
+
+  # setenv AMET_NOAA_ESRL_O3    T
+  # setenv AMET_TOAR            T
 
   # Log File for R script
   setenv AMET_LOG scatterplot_skill.log
