@@ -1370,182 +1370,154 @@ You should see files of the form:
 A brief summary of each of the C-shell scripts is given below.
 
 **run\_boxplot.csh**
-   - boxplot.input
    - Creates a box plot of model-obs quartiles
    - single network; single species; multi simulation         
 
 **run\_boxplot\_DofW.csh**         
-   - boxplot.input
    - Creates a box plot of model-obs quartiles parsed by the day of the week
    - single network; single species; single simulation
    
 **run\_boxplot\_hourly.csh** 
-   - boxplot\_hourly.input
    - Creates side-by-side boxplots to create a diurnal average curve. Hourly data only
    - single network; hourly species only; multi simulation
 
 **run\_boxplot\_MDA8.csh**
-   - boxplot.input
    - Creates a box plot of model-obs quartiles based on MDA8 ozone
    - single network; single species; single simulation
    
 **run\_boxplot\_roselle.csh**
-   - boxplot.input
    - Creates a box plot of model-obs quartiles, with select statistics provided underneath the box plot
    - single network; single species; multi simulation
 
-**run\_boxplot\_solrad.csh**
-   - boxplot.input
-   - Creates a box plot of model-obs quartiles designed specifically to plot solar radiation data
-   - single network; single species; multi simulation
-
 **run\_bugleplot.csh**
-   - bugleplot.input
    - Model performance criteria are adjusted as a function of the average concentration of the observed value for that species. As the average concentration of the species decreases, the acceptable performance criteria increase. Creates a bias and error plot
    - multiple networks; single species; single simulation
 
 **run\_histogram.csh**
-   - histogram.input
    - Creates a histogram of model-obs quartiles
    - single network; single species; multi simulation
 
 **run\_overlay\_file.csh**
-   - overlay\_file.input
    - Creates a data file that can be used by the program **bldoverlay** to create an overlay file. This file can be used in PAVE/VERDI to overlay over CMAQ model output. Hourly data only
    - single network; hourly species only; single simulation
 
 **run\_plot\_spatial.csh**
-   - plot\_spatial.input
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
+   - multiple networks; single species; single simulation
+   
+**run\_plot\_spatial_interactive.csh**
+   - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; single simulation
 
 **run\_plot\_spatial\_diff.csh**
-   - plot\_spatial.input
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes
+   - multiple networks; single species; multi simulations required
+   
+**run\_plot\_spatial\_diff.csh**
+   - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; multi simulations required
 
 **run\_plot\_spatial\_mtom.csh**
-   - plot\_spatial.input
    - Plots the absolute difference between two model simulations at observation sites, regardless if valid observations exist or not. Multiple values for a site are averaged to a single value for plotting purposes.
    - multiple networks; single species; multiple simulations required
 
 **run\_plot\_spatial\_ratio.csh**
-   - plot\_spatial.input
    - Plots the model/obs ratio for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
 
 **run\_raw\_data.csh**
-   - raw_data.input
    - Used to extract raw data from the database. Output is a csv file containing the data requested
    - single network; single species; multi simulation
 
 **run\_scatterplot\_bins.csh**
-   - scatterplot.input
    - Creates a multi-panel scatterplot of bias and RMSE, where the values are binned by the observed or modeled concentration. This script will plot a single species for a single network
    - single networks; single species; multiple simulations
 
 **run\_scatterplot.csh**
-   - scatterplot.input
    - Creates a single model vs. obs scatterplot. This script will plot a single species from up to three networks on a single plot. Summary statistics are also included on the plot
    - multiple networks; single species; multiple simulations
 
 **run\_scatterplot\_density.csh**
-   - scatterplot\_density.input
    - Creates a single model vs. obs scatterplot with shading to represent the density of points
    - multiple networks; single species; single simulation
 
 **run\_scatterplot\_mtom.csh**
-   - scatterplot\_mtom.input
    - Creates a single model-to-model scatterplot. *Note*: The model points correspond to network’s site locations only
    - multiple networks; single species; multiple simulations
 
 **run\_scatterplot\_multi.csh**
-   - scatterplot\_multi.input
    - Creates a single model vs. obs scatterplot, designed specifically for plotting many simulations on a single plot. This script will plot a single species from a single network for up to six different simulations. Summary statistics are also included on the plot
    - single networks; single species; multiple simulations
 
 **run\_scatterplot\_percentiles.csh**
-   - scatterplot\_percentiles.input
    - Creates a single model vs. obs scatterplot, color coding the 5th, 25th, 50th, 75th and 95th percentiles
    - single networks; single species; single simulation
 
 **run\_scatterplot\_single.csh**
-   - scatterplot\_single.input
    - Creates a scatter plot for a single network that includes more specific statistics than run\_scatterplot.csh
    - single network;single species;multiple simulations
 
 **run\_scatterplot\_skill.csh**
-   - scatterplot\_skill.input
    - Creates a forecast skill scatter plot. The script is designed to work specifically with O<sub>3</sub>
    - all AQS networks; O<sub>3</sub>; single simulation
 
 **run\_scatterplot\_soil.csh**
-   - scatterplot\_soil.input
    - Creates a single model vs. obs scatterplot designed specifically for plotting soil species (e.g. Si, Fe, Al, etc.). This script will plot the soil species from a single network on a single plot
    - single network; multiple soil species; single simulation
 
 **run\_soccerplot.csh** 
-   - soccerplot.input
    - Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines
    - multiple network; multiple species; multiple simulations
 
 **run\_spectral\_analysis.csh**
-   - spectral\_analysis.input
    - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
    - single network; single species; multiple simulations
 
 **run\_stacked\_barplot\_AE6.csh**
-   - stacked\_barplot\_AE6.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
 
 **run\_stacked\_barplot.csh**
-   - stacked\_barplot.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
-   - stacked\_barplot\_panel\_AE6.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions
    - CSN, IMPROVE or SEARCH; species predefined; single simulation
 
 **run\_stacked\_barplot\_panel\_AE6\_multi.csh**
-   - stacked\_barplot\_panel\_AE6\_multi.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions for multiple simulations
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
-   - stacked\_barplot\_panel\_AE6.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions
    - CSN, IMPROVE or SEARCH; species predefined; single simulation
 
 **run\_stacked\_barplot\_soil.csh**
-   - stacked\_barplot\_soil.input
    - Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes
    - CSN and IMPROVE networks; species predefined; single simulation
 
 **run\_stacked\_barplot\_soil\_multi.csh**
-   - stacked\_barplot\_soil\_multi.input
    - Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes
    - CSN and IMPROVE networks; species predefined; multiple simulations
 
 **run\_stats\_plots.csh**
-   - stats\_plots.input
    - Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included
    - multiple networks; single species; single simulation
 
 **run\_timeseries.csh**
-   - timeseries.input
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model
+   - single network;single species; multiple simulations
+   
+**run\_timeseries.csh**
+   - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R leaflet package to allow time-series zooming
    - single network;single species; multiple simulations
 
 **run\_timeseries\_mtom.csh**
-   - timeseries\_mtom.input
    - Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model
    - single network;single species; multiple simulations
 
 **run\_timeseries\_multi.csh**
-   - timeseries\_multi\_networks.input
    - Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model
    - multiple networks;single species; multiple simulations
 
