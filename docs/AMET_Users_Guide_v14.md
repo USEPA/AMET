@@ -1806,6 +1806,7 @@ files. Not all of these variables are available in every input file.
 | **abs\_rang\_min**       | Specify the minimum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **abs\_range\_max**      | Specify the maximum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
+| **aggregate\_data**      | Flag (y/n) to indicate whether or not to aggregate data from sites with multiple Parameter Occurrance codes (POCs)  |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
 | **aq\_network**          | AQ monitoring network. |
 | **aq\_project**          | AQ project name. |
@@ -1832,6 +1833,7 @@ files. Not all of these variables are available in every input file.
 | **error\_range\_max**    | Error range max limit: “**NULL**” – script defined limit  |
 | **figdir**               | Output directory for plots.|
 | **greyscale**            | Option to use greyscale for the spatial plots:  “**y**” or “**n**”. |
+| **hist\_max**            | Set the y-axis max for the histograms produced from the spatial diff plot script |
 | **inc\_counties**        | Option to include county borders on spatial plots:  “**y**” or “**n**”. |
 | **inc\_FRM\_adj**        | Include FRM adjustment on stacked bar plots. Most users will set this to  “**n**”. Advanced users that calculated the FRM adjusted values for the CSN network may set this to  “**y**”. Default is  “**n**”. |
 | **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
@@ -1856,6 +1858,7 @@ files. Not all of these variables are available in every input file.
 | **plot\_symbols**        | Specify, by R symbol number, the order of plot symbols to use. 0-square; 1-circle; 2-triangle point up; 3-plus; 4-cross; 5-diamond; 6-triangle point down; 7-square cross; 8-star; 9-diamond plus; 10-circle plus; 11-triangles up and down; 12-square plus; 13-circle cross; 14-square and triangle down; 15-filled square; 16-filled circle; 17-filled triangle point-up; 18-filled diamond; 19-solid circle; 20-bullet (smaller circle); 21-filled circle blue; 22-filled square blue; 23-filled diamond blue; 24-filled triangle point-up blue; 25- filled triangle point down blue |
 | **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
+| **png\_res**             | Set resolution of output png files in DPI. Default is 300 dpi |
 | **query**                | MySQL query to select data from database. In most cases, this is only part of the query. The complete query is constructed in the corresponding R script. |
 | **remove\_mean**         | Remove the observation/model mean statistics calculation, thereby just calculating the difference from the mean value |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
