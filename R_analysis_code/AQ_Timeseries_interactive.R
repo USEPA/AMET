@@ -45,10 +45,10 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 sub.title	<- ""
 
 
-filename_txt <- paste(run_name1,species,pid,"timeseries.csv",sep="_")
-
-## Create a full path to file
-filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
+filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")       # Set output filename
+filename_html   <- paste(figdir,filename_html,sep="/")                          # Set output filename location
+filename_txt	<- paste(run_name1,species,pid,"timeseries.csv",sep="_")
+filename_txt 	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
 
 #######################
@@ -266,6 +266,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
 
 } # Close else statement
 } # Close if/else statement
+ymin	<- 1.05*floor(min(ymin,Obs_Mean[[j]], Mod_Mean[[j]],Bias_Mean[[j]],RMSE[[j]]))
+ymax	<- 1.05*ceiling(max(ymax,Obs_Mean[[j]], Mod_Mean[[j]],Bias_Mean[[j]],RMSE[[j]]))
 } # End num_runs loop
 
 ### Write data to be plotted to file ###
@@ -289,18 +291,19 @@ zero.ref.ts <- xts(zero.ref,order.by=Dates[[1]])
 ts.combine <- cbind(obs.ts,mod.ts,bias.ts,rmse.ts,zero.ref.ts)
 
 if (j > 1) {
-   mod2.ts <- xts(Mod_Mean[[2]],order.by=Dates[[1]])
-   bias2.ts <- xts(Bias_Mean[[2]],order.by=Dates[[1]])
-   rmse2.ts <- xts(RMSE[[2]],order.by=Dates[[1]])
+   mod2.ts <- xts(Mod_Mean[[2]],order.by=Dates[[2]])
+   bias2.ts <- xts(Bias_Mean[[2]],order.by=Dates[[2]])
+   rmse2.ts <- xts(RMSE[[2]],order.by=Dates[[2]])
    ts.combine <- cbind(obs.ts,mod.ts,bias.ts,rmse.ts,mod2.ts,bias2.ts,rmse2.ts,zero.ref.ts)
 }
 
-filename_html	<- paste(run_name1,species,pid,"timeseries.html",sep="_")	# Set output filename
-filename_html	<- paste(figdir,filename_html,sep="/")   		        # Set output filename location
+if (length(y_axis_max) > 0) { ymax <- y_axis_max }
+if (length(y_axis_min) > 0) { ymin <- y_axis_min }
 
 #Use dygraph to make interactive html plot. (https://rstudio.github.io/dygraphs/ has examples of other features to try out.)
 if (j == 1) {
    plot.ts <- dygraph(ts.combine, main=main.title, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
+     dyAxis("y", valueRange = c(ymin,ymax)) %>%
      dySeries("..1",label=,network,strokeWidth=3) %>%
      dySeries("..2",label=,run_name1,strokeWidth=2) %>%
      dySeries("..3",label=,"Model - Obs Bias",strokeWidth=2) %>%
@@ -313,6 +316,7 @@ if (j == 1) {
 
 if (j != 1) {
    plot.ts <- dygraph(ts.combine, main=main.title, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
+     dyAxis("y", valueRange = c(ymin,ymax)) %>%
      dySeries("..1",label=,network,strokeWidth=3) %>%
      dySeries("..2",label=,run_name1,strokeWidth=2) %>%
      dySeries("..3",label=,"Model - Obs Bias (Sim1)",strokeWidth=2) %>%
