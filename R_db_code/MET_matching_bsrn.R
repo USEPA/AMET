@@ -1,32 +1,26 @@
 #######################################################################################################
 #####################################################################################################
 #                                                                 ################################
-#       AMET Surface Meteorology Model-Obs Matching Driver          
+#       AMET Surface Radiation Model-Obs Matching Driver          
 #                                                                  
 #       Meteorological Models:
 #            Model for Prediction Across Scales (MPAS)
 #            Weather Research and Forecasting Model (WRF) 
 #                                                  
-#       This "R" script provides an interface to match MADIS
+#       This "R" script provides an interface to match BSRN Radiation
 #       observations with either WRF or MPAS model output and
 #       insert into AMET configured MySQL database. This specific
 #       script is the master that calls R functions that read
-#       model output, MADIS observations, interpolate, 
-#       and construct the database queries.
-#
-#       This wrapper matches surface observations (WS, WS, T, Q and PSFC)
-#       with either WRF or MPAS surface meteorology fields.   
+#       model output, BSRN observations, interpolate, 
+#       and construct the database queries.   
 #                                                            
 #       Developed by the US EPA           
 #                                                                 ################################
 #####################################################################################################
+#
+#  V1.4, 2018Sep30, Robert Gilliam: Initial Development
+#
 #######################################################################################################
-#
-#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
-#  V1.4, 2018Sep30, Robert Gilliam: 
-#         - Added the matching of surface pressure for the ability
-#           to evaluate relative humidity
-#
 #######################################################################################################
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded") }
   if(!require(date))   {stop("Required Package date was not loaded")   }
@@ -74,16 +68,18 @@
   madisbase      <- Sys.getenv("MADISBASE")  
   mysqlserver    <- Sys.getenv("MYSQL_SERVER")
   met_output     <- Sys.getenv("METOUTPUT") 
-  madis_dset     <- Sys.getenv("MADISDSET") 
+  rad_dset       <- Sys.getenv("RADIATION_DSET") 
   ametproject    <- Sys.getenv("AMET_PROJECT")
   projectdesc    <- Sys.getenv("RUN_DESCRIPTION")
-  maxdtmin       <- as.numeric(Sys.getenv("MAXDTMIN"))
+  window         <- as.numeric(Sys.getenv("OBS_AVG_WINDOW_MIN"))
   skipind        <- Sys.getenv("SKIPIND")
   interp         <- Sys.getenv("INTERP_METHOD")
   updateSiteTable<-as.logical(Sys.getenv("UPDATE_SITES"))
   total_loop_max <- as.numeric(Sys.getenv("MAX_TIMES_SITE_CHECK"))
   autoftp        <-as.logical(Sys.getenv("AUTOFTP"))
-  madis_server   <- Sys.getenv("MADIS_SERVER")
+  bsrn_server    <- Sys.getenv("BSRN_SERVER")
+  bsrn_login     <- Sys.getenv("BSRN_LOGIN")
+  bsrn_pass      <- Sys.getenv("BSRN_PASS")
   verbose        <- as.logical(Sys.getenv("VERBOSE"))
 
   userid         <-system("echo $USER",intern = TRUE)
@@ -107,12 +103,15 @@
   # Hard coded settings now
   buffer           <- 5
   total_loop_count <- 1 
-  
+ 
   # Skip index setting for first file (1) and all after (2)
   a<-strsplit(skipind,split=" ")
   skipind1 <-as.numeric(unlist(a)[1])
   skipind2 <-as.numeric(unlist(a)[2])
   
+  # Initialize BSRN file read to T
+  read_new_bsrn_file <- TRUE
+
   # Site mapping to model grid arrays for MPAS or WRF. Note CIND and CWGT are MPAS index
   # arrays and interp weighting values. WRFIND is the eqivalent for WRF. Values [site,1:3,1:2]
   # are indicies of the four grid point surrounding the obs site. [site,1,1:2] is the first and
@@ -120,7 +119,7 @@
   # DX and DY (in fractional grid form) of the obs site with respect to the grid point to the 
   # south and west. These are computed in site mapping to keep from repetative logic and calculations. 
   sitenum <-as.integer(0)
-  sitemax <-as.integer(45000)
+  sitemax <-as.integer(500)
   sitelist<-array(NA,c(sitemax))
   cind    <-array(NA,c(sitemax,3))
   cwgt    <-array(NA,c(sitemax,3))
@@ -156,7 +155,7 @@ for(f in 1:nf) {
     qout<-new_surface_met_table(mysql, ametproject, metmodel, userid, projectdesc, projectdate)
   }
 
-  # MPAS Grid and Sfc Met extraction
+  # MPAS Grid and Sfc Met extraction shortwave radiation at surface
   #list includes: 
   #projection <-list(mproj=0,lat=lat,lon=lon,latv=latv,lonv=lonv,cells_on_vertex=cells_on_vertex,conef=cone)
   #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr)
@@ -164,17 +163,17 @@ for(f in 1:nf) {
     model<-mpas_surface(file)
   }
 
-  # WRF Grid and Sfc Met extraction
+  # WRF Grid and Sfc Met extraction including shortwave radiation at surface
   #list includes:
   #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
   #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
-  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr,psf=psf)
+  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr)
   if(metmodel == "wrf"){
     model<-wrf_surface(file)
   }
 
 ##########################################################################
-# begin loop for hours in MPAS file (reads one MADIS file)
+# begin loop for hours in Model file (reads one BSRN file)
 if(f == 1) { skipind <- skipind1 }
 if(f > 1)  { skipind <- skipind2 }
 nt  <-length(model$sfc_met$time)
@@ -185,13 +184,13 @@ for(t in skipind:nt){
   # Check time for missing or zero data and skip. This ensures initial times
   # in model output that are often zero do not get compared with obs.
   if(metmodel == "mpas"){
-    if(sum( model$sfc_met$t2[,t]) == 0) {
+    if(sum( model$sfc_met$swr[,t]) == 0) {
       writeLines(paste("MPAS time period skipped because initial model time"))
       next 
     }
   }
   if(metmodel == "wrf"){
-    if(sum( model$sfc_met$t2[,,t]) == 0){ 
+    if(sum( model$sfc_met$swr[,,t]) == 0){ 
       writeLines(paste("WRF time period skipped because initial model time"))
       next 
     }
@@ -202,18 +201,32 @@ for(t in skipind:nt){
   # modeldate, modeltime, yc, mc, dc, hc
   datetime<- model_time_format(model$sfc_met$time[t])
 
+  # Check for first time of the month to judge if new monthly BSRN
+  # needs to be ingested.
+  # read_new_bsrn_file
+  if(total_loop_count > 1 ) {
+    read_new_bsrn_file <-check_for_bsrn_read(datetime)
+  }
   # Extract obs from MADIS file along with site metadata
   # return variable contains two lists: site and sfc_met
   # site:    ns, nsr, site, site_unique, slat ,slon, site_locname, report_type, 
   #          ihour, imin, isec, stime, stime2
   # sfc_met: t2, q2, u10, v10
-  if(madis_dset != "text") {
-    obs<- madis_surface(madisbase, madis_dset, datetime, autoftp, madis_server,
-                        model$projection$standlon, model$projection$conef)
+  
+  if(rad_dset != "text" & read_new_bsrn_file) {
+    obs<- bsrn_observations(madisbase, datetime, model$projection$lat, model$projection$lon,  
+                            ametdbase, sitecommand, bsrn_server,                            
+                            bsrn_login, bsrn_pass, autoftp, updateSiteTable)
+    read_new_bsrn_file <- FALSE
     if(is.na(obs[1])) { next }
-  } else if(madis_dset == "text") {
-    obs<- text_surface(madisbase, datetime, model$projection$standlon, model$projection$conef)
+  } else if(rad_dset == "text") {
+    obs<- text_radiation_obs(madisbase, datetime)
   }
+
+  swr_obs_avg <- bsrn_get_avg(datetime, obs$meta, obs$ob_time, obs$sfc_met, window)
+  
+  # Site mapping. This is not as important for speed since there are such few sites, but preserved
+  # noththeless. I will help to some degree with MPAS global data.
   if(metmodel == "mpas" & total_loop_count <= total_loop_max){
     site_update <- mpas_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
                                  obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname,
@@ -234,6 +247,7 @@ for(t in skipind:nt){
     sitelist<-site_update$sitelist
     wrfind  <-site_update$wrfind
   }
+
 writeLines("**********************************************************************************************")
 # Open new query file
 system("rm -f tmp.query") 
@@ -243,95 +257,39 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
   # Main Loop over observation sites for a defined date/time of model output
   for(s in 1:sitenum){   
 
-    # Find all obs for the unique site and determine the closest to WRF time
-    all.sind  <-which(sitelist[s] == obs$meta$site)
-    if(sum(all.sind,na.rm=T) == 0 ) { next }
-
-    time        <-as.numeric(datetime$hc)
-    tdiff       <-abs(obs$meta$stime[all.sind]-obs$meta$stime2[all.sind])/60
-    ndiff       <-which(tdiff==min(tdiff,na.rm=T))[1]
-    sind        <-all.sind[ndiff]
-    nhour       <-sprintf("%02d",obs$meta$ihour[sind])
-    nmin        <-sprintf("%02d",obs$meta$imin[sind])
-    nsec        <-sprintf("%02d",obs$meta$isec[sind])
-    actual_time <-paste(nhour,":",nmin,":",nsec,sep="")
+    sind  <-which(sitelist[s] == obs$meta$site)
     mysqltimestr<-paste(datetime$yc,"-",datetime$mc,"-",datetime$dc," ",datetime$modeltime,sep="") 
-    # If time of site ob is outside user defined window, skip
-    if(tdiff[ndiff]>maxdtmin) {
-      if(verbose) {
-        writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                          datetime$modeltime,actual_time,"(obs time) MAXDTMIN Violation - skipped - tdiff (min):",tdiff))
-      }
-      next
-    }
     if(verbose) {
       writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                       "Model time:",datetime$modeltime,"  Obs time:",actual_time))
+                       "Model time:",datetime$modeltime))
     }
 
-    if(is.na(obs$sfc_met$t2[sind]))  { obs$sfc_met$t2[sind]  <-"NULL" }
-    if(is.na(obs$sfc_met$q2[sind]))  { obs$sfc_met$q2[sind]  <-"NULL" }
-    if(is.na(obs$sfc_met$u10[sind])) { obs$sfc_met$u10[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$v10[sind])) { obs$sfc_met$v10[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$psf[sind])) { obs$sfc_met$psf[sind] <-"NULL" }
+    # Set missing or bad obs values to MySQL NULL
+    swr_obs_avgn <- as.numeric(swr_obs_avg[sind])
+    if(is.na(swr_obs_avgn) || is.nan(swr_obs_avgn))  { swr_obs_avgn  <-"NULL" }
 
     # Calculate model values base on barycentric interpolation if MPAS
     if(metmodel == "mpas"){
-      t2_int   <-cwgt[s,1]*model$sfc_met$t2[cind[s,1],t]+cwgt[s,2]*model$sfc_met$t2[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$t2[cind[s,3],t]
-      q2_int   <-cwgt[s,1]*model$sfc_met$q2[cind[s,1],t]+cwgt[s,2]*model$sfc_met$q2[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$q2[cind[s,3],t]
-      u10_int  <-cwgt[s,1]*model$sfc_met$u10[cind[s,1],t]+cwgt[s,2]*model$sfc_met$u10[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$u10[cind[s,3],t]
-      v10_int  <-cwgt[s,1]*model$sfc_met$v10[cind[s,1],t]+cwgt[s,2]*model$sfc_met$v10[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$v10[cind[s,3],t]
-      psf_int  <-cwgt[s,1]*model$sfc_met$psf[cind[s,1],t]+cwgt[s,2]*model$sfc_met$psf[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$psf[cind[s,3],t]
+      swr_int   <-cwgt[s,1]*model$sfc_met$swr[cind[s,1],t]+cwgt[s,2]*model$sfc_met$swr[cind[s,2],t]+
+                  cwgt[s,3]*model$sfc_met$swr[cind[s,3],t]
     }
     if(metmodel == "wrf"){
       # Compute model values from the site-mapped grid idicies. This is a bilinear interpolation
       # calculation using the four grid points surrounding observation site. It is written to
       # work with nearest neighbor where fractional grid index in x and y direction (wrfind[s,3,1:2])
       # are set to zero in the site mapping routine.
-       t2_int<-(model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-       q2_int<-(model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      u10_int<-(model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      v10_int<-(model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      psf_int<-(model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
+      swr_int<-(model$sfc_met$swr[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+               (model$sfc_met$swr[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$swr[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
+               (wrfind[s,3,2] * (model$sfc_met$swr[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
+               (model$sfc_met$swr[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$swr[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
+               (model$sfc_met$swr[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+               (model$sfc_met$swr[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$swr[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
     }
 
-    q1    <-paste("REPLACE INTO ",ametproject,"_surface (proj_code, stat_id, ob_date, ob_time,fcast_hr, init_utc,T_ob,  T_mod,
-                   U_ob,  U_mod,  V_ob,  V_mod,  WVMR_ob, Q_ob, Q_mod, PSFC_ob, PSFC_mod)",sep="")
+    q1    <-paste("REPLACE INTO ",ametproject,"_surface (proj_code, stat_id, ob_date, 
+                  ob_time,fcast_hr, init_utc, SRAD_ob,  SRAD_mod)",sep="")
     q2    <-paste("('",ametproject,"','",obs$meta$site[sind],"','",mysqltimestr,"','",
-                  datetime$modeltime,"',0,00,",obs$sfc_met$t2[sind],",",t2_int,",",
-                  obs$sfc_met$u10[sind],",",u10_int,",",obs$sfc_met$v10[sind],",",v10_int,",",
-                  obs$sfc_met$q2[sind],",",obs$sfc_met$q2[sind],",",q2_int,",",
-                  obs$sfc_met$psf[sind],",",psf_int,")",sep="")
+                  datetime$modeltime,"',0,00,",swr_obs_avgn,",",round(swr_int),")",sep="")
 
     query <-paste(q1,"VALUES",q2)
     writeLines(paste(query,";"),con=sfile)
