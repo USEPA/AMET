@@ -83,9 +83,8 @@
   # curtain plots when RAOB_CURTAINN and/or setenv RAOB_PROFILEN is true
   setenv AMET_PLIM "1000 600"             
 
-  # lat-lon plot bounds. Note that all sites in a domain
-  # will be considered when stats are calculated, but the
-  # spatial plots will only cover the area below.
+  # Lat-lon plot bounds for spatial analysis. 
+  # This is also used for bounds of spatial plots.
   setenv AMET_BOUNDS_LAT "23 55"
   setenv AMET_BOUNDS_LON "-135 -60"
 
