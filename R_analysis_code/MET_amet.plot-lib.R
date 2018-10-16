@@ -1237,9 +1237,17 @@
  ################################################################
  nv<- dim(statsq)[2]
  nm<- 4
+ ns<- dim(statsq)[1]
 
  for(v in 1:nv) {
   for(m in 1:nm) {
+
+   num.missing <- sum(is.na(statsq[,v,m]))
+   if(num.missing > 0.25*ns) {
+     writeLines(paste("*************************************************"))
+     writeLines(paste("Not enough good data for plot. Skipping:",plotlab$varName[v],plotlab$metricID[m]))
+     next
+   }
 
    figure  <- paste(plotopts$figdir,"/","raob.spatial.",metricID[m],".",varID[v],".",plotlab$datelab,".", 
                     plotlab$figurelablev,".",plotopts$project,".",plotopts$plotfmt,sep="")

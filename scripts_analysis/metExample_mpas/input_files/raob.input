@@ -16,8 +16,8 @@
 #########################################################################
 # Sample size thresholds for statistics
 #########################################################################
- # Sample size threshold of 35 samples for spatial layer avg. statistics
- spatial.thresh <- 5
+ # Sample size threshold of 5 samples for spatial layer avg. statistics
+ spatial.thresh <- 5 
 
  # Sample size threshold for pressure level statistics
  level.thresh   <- 5
