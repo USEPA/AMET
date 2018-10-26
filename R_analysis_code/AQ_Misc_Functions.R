@@ -373,7 +373,7 @@ if (length(cols) != (length(bounds)-1)) {
 #### Draw Title ###
 ###################
   par(xpd=NA)
-  title(main=paste(varlab[1]),cex.main = 0.7, cex.sub=0.8,line=0.25,sub=sub_title)
+  title(main=paste(varlab[1]),cex.main = 0.6, cex.sub=0.8,line=0.25,sub=sub_title)
 #  text(lone-legoffset2+legoffset,lats+0.7*legoffset,"An AMET Product",adj=c(0,1),cex=0.65)
   text(lone-legoffset2+legoffset,latn,paste("units = ",plot_units,sep=""),adj=c(0,.5),cex=0.6)
   text(lone-legoffset2+legoffset,latn-textoffset,paste("coverage limit = ",coverage_limit,"%",sep=""),adj=c(0,.5),cex=0.6)
@@ -462,12 +462,12 @@ data.df <- data_all.df
 #######################################################
 
 ## Remove missing and zero concentration observations from dataset ##
-if (remove_negatives == "y") {
-   indic.nonzero <- data.df$ob_val >= 0 
-   data.df <- data.df[indic.nonzero,]
-   indic.nonzero <- data.df$mod_val >= 0
-   data.df <- data.df[indic.nonzero,]
-}
+#if (remove_negatives == "y") {
+#   indic.nonzero <- data.df$ob_val >= 0 
+#   data.df <- data.df[indic.nonzero,]
+#   indic.nonzero <- data.df$mod_val >= 0
+#   data.df <- data.df[indic.nonzero,]
+#}
 ##############################################
 
 ## Full Domain Statistics ##
@@ -644,7 +644,8 @@ for (i in 1:length(temp)) {
    X          <- NULL
    sub.df <- temp[[i]]
    num_good_obs <- length(sub.df$stat_id)			# First assume all queried obs are valid
-   if ((valid_only == "y") && (remove_negatives == "y")) {	# Check that we assuming all records are valid and we are removing negative values
+#   if ((valid_only == "y") && (remove_negatives == "y")) {	# Check that we assuming all records are valid and we are removing negative values
+   if (valid_only == "y") {
       indic.missing <- sub.df$ob_val < 0			# Check for observations that are less than 0
       sub.df$ob_val[indic.missing] <- 0				# Replace those observations with 0 (we assume a valid observation, just not negative)
       indic.missing <- sub.df$mod_val >= 0			# Find all the good model values
@@ -652,13 +653,13 @@ for (i in 1:length(temp)) {
       num_good_obs <- length(sub.df$stat_id)			# Count the remaining records
    }
    else {
-      if (remove_negatives == "y") {	# If removing negative observations and valid_only (which applies only to NADP) is not checked
+#      if (remove_negatives == "y") {	# If removing negative observations and valid_only (which applies only to NADP) is not checked
          indic.missing <- sub.df$ob_val >= 0 
          sub.df <- sub.df[indic.missing,]
          indic.missing <- sub.df$mod_val >= 0
          sub.df <- sub.df[indic.missing,]
          num_good_obs <- length(sub.df$stat_id)
-      }
+#      }
    }
    coverage <- round((num_good_obs/total_obs[i])*100)
    if ((length(sub.df$stat_id) > 0) && (coverage >= coverage_limit) && (num_good_obs >= num_obs_limit)) {	# number of observations necessary for evaluation(completeness criteria)
@@ -667,8 +668,10 @@ for (i in 1:length(temp)) {
       lats          <- c(lats, sub.df$lat[1])		# Set lat to first lat record in sub.df
       lons          <- c(lons, sub.df$lon[1])		# Set lon to first lon record in sub.df
       num_obs       <- c(num_obs,length(sub.df$stat_id))	
-      mean_obs      <- c(mean_obs, round(mean(sub.df$ob_val),3))
-      mean_model    <- c(mean_model, round(mean(sub.df$mod_val),3))
+      mean_obs      <- c(mean_obs, round(mean(sub.df$ob_val),5))
+      mean_model    <- c(mean_model, round(mean(sub.df$mod_val),5))
+      sum_obs	    <- c(sum_obs, round(sum(sub.df$ob_val),5))
+      sum_model	    <- c(sum_model, round(sum(sub.df$mod_val),5))
       median_obs    <- c(median_obs, median(sub.df$ob_val))
       median_mod    <- c(median_mod, median(sub.df$mod_val))
       median_diff   <- c(median_diff, median(sub.df$mod_val-sub.df$ob_val))
@@ -715,7 +718,7 @@ for (i in 1:length(temp)) {
 
 ##################################
 
-sites_stats.df <- data.frame(Network=I(network),Site_ID=I(sites),lat=lats,lon=lons,Num_Obs=num_obs,Obs_mean=mean_obs,Mod_mean=mean_model,Obs_median=median_obs,Mod_median=median_mod,Coverage=site_coverage,MB=site_mb, ME=site_me, NMB=site_nmb, NME=site_nme, NMdnB=site_nmdnb, NMdnE=site_nmdne, FB=site_fb, FE=site_fe, COR=site_corr, R_Squared=site_r_sqrd, Stand_Dev_obs=sd_obs, Stand_Dev_mod=sd_mod, Coeff_of_Var_obs=coef_var_obs, Coeff_of_Var_mod=coef_var_mod, Index_of_Agree=index_agree, RMSE=site_rmse, RMSE_systematic=rmse_sys, RMSE_unsystematic=rmse_unsys, Skew_Obs=skew_obs, Skew_Mod=skew_mod, Median_Diff=median_diff)
+sites_stats.df <- data.frame(Network=I(network),Site_ID=I(sites),lat=lats,lon=lons,Num_Obs=num_obs,Obs_mean=mean_obs,Mod_mean=mean_model,Obs_median=median_obs,Mod_median=median_mod,Obs_sum=sum_obs,Mod_sum=sum_model,Coverage=site_coverage,MB=site_mb, ME=site_me, NMB=site_nmb, NME=site_nme, NMdnB=site_nmdnb, NMdnE=site_nmdne, FB=site_fb, FE=site_fe, COR=site_corr, R_Squared=site_r_sqrd, Stand_Dev_obs=sd_obs, Stand_Dev_mod=sd_mod, Coeff_of_Var_obs=coef_var_obs, Coeff_of_Var_mod=coef_var_mod, Index_of_Agree=index_agree, RMSE=site_rmse, RMSE_systematic=rmse_sys, RMSE_unsystematic=rmse_unsys, Skew_Obs=skew_obs, Skew_Mod=skew_mod, Median_Diff=median_diff)
 
 }
 ##############################################################################################################
@@ -791,7 +794,8 @@ for (i in 1:length(temp)) {
    X          <- NULL
    sub.df <- temp[[i]]
    num_good_obs <- length(sub.df$Date_Hour)                       # First assume all queried obs are valid
-   if ((valid_only == "y") && (remove_negatives == "y")) {      # Check that we assuming all records are valid and we are removing negative values
+#   if ((valid_only == "y") && (remove_negatives == "y")) {      # Check that we assuming all records are valid and we are removing negative values
+   if (valid_only == "y") {
       indic.missing <- sub.df$ob_val < 0                        # Check for observations that are less than 0
       sub.df$ob_val[indic.missing] <- 0                         # Replace those observations with 0 (we assume a valid observation, just not negative)
       indic.missing <- sub.df$mod_val >= 0                      # Find all the good model values
@@ -799,13 +803,13 @@ for (i in 1:length(temp)) {
       num_good_obs <- length(sub.df$Date_Hour)                    # Count the remaining records
    }
    else {
-      if (remove_negatives == "y") {    # If removing negative observations and valid_only (which applies only to NADP) is not checked
+#      if (remove_negatives == "y") {    # If removing negative observations and valid_only (which applies only to NADP) is not checked
          indic.missing <- sub.df$ob_val >= 0
          sub.df <- sub.df[indic.missing,]
          indic.missing <- sub.df$mod_val >= 0
          sub.df <- sub.df[indic.missing,]
          num_good_obs <- length(sub.df$Date_Hour)
-      }
+#      }
    }
    coverage <- round((num_good_obs/total_obs[i])*100)
    if ((length(sub.df$Date_Hour) > 0) && (coverage >= coverage_limit) && (num_good_obs >= num_obs_limit)) {       # number of observations necessary for evaluation(completeness criteria)
