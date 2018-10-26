@@ -45,10 +45,10 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 sub.title	<- ""
 
 
-filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")       # Set output filename
-filename_html   <- paste(figdir,filename_html,sep="/")                          # Set output filename location
+filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
+filename_html   <- paste(figdir,filename_html,sep="/")
 filename_txt	<- paste(run_name1,species,pid,"timeseries.csv",sep="_")
-filename_txt 	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
+filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
 
 #######################
@@ -174,13 +174,13 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Date_Hour,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
    Dates[[j]]		<- as.POSIXct(unique(aqdat.df$Date_Hour),origin="1970-01-01")
    if (averaging == "ym") {
-      years                     <- substr(aqdat.df$Start_Date,1,4)
-      months                    <- substr(aqdat.df$Start_Date,6,7)
-      yearmonth                 <- paste(years,months,sep="-")
-      aqdat.df$Year		<- years
-      aqdat.df$YearMonth	<- yearmonth
-      Obs_Mean[[j]]		<- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,centre,type=avg_func)
-      Mod_Mean[[j]]		<- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,centre,type=avg_func)
+      years                <- substr(aqdat.df$Start_Date,1,4)
+      months               <- substr(aqdat.df$Start_Date,6,7)
+      yearmonth            <- paste(years,months,sep="-")
+      aqdat.df$Year	   <- years
+      aqdat.df$YearMonth   <- yearmonth
+      Obs_Mean[[j]]	   <- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,centre,type=avg_func)
+      Mod_Mean[[j]]	   <- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)sqrt(mean((dfrm$Mod_Value - dfrm$Obs_Value)^2))))
@@ -188,12 +188,17 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       x_label              <- "Month"
    }
    if (averaging == "m") {
+      years                <- substr(aqdat.df$Start_Date,1,4)
+      months               <- substr(aqdat.df$Start_Date,6,7)
+      yearmonth            <- paste(years[1],months,sep="-")
+      aqdat.df$Year        <- years 
+      aqdat.df$YearMonth   <- yearmonth
       Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,centre,type=avg_func)
       Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
-      Dates[[j]]            <- unique(aqdat.df$Month)
+      Dates[[j]]           <- as.POSIXct(paste(unique(aqdat.df$YearMonth),"-01",sep=""),origin="1970-01-01")
       x_label		   <- "Month"
    }
    if (averaging == "d") {
@@ -205,12 +210,16 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       Dates[[j]]           <- as.POSIXct(unique(aqdat.df$Start_Date),origin="1970-01-01")
    }
    if (averaging == "h") {
+      years                <- substr(aqdat.df$Start_Date,1,4)
+      months               <- substr(aqdat.df$Start_Date,6,7)
+      days		   <- substr(aqdat.df$Start_Date,9,10)
       Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,centre,type=avg_func)
       Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
-      Dates[[j]]           <- unique(aqdat.df$Hour)
+#      Dates[[j]]           <- unique(aqdat.df$Hour)
+      Dates[[j]]           <- as.POSIXct(paste(years[1],"-",months[1],"-",days[1]," ",unique(aqdat.df$Hour),":00:00",sep=""),origin="1970-01-01")
       x_label		   <- "Hour (LST)"
    }
    if (averaging == "a") {
@@ -221,7 +230,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
-      Dates[[j]]           <- unique(aqdat.df$Year)
+#      Dates[[j]]           <- unique(aqdat.df$Year)
+      Dates[[j]]           <- as.POSIXct(paste(unique(aqdat.df$Year),"01-01",sep=""),origin="1970-01-01")
       x_label              <- "Year"
    }
    if (j == 1) { # Set number of sites based on first run loaded (applies if runs have different number of sites)
@@ -266,9 +276,19 @@ for (j in 1:num_runs) {	# For each simulation being plotted
 
 } # Close else statement
 } # Close if/else statement
-ymin	<- 1.05*floor(min(ymin,Obs_Mean[[j]], Mod_Mean[[j]],Bias_Mean[[j]],RMSE[[j]]))
-ymax	<- 1.05*ceiling(max(ymax,Obs_Mean[[j]], Mod_Mean[[j]],Bias_Mean[[j]],RMSE[[j]]))
+#ymin	<- 1.05*floor(min(ymin,Obs_Mean[[j]], Mod_Mean[[j]],Bias_Mean[[j]],RMSE[[j]]))
+ymin   <- min(ymin,Obs_Mean[[j]], Mod_Mean[[j]])
+if (inc_bias == 'y') { ymin <- min(ymin,Bias_Mean[[j]]) }
+if (inc_rmse == 'y') { ymin <- min(ymin,RMSE[[j]]) }
+#ymax	<- 1.05*ceiling(max(ymax,Obs_Mean[[j]], Mod_Mean[[j]],Bias_Mean[[j]],RMSE[[j]]))
+ymax   <- max(ymax,Obs_Mean[[j]], Mod_Mean[[j]])
+if (inc_bias == 'y') { ymax <- max(ymax,Bias_Mean[[j]]) }
+if (inc_rmse == 'y') { ymax <- max(ymax,RMSE[[j]]) }
 } # End num_runs loop
+
+range <- ymax - ymin
+ymin  <- ymin - 0.05*range
+ymax  <- ymax + 0.10*range
 
 ### Write data to be plotted to file ###
 write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
@@ -290,6 +310,12 @@ rmse.ts <- xts(RMSE[[1]],order.by=Dates[[1]])
 zero.ref.ts <- xts(zero.ref,order.by=Dates[[1]])
 ts.combine <- cbind(obs.ts,mod.ts,bias.ts,rmse.ts,zero.ref.ts)
 
+bias_color <- "transparent"
+rmse_color <- "transparent"
+
+if (inc_bias == 'y') { bias_color <- "red" }
+if (inc_rmse == 'y') { rmse_color <- "black" }
+
 if (j > 1) {
    mod2.ts <- xts(Mod_Mean[[2]],order.by=Dates[[2]])
    bias2.ts <- xts(Bias_Mean[[2]],order.by=Dates[[2]])
@@ -300,22 +326,25 @@ if (j > 1) {
 if (length(y_axis_max) > 0) { ymax <- y_axis_max }
 if (length(y_axis_min) > 0) { ymin <- y_axis_min }
 
+filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
+filename_html   <- paste(figdir,filename_html,sep="/")
+
 #Use dygraph to make interactive html plot. (https://rstudio.github.io/dygraphs/ has examples of other features to try out.)
-if (j == 1) {
-   plot.ts <- dygraph(ts.combine, main=main.title, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
+if (j < 2) {
+   plot.ts <- dygraph(ts.combine, main=main.title, xlab=x_label, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
      dyAxis("y", valueRange = c(ymin,ymax)) %>%
      dySeries("..1",label=,network,strokeWidth=3) %>%
      dySeries("..2",label=,run_name1,strokeWidth=2) %>%
      dySeries("..3",label=,"Model - Obs Bias",strokeWidth=2) %>%
      dySeries("..4",label=,"RMSE",strokeWidth=2) %>%
      dySeries("..5",label=,"Reference",strokeWidth=3) %>%
-     dyOptions(colors=c("blue","green","red","black","grey")) %>%
+     dyOptions(colors=c("blue","green",bias_color,rmse_color,"grey")) %>%
      dyRangeSelector(height=20,dateWindow = c(start.date, end.date))%>%
      dyLegend(width=800)
 }
 
-if (j != 1) {
-   plot.ts <- dygraph(ts.combine, main=main.title, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
+if (j > 1) {
+   plot.ts <- dygraph(ts.combine, main=main.title, xlab=x_label, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
      dyAxis("y", valueRange = c(ymin,ymax)) %>%
      dySeries("..1",label=,network,strokeWidth=3) %>%
      dySeries("..2",label=,run_name1,strokeWidth=2) %>%
@@ -325,15 +354,13 @@ if (j != 1) {
      dySeries("..6",label=,"Model - Obs Bias (Sim2)",strokeWidth=2,strokePattern="dashed") %>%
      dySeries("..7",label=,"RMSE (Sim2)",strokeWidth=2,strokePattern="dashed") %>%
      dySeries("..8",label=,"Reference",strokeWidth=3) %>%
-     dyOptions(colors=c("blue","green","red","black","green","red","black","grey")) %>%
+     dyOptions(colors=c("blue","green",bias_color,rmse_color,"green",bias_color,rmse_color,"grey")) %>%
      dyRangeSelector(height=20,dateWindow = c(start.date, end.date))%>%
      dyLegend(width=800)
 }
 #On Newton:
 #saveWidget(plot.ts, file="/home/kfoley/LINKS/tools/Rcode/dygraphs/sitecompare_time_series_example_on_newton.html",selfcontained=F)
-
 saveWidget(plot.ts, file=filename_html,selfcontained=T)
-#saveWidget(plot.ts, file=filename_html,selfcontained=T,title=main.title)	# Need to update to latest version of htmlwidgets to implement title option
 
 #On windows:
 #saveWidget(plot.ts, file="B:/LINKS/tools/Rcode/dygraphs/sitecompare_time_series_example_selfcontained.html",selfcontained=T)
