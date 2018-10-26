@@ -52,9 +52,12 @@ filename_txt 	<- paste(figdir,filename_txt,sep="/")
 filename_zip    <- paste(figdir,filename_zip,sep="/")
 #################################################
 
+###########################
+### Retrieve units label from database table ###
 network <- network_names[1]
-
-if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+################################################
 
 if (length(num_ints) == 0) {
    num_ints <- 20 
@@ -99,6 +102,7 @@ spch<-plot.symbols
 
 n <- 1
 total_networks <- length(network_names)
+remove_negatives <- 'n'      # Set remove negatives to false. Negatives are needed in the coverage calculation and will be removed automatically by Average
 k <- 1
 for (j in 1:total_networks) {
    total_obs 		<- NULL
