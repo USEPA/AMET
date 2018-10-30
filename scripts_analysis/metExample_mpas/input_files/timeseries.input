@@ -1,14 +1,12 @@
 #########################################################################
-#------         INPUT FILE      INPUT FILE      INPUT FILE         -----#
+#                 INPUT FILE for Main R Scripts                         #
 #-----------------------------------------------------------------------#
 #                                                                       #
-#               PLOT OBSERVATION-MODEL TIMESERIES                       #
-#                                                                       #
-#       Version:        1.1                                             #
-#       Date:           July 05, 2004                                   #
-#       Contributors:   Robert Gilliam                                  #
+#                   Input to MET_timeseries.R                           #
+#                     Developed by US EPA                               #
 #                                                                       #
 #-----------------------------------------------------------------------#
+#########################################################################
 # Change LOG
 # timeseries1.1 (06/15/2004)
 #       Initial deveopment: The program currently reads a configuration file
@@ -17,8 +15,9 @@
 #       an option is allowed to let the users compare two model simulations with
 #       observation for sensitivity experiments.
 #
-# Version 1.3, May 6, 2013, Rob Gilliam
+# Version 1.3, May 6, 2013, Robert Gilliam
 #  - better formatting of script
+#  - added requirement that password is passed via argument input.
 #########################################################################
 #---------------------------------------------------##
 #       Configurable DATE Definitions
@@ -43,8 +42,8 @@
  extra      <-Sys.getenv("AMET_EXTRA1")
  extra2     <-Sys.getenv("AMET_EXTRA2")
  wdweightws <-T
- savefile   <-T
- textout    <-T
+ savefile   <-F
+ textout    <-F
 
  figdir     <-Sys.getenv("AMET_OUT")
 
@@ -56,7 +55,6 @@
  symbsiz  <-2
  plotsize <-1
  scex     <-0.65
- maxrec   <-10000
 
 #########################################################################
 # GROSS	QC/QA limits for T (K), WS (m/s), and Q (g/kg): Min, Max

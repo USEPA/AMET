@@ -1,7 +1,7 @@
 #######################################################################################################
 #####################################################################################################
 #                                                                 ################################
-#       AMET Surface Meteorology Model-Obs Matching Driver          
+#       AMET Upper-Air Meteorology Model-Obs Matching Driver          
 #                                                                  
 #       Meteorological Models:
 #            Model for Prediction Across Scales (MPAS)
@@ -12,27 +12,24 @@
 #       insert into AMET configured MySQL database. This specific
 #       script is the master that calls R functions that read
 #       model output, MADIS observations, interpolate, 
-#       and construct the database queries.
+#       and construct the database queries.   
 #
-#       This wrapper matches surface observations (WS, WS, T, Q and PSFC)
-#       with either WRF or MPAS surface meteorology fields.   
+#       This wrapper matches Rawindsone profiles (Theta, WS/WD and RH)
+#       with either WRF or MPAS meteorology.   
 #                                                            
 #       Developed by the US EPA           
 #                                                                 ################################
 #####################################################################################################
+#
+#  V1.4, 2018Sep30, Robert Gilliam: Initial Development
+#
 #######################################################################################################
-#
-#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
-#  V1.4, 2018Sep30, Robert Gilliam: 
-#         - Added the matching of surface pressure for the ability
-#           to evaluate relative humidity
-#
 #######################################################################################################
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded") }
   if(!require(date))   {stop("Required Package date was not loaded")   }
   if(!require(ncdf4))  {stop("Required Package ncdf4 was not loaded")  }
 
-  config_file     <- Sys.getenv("MYSQL_CONFIG")   # MySQL configuration file
+  config_file     <- Sys.getenv("MYSQL_CONFIG")  
   if (!exists("config_file")) {
      stop("Must set MYSQL_CONFIG environment variable")
   }
@@ -58,9 +55,9 @@
   mysqlpass         <- args[1]
 
   ### Use MySQL login/password from config file if requested ###
-  if (mysqlpass == 'config_file')  { mysqlpass  <- amet_pass  }
+  #if (mysqlpass == 'config_file')  { mysqlpass  <- amet_pass  }
   ##############################################################
-
+  mysqlpass  <- amet_pass 
   # Initialize AMET Directory Structure Via Env. Vars
   # AND Load required function and configuration files
   source(paste(amet_base,"/R_db_code/MET_model.read.R",sep="")) 
@@ -74,20 +71,30 @@
   madisbase      <- Sys.getenv("MADISBASE")  
   mysqlserver    <- Sys.getenv("MYSQL_SERVER")
   met_output     <- Sys.getenv("METOUTPUT") 
-  madis_dset     <- Sys.getenv("MADISDSET") 
+  native         <- as.logical(Sys.getenv("NATIVE"))
+  mandatory      <- as.logical(Sys.getenv("MANDATORY"))
   ametproject    <- Sys.getenv("AMET_PROJECT")
   projectdesc    <- Sys.getenv("RUN_DESCRIPTION")
-  maxdtmin       <- as.numeric(Sys.getenv("MAXDTMIN"))
   skipind        <- Sys.getenv("SKIPIND")
-  interp         <- Sys.getenv("INTERP_METHOD")
   updateSiteTable<-as.logical(Sys.getenv("UPDATE_SITES"))
-  total_loop_max <- as.numeric(Sys.getenv("MAX_TIMES_SITE_CHECK"))
   autoftp        <-as.logical(Sys.getenv("AUTOFTP"))
   madis_server   <- Sys.getenv("MADIS_SERVER")
   verbose        <- as.logical(Sys.getenv("VERBOSE"))
 
   userid         <-system("echo $USER",intern = TRUE)
   projectdate    <-as.POSIXlt(Sys.time(), "GMT")
+
+  # Hard Coded settings that do not require user input with RAOB matching option.
+  # maxdtmin is set to 60 since soundings take place over an hour. Raob is the only 
+  # dataset. No need to minimize site mapping since all sites are in each file.
+  # Only nearests neighbor interp is needed since balloons actually travel to adjacent
+  # model grid cells; so approximation is implied.
+  maxdtmin         <- 60
+  madis_dset       <- "raob" 
+  total_loop_max   <- 999999
+  buffer           <- 5
+  total_loop_count <- 1 
+  interp           <- 1
 
   # MySQL connection information and command to send temporary query file to database.
   # This method is dramatically quicker than sending single queries for each of the
@@ -97,19 +104,15 @@
   # For option 1, the file is $AMETBASE/configure/amet-config.R 
   mysql          <-list(server=mysqlserver,dbase=ametdbase,login=mysqllogin,passwd=mysqlpass,maxrec=5E6)
   command        <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",
-                          mysql$passwd,"' --database=",mysql$dbase," < tmp.query",sep="")
+                          mysql$passwd,"' --database=",mysql$dbase," < tmp.raob.query",sep="")
   sitecommand    <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",
                           mysql$passwd,"' --database=",mysql$dbase," < tmp.site.query",sep="")
 
   files <-system(paste("ls -lh ",met_output,"*",sep=''),intern=T)
   nf    <-length(files)
-
-  # Hard coded settings now
-  buffer           <- 5
-  total_loop_count <- 1 
   
   # Skip index setting for first file (1) and all after (2)
-  a<-strsplit(skipind,split=" ")
+  a        <-strsplit(skipind,split=" ")
   skipind1 <-as.numeric(unlist(a)[1])
   skipind2 <-as.numeric(unlist(a)[2])
   
@@ -118,14 +121,15 @@
   # are indicies of the four grid point surrounding the obs site. [site,1,1:2] is the first and
   # second I index. [site,2,1:2] is the first and second J index. The third [site,3,1:2] is
   # DX and DY (in fractional grid form) of the obs site with respect to the grid point to the 
-  # south and west. These are computed in site mapping to keep from repetative logic and calculations. 
+  # south and west. These are computed in site mapping to keep from repetative logic and calculations.
+  # For RAOB matching nearest neighbor is used since balloon soundings are not static with respect to
+  # the surface launch site ground location. 
   sitenum <-as.integer(0)
-  sitemax <-as.integer(45000)
+  sitemax <-as.integer(1000)
   sitelist<-array(NA,c(sitemax))
   cind    <-array(NA,c(sitemax,3))
   cwgt    <-array(NA,c(sitemax,3))
   wrfind  <-array(NA,c(sitemax,3,2))
-
 ##########################################################################
 # Begin loop over Model Output files
 for(f in 1:nf) {
@@ -153,67 +157,67 @@ for(f in 1:nf) {
   # Then update AMET database project table and add new project if not existing
   if(f == 1){
     qout<-new_dbase_tables(mysql)
-    qout<-new_surface_met_table(mysql, ametproject, metmodel, userid, projectdesc, projectdate)
+    qout<-new_raob_met_table(mysql, ametproject, metmodel, userid, projectdesc, projectdate)
   }
 
-  # MPAS Grid and Sfc Met extraction
+  # MPAS Grid and Met extraction. List specs below show what is returned by the model read
   #list includes: 
   #projection <-list(mproj=0,lat=lat,lon=lon,latv=latv,lonv=lonv,cells_on_vertex=cells_on_vertex,conef=cone)
-  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr)
+  #raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+  #                    qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
   if(metmodel == "mpas"){
-    model<-mpas_surface(file)
+    model <-mpas_raob(file,t=1)
   }
 
-  # WRF Grid and Sfc Met extraction
+  # WRF Grid and Met extraction.  List specs below show what is returned by the model read
   #list includes:
   #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
   #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
-  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr,psf=psf)
+  #raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+  #                    qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
   if(metmodel == "wrf"){
-    model<-wrf_surface(file)
+    model <-wrf_raob(file,t=1)
   }
 
 ##########################################################################
-# begin loop for hours in MPAS file (reads one MADIS file)
+# begin loop for hours in MPAS file (Model values are extracted each time increment)
 if(f == 1) { skipind <- skipind1 }
 if(f > 1)  { skipind <- skipind2 }
-nt  <-length(model$sfc_met$time)
+nt  <-length(model$raob_met$time)
 if(skipind > nt) { next }
 
 for(t in skipind:nt){
 
-  # Check time for missing or zero data and skip. This ensures initial times
-  # in model output that are often zero do not get compared with obs.
-  if(metmodel == "mpas"){
-    if(sum( model$sfc_met$t2[,t]) == 0) {
-      writeLines(paste("MPAS time period skipped because initial model time"))
-      next 
-    }
-  }
-  if(metmodel == "wrf"){
-    if(sum( model$sfc_met$t2[,,t]) == 0){ 
-      writeLines(paste("WRF time period skipped because initial model time"))
-      next 
-    }
-  }
-
   # Time component extraction from WRF or MPAS Time variable
   # return variable contains one list variable 
   # modeldate, modeltime, yc, mc, dc, hc
-  datetime<- model_time_format(model$sfc_met$time[t])
+  datetime <- model_time_format(model$raob_met$time[t])
+  # Limit times to standard soundings (i.e.; 00 and 12 UTC)
+  if(datetime$hc != "00" & datetime$hc != "12") { next }
 
   # Extract obs from MADIS file along with site metadata
-  # return variable contains two lists: site and sfc_met
+  # return variable contains two lists: site and raob_met
+  # Skip time if MADIS file is not availiable or has 0 or 1 sites.
   # site:    ns, nsr, site, site_unique, slat ,slon, site_locname, report_type, 
   #          ihour, imin, isec, stime, stime2
-  # sfc_met: t2, q2, u10, v10
-  if(madis_dset != "text") {
-    obs<- madis_surface(madisbase, madis_dset, datetime, autoftp, madis_server,
-                        model$projection$standlon, model$projection$conef)
-    if(is.na(obs[1])) { next }
-  } else if(madis_dset == "text") {
-    obs<- text_surface(madisbase, datetime, model$projection$standlon, model$projection$conef)
+  #raob_met  ghgtm=ghgtm, prest=prest, presw=presw, presm=presm, tempm=temp, temps=temps, 
+  #          mixrm=mixr, mixrs=mixrs, rhm=rhm, rhs=rhs, um=um, vm=vm, us=us, vs=vs,
+  #          wspdm=wspd, wspds=wspds, wdirm=wdir, wdirs=wdirs, wdirma=wdira1, wdirsa=wdira2
+  obs <- madis_raob(madisbase, datetime, autoftp, madis_server,
+                    model$projection$standlon, model$projection$conef)
+  if(obs$meta$ns <= 1 ) { next }
+
+  # Load new profile for current timestep.
+  # Changed from surface script where all times in model output 
+  # are loaded to save memory space since profiles are 4D.
+  if(metmodel == "mpas"){
+    model <-mpas_raob(file,t=t)
   }
+  if(metmodel == "wrf"){
+    model <-wrf_raob(file,t=t)
+  }
+
+  # MAP observation sites to model grid cell and update new sites.
   if(metmodel == "mpas" & total_loop_count <= total_loop_max){
     site_update <- mpas_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
                                  obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname,
@@ -234,10 +238,12 @@ for(t in skipind:nt){
     sitelist<-site_update$sitelist
     wrfind  <-site_update$wrfind
   }
+
 writeLines("**********************************************************************************************")
+
 # Open new query file
-system("rm -f tmp.query") 
-sfile<-file("tmp.query","a")
+system("rm -f tmp.raob.query") 
+sfile<-file("tmp.raob.query","a")
 writeLines(paste("use",mysql$dbase,";"),con=sfile) 
 ##########################################################################
   # Main Loop over observation sites for a defined date/time of model output
@@ -256,6 +262,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     nsec        <-sprintf("%02d",obs$meta$isec[sind])
     actual_time <-paste(nhour,":",nmin,":",nsec,sep="")
     mysqltimestr<-paste(datetime$yc,"-",datetime$mc,"-",datetime$dc," ",datetime$modeltime,sep="") 
+
     # If time of site ob is outside user defined window, skip
     if(tdiff[ndiff]>maxdtmin) {
       if(verbose) {
@@ -269,72 +276,87 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
                        "Model time:",datetime$modeltime,"  Obs time:",actual_time))
     }
 
-    if(is.na(obs$sfc_met$t2[sind]))  { obs$sfc_met$t2[sind]  <-"NULL" }
-    if(is.na(obs$sfc_met$q2[sind]))  { obs$sfc_met$q2[sind]  <-"NULL" }
-    if(is.na(obs$sfc_met$u10[sind])) { obs$sfc_met$u10[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$v10[sind])) { obs$sfc_met$v10[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$psf[sind])) { obs$sfc_met$psf[sind] <-"NULL" }
-
-    # Calculate model values base on barycentric interpolation if MPAS
+    ###############################################################################################
+    # Define model profiles, dependent on model.
     if(metmodel == "mpas"){
-      t2_int   <-cwgt[s,1]*model$sfc_met$t2[cind[s,1],t]+cwgt[s,2]*model$sfc_met$t2[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$t2[cind[s,3],t]
-      q2_int   <-cwgt[s,1]*model$sfc_met$q2[cind[s,1],t]+cwgt[s,2]*model$sfc_met$q2[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$q2[cind[s,3],t]
-      u10_int  <-cwgt[s,1]*model$sfc_met$u10[cind[s,1],t]+cwgt[s,2]*model$sfc_met$u10[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$u10[cind[s,3],t]
-      v10_int  <-cwgt[s,1]*model$sfc_met$v10[cind[s,1],t]+cwgt[s,2]*model$sfc_met$v10[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$v10[cind[s,3],t]
-      psf_int  <-cwgt[s,1]*model$sfc_met$psf[cind[s,1],t]+cwgt[s,2]*model$sfc_met$psf[cind[s,2],t]+
-                 cwgt[s,3]*model$sfc_met$psf[cind[s,3],t]
+      t_mod     <- model$raob_met$temp[,cind[s,1]]
+      rh_mod    <- model$raob_met$rh[,cind[s,1]]
+      u_mod     <- model$raob_met$u[,cind[s,1]]
+      v_mod     <- model$raob_met$v[,cind[s,1]]
+      zlev_mod  <- model$raob_met$levzh[,cind[s,1]]
+      plev_mod  <- model$raob_met$p[,cind[s,1]]
     }
     if(metmodel == "wrf"){
-      # Compute model values from the site-mapped grid idicies. This is a bilinear interpolation
-      # calculation using the four grid points surrounding observation site. It is written to
-      # work with nearest neighbor where fractional grid index in x and y direction (wrfind[s,3,1:2])
-      # are set to zero in the site mapping routine.
-       t2_int<-(model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-       q2_int<-(model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      u10_int<-(model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      v10_int<-(model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      psf_int<-(model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
-               (wrfind[s,3,2] * (model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
-               (model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
-               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-    }
+      x         <-wrfind[s,1,1]
+      y         <-wrfind[s,2,1]
+      t_mod     <- model$raob_met$temp[x,y,]
+      rh_mod    <- model$raob_met$rh[x,y,]
+      u_mod     <- model$raob_met$u[x,y,]
+      v_mod     <- model$raob_met$v[x,y,]
+      zlev_mod  <- model$raob_met$levzh[x,y,]
+      plev_mod  <- model$raob_met$p[x,y,]
+     }
+     varid_str <-"v1_id, v2_id"
+     var_str   <-"v1_val, v2_val"
+     ####################################################################################################
+     # Pass significant level profiles on their native levels so they can be written to query connection.
+     # Temp and RH of obs and model
+     if(native) {
+      varid_vals <-"'T_OBS_N', 'RH_OBS_N'"
+      profiles   <- data.frame(obs$raob_met$temps[,all.sind],obs$raob_met$rhs[,all.sind])
+      levels     <- obs$raob_met$prest[,all.sind]
+      raob_query_native(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                        varid_str, var_str, varid_vals, profiles, levels) 
+      varid_vals <-"'T_MOD_N', 'RH_MOD_N'"
+      profiles   <- data.frame(t_mod,rh_mod)
+      levels     <- plev_mod
+      raob_query_native(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                        varid_str, var_str, varid_vals, profiles, levels) 
+      # U and V of obs and model
+      varid_vals<-"'U_OBS_N', 'V_OBS_N'"
+      profiles  <- data.frame(obs$raob_met$us[,all.sind],obs$raob_met$vs[,all.sind])
+      levels    <- obs$raob_met$ghgts[,all.sind]
+      raob_query_native(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                        varid_str, var_str, varid_vals, profiles, levels) 
+      varid_vals<-"'U_MOD_N', 'V_MOD_N'"
+      profiles  <- data.frame(u_mod,v_mod)
+      levels    <- zlev_mod
+      raob_query_native(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                        varid_str, var_str, varid_vals, profiles, levels) 
+     } 
+     ###############################################################################################
+     # Mandatory Pressure level interpolation and query write to main query file connection.
+     # Temp 
+     if(mandatory) {
+      varid_vals<-"'T_OBS_M', 'T_MOD_M'"
+      obsdf   <- data.frame(obs$raob_met$presm[,all.sind], obs$raob_met$tempm[,all.sind])
+      moddf   <- data.frame(plev_mod, t_mod)
+      raob_query_mandatory(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                           varid_str, var_str, varid_vals, obsdf, moddf) 
 
-    q1    <-paste("REPLACE INTO ",ametproject,"_surface (proj_code, stat_id, ob_date, ob_time,fcast_hr, init_utc,T_ob,  T_mod,
-                   U_ob,  U_mod,  V_ob,  V_mod,  WVMR_ob, Q_ob, Q_mod, PSFC_ob, PSFC_mod)",sep="")
-    q2    <-paste("('",ametproject,"','",obs$meta$site[sind],"','",mysqltimestr,"','",
-                  datetime$modeltime,"',0,00,",obs$sfc_met$t2[sind],",",t2_int,",",
-                  obs$sfc_met$u10[sind],",",u10_int,",",obs$sfc_met$v10[sind],",",v10_int,",",
-                  obs$sfc_met$q2[sind],",",obs$sfc_met$q2[sind],",",q2_int,",",
-                  obs$sfc_met$psf[sind],",",psf_int,")",sep="")
+      # RH 
+      varid_vals<-"'RH_OBS_M', 'RH_MOD_M'"
+      obsdf   <- data.frame(obs$raob_met$presm[,all.sind], obs$raob_met$rhm[,all.sind])
+      moddf   <- data.frame(plev_mod, rh_mod)
+      raob_query_mandatory(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                           varid_str, var_str, varid_vals, obsdf, moddf) 
 
-    query <-paste(q1,"VALUES",q2)
-    writeLines(paste(query,";"),con=sfile)
+     # U 
+      varid_vals<-"'U_OBS_M', 'U_MOD_M'"
+      obsdf   <- data.frame(obs$raob_met$presm[,all.sind], obs$raob_met$um[,all.sind])
+      moddf   <- data.frame(plev_mod, u_mod)
+      raob_query_mandatory(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                           varid_str, var_str, varid_vals, obsdf, moddf) 
+
+     # V 
+      varid_vals<-"'V_OBS_M', 'V_MOD_M'"
+      obsdf   <- data.frame(obs$raob_met$presm[,all.sind], obs$raob_met$vm[,all.sind])
+      moddf   <- data.frame(plev_mod, v_mod)
+      raob_query_mandatory(sfile, ametproject, obs$meta$site[all.sind],mysqltimestr, datetime$modeltime,
+                           varid_str, var_str, varid_vals, obsdf, moddf) 
+     } 
+     ###############################################################################################
+
   }
   close(sfile)
   system(command)
@@ -348,6 +370,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
 
 ##########################################################################
 }  # End of loop over files
-system("rm -f tmp.query tmp.site.query") 
+system("rm -f tmp.raob.query") 
+system("rm -f tmp.site.query") 
 quit(save="no")
 

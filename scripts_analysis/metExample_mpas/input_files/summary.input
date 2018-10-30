@@ -1,38 +1,31 @@
 #########################################################################
-#------		INPUT FILE	INPUT FILE	INPUT FILE	     ---------------------#
+#                 INPUT FILE for Main R Scripts                         #
 #-----------------------------------------------------------------------#
-#						 			
-#	SUMMARY STATISTIC TOOL				
-#									
-#	Version: 	1.1					 
-#	Date:		July 14, 2004					
-#	Contributors:	Robert Gilliam					
-#						 			
-#	Developed by and for NOAA, ARL, ASMD on assignment to US EPA	
+#                                                                       #
+#                   Input to MET_summary.R                              #
+#                     Developed by US EPA                               #
+#                                                                       #
 #-----------------------------------------------------------------------#
+#########################################################################
 # Change LOG
-# web_query (06/15/2004)	
-#	Initial deveopment: The program currently reads a configuration file
-#	that is placed in
-#
 # Changed to summary (Oct, 2007)
 #       Integrated w/ combined AQ/MET, Alexis Zubrow (IE UNC)
 #
-# Version 1.3, May 6, 2013, Rob Gilliam
+# Version 1.3, May 6, 2013, Robert Gilliam
 #  - better formatting, no real changes
 #########################################################################
 
 #########################################################################
 #	Configurable DATE Definitions
 #########################################################################
-  querystr<-Sys.getenv("AMET_CRITERIA")	
+  querystr <-Sys.getenv("AMET_CRITERIA")	
   pid      <-Sys.getenv("AMET_RUNID") 
-  project	 <-Sys.getenv("AMET_PROJECT")
+  project  <-Sys.getenv("AMET_PROJECT")
   queryID  <-pid
   statid   <-"NULL"
   obnetwork<-"ALL"
   lat      <-"ALL"
-  lon	     <-"ALL"
+  lon      <-"ALL"
   elev     <-"NULL"
   landuse  <-"NULL"
   dates    <-"ALL"
@@ -55,6 +48,12 @@
   diurnal  <-T
   textstats<-T 
 #########################################################################
+
+#########################################################################
+#       Rough QC check on Model-Obs difference. If above ignore
+#       the mod-obs pair. Values are T (K), Q(g/kg) and WS (m/s).
+#########################################################################
+  qcerror  <- c(15,15,10) 
 
 #########################################################################
 #	Statistics Index location from query		  

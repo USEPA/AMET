@@ -6,11 +6,6 @@
 #                     Summary Statistics Plots                          #
 #                         MET_summary.R                                 #
 #                                                                       #
-#                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
-#         Contributors:	Robert Gilliam                                  #
-#                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
@@ -20,12 +15,12 @@
 #                   Alexis Zubrow (IE UNC), Oct 2007                    #
 #                                                                       #
 #-----------------------------------------------------------------------#
-# Version 1.2, May 8, 2013, Rob Gilliam                                 #
+# Version 1.2, May 8, 2013, Robert Gilliam                              #
 # Updates: - Pulled some configurable options out of MET_plot_prof.R    #
 #            and placed into the plot_prof.input file                   #
 #          - Extensive cleaning of R script, R input and .csh files     #
 #                                                                       #
-#  Version 1.3, May 15, 2017, Rob Gilliam                               # 
+#  Version 1.3, May 15, 2017, Robert Gilliam                            # 
 #  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
 #             Now users define that file location in csh wrapper scripts#
@@ -33,6 +28,11 @@
 #           - Removed some deprecated variables and cleaned/formatted   #
 #             script for better readability. Also changed dir names     #
 #             to reflect the update (i.e., R_analysis_code instead of R)#      
+#                                                                       #
+#  Version 1.4, Sep 30, 2018, Robert Gilliam                            # 
+#  Updates: - Moved hard-coded QC limits that remove model-obs pairs    #
+#             when difference exceeds the limits to summary.input file. #
+#             If QC limit is not specified, old hard-coded limit used.  # 
 #-----------------------------------------------------------------------#
 #                                                                       #
 #########################################################################
@@ -41,7 +41,7 @@
 #:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
   if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
-  if(!require(maps)){stop("Required Package maps was not loaded")}
+  if(!require(maps))  {stop("Required Package maps was not loaded")}
 
 ########################################################
 #    Initialize AMET Diractory Structure Via Env. Vars
@@ -58,6 +58,9 @@
  # and not specified via AMET_OUT, then set figdir to the current directory
  if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
  if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
+
+ # Check for rough QC error specs from summary.input. If not set (pre-AMETv1.3), define.
+ if(!exists("qcerror"))                         { qcerror<- c(15,15,10)                 }
 
  ## source some configuration files, AMET libs, and input
  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
@@ -77,8 +80,8 @@
  # Create query string
  varsName	<-c("Temperature (2m)","Specific Humidity (2m)","Wind Speed (10m)","Wind Direction (deg.)")
  varid		<-c("T","Q","WS","WD")
- varxstr	<-paste("SELECT DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_time),d.stat_id,s.ob_network,d.T_mod,d.T_ob, 
-                   d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob")
+ varxstr	<-paste("SELECT DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_date),d.stat_id,s.ob_network,d.T_mod,d.T_ob, 
+                   d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob, HOUR(ob_time)")
  query		<-paste(varxstr," FROM ",project,"_surface d, stations s WHERE  s.stat_id=d.stat_id ",querystr,sep="")
 ################################################################################
  for(q in 1:length(query)){
@@ -87,6 +90,13 @@
     writeLines("Query used to extract data from MySQL database:")
     writeLines(paste(query))
     data<-ametQuery(query[q],mysql)
+
+    # Hour of Day fix for MySQL database ob_time format changes. 
+    # Looks at HOUR(ob_date) and HOUR(ob_time) and choose the one
+    # that is not all zeros.
+    if( sum(data[,2],na.rm=T) == 0){
+      data[,2] <- data[,13]
+    }
 
     ## test to see if query returned anything
     if ( dim(data)[1] == 0) {
@@ -109,7 +119,7 @@
     }
 
     locs<-c(1,2,3,4,5,6,9,10,11,12,7,8)
-    datap<-massageTseries(data,loc=locs,qcerror=c(15,15,10),iftseries=F,addrand=FALSE)
+    datap<-massageTseries(data,loc=locs,qcerror=qcerror,iftseries=F,addrand=FALSE)
 
     if (diurnal){
          ################################

@@ -1,15 +1,12 @@
 #########################################################################
-#------		INPUT FILE	INPUT FILE	INPUT FILE	 
+#                 INPUT FILE for Main R Scripts                         #
 #-----------------------------------------------------------------------#
-#						 										
-#	Evaluation Protocol: Spatial Statistics (Calculations and Plotting)		
-#									
-#	Version: 	1.2					 	
-#	Date:		March 08, 2005					
-#	Contributors:	Robert Gilliam					
-#						 			
-#	Developed by US EPA	
+#                                                                       #
+#                 Input to MET_spatial_surface.R                        #
+#                     Developed by US EPA                               #
+#                                                                       #
 #-----------------------------------------------------------------------#
+#########################################################################
 # Change LOG
 # daily-spatial-1.1 (06/15/2004)	
 #	Initial deveopment: The program currently reads a configuration file
@@ -19,7 +16,7 @@
 #	Protocol development: Input files for the daily-spatial.R script have been modified. Modifications
 #	include an update to the in-code documentation and general clean up of input file
 #-----------------------------------------------------------------------
-# Version 1.3, May 17, 2017, Rob Gilliam
+# Version 1.3, May 17, 2017, Robert Gilliam
 #  - better formatting of input file
 #  - removed convert command that has been depreicated 
 #########################################################################
@@ -43,7 +40,7 @@
  textstats   <- as.logical(Sys.getenv("AMET_TEXTSTATS"))
  wantfigs    <- T
  wantsave    <- T
- checksave   <- T
+ checksave   <- F
  t.test.flag <- F
 
  # Surface data table in evaluation database
@@ -55,7 +52,7 @@
  plotfmt   <- Sys.getenv("AMET_PTYPE")
  plotsize  <- 1.50
  symb      <- 19
- symbsiz   <- 0.85
+ symbsiz   <- 0.75 
  plotopts  <- list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
 
 #########################################################################
@@ -80,6 +77,11 @@
  extra  <-" and (s.ob_network!='ASOS' and s.ob_network!='SAO' and s.ob_network!='MARITIME' 
             and s.ob_network!='OTHER-MTR') AND HOUR(d.ob_time) BETWEEN 3 AND 14" 
 
+ # Note: Pre-AMET1.3 versions use HOUR(d.ob_time). If this script fails,
+ # you may be using newer database where HOUR(d.ob_date) should be used.
+ extra  <-"AND HOUR(d.ob_date) BETWEEN 13 AND 15 "
+ extra  <-"AND HOUR(d.ob_date) BETWEEN 21 AND 23 "
+
  extra <-" "
 
  # This is the maximum allowable number of data points
@@ -102,14 +104,14 @@
 #########################################################################
 #----- 			END OF INPUT FILE	------------------------#
 #########################################################################
- ys <-as.numeric(substr(date[1],1,4))       # Year Start
- ye <-as.numeric(substr(date[2],1,4))       # Year End
- ms <-as.numeric(substr(date[1],5,6))       # Month to start
- me <-as.numeric(substr(date[2],5,6))       # Month to end
- ds <-as.numeric(substr(date[1],7,8))       # Day of the month to start npa processing
- de <-as.numeric(substr(date[2],7,8))       # Day to end 
- hs <-as.numeric(substr(date[1],10,11))     # Hour to start
- he <-as.numeric(substr(date[2],10,11))     # Hour to end
+ ys <-as.numeric(substr(date[1],1,4))
+ ye <-as.numeric(substr(date[2],1,4))
+ ms <-as.numeric(substr(date[1],5,6))
+ me <-as.numeric(substr(date[2],5,6))
+ ds <-as.numeric(substr(date[1],7,8))
+ de <-as.numeric(substr(date[2],7,8))
+ hs <-as.numeric(substr(date[1],10,11))
+ he <-as.numeric(substr(date[2],10,11))
  saveid	<-model
 
  if(is.na(hs) || is.na(he)) {
@@ -118,26 +120,26 @@
  }
 #---------------------------------------------------##
 # Various set-up definitions for main plot function
- plotlab=array(,)
- statid<-c("Count","Correlation","Anomaly Correlation","Variance","Standard Deviation","RMSE","Mean Absolute Error",
+ plotlab <-array(,)
+ statid  <-c("Count","Correlation","Anomaly Correlation","Variance","Standard Deviation","RMSE","Mean Absolute Error",
            "Mean bias","Mean Fractional Bias","Mean Normalized Bias","Mean Normalized Gross Error",
            "Normailized Mean Bias","Normalized mean error","Difference Max Value","Difference of Min Value")
- varid<-c("2 m Temperature (C)","Wind Speed (m/s)","Wind Direction (Deg.)","Mixing Ratio (g/kg)")
+ varid   <-c("2 m Temperature (C)","Wind Speed (m/s)","Wind Direction (Deg.)","Mixing Ratio (g/kg)")
 
- statAbr<-c("count","corr","ac","var","sdev","rmse","mae","bias","mfbias","mnbias","mngerr","nmbias","nmerr","max","min")
- varAbr<-c("T","WS","WD","Q")
- vget	<-c(1,2,3,4)
- sget	<-c(3,6,7,8)
+ statAbr <-c("count","corr","ac","var","sdev","rmse","mae","bias","mfbias","mnbias","mngerr","nmbias","nmerr","max","min")
+ varAbr  <-c("T","WS","WD","Q")
+ vget	 <-c(1,2,3,4)
+ sget	 <-c(3,6,7,8)
 
  convfactor<-c(1.8,1.94,1,1)
  convfactor<-c(1,1,1,1)
 
-  great	<-gray(0.80)
-  good	<-"green"
-  fair	<-"blue"
-  caut	<-"yellow"
-  quest	<-"red"
-  bad	<-"black"
+  great	 <-gray(0.80)
+  good	 <-"green"
+  fair	 <-"blue"
+  caut	 <-"yellow"
+  quest	 <-"red"
+  bad	 <-"black"
 #################################################
 # Plotting Protocol defnitions (colors, scales, etc)
 # These are pretty esoteric. A user will have to read code
@@ -145,15 +147,15 @@
 # levels for each statistics and C* for corresponding color
 
   levcols<-array(NA,c(length(statid),length(varid),20))
-  levs<-array(NA,c(length(statid),length(varid),20))
+  levs   <-array(NA,c(length(statid),length(varid),20))
 
 # Typical Error and bias range w/ color scale
- L1<-c(seq(0.75,3,by=0.25),4,10)
- L1<-c(0,0.50,1,1.5,2,2.5,3,4,5,6,7,8)
- C1<-tim.colors(length(L1))
+ L1  <-c(seq(0.75,3,by=0.25),4,10)
+ L1  <-c(0,0.50,1,1.5,2,2.5,3,4,5,6,7,8)
+ C1  <-tim.colors(length(L1))
 
- L2<-c(-3,-2,-1,-0.5,-0.25,0,0.25,0.5,1,2,3,4)
- C2<-tim.colors(length(L2))
+ L2  <-c(-3,-2,-1,-0.5,-0.25,0,0.25,0.5,1,2,3,4)
+ C2  <-tim.colors(length(L2))
  C2[length(L2)/2]<-great
 
 # Error and bias scale for wind direction
