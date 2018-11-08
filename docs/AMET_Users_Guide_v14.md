@@ -3,7 +3,7 @@ User’s Guide***
 
 **Contents**
 
-1 Overview
+1. Overview
 
    1.1 Overall Objective and Basic Structure
 
@@ -11,25 +11,25 @@ User’s Guide***
 
    1.3 Organization of This User’s Guide
 
-2 Directory Structure
+2. Directory Structure
 
-3 Configuration
+3. Configuration
 
    3.1 R Configuration File (amet-config.R)
 
-4 Datasets
+4. Datasets
 
    4.1 Model Data
 
    4.2 Observational Data
 
-5 Database Setup
+5. Database Setup
 
    5.1 AMET Setup
 
    5.2 Basic MySQL Commands
 
-6 Project Creation and Database Population
+6. Project Creation and Database Population
 
    6.1 The wrfExample Project
 
@@ -39,7 +39,7 @@ User’s Guide***
 
    6.4 Creating a New AQ Project
  
-7 Analysis
+7. Analysis
 
    7.1 wrfExample
 
@@ -76,7 +76,7 @@ Table B‑4. MET analysis input variables
 
 Table B‑5. AQ analysis input variables 
 
-# 1 Overview
+# 1. Overview
    
 ## 1.1  Overall Objective and Basic Structure
        
