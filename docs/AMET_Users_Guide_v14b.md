@@ -1643,7 +1643,7 @@ files. Not all of these variables are available in every input file.
 | **abs\_rang\_min**       | Specify the minimum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **abs\_range\_max**      | Specify the maximum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
-| **aggregate\_data**      | Flag (y/n) to indicate whether or not to aggregate data from sites with multiple Parameter Occurrance codes (POCs)  |
+| **aggregate\_data**      | Flag (y/n) to indicate whether or not to aggregate data from sites with multiple Parameter Occurrance Codes (POCs). If set to Y, data with different POCs from the same site will be averaged and compared to the model grid-cell value as a single data point. If set to N, the data will be treated as unique observations and each POC data point will be paired to the same model grid-cell value.    |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
 | **aq\_network**          | AQ monitoring network. |
 | **aq\_project**          | AQ project name. |
@@ -1680,6 +1680,7 @@ files. Not all of these variables are available in every input file.
 | **line\_width**          | Specify the line width for the time series plot (default is 1). Smaller number result is a thinner line, while larger numbers result in a thicker line. |
 | **inc\_whiskers**        | Include whiskers on the box plots: “**y**” or “**n**”. |
 | **map\_leg\_size**       | Map legend size factor. Default is 0.65. |
+| **max\_limit**           | Used in the skill scatter plot script to set the "limit" at which an exceedance occurs. The default is 70, the current standard for MDA8 O3 in the United States. |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
 | **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation. This can be used to eliminate days when only a small number of sites are available. |
@@ -1712,8 +1713,6 @@ files. Not all of these variables are available in every input file.
 | **state**                | Plot label for indicating certain states. Note that you will need to use an additional query to actually subset the data to these states.|
 | **stat\_file**           | File containing specific list of stations to analyze. User-defined. |
 | **stats\_flags**         | Flags to determine which statistics are included on the **run\_scatterplot.csh** script. Up to five statistics can be included, and are indicated by a ‘**y**’. Unused statistics are left blank. The order of the statistics flags is: **index of agreement (IA), correlation (r), RMSE, systematic RMSE, unsystematic RMSE, NMB, NME, Normalized Median Bias, Normalized Median Error, Mean Bias, Mean Error, Median Bias, Median Error, Fractional Bias, Fractional Error** |
-| **symb**                 | Plot symbol: **15** – square, **19** – circle |
-| **symbol**               | Plot symbol.|
 | **symbsizfac**           | Plot symbol size: (**0.5** very small to **1.5** large). A value of **1** is recommended for most applications. |
 | **textstats**            | Produce text statistics file: **TRUE** or **FALSE**.  |
 | **use\_avg\_stats**      | Use time-averaged statistics: “**y**” or “**n**”. |
