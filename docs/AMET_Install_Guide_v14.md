@@ -1,4 +1,4 @@
-# Atmospheric Model Evaluation Tool (AMET) v1.3  
+# Atmospheric Model Evaluation Tool (AMET) v1.4 Beta  
 ## Installation Guide
 -----
 **Contents**
