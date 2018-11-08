@@ -48,7 +48,8 @@ Tables
 <a id="Overview"></a>1. Overview
 ===========
    
-## 1.1  Overall Objective and Basic Structure
+<a id="Basic_Structure"></a>1.1 Overall Objective and Basic Structure
+-------------------------------------
        
 The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a
 suite of software designed to facilitate the analysis and evaluation of
@@ -84,7 +85,9 @@ and graphics). The previous versions of AMET also utilized **perl** (an
 open-source cross-platform programming language), but the **perl** requirement
 has been removed from AMETv1.3.
 
-### Concept of an AMET “Project”
+<a id="AMET_Project"></a>
+1.2 Concept of an AMET “Project”
+----------------------------
 
 A central organizing structure for AMET applications is a *project*. A
 project groups a particular model simulation (specific model,
@@ -100,7 +103,9 @@ projects, by copying one of the three example directories (aqExample,
 mm5Example, wrfExample) provided with the installation and then renaming
 it to the new project’s name.
 
-### Organization of This User’s Guide
+<a id="Users_Guide"></a>
+1.3 Organization of This User’s Guide
+---------------------------------
 
 The Community Modeling and Analysis System (CMAS) Center has created
 this user’s guide to assist you in applying the AMET system in your
@@ -153,7 +158,9 @@ Before using AMET and this user’s guide, you must first install the AMET packa
 system. For information on the installation process, please see the separate *Atmospheric 
 Model Evaluation Tool (AMET) Installation Guide* that can be downloaded from the CMAS web site.
 
-# 2 Directory Structure
+<a id="Directory_Structure"></a>
+2. Directory Structure
+===================
 
 In our discussions, we refer to the top of the AMET directory structure
 as “AMETBASE”. This environment variable is actually set in many of the
