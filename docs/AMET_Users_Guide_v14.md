@@ -3,55 +3,33 @@ User’s Guide***
 
 **Contents**
 
-[1. Overview](#Overview)
-
-   1.1 Overall Objective and Basic Structure
-
-   1.2 Concept of an AMET “Project”
-
-   1.3 Organization of This User’s Guide
-
-2. Directory Structure
-
-3. Configuration
-
-   3.1 R Configuration File (amet-config.R)
-
-4. Datasets
-
-   4.1 Model Data
-
-   4.2 Observational Data
-
-5. Database Setup
-
-   5.1 AMET Setup
-
-   5.2 Basic MySQL Commands
-
-6. Project Creation and Database Population
-
-   6.1 The wrfExample Project
-
-   6.2 The aqExample Project
-
-   6.3 Creating a New MET Project
-
-   6.4 Creating a New AQ Project
- 
-7. Analysis
-
-   7.1 wrfExample
-
-   7.2 aqExample
-
-   7.3 Creating a New Analysis Project
-
-References
-
-Appendix A: Overview Flow Diagram
-
-**Appendix B: Configuration and Input Files**
+[1. Overview](#Overview)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Overall Objective and Basic Structure](#Basic_Structure)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Concept of an AMET “Project”](#AMET_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[1.3 Organization of This User’s Guide](#Users_Guide)<br>
+[2. Directory Structure](#Directory_Structure)<br>
+[3. Configuration](#Configuration)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[3.1 R Configuration File (amet-config.R)](#Configuration_File)<br>
+[4. Datasets](#Datasets)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[4.1 Model Data](#Model_Data)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[4.2 Observational Data](#Observational_Data)<br>
+[5. Database Setup](#Database_Setup)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[5.1 AMET Setup](#AMET_Setup)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[5.2 Basic MySQL Commands](#MySQL_Commands)<br>
+[6. Project Creation and Database Population](#Project_Creation)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The wrfExample Project](#WRF_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.2 The aqExample Project](#AQ_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
+[7. Analysis](#Analysis)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
+[8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
+[9. CMAS Support for AMET](#CMAS_Support)<br>
+[References](#References)<br>
+[Appendix A: Overview Flow Diagram](#Appendix_A)<br>
+[Appendix B: Configuration and Input Files](#Appendix_B)<br>
 
   
 Tables
