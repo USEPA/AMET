@@ -25,8 +25,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
-[8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
-[9. CMAS Support for AMET](#CMAS_Support)<br>
 [References](#References)<br>
 [Appendix A: Overview Flow Diagram](#Appendix_A)<br>
 [Appendix B: Configuration and Input Files](#Appendix_B)<br>
