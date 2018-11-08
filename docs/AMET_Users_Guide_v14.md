@@ -1,5 +1,5 @@
-***Atmospheric Model Evaluation Tool (AMET)  
-User’s Guide***
+# Atmospheric Model Evaluation Tool (AMET)  
+# User’s Guide for v1.4
 
 **Contents**
 
@@ -35,24 +35,17 @@ User’s Guide***
 Tables
 ======
 
-Table 2‑1. Directories under $AMETBASE
+[Table 2‑1. Directories under $AMETBASE](#Table_2-1)<br>
+[Table 3‑1. Most common variables that need to be changed in amet-config.R](#Table_3-1)<br>
+[Table 6‑3. aqProject.csh script options](#Table_6-3)<br>
+[Table 7‑1. MET analysis scripts](#Table_7-1)<br>
+[Table 7‑2. AQ analysis script options](#Table_7-2)<br>
+[Table B‑1. amet-config.R](#Table_B-1)<br>
+[Table B‑2. MET setup\_project.input](#Table_B-2)<br>
+[Table B‑2. MET populate\_project.input](#Table_B-3)<br>
+[Table B‑4. MET analysis input variables](#Table_B-4)<br>
+[Table B‑5. AQ analysis input variables](#Table_B-5)<br>
 
-Table 3‑1. Most common variables that need to be changed in
-amet-config.R
-
-Table 7‑1. MET analysis scripts
-
-Table 7‑2. AQ analysis scripts
-
-Table B‑1. amet-config.R 
-
-Table B-2. MET setup\_project.input
-
-Table B‑3. MET populate\_project.input 
-
-Table B‑4. MET analysis input variables 
-
-Table B‑5. AQ analysis input variables 
 
 <a id="Overview"></a>1. Overview
 ===========
