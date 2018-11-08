@@ -57,7 +57,7 @@
   setenv THRESHOLD 558
 
   # Option to do daily statistics over the specified period above
-  # Or statistics for the entire period.
+  # Or statistics for the entire period.
   setenv DAILY F
 
   # lat-lon plot bounds. Note that all sites in a domain
