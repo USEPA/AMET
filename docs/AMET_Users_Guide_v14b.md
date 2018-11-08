@@ -194,20 +194,24 @@ The AMET release includes example datasets of both model and observational data.
 4.1 Model Data
 ----------
 
-For the example model data, both meteorological and air quality data are provided with the AMET installation. The data are organized into two example projects: "metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation (July 01 2011 00:00 UTC to July 31 2011 23:00 UTC) and 1-month MPAS simulation (July 01 2013 00:00 UTC to July 31 2013 23:00 UTC).
+For the model data, we have included both meteorological and air quality
+data. We have organized the data into four example projects:
+"metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+(July 01 2016 00:00 UTC to July 31 2016 23:00 UTC) and 1-month MPAS simulation provided. 
 
-The WRF data consist of 31 output files in netCDF format where DD is day of the month:
+The WRF data consist of five WRF output files in netCDF format:
 
-> $AMETBASE/model\_data/MET/**metExample**/
+> $AMETBASE/model\_data/MET/**wrfExample**/
 >
-> wrfout\_d01\_2011-07-DD\_00:00:00
-
-The MPAS data consist of 31 output files in netCDF format where DD is day of the month:
-
-> $AMETBASE/model\_data/MET/**metExample**/
+> wrfout\_d01\_2016-07-05\_00:00:00
 >
-> history.2013-07-DD.luf.nc
+> wrfout\_d01\_2016-07-06\_00:00:00
 >
+> wrfout\_d01\_2016-07-07\_00:00:00
+>
+> wrfout\_d01\_2016-07-08\_00:00:00
+>
+> wrfout\_d01\_2016-07-09\_00:00:00
 
 Note that we have bolded “metExample” in the directory name above to
 highlight the fact that we are using the project name to organize the
@@ -218,14 +222,14 @@ July 01 2011 0:00 UTC to July 31 2011 23:00 UTC. The two files:
 
 > $AMETBASE/model\_data/AQ/**aqExample**/
 >
-> AMET_CMAQ_July_2011_Test_Data.aconc
+> AMET_CMAQ_July_2016_Test_Data.aconc
 >
-> AMET_CMAQ_July_2011_Test_Data.dep
+> AMET_CMAQ_July_2016_Test_Data.dep
 
 correspond to the concentration and wet deposition output files from
 CMAQ, after they have been postprocessed with the combine utility.
 
-The spatial domains for the met and air quality example datasets cover the continental U.S. and have a 12-km
+All of the spatial domains cover the continental U.S. and have a 12-km
 grid resolution.
 
 <a id="Observational_Data"></a>
@@ -1091,11 +1095,13 @@ default script has SO4 as the selected species and the IMPROVE and
 CASTNET networks as the observational data to use for the SO4 evaluation. The corresponding input file, scatterplot.input, will likely not
 need to be changed for this example.
 
-Note that while each script has its own individual corresponding input file,
-there is also an input file called **all_scripts.input**, which contains all
-the options available for all the analysis scripts. This input file can be
-used instead of script specific input files, thereby eliminating the need to
-edit each individual input file. This may be a preferred option for some users.
+Each script requires an input file, located in the subdirectory **input\_files**.
+The input file contains all the options available for each script, and allows
+the user to customize scripts to their liking. Unlike previous version of AMET 
+where each script had its own individual input file, for AMETv1.4b and beyond, 
+all scripts by default will use the **all_scripts.input** file, which contains 
+all the options available for all the analysis scripts. This eliminates the need 
+to edit each individual input file. 
 
 A brief summary of each of the typical options for a AQ analysis script is given
 below in table 7-2.<a id="Table_7-2"></a>
@@ -1107,6 +1113,9 @@ below in table 7-2.<a id="Table_7-2"></a>
 | **AMET\_DATABASE**               | MySQL database containing your project. |
 | **AMET\_PROJECT**                | Name of the AMET project to analyze. |
 | **AMET\_OUT**                    | Location to which to write output files (e.g. plots). By default this is set to $AMETBASE/output/$AMET_PROJECT/$analysis_script_type. |
+| **AMET\_DB**                     | Flag to indicate whether or not to get data from the MySQL database. If T, data
+will be retrieved from the database. If F, the site compare files will be read directly. If AMET_DB=F, the environment
+variable OUTDIR must be set indicating where the site compare files are located. |
 | **AMET\_SDATE**                  | Start date in the form YYYYMMDD from which to begin the analysis. |
 | **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
 | **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
@@ -1124,6 +1133,7 @@ below in table 7-2.<a id="Table_7-2"></a>
 | **AMET\_SEARCH\_HOURLY**         | y/n; Flag to include the SEARCH hourly data in the analysis |
 | **AMET\_SEARCH\_DAILY**          | y/n; Flag to include the SEARCH daily data in the analysis |
 | **AMET\_NAPS\_HOURLY**           | y/n; Flag to include the NAPS hourly data in the analysis |
+| **AMET\_NAPS\_DAILY_O3**         | y/n; Flag to include the NAPS daily ozone (e.g. MDA8) in the analysis |
 | **AMET\_CASTNET\_DRYDEP**        | y/n; Flag to include the CASTNET dry deposition data in the analysis |
 | **AMET\_AIRMON**                 | y/n; Flag to include the AIRMON data in the analysis |
 | **AMET\_AMON**                   | y/n; Flag to include the AMON data in the analysis |
@@ -1138,6 +1148,8 @@ below in table 7-2.<a id="Table_7-2"></a>
 | **AMET\_AGANET**                 | y/n; Flag to include the AGANET data in the analysis |
 | **AMET\_ADMN**                   | y/n; Flag to include the ADMN data in the analysis |
 | **AMET\_NAMN**                   | y/n; Flag to include the NAMN data in the analysis |
+| **AMET\_NOAA\_ESRL\_O3**         | y/n; Flag to include the NOAA ESLR ozone data in the analysis |
+| **AMET\_TOAR**                   | y/n; Flag to include the TOAR global network data in the analysis |
 
 Also note that all AQ analysis scripts make use of the Network.input
 input file. This file contains information about each observational
@@ -1214,10 +1226,18 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - plot\_spatial.input
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
+   
+**run\_plot\_spatial_interactive.csh**
+   - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
+   - multiple networks; single species; single simulation
 
 **run\_plot\_spatial\_diff.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_bias_diff.png))
    - plot\_spatial.input
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes
+   - multiple networks; single species; multi simulations required
+   
+ **run\_plot\_spatial\_diff_interactive.csh**
+   - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; multi simulations required
 
 **run\_plot\_spatial\_mtom.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_mtom_diff_avg.png))
@@ -1333,6 +1353,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 **run\_timeseries.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries.png))
    - timeseries.input
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model
+   - single network;single species; multiple simulations
+   
+**run\_timeseries\_interactive.csh**
+   - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R leaflet package to allow time-series zooming
    - single network;single species; multiple simulations
 
 **run\_timeseries\_mtom.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries_mtom.png))
