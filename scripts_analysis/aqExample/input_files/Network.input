@@ -21,7 +21,9 @@ inc_aqs_hourly		<-Sys.getenv("AMET_AQS_Hourly")
 inc_aqs_daily_O3	<-Sys.getenv("AMET_AQS_Daily_O3")
 inc_aqs_daily		<-Sys.getenv("AMET_AQS_Daily")
 inc_search		<-Sys.getenv("AMET_SEARCH")
-inc_search_daily	<-Sys.getenv("AMET_SEARCH_DAILY")
+inc_search_daily	<-Sys.getenv("AMET_SEARCH_Ddaily")
+inc_naps		<-Sys.getenv("AMET_NAPS_Hourly")
+inc_naps_daily_o3	<-Sys.getenv("AMET_NAPS_Daily_O3")
 
 ### Europe Networks ###
 inc_airbase_hourly	<-Sys.getenv("AMET_AirBase_Hourly")
@@ -33,6 +35,10 @@ inc_emep_daily		<-Sys.getenv("AMET_EMEP_Daily")
 inc_aganet		<-Sys.getenv("AMET_AGANET")
 inc_namn		<-Sys.getenv("AMET_NAMN")
 inc_admn		<-Sys.getenv("AMET_ADMN")
+
+### Global Networks ###
+inc_noaa_esrl_o3<-	<-Sys.getenv("AMET_NOAA_ESRL_O3")
+inc_toar<-		<-Sys.getenv("AMET_TOAR")
 
 #############################
 ### Setup Networks Arrays ###
@@ -93,6 +99,14 @@ if (inc_search_daily == "y") {
    network_names <- c(network_names,"SEARCH_daily")
    network_label <- c(network_label,"SEARCH_daily")
 }
+if (inc_naps == "y") {
+   network_names <- c(network_names,"NAPS")
+   network_label <- c(network_label,"NAPS")
+}
+if (inc_naps_daily_o3 == "y") {
+   network_names <- c(network_names,"NAPS_Daily_O3")
+   network_label <- c(network_label,"NAPS")
+}
 
 ### Europe Networks ###
 
@@ -131,6 +145,16 @@ if (inc_emep_hourly == "y") {
 if (inc_emep_daily == "y") {
    network_names <- c(network_names,"EMEP_Daily")
    network_label <- c(network_label,"EMEP")
+}
+
+## Global Networks ###
+if (inc_noaa_esrl_o3 == "y") {
+   network_names <- c(network_names,"NOAA_ESRL_O3")
+   network_label <- c(network_label,"NOAA_ESRL")
+}
+if (inc_toar == "y") {
+   network_names <- c(network_names,"TOAR")
+   network_label <- c(network_label,"TOAR")
 }
 
 total_networks<-length(network_names)

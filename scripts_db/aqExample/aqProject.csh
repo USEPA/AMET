@@ -27,7 +27,7 @@
 ## - sites_meta.input (required when first setting up the database)
 ## - AQ_species_list.input (likely does not need to be altered)
 ##
-## Last modified by K. Wyat Appel: June, 2017
+## Last modified by K. Wyat Appel: Sep, 2018
 ##
 ##########################################################
 
@@ -45,9 +45,9 @@ set    mysql_password="config_file"
 ### Project name and details. Project will be created if it does not already exist ###
 setenv AMET_PROJECT 	"aqExample"
 setenv MODEL_TYPE 	"CMAQ"
-setenv RUN_DESCRIPTION 	"AQ example project; July 2011"
+setenv RUN_DESCRIPTION 	"AQ example project; May 2016"
 setenv USER_NAME 	`whoami`
-setenv EMAIL_ADDR 	"appel.wyat@epa.gov"
+setenv EMAIL_ADDR 	"someone@somewhere.org"
 
 ### AQ observation data directory and input files ###
 setenv AMET_OBS 	$AMETBASE/obs/AQ
@@ -72,10 +72,9 @@ setenv INC_AERO6_SPECIES	T
 setenv INC_CUTOFF 		F
 setenv TIME_SHIFT 		0
 
-### Set start and end date for analysis (Year and Julian day) ###
-### Jan 001-032; Feb 032-060; Mar 060-091; Apr 091-121; May 121-152; Jun 152-182; Jul 182-213; Aug 213-244; Sep 244-274; Oct 274-305; Nov 305-335; Dec 355-365 ###
-setenv START_DATE       2011182
-setenv END_DATE         2011213
+### Set start and end date for analysis in the form YYYY-MM-DD ###
+setenv START_DATE_H     "2016-05-01"	
+setenv END_DATE_H	"2016-05-31"
 
 ### Set path to concentration/dep files (up to 10 files, sequentially numbered) ###
 setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
@@ -114,6 +113,9 @@ setenv AGANET		F
 setenv ADMN		F
 setenv NAMN		F
 
+### Gloabl networks ###
+setenv TOAR		F
+
 ### Flags to set ozone and precipitation units (do not change if using standard SPEC_DEF file) ###
 setenv O3_OBS_FACTOR    1
 setenv O3_MOD_FACTOR    1
@@ -125,6 +127,12 @@ setenv PRECIP_UNITS     cm
 ##################################################################
 ###### Most users will not need to modify anything below #########
 ##################################################################
+
+set START_DATE_J	= `date -ud "${START_DATE_H}" +%Y%j`	#> Convert YYYY-MM-DD to YYYYJJJ
+set END_DATE_J		= `date -ud "${END_DATE_H}" +%Y%j`	#> Convert YYYY-MM-DD to YYYYJJJ
+
+setenv START_DATE	${START_DATE_J}
+setenv END_DATE		${END_DATE_J}
 
 if (! "$?mysql_login" ) then
    echo "Enter the AMET user name: "

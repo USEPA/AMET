@@ -19,11 +19,13 @@ plot_all <- 'y'
 
 filename1_pdf <- paste(run_name1,species,pid,"spectrum.pdf",sep="_")                                # Set PDF filename
 filename1_png <- paste(run_name1,species,pid,"spectrum.png",sep="_")                                # Set PNG filename
+filename2_png <- paste(run_name1,species,pid,"spectrum_all.png",sep="_")
 filename2_pdf <- paste(run_name1,species,pid,"spectrum_all.pdf",sep="_")                                # Set PDF filename
 
 ## Create a full path to file
 filename1_pdf <- paste(figdir,filename1_pdf,sep="/")                                # Set PDF filename
 filename1_png <- paste(figdir,filename1_png,sep="/")                                # Set PNG filename
+filename2_png <- paste(figdir,filename2_png,sep="/")                                # Set PNG filename
 filename2_pdf <- paste(figdir,filename2_pdf,sep="/")                                # Set PDF filename
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
@@ -36,39 +38,40 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
-model_name <- model_name[[1]]
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name <- db_Query(model_name_qs,mysql)
 ################################################
 run_name <- run_name1
 j <- 1
 
 network <- network_names[[j]]                                             # Set network
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")                # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
+
+#############################################
+### Read sitex file or query the database ###
+#############################################
 {
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {    # Check to see if POCode column exists or not
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="") # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
-      aqdat_query.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+      aqdat_query.df   <- sitex_info$sitex_data
+      units            <- as.character(sitex_info$units[[1]])
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="") # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
+      query_result    <- query_dbase(run_name,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      units           <- query_result[[3]]
+      model_name      <- query_result[[4]]
    }
 }
-aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
-aqdat.df <- aqdat_query.df
-aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month,precip_ob=aqdat.df$precip_ob)      # Create dataframe of network values to be used to create a list
+#############################################
+
+aqdat.df 	<- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Month=aqdat_query.df$month)      # Create dataframe of network values to be used to create a list
 aqdat_stats.df <- aqdat.df
 
 #########################################################
 #### Calculate statistics for each requested network ####
 #########################################################
-data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value,precip_val=aqdat_stats.df$precip_ob)
+data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
 data_all.df$ob_val[data_all.df$ob_val<0] <- NA		# Set missing observations to NA so that they may be removed
 data_all.df$mod_val[data_all.df$mod_val<0] <- NA	# Set missing modeled values to NA so that they may be removed
 
@@ -203,9 +206,9 @@ title(main=title,cex.main=1.1)
 
 
 ### Convert pdf to png ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename1_pdf," png:",filename1_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename1_pdf," png:",filename1_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -249,17 +252,17 @@ if (plot_all == 'y') {
       i <- i + 1
    }
 
-if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename2_pdf," png:",filename2_png,sep="")
+   ### Convert pdf to png ###
    dev.off()
-   system(convert_command)
-
-   if (ametptype == "png") {
-      remove_command <- paste("rm ",filename2_pdf,sep="")
-      system(remove_command)
-   }
-}
-
+#   if ((ametptype == "png") || (ametptype == "both")) {
+#      convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename2_pdf," png:",filename2_png,sep="")
+#      system(convert_command)
+#      if (ametptype == "png") {
+#         remove_command <- paste("rm ",filename2_pdf,sep="")
+#         system(remove_command)
+#      }
+#   }
+##########################
  
 }
 

@@ -22,8 +22,8 @@ network_name <- network_label[1]
 num_runs <- 1   
 
 ### Retrieve units and model labels from database table ###
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name <- db_Query(model_name_qs,mysql)
 ################################################
 
 ### Set filenames and titles ###
@@ -53,10 +53,12 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    num_runs <- 2
 }
 
-if (species == "") {	# Default to normal PM_TOT if species not selected
-   species <- "PM_TOT"
+PM_species <- species
+if (is.null(species[1])) {
+   PM_species <- "PM_TOT"
 }
-
+PM_spec_ob  <- paste(PM_species,"_ob",sep="")
+PM_spec_mod <- paste(PM_species,"_mod",sep="")
 
 medians          <- NULL
 data             <- NULL
@@ -75,24 +77,52 @@ rmse_unsys     <- NULL
 rmse_unsys2    <- NULL
 
 criteria <- paste(" WHERE d.SO4_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-#criteria <- paste(" WHERE d.SO4_ob is not NULL",query,sep="")
-qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.SO4_ob,d.SO4_mod,d.NO3_ob,d.NO3_mod,d.NH4_ob,d.NH4_mod,d.EC_ob,d.EC_mod,d.OC_ob,d.OC_mod,d.",species,"_ob,d.",species,"_mod,d.TC_ob,d.TC_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-aqdat_all.df <- db_Query(qs,mysql)
-aqdat_all.df$NH4_ob[aqdat_all.df$NH4 == -999] <- 0.2903*aqdat_all.df$NO3_ob+0.375*aqdat_all.df$SO4_ob
-aqdat_store.df <- aqdat_all.df
+species <- c("SO4","NO3","NH4","EC","OC",PM_species)
+#############################################
+### Read sitex file or query the database ###
+#############################################
+{
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- sitex_info$sitex_data
+      units            <- as.character(sitex_info$units[[1]])
+   }
+   else {
+     query_result    <- query_dbase(run_name1,network,species,criteria)
+     aqdat_query.df  <- query_result[[1]]
+     units           <- query_result[[3]]
+     model_name      <- query_result[[4]]
+   }
+}
+#############################################
+
+aqdat_query.df$NH4_ob[aqdat_query.df$NH4 == -999] <- 0.2903*aqdat_query.df$NO3_ob+0.375*aqdat_query.df$SO4_ob
 
 if (num_runs > 1) {
-   qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.SO4_ob,d.SO4_mod,d.NO3_ob,d.NO3_mod,d.NH4_ob,d.NH4_mod,d.EC_ob,d.EC_mod,d.OC_ob,d.OC_mod,d.",species,"_ob,d.",species,"_mod,d.TC_ob,d.TC_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-   aqdat_all2.df <- db_Query(qs,mysql)
-   aqdat_all2.df$NH4_ob[aqdat_all2.df$NH4 == -999] <- 0.2903*aqdat_all2.df$NO3_ob+0.375*aqdat_all2.df$SO4_ob
+   #############################################
+   ### Read sitex file or query the database ###
+   #############################################
+   {
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         aqdat_query2.df  <- sitex_info$sitex_data
+         units            <- as.character(sitex_info$units[[1]])
+      }
+      else {
+         query_result2    <- query_dbase(run_name2,network,species,criteria)
+         aqdat_query2.df  <- query_result[[1]]   
+      }
+   }
+   #############################################
+   aqdat_query2.df$NH4_ob[aqdat_query2.df$NH4 == -999] <- 0.2903*aqdat_query2.df$NO3_ob+0.375*aqdat_query2.df$SO4_ob
 }
 
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 8                                                  # offset for first species ob value
+l <- 9                                                  # offset for first species ob value
 
-aqdat_sub.df <- aqdat_all.df
+aqdat_sub.df <- aqdat_query.df
 len <- length(aqdat_sub.df)
 
 while (l < len) {                                       # loop through each column
@@ -117,9 +147,9 @@ TC_mod <- medians.df$EC_mod+medians.df$OC_mod
 ##############################################################
 
 if (num_runs > 1) {
-   l <- 8                                          # offset for first species ob value
+   l <- 9                                          # offset for first species ob value
 
-   aqdat_sub2.df <- aqdat_all2.df
+   aqdat_sub2.df <- aqdat_query2.df
    len <- length(aqdat_sub2.df)
    while (l < len) {                                       # loop through each column
       indic.nonzero <- aqdat_sub2.df[,l] >= 0               # determine missing data from ob column
@@ -145,9 +175,9 @@ if (num_runs > 1) {
 ###############################################################
 ### Calculate percent of total PM2.5 each species comprises ###
 ###############################################################
-other_ob      <- data.df[,11]-(data.df$SO4_ob+data.df$NO3_ob+data.df$NH4_ob+data.df$EC_ob+data.df$OC_ob)
+other_ob      <- data.df[[PM_spec_ob]]-(data.df$SO4_ob+data.df$NO3_ob+data.df$NH4_ob+data.df$EC_ob+data.df$OC_ob)
 med_other_ob      <- median(other_ob)
-total_ob          <- data.df[,11]
+total_ob          <- data.df[[PM_spec_ob]]
 
 SO4_ob_percent   <- round(medians.df$SO4_ob/(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+med_other_ob)*100,1)
 NO3_ob_percent   <- round(medians.df$NO3_ob/(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+med_other_ob)*100,1)
@@ -157,9 +187,9 @@ OC_ob_percent    <- round(medians.df$OC_ob/(medians.df$SO4_ob+medians.df$NO3_ob+
 TC_ob_percent    <- round(TC_ob/(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+med_other_ob)*100,1)
 Other_ob_percent <- round(med_other_ob/(medians.df$SO4_ob+medians.df$NO3_ob+medians.df$NH4_ob+medians.df$EC_ob+medians.df$OC_ob+med_other_ob)*100,1)
 
-other_mod      <- data.df[,11]-(data.df$SO4_mod+data.df$NO3_mod+data.df$NH4_mod+data.df$EC_mod+data.df$OC_mod)
+other_mod      <- data.df[[PM_spec_ob]]-(data.df$SO4_mod+data.df$NO3_mod+data.df$NH4_mod+data.df$EC_mod+data.df$OC_mod)
 med_other_mod    <- median(other_mod)
-total_mod        <- data.df[,12]
+total_mod        <- data.df[[PM_spec_mod]]
 
 SO4_mod_percent   <- round(medians.df$SO4_mod/(medians.df$SO4_mod+medians.df$NO3_mod+medians.df$NH4_mod+medians.df$EC_mod+medians.df$OC_mod+med_other_mod)*100,1)
 NO3_mod_percent   <- round(medians.df$NO3_mod/(medians.df$SO4_mod+medians.df$NO3_mod+medians.df$NH4_mod+medians.df$EC_mod+medians.df$OC_mod+med_other_mod)*100,1)
@@ -170,19 +200,19 @@ TC_mod_percent    <- round(TC_mod/(medians.df$SO4_mod+medians.df$NO3_mod+medians
 Other_mod_percent <- round(med_other_mod/(medians.df$SO4_mod+medians.df$NO3_mod+medians.df$NH4_mod+medians.df$EC_mod+medians.df$OC_mod+med_other_mod)*100,1)
 
 correlation	<- round(cor(total_mod, total_ob),2)
-rmse 		<- round(sqrt(c(rmse, sum((data.df[,12] - data.df[,11])^2)/length(data.df[,11]))),2)
+rmse 		<- round(sqrt(c(rmse, sum((data.df[[PM_spec_mod]] - data.df[[PM_spec_ob]])^2)/length(data.df[[PM_spec_ob]]))),2)
 ls_regress	<- lsfit(total_ob,total_mod)
 intercept	<- ls_regress$coefficients[1]
 X		<- ls_regress$coefficients[2]
 rmse_sys	<- round(sqrt(c(rmse_sys, sum(((intercept+X*total_ob) - total_ob)^2))/length(total_ob)),2)
 rmse_unsys	<- round(sqrt(c(rmse_unsys, sum((total_mod - (intercept+X*total_ob))^2)/length(total_ob))),2) 
-index_agree	<- round(1-((sum((data.df[,11]-data.df[,12])^2))/(sum((abs(data.df[,12]-mean(data.df[,11]))+abs(data.df[,11]-mean(data.df[,11])))^2))),2)
+index_agree	<- round(1-((sum((data.df[[PM_spec_ob]]-data.df[[PM_spec_mod]])^2))/(sum((abs(data.df[[PM_spec_mod]]-mean(data.df[[PM_spec_ob]]))+abs(data.df[[PM_spec_ob]]-mean(data.df[[PM_spec_ob]])))^2))),2)
 
 if (num_runs > 1) {
-   other_mod2         <- data2.df[,11]-(data2.df$SO4_mod+data2.df$NO3_mod+data2.df$NH4_mod+data2.df$EC_mod+data2.df$OC_mod)
+   other_mod2         <- data2.df[[PM_spec_ob]]-(data2.df$SO4_mod+data2.df$NO3_mod+data2.df$NH4_mod+data2.df$EC_mod+data2.df$OC_mod)
    med_other_mod2    <- median(other_mod2)
-   total_ob2         <- data2.df[,11]
-   total_mod2        <- data2.df[,12]
+   total_ob2         <- data2.df[[PM_spec_ob]]
+   total_mod2        <- data2.df[[PM_spec_mod]]
    
    SO4_mod_percent2  <- round(medians2.df$SO4_mod/(medians2.df$SO4_mod+medians2.df$NO3_mod+medians2.df$NH4_mod+medians2.df$EC_mod+medians2.df$OC_mod+med_other_mod2)*100,1)
    NO3_mod_percent2  <- round(medians2.df$NO3_mod/(medians2.df$SO4_mod+medians2.df$NO3_mod+medians2.df$NH4_mod+medians2.df$EC_mod+medians2.df$OC_mod+med_other_mod2)*100,1)
@@ -199,7 +229,7 @@ if (num_runs > 1) {
    X			<- ls_regress$coefficients[2]
    rmse_sys2		<- round(sqrt(c(rmse_sys2, sum(((intercept+X*total_ob2) - total_ob2)^2))/length(total_ob2)),2)
    rmse_unsys2	<- round(sqrt(c(rmse_unsys2, sum((total_mod2 - (intercept+X*total_ob2))^2)/length(total_ob2))),2)
-   index_agree2	<- round(1-((sum((data2.df[,11]-data2.df[,12])^2))/(sum((abs(data2.df[,12]-mean(data2.df[,11]))+abs(data2.df[,11]-mean(data2.df[,11])))^2))),2)
+   index_agree2	<- round(1-((sum((data2.df[[PM_spec_ob]]-data2.df[[PM_spec_mod]])^2))/(sum((abs(data2.df[[PM_spec_mod]]-mean(data2.df[[PM_spec_ob]]))+abs(data2.df[[PM_spec_ob]]-mean(data2.df[[PM_spec_ob]])))^2))),2)
 }
 ###############################################################
 
@@ -328,9 +358,9 @@ if (num_runs > 1) {
 title(main=title,cex.main=1.3)
 
 ## Convert pdf to png ##
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

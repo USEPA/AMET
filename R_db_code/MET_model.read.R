@@ -3,16 +3,18 @@
 #                                                                 ################################
 #     AMET Read Model Functions Library                           ###############################
 #                                                                 ###############################
-#       Version 1.3                                               ###############################
-#       Date: April 18, 2017                                      ###############################
-#       Contributors:Robert Gilliam                               ###############################
-#                                                                 ###############################
 #     Developed by the US Environmental Protection Agency         ###############################
 #                                                                 ################################
 #####################################################################################################
 #######################################################################################################
 #
 #  V1.3, 2017Apr18, Robert Gilliam: Initial Development
+#  V1.4, 2018Sep30, Robert Gilliam: 
+#       - Added functions for reading model upper-air meteorology for
+#         matching to rawindsonde observations. Also computes what is not 
+#         explicitly in the model output. Profiles include pressure, height,
+#         temperature, rh, u and v wind components. Other values are included
+#         for potential future use for other obs sources like theta and q.
 #
 #######################################################################################################
 #     This script contains the following functions
@@ -24,6 +26,14 @@
 #     wrf_surface        --> Open WRF output and read surface variables to be
 #                            matched with MADIS surface observations. Also grabs the 
 #                            projection information for obs matching. 
+#
+#     mpas_raob          --> Open MPAS output and read 3D met variables to be
+#                            matched with MADIS raob observations. Also grabs grid 
+#                            structure information for matching obs to the grid.
+#
+#     wrf_raob           --> Open WRF output and read 3D met variables to be
+#                            matched with MADIS raob observations. Also grabs the 
+#                            projection information for obs matching.
 #
 #     model_time_format  --> Takes either MPAS or WRF timestamp and reformats for various AMET
 #                            functions and MySQL.
@@ -65,9 +75,11 @@
    q2     <- ncvar_get(f1, varid="q2")
    u10    <- ncvar_get(f1, varid="u10")
    v10    <- ncvar_get(f1, varid="v10")
-   #swr   <- ncvar_get(f1, varid="swdnb")
+   swr    <- ncvar_get(f1, varid="swdnb")
+   psf    <- ncvar_get(f1, varid="surface_pressure")/1000
   nc_close(f1)
 
+  #swr    <-t2 * 0.0
   # Get met array dimensions; set first good model time to 1
   ncells  <-dim(t2)[1]
   nt      <-length(time)
@@ -90,11 +102,13 @@
     q2  <-array(q2,c(ncells,1))
     u10 <-array(u10,c(ncells,1))
     v10 <-array(v10,c(ncells,1))
+    swr <-array(swr,c(ncells,1))
+    psf <-array(psf,c(ncells,1))
   }
 
   projection <-list(mproj=0, lat=lat, lon=lon, latv=latv, lonv=lonv, 
                     cells_on_vertex=cells_on_vertex, conef=0, standlon=0)
-  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10)
+  sfc_met    <-list(time=time, t2=t2, q2=q2, u10=u10, v10=v10, swr=swr, psf=psf)
   
   return(list(projection=projection,sfc_met=sfc_met))
 
@@ -154,6 +168,7 @@
    u10    <- ncvar_get(f1, varid="U10")
    v10    <- ncvar_get(f1, varid="V10")
    swr    <- ncvar_get(f1, varid="SWDOWN")
+   psf    <- ncvar_get(f1, varid="PSFC")/1000
    
   nc_close(f1)
   
@@ -166,16 +181,210 @@
     q2  <-array(q2,c(nx,ny,1))
     u10 <-array(u10,c(nx,ny,1))
     v10 <-array(v10,c(nx,ny,1))
+    swr <-array(swr,c(nx,ny,1))
+    psf <-array(psf,c(nx,ny,1))
   }
 
   projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
                     truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
-  sfc_met    <-list(time=time, t2=t2, q2=q2, u10=u10, v10=v10, swr=swr)
+  sfc_met    <-list(time=time, t2=t2, q2=q2, u10=u10, v10=v10, swr=swr, psf=psf)
   
   return(list(projection=projection,sfc_met=sfc_met))
 
  }
 #####--------------------------	  END OF FUNCTION: WRF_SURFACE     -----------------------------------####
+##########################################################################################################
+
+##########################################################################################################
+#####--------------------------   START OF FUNCTION: WRF_RAOB     ------------------------------------####
+#  Open WRF output and extract grid information and met data for matching to MADIS RAOB profiles
+# Input:
+#       file   -- Model output file name. Full path and file name
+#          t   -- Time index to get. Unlike surface met, this was added to
+#                 cut down on array size in memory instead of grabbing all times at once.
+#
+# Output: Multi-level list of model projection data and sounding meteorology.
+#
+#  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
+#                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
+#  raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+#                      qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
+
+ wrf_raob <-function(file,t=1) {
+
+  f1  <-nc_open(file)
+
+   head <- ncatt_get(f1, varid=0, attname="TITLE" )$value
+   time <- ncvar_get(f1, varid="Times")
+   mproj<- ncatt_get(f1, varid=0, attname="MAP_PROJ" )$value
+   
+   if(mproj == 1){
+    lat1    <- ncvar_get(f1, varid="XLAT",start=c(1,1,1),count=c(1,1,1))
+    lon1    <- ncvar_get(f1, varid="XLONG",start=c(1,1,1),count=c(1,1,1))
+    lat     <- ncvar_get(f1, varid="XLAT",start=c(1,1,1),count=c(-1,-1,1))
+    lon     <- ncvar_get(f1, varid="XLONG",start=c(1,1,1),count=c(-1,-1,1))
+    nx      <- ncatt_get(f1, varid=0, attname="WEST-EAST_GRID_DIMENSION" )$value
+    ny      <- ncatt_get(f1, varid=0, attname="SOUTH-NORTH_GRID_DIMENSION" )$value
+    dx      <- ncatt_get(f1, varid=0, attname="DX" )$value
+    truelat1<- ncatt_get(f1, varid=0, attname="TRUELAT1" )$value
+    truelat2<- ncatt_get(f1, varid=0, attname="TRUELAT2" )$value
+    standlon<- ncatt_get(f1, varid=0, attname="STAND_LON" )$value
+   }
+
+   if(mproj == 2){
+    lat1      <- ncvar_get(f1, varid="XLAT",start=c(1,1,1),count=c(1,1,1))
+    lon1      <- ncvar_get(f1, varid="XLONG",start=c(1,1,1),count=c(1,1,1))
+    lat       <- ncvar_get(f1, varid="XLAT",start=c(1,1,1),count=c(-1,-1,1))
+    lon       <- ncvar_get(f1, varid="XLONG",start=c(1,1,1),count=c(-1,-1,1))
+    nx        <- ncatt_get(f1, varid=0, attname="WEST-EAST_GRID_DIMENSION" )$value
+    ny        <- ncatt_get(f1, varid=0, attname="SOUTH-NORTH_GRID_DIMENSION" )$value
+    dx        <- ncatt_get(f1, varid=0, attname="DX" )$value
+    truelat1  <- ncatt_get(f1, varid=0, attname="TRUELAT1" )$value
+    truelat2  <- ncatt_get(f1, varid=0, attname="TRUELAT2" )$value
+    standlon  <- ncatt_get(f1, varid=0, attname="STAND_LON" )$value
+   }
+
+   conef  <- cone(truelat1,truelat2)
+
+   sigu   <- ncvar_get(f1, varid="ZNU")
+   sigm   <- ncvar_get(f1, varid="ZNW")
+
+   p      <- ncvar_get(f1, varid="P",      start=c(1,1,1,t),count=c(-1,-1,-1,1))/100
+   pb     <- ncvar_get(f1, varid="PB",     start=c(1,1,1,t),count=c(-1,-1,-1,1))/100
+   ph     <- ncvar_get(f1, varid="PH",     start=c(1,1,1,t),count=c(-1,-1,-1,1))/9.81
+   phb    <- ncvar_get(f1, varid="PHB",    start=c(1,1,1,t),count=c(-1,-1,-1,1))/9.81
+
+   u      <- ncvar_get(f1, varid="U",      start=c(1,1,1,t),count=c(-1,-1,-1,1))
+   v      <- ncvar_get(f1, varid="V",      start=c(1,1,1,t),count=c(-1,-1,-1,1))
+   theta  <- ncvar_get(f1, varid="T",      start=c(1,1,1,t),count=c(-1,-1,-1,1))
+   t00    <- as.numeric(ncvar_get(f1, varid="T00",    start=c(t),count=c(1)))
+   qv     <- ncvar_get(f1, varid="QVAPOR", start=c(1,1,1,t),count=c(-1,-1,-1,1))
+   pblh   <- ncvar_get(f1, varid="PBLH",   start=c(1,1,t),count=c(-1,-1,1))
+   psf    <- ncvar_get(f1, varid="PSFC",   start=c(1,1,t),count=c(-1,-1,1))/100
+   elev   <- ncvar_get(f1, varid="HGT",    start=c(1,1,t),count=c(-1,-1,1))   
+   t2m    <- ncvar_get(f1, varid="T2",     start=c(1,1,t),count=c(-1,-1,1))
+
+  nc_close(f1)
+
+  nzh <-dim(sigu)[1]
+  nzf <-dim(sigm)[1]
+
+  # Some calcs to derive variables needed for other calcs and comp to obs profiles
+  # theta = baseP + pert; pressure = baseP + pert; temp, satmixr and RH
+  theta  <- theta + 300
+  p      <- p + pb
+  levzf  <- ph+phb
+  tk     <- theta / (1000/p) ^ 0.2857143
+  e      <- 0.611 * exp ( (2.501E6/461.5) * ( (1/273.14) -(1/tk) ) )
+  #mixrs  <- 0.62197 * (e/(p/10-e))
+  mixrs  <- 0.62197 * (e/(p/10))
+  rh     <- 100*(qv/mixrs)
+  rh     <- ifelse(rh > 100,100,rh)
+  rh     <- ifelse(rh < 0.0,0.1,rh)
+
+  # Calcuate full level heigh above ground level and center height of full levels
+  levzh      <- p*0.0
+  levzf[,,1] <- 0.0
+  for(z in 2:nzf) {
+    levzf[,,z] <- levzf[,,z] - elev
+  }
+  for(z in 1:nzh) {
+    levzh[,,z] <- levzf[,,z] + (levzf[,,z+1] - levzf[,,z])/2
+  }
+  
+  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
+                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
+  raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+                      qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
+  
+  return(list(projection=projection, raob_met=raob_met))
+
+ }
+#####--------------------------	  END OF FUNCTION: WRF_RAOB        -----------------------------------####
+##########################################################################################################
+
+##########################################################################################################
+#####--------------------------   START OF FUNCTION: MPAS_RAOB     -----------------------------------####
+#  Open MPAS output and extract grid information and upper-air met data for comparision to MADIS raob soundings
+#
+# Input:
+#       file   -- Model output file name. Full path and file name
+#
+# Output: Multi-level list of model projection data and sounding meteorology.
+#
+#  projection <-list(mproj=0, lat=lat, lon=lon, latv=latv, lonv=lonv, 
+#                    cells_on_vertex=cells_on_vertex, conef=0, standlon=0)
+#  raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+#                      qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
+
+ mpas_raob <-function(file, t=1) {
+
+  writeLines(paste("Reading MPAS Model Output File:",file))
+  f1 <-nc_open(file)
+   lat    <- ncvar_get(f1, varid="latCell")
+   lon    <- ncvar_get(f1, varid="lonCell")
+   latv   <- ncvar_get(f1, varid="latVertex")
+   lonv   <- ncvar_get(f1, varid="lonVertex")
+   time   <- ncvar_get(f1, varid="xtime")
+   cells_on_vertex <- ncvar_get(f1, varid="cellsOnVertex")
+   # Get met array dimensions; set first good model time to 1
+   ncells <-dim(t)[1]
+   nt     <-length(time)
+
+   hgt   <- ncvar_get(f1, varid="zgrid")
+   p     <- ncvar_get(f1, varid="pressure", start=c(1,1,t),count=c(-1,-1,1))/100
+   theta <- ncvar_get(f1, varid="theta", start=c(1,1,t),count=c(-1,-1,1))
+   rh    <- ncvar_get(f1, varid="relhum", start=c(1,1,t),count=c(-1,-1,1))
+   u     <- ncvar_get(f1, varid="uReconstructZonal", start=c(1,1,t),count=c(-1,-1,1))
+   v     <- ncvar_get(f1, varid="uReconstructMeridional", start=c(1,1,t),count=c(-1,-1,1))
+   pblh  <- ncvar_get(f1, varid="hpbl", start=c(1,t),count=c(-1,1))
+   psf   <- ncvar_get(f1, varid="surface_pressure", start=c(1,t),count=c(-1,1))/100
+   elev  <- hgt[1,]
+
+  nc_close(f1)
+
+  # Some calcs to derive variables needed for other calcs and comp to obs profiles
+  # theta = baseP + pert; pressure = baseP + pert; temp, satmixr and RH
+  sigu   <- hgt[,1]*0.0
+  nzf    <- length(sigu)
+  sigm   <- sigu[1:(nzf-1)]
+  nzh    <- length(sigm)
+
+  tk     <- theta / (1000/p) ^ 0.2857143
+  e      <- 0.611 * exp ( (2.501E6/461.5) * ( (1/273.14) -(1/tk) ) )
+  mixrs  <- 0.62197 * (e/(p/10))
+  qv     <- rh*mixrs/100
+
+  # Calcuate full level heigh above ground level and center height of full levels
+  levzh      <- p*0.0
+  levzf      <- hgt*0.0
+  for(z in 2:nzf) {
+    levzf[z,] <- hgt[z,] - elev
+  }
+  for(z in 1:nzh) {
+    levzh[z,] <- levzf[z,] + (levzf[z+1,] - levzf[z,])/2
+  }
+    
+  # MPAS in radians, convert to degrees and +/- 180 Lon reference
+  lat  <- lat * (180/pi)
+  lon  <- lon * (180/pi)
+  latv <- latv * (180/pi)
+  lonv <- lonv * (180/pi)
+
+  # Convert to same Lon reference as obs sites
+  lon  <-ifelse(lon > 180, lon - 360, lon)
+  lonv <-ifelse(lonv > 180, lonv - 360, lonv)
+
+  projection <-list(mproj=0, lat=lat, lon=lon, latv=latv, lonv=lonv, 
+                    cells_on_vertex=cells_on_vertex, conef=0, standlon=0)
+
+  raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+                      qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
+
+  return(list(projection=projection, raob_met=raob_met))
+
+ }
+#####--------------------------	  END OF FUNCTION: MPAS_RAOB       -----------------------------------####
 ##########################################################################################################
 
 ##########################################################################################################
@@ -195,10 +404,13 @@
   mc        <- unlist(strsplit(tmp1,"-"))[2]
   dc        <- unlist(strsplit(tmp1,"-"))[3]
   hc        <- unlist(strsplit(tmp1[2],":"))[1]
+  minc      <- unlist(strsplit(tmp1[2],":"))[2]
+  secc      <- unlist(strsplit(tmp1[2],":"))[3]
   modeldate <-paste(yc,mc,dc,sep="")
-  modeltime <-paste(hc,":00:00",sep="")
+  modeltime <-paste(hc,":",minc,":",secc,sep="")
 
-  return(list(modeldate=modeldate,modeltime=modeltime,yc=yc,mc=mc,dc=dc,hc=hc))
+  return(list(modeldate=modeldate,modeltime=modeltime,
+              yc=yc,mc=mc,dc=dc,hc=hc,minc=minc,secc=secc))
 
  }
 #####--------------------------	  END OF FUNCTION: MODEL_TIME_FORMAT     -----------------------------####

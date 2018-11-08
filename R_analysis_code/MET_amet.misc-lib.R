@@ -1,16 +1,18 @@
-#######################################################################################################
-#######################################################################################################
+#########################################################################
+#-----------------------------------------------------------------------#
+#                                                                       #
+#                AMET (Atmospheric Model Evaluation Tool)               #
+#                                                                       #
+#                   AMET Miscellanous Function Library                  #
+#                           MET_amet.misc-lib.R                         #
+#                                                                       #
+#         Developed by the US Environmental Protection Agency           #
+#-----------------------------------------------------------------------#
+#########################################################################
 #
-#		AMET Miscellanous Function Library
+# Version 1.1, Robert Gilliam, August 18, 2005
 #
-#
-#	Version: 	1.1
-#	Date:		August 18, 2005
-#	Contributors:	Robert Gilliam
-#
-#	Developed by the US Environmental Protection Agency 
-#
-# Version 1.2, May 6, 2013, Rob Gilliam
+# Version 1.2, May 6, 2013, Robert Gilliam
 #  - Extensive code cleansing
 #  - massageTseries: removed outdated logic for MixRatio in the case of MARITIME
 #  - quickstats: Bug fix that only impacted run_timeseries.csh statistics (index of agreement
@@ -21,42 +23,46 @@
 #                weighted as a function of wind speed. This was disabled. Also, MAE and Bias functions
 #                were used instead of direct computation in the quickstats function.
 #  - stationStatsSfc: threshold sample size implemented, so sites with a lot of missing data can be 
-#                     ignored.
+#                       ignored.
 #  - station.ts.filter: New function that uses K-Z filter to partition model-obs time series into 
 #                       intra-day, diurnal and synoptic components. Note: Not fully operational!
 #  - kz.filter: New K-Z filtering function. Note: Not fully operational! It works, but controling 
 #               script is not supported yet.
 #
-#-----------------------------------------------------------------------###############################
-#######################################################################################################
-#######################################################################################################
+# Version 1.4, Sep 30, 2018, Robert Gilliam
+#  - More code cleansing and documentation. Removed tabs. Removed excessive comments
+#    next to clearly understood statistics functions.
+#
+#-----------------------------------------------------------------------##################
+##########################################################################################
+##########################################################################################
 #	This collection contains the following functions
 #
-#	dform           --> Simple format function, formats numbers from one to two digit 
+#       dform           --> Simple format function, formats numbers from one to two digit 
 #
-#	avewindow       --> Simple Averaging window function
+#       avewindow       --> Simple Averaging window function
 #
-#	quickstats      --> A simple function that caculates error, bias, ioa statistics from a given dataset
+#       quickstats      --> A simple function that caculates error, bias, ioa statistics from a given dataset
 #	
-#	ac              --> Anomoly correlation/index of agreement function
+#       ac              --> Anomoly correlation/index of agreement function
 #
-#	genvarstats     --> Complete Model Performance Metrics Caculations
+#       genvarstats     --> Complete Model Performance Metrics Caculations
 #
-#	datecalc        --> Calculate Dates given an inital date and dour or day to add
+#       datecalc        --> Calculate Dates given an inital date and dour or day to add
 #
-#	ametQuery	      --> MySQL Query  Function 	
+#       ametQuery       --> MySQL Query  Function 	
 #
-#	massageTseries	--> Takes surface related variables, filters bad data, converts wind componentes speed and direction.
+#       massageTseries  --> Takes surface related variables, filters bad data, converts wind componentes speed and direction.
 #
-#	stationStatsSfc	--> Sorts a set of paired obs-model data by site and computes model performance metrics
+#       stationStatsSfc --> Sorts a set of paired obs-model data by site and computes model performance metrics
 #
-#	compressedcheck --> Checks a file for compression.
+#       compressedcheck --> Checks a file for compression.
 #
-#	acumprecip      --> Acummulates precipitation from NPA precipitation files in the savedir/npa/R-save
+#       acumprecip      --> Acummulates precipitation from NPA precipitation files in the savedir/npa/R-save
 #
-# station.ts.filter-> K-Z filtering of model-obs times series at each site in the model domain
+#     station.ts.filter --> K-Z filtering of model-obs times series at each site in the model domain
 #
-# kz.filter       --> R version of the K-Z filter function
+#       kz.filter       --> R version of the K-Z filter function
 #
 #######################################################################################################
 #######################################################################################################
@@ -65,7 +71,7 @@
 #- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
 ###############################################################
 # Simple format function, formats numbers from one to two digit (e.g. 7 to 07)
-   dform<-function(num) {
+   dform <-function(num) {
      if(num<10){num<-paste("0",num,sep="")}
      return(num)
    }
@@ -76,14 +82,14 @@
 #- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
 ###############################################################
 #	Averaging window function
- avewindow<-function(obs,window){
+ avewindow <-function(obs,window){
 ##########################################################################################################
- 	
- 	smth<-array(NA,c(length(obs),1))
- 	for (t in (window+1):(length(obs)-window) ){
- 		smth[t]<- mean(obs[(t-window):(t+window)],na.rm=TRUE) 	
- 	}
- return(smth)
+
+     smth<-array(NA,c(length(obs),1))
+     for (t in (window+1):(length(obs)-window) ){
+       smth[t]<- mean(obs[(t-window):(t+window)],na.rm=TRUE) 	
+     }
+     return(smth)
 }
 #####--------------------------		END OF FUNCTION 	--------------------------------------####
 ##########################################################################################################
@@ -94,43 +100,39 @@
 #				FUNCTION Quick Stats 
  quickstats<-function(obs,mod,wsob,digs=5,wd=FALSE,wdweightws=FALSE){
 ##########################################################################################################
- 	if (wd){
- 		diff<-mod-obs
-		diff<-ifelse(diff > 180 , diff-360, diff)
-		diff<-ifelse(diff< -180 , diff+360, diff)
-		obs<-runif(length(diff),min=0,max=0.001) * diff/diff
-		#mod<-diff*(0.320*log(ifelse(wsob>1,wsob,1)+0.380))		 # Turned off this dangerous options as it's not well documented
-		                                                       # WS limit can be used to change WD statistics based on min wind speed
-		#if(!wdweightws){ 
-	  mod<-diff
-		#}
- 	}
-	mae  <-magerror(obs, mod,na.rm=T)		# AMD Model evaluation statistics
- 	bias <-mbias(obs,mod,na.rm=T)
-	ioa  <-ac(obs,mod*obs/obs)
+    if (wd){
+     diff  <-mod-obs
+     diff  <-ifelse(diff > 180 , diff-360, diff)
+     diff  <-ifelse(diff< -180 , diff+360, diff)
+     obs   <-runif(length(diff),min=0,max=0.001) * diff/diff
+     mod   <-diff
+    }
+     mae   <-magerror(obs, mod,na.rm=T)
+     bias  <-mbias(obs,mod,na.rm=T)
+     ioa   <-ac(obs,mod*obs/obs)
 
-  # Turned off Apr 2013. Used standard functions above although no problems with code below.
- 	#mae <-(1/length(na.omit(obs)))*sum(abs(mod-obs),na.rm=TRUE)
- 	#bias<-(1/length(na.omit(obs)))*sum(mod-obs,na.rm=TRUE)
+     # Turned off Apr 2013. Used standard functions above although no problems with code below.
+     #mae <-(1/length(na.omit(obs)))*sum(abs(mod-obs),na.rm=TRUE)
+     #bias<-(1/length(na.omit(obs)))*sum(mod-obs,na.rm=TRUE)
 	
-	# Turned this off Apr 2013 in place of above. Mean or climate value use in formula is subtracted from model. This ensures
-	# that vector has same missing samples as observations.
-	#ioa <-ac(obs,mod)
+     # Turned this off Apr 2013 in place of above. Mean or climate value use in formula is subtracted from model. This ensures
+     # that vector has same missing samples as observations.
+     #ioa <-ac(obs,mod)
 
-	mfbias  <-format(mfbias(obs, mod, na.rm = TRUE),digits=digs)
-	mnbias  <-format(mnbias(obs, mod, na.rm = TRUE),digits=digs)
-	mngerror<-format(mngerror(obs, mod, na.rm = TRUE),digits=digs)
-	nmbias  <-format(nmbias(obs, mod, na.rm = TRUE),digits=digs)
-	nmerror <-format(nmerror(obs, mod, na.rm = TRUE),digits=digs)
-	rmserror<-format(rmserror(obs, mod, na.rm = TRUE),digits=digs)
+     mfbias  <-format(mfbias(obs, mod, na.rm = TRUE),digits=digs)
+     mnbias  <-format(mnbias(obs, mod, na.rm = TRUE),digits=digs)
+     mngerror<-format(mngerror(obs, mod, na.rm = TRUE),digits=digs)
+     nmbias  <-format(nmbias(obs, mod, na.rm = TRUE),digits=digs)
+     nmerror <-format(nmerror(obs, mod, na.rm = TRUE),digits=digs)
+     rmserror<-format(rmserror(obs, mod, na.rm = TRUE),digits=digs)
 
-	mae     <-format(mae,digits=digs+1)
-	bias    <-format(bias,digits=digs)
-	ioa     <-format(ioa,digits=digs)
+     mae     <-format(mae,digits=digs+1)
+     bias    <-format(bias,digits=digs)
+     ioa     <-format(ioa,digits=digs)
 	
-	qc<-list(mae=mae,bias=bias,ioa=ioa,mfbias=mfbias,mnbias=mnbias,mngerror=mngerror,
-	         nmbias=nmbias,nmerror=nmerror,rmserror=rmserror)
-	return(qc)
+     qc<-list(mae=mae,bias=bias,ioa=ioa,mfbias=mfbias,mnbias=mnbias,mngerror=mngerror,
+              nmbias=nmbias,nmerror=nmerror,rmserror=rmserror)
+     return(qc)
 }
 #####--------------------------		END OF FUNCTION 	--------------------------------------####
 ####################################################################################################################################################################################################################
@@ -141,10 +143,10 @@
 #				FUNCTION AC (ANOMOLY CORRELATION)
  ac<-function(obs,mod){
 ##########################################################################################################
- 	cm<-mean(obs,na.rm=TRUE)
-	p1<-sum (    (mod-cm)*(obs-cm),na.rm=TRUE        )
-	p2<-(sum(  (mod-cm)^2,na.rm=TRUE ) * sum ( (obs-cm)^2,na.rm=TRUE )  )^0.5
-	ac<-p1/p2
+     cm  <-mean(obs,na.rm=TRUE)
+     p1  <-sum ((mod-cm)*(obs-cm),na.rm=TRUE)
+     p2  <-(sum((mod-cm)^2,na.rm=TRUE ) * sum ( (obs-cm)^2,na.rm=TRUE )  )^0.5
+     ac  <-p1/p2
 }
 #####--------------------------		END OF FUNCTION 	--------------------------------------####
 ##########################################################################################################
@@ -165,48 +167,51 @@
 ###
   genvarstats<-function(var,varname="DEFAULT"){
  
-		mod<-var$mod
-		obs<-var$obs
-		diff<-mod-obs
-#############################################################
-	metrics<-array(,)
-	metrics[1]<-length(obs)
-	metrics[1]<-sum(ifelse(!is.na(mod),1,0))
-	metrics[2]<-max(obs,na.rm=T)		# Standard description of observation data
-	metrics[3]<-min(obs,na.rm=T)
-	metrics[4]<-mean(obs,na.rm=T)
-	metrics[5]<-median(obs,na.rm=T)
-	metrics[6]<-sum(obs,na.rm=T)
-	metrics[7]<-var(obs,use="complete.obs")
+     mod        <-var$mod
+     obs        <-var$obs
+     diff       <-mod-obs
 
-	metrics[8]<-max(mod,na.rm=T)		# Standard description of model data
-	metrics[9]<-min(mod,na.rm=T)
-	metrics[10]<-mean(mod,na.rm=T)
-	metrics[11]<-median(mod,na.rm=T)
-	metrics[12]<-sum(mod,na.rm=T)
-	metrics[13]<-var(mod,use="complete.obs")
+     metrics    <-array(,)
+     metrics[1] <-length(obs)
+     metrics[1] <-sum(ifelse(!is.na(mod),1,0))
+     metrics[2] <-max(obs,na.rm=T)
+     metrics[3] <-min(obs,na.rm=T)
+     metrics[4] <-mean(obs,na.rm=T)
+     metrics[5] <-median(obs,na.rm=T)
+     metrics[6] <-sum(obs,na.rm=T)
+     metrics[7] <-var(obs,use="complete.obs")
 
-	metrics[14]<-cor(mod,obs,use="complete.obs")	# Correlation and variance
-	metrics[15]<-var(diff,use="complete.obs")
-	metrics[16]<-sqrt(var(diff,use="complete.obs"))
+     metrics[8] <-max(mod,na.rm=T)
+     metrics[9] <-min(mod,na.rm=T)
+     metrics[10]<-mean(mod,na.rm=T)
+     metrics[11]<-median(mod,na.rm=T)
+     metrics[12]<-sum(mod,na.rm=T)
+     metrics[13]<-var(mod,use="complete.obs")
+
+     metrics[14]<-cor(mod,obs,use="complete.obs")
+     metrics[15]<-var(diff,use="complete.obs")
+     metrics[16]<-sqrt(var(diff,use="complete.obs"))
 
 	
-	metrics[17]<-magerror(obs, mod,na.rm=T)		# AMD Model evaluation statistics
- 	metrics[18]<-mbias(obs,mod,na.rm=T)
-	metrics[19]<-mfbias(obs, mod,na.rm=T)
-	metrics[20]<-mnbias(obs, mod,na.rm=T)
-	metrics[21]<-mngerror(obs, mod,na.rm=T)
-	metrics[22]<-nmbias(obs, mod,na.rm=T)
-	metrics[23]<-nmerror(obs, mod,na.rm=T)
-	metrics[24]<-rmserror(obs, mod,na.rm=T)
-	metrics[25]<-ac(obs,mod)
+     metrics[17]<-magerror(obs, mod,na.rm=T)
+     metrics[18]<-mbias(obs,mod,na.rm=T)
+     metrics[19]<-mfbias(obs, mod,na.rm=T)
+     metrics[20]<-mnbias(obs, mod,na.rm=T)
+     metrics[21]<-mngerror(obs, mod,na.rm=T)
+     metrics[22]<-nmbias(obs, mod,na.rm=T)
+     metrics[23]<-nmerror(obs, mod,na.rm=T)
+     metrics[24]<-rmserror(obs, mod,na.rm=T)
+     metrics[25]<-ac(obs,mod)
 		
 
- 	metricsID<-c("count","maxO","minO","meanO","medianO","sumO","varO","maxM","minM","meanM","medianM","sumM","varM",
-	"cor","var","sdev","mae","bias","mfbias","mnbias","mngerror","nmbias","nmerror","rmserror","ac")
-	metricsNAME<-c("Number of Pairs","Max. Obs","Min. Obs")
-	out<-list(metrics=metrics,id=metricsID,name=metricsNAME,var=varname)
-	return(out)
+     metricsID   <-c("count","maxO","minO","meanO","medianO","sumO","varO","maxM","minM","meanM",
+                     "medianM","sumM","varM","cor","var","sdev","mae","bias","mfbias","mnbias",
+                     "mngerror","nmbias","nmerror","rmserror","ac")
+     metricsNAME <-c("Number of Pairs","Max. Obs","Min. Obs")
+     out         <-list(metrics=metrics,id=metricsID,name=metricsNAME,var=varname)
+
+   return(out)
+
 }
 ##############################################################################################################
 #----------------------------------------  END OF FUNCTION  ------------------------------------------------##
@@ -230,8 +235,8 @@
 # NOTE:
 #
 ###
-datecalc<-function(date,dt,units,verbose=F)
-  {
+  datecalc<-function(date,dt,units,verbose=F) {
+
       if(units == "hour"){
 	rdate<-mdy.date(month=as.numeric(date$m), day=as.numeric(date$d), year=as.numeric(date$y))
 	h<-as.numeric(date$h)
@@ -255,6 +260,7 @@ datecalc<-function(date,dt,units,verbose=F)
 	d<-as.numeric(ch[2])
 	h<-as.numeric(date$h)
       }
+
    return(y,m,d,h)
   }
 ##############################################################################################################
@@ -277,7 +283,8 @@ datecalc<-function(date,dt,units,verbose=F)
 #
 ###
 # Simple leap year function
-leapy<-function(y) {
+  leapy<-function(y) {
+
    ## Leap Year Calc
    c1<-y/4	; c1i<-floor(c1)    
    c2<-y/100	; c2i<-floor(c2)
@@ -286,7 +293,8 @@ leapy<-function(y) {
    if( ((c1 == c1i) & (c2 !=c2i)) || (c3 == c3i) ) {
      ly=29
    }
-   return(ly)
+
+  return(ly)
 }
 #####--------------------------		END OF FUNCTION 	--------------------------------------####
 ##########################################################################################################
@@ -315,19 +323,20 @@ leapy<-function(y) {
 # NOTE: 
 #   
 ###
- 	ametQuery<-function(query,mysql,get=1,verbose=F)
- {
-  db<-dbDriver("MySQL")				# MySQL Database type
-  con <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server,dbname=mysql$dbase)		# Database connect
+  ametQuery<-function(query,mysql,get=1,verbose=F) {
+
+  db<-dbDriver("MySQL")
+  con <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server,dbname=mysql$dbase)
 
   for (q in 1:length(query)){
-      rs<-dbSendQuery(con,query[q])	# Send query and place results in data frame
+      rs<-dbSendQuery(con,query[q])
       if(verbose) { writeLines(query[q]) }     
   }
+
   if(get == 1){df<-fetch(rs,n=mysql$maxrec)}
   
   dbClearResult(rs)
-  dbDisconnect(con)		# Database disconnect
+  dbDisconnect(con)
   
   return(df)
 
@@ -381,7 +390,7 @@ leapy<-function(y) {
 	iso.date <- ISOdatetime(year=as.numeric(substr(day,1,4)), month=as.numeric(substr(day,5,6)), 
 	                         day=as.numeric(substr(day,7,8)),  hour=as.numeric(timex), min=0, sec=0, tz="GMT")
 
-#	Populate Surface Variable arrays
+        # Populate Surface Variable arrays
 	temp[,1]<-data[,loc[5]]; temp[,2]<-avewindow(data[,loc[6]],window);
 	ws[,1]  <-data[,loc[7]];   ws[,2]<-avewindow(data[,loc[8]],window);
 	wd[,1]  <-data[,loc[9]];   wd[,2]<-avewindow(data[,loc[10]],window);
@@ -391,10 +400,12 @@ leapy<-function(y) {
 	temp[,1]<-ifelse(abs(temp[,1]-temp[,2]) > qcerror[1],NA,temp[,1])
 	temp[,2]<-ifelse(abs(temp[,1]-temp[,2]) > qcerror[1],NA,temp[,2])
 	
-	q[,1]<-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,1])
-	q[,2]<-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,2])
+	q[,1]   <-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,1])
+	q[,2]   <-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,2])
 
-	if (iftseries){}	# If for timeseries then preserve missing data (NA) elements, else if for batch statisitcs, remove missing values from arrays
+       # If for timeseries then preserve missing data (NA) elements, else if 
+       # for batch statisitcs, remove missing values from arrays
+	if (iftseries){}	
 	else{
 	  dum<-array(,c(length(ws[,1]),4))
 	  dum[,1]=ws[,1];dum[,2]=ws[,2];dum[,3]=wd[,1];dum[,4]=wd[,2];
@@ -527,23 +538,23 @@ leapy<-function(y) {
       }
       #############################################################
       diff<-modT-obsT
- 	    metrics[s,1,1]<-length(obsT) 				                 # Count
- 	    metrics[s,2,1]<-cor(modT,obsT)			                 # Correlation
- 	    metrics[s,3,1]<-ac(obsT,modT)			                   # Anomoly correlation
- 	    metrics[s,4,1]<-var(diff,na.rm=T)			               # Variance
- 	    metrics[s,5,1]<-sqrt(var(diff,na.rm=T))			         # Standard deviation
- 	    metrics[s,6,1]<-rmserror(obsT, modT,na.rm=T)		     # RMSE
- 	    metrics[s,7,1]<-magerror(obsT, modT,na.rm=T)		     # MAE
- 	    metrics[s,8,1]<-mbias(obsT,modT,na.rm=T)		         # Mean bias
- 	    metrics[s,9,1]<-mfbias(obsT, modT,na.rm=T)		       # Mean Fractional bias
- 	    metrics[s,10,1]<-mnbias(obsT, modT,na.rm=T)		       # Mean Normalized Bias
- 	    metrics[s,11,1]<-mngerror(obsT, modT,na.rm=T)		     # Mean Normalized Gross Error
- 	    metrics[s,12,1]<-nmbias(obsT, modT,na.rm=T)		       # Normailized mean bias
- 	    metrics[s,13,1]<-nmerror(obsT, modT,na.rm=T)		     # Normalized mean error
- 	    metrics[s,14,1]<-max(modT,na.rm=T)-min(modT,na.rm=T) # DTR Model
- 	    metrics[s,15,1]<-max(obsT,na.rm=T)-min(obsT,na.rm=T) # DTR Obs
- 	    metrics[s,16,1]<-mean(modT,na.rm=T)	                 # DTR Model
- 	    metrics[s,17,1]<-mean(obsT,na.rm=T)	                 # DTR Obs
+ 	    metrics[s,1,1]<-length(obsT)
+ 	    metrics[s,2,1]<-cor(modT,obsT)
+ 	    metrics[s,3,1]<-ac(obsT,modT)
+ 	    metrics[s,4,1]<-var(diff,na.rm=T)
+ 	    metrics[s,5,1]<-sqrt(var(diff,na.rm=T))
+ 	    metrics[s,6,1]<-rmserror(obsT, modT,na.rm=T)
+ 	    metrics[s,7,1]<-magerror(obsT, modT,na.rm=T)
+ 	    metrics[s,8,1]<-mbias(obsT,modT,na.rm=T)
+ 	    metrics[s,9,1]<-mfbias(obsT, modT,na.rm=T)
+ 	    metrics[s,10,1]<-mnbias(obsT, modT,na.rm=T)
+ 	    metrics[s,11,1]<-mngerror(obsT, modT,na.rm=T)
+ 	    metrics[s,12,1]<-nmbias(obsT, modT,na.rm=T)	
+ 	    metrics[s,13,1]<-nmerror(obsT, modT,na.rm=T)
+ 	    metrics[s,14,1]<-max(modT,na.rm=T)-min(modT,na.rm=T)
+ 	    metrics[s,15,1]<-max(obsT,na.rm=T)-min(obsT,na.rm=T) 
+ 	    metrics[s,16,1]<-mean(modT,na.rm=T)
+ 	    metrics[s,17,1]<-mean(obsT,na.rm=T)
  	  }
 #############################################################
 #	Wind Statistics
@@ -562,23 +573,23 @@ leapy<-function(y) {
  	      if(tval > conf.lim) {   obsWS = modWS ;  obsWD = modWD   }
  	    }
  	    diff<-modWS-obsWS
- 	    metrics[s,1,2]<-length(obsWS) 		# Count
- 	    metrics[s,2,2]<-cor(modWS,obsWS)		# Correlation
- 	    metrics[s,3,2]<-ac(obsWS,modWS)		# Anomoly correlation
- 	    metrics[s,4,2]<-var(diff)			# Variance
- 	    metrics[s,5,2]<-sqrt(var(diff))		# Standard deviation
- 	    metrics[s,6,2]<-rmserror(obsWS, modWS)	# RMSE
- 	    metrics[s,7,2]<-magerror(obsWS, modWS)	# MAE
- 	    metrics[s,8,2]<-mbias(obsWS,modWS)		# Mean bias
- 	    metrics[s,9,2]<-mfbias(obsWS, modWS)		# Mean Fractional bias
- 	    metrics[s,10,2]<-mnbias(obsWS, modWS)		# Mean Normalized Bias
- 	    metrics[s,11,2]<-mngerror(obsWS, modWS)	# Mean Normalized Gross Error	
- 	    metrics[s,12,2]<-nmbias(obsWS, modWS)		# Normailized mean bias
- 	    metrics[s,13,2]<-nmerror(obsWS, modWS)	# Normalized mean error	
- 	    metrics[s,14,2]<-max(modWS,na.rm=T)-min(modWS,na.rm=T)	# DTR Model
- 	    metrics[s,15,2]<-max(obsWS,na.rm=T)-min(obsWS,na.rm=T)	# DTR Obs
- 	    metrics[s,16,2]<-mean(modWS,na.rm=T)	                    # Mean Mod Wind Speed
- 	    metrics[s,17,2]<-mean(obsWS,na.rm=T)	                    # Mean Obs Wind Speed
+ 	    metrics[s,1,2]<-length(obsWS) 
+ 	    metrics[s,2,2]<-cor(modWS,obsWS)
+ 	    metrics[s,3,2]<-ac(obsWS,modWS)
+ 	    metrics[s,4,2]<-var(diff)	
+ 	    metrics[s,5,2]<-sqrt(var(diff))
+ 	    metrics[s,6,2]<-rmserror(obsWS, modWS)
+ 	    metrics[s,7,2]<-magerror(obsWS, modWS)
+ 	    metrics[s,8,2]<-mbias(obsWS,modWS)
+ 	    metrics[s,9,2]<-mfbias(obsWS, modWS)
+ 	    metrics[s,10,2]<-mnbias(obsWS, modWS)
+ 	    metrics[s,11,2]<-mngerror(obsWS, modWS)
+ 	    metrics[s,12,2]<-nmbias(obsWS, modWS)
+ 	    metrics[s,13,2]<-nmerror(obsWS, modWS)
+ 	    metrics[s,14,2]<-max(modWS,na.rm=T)-min(modWS,na.rm=T)
+ 	    metrics[s,15,2]<-max(obsWS,na.rm=T)-min(obsWS,na.rm=T)
+ 	    metrics[s,16,2]<-mean(modWS,na.rm=T)
+ 	    metrics[s,17,2]<-mean(obsWS,na.rm=T)
     }
  	  if (  length(na.omit(obsWD * modWD)) > thresh  )  {
       diff<-modWD-obsWD
@@ -588,23 +599,23 @@ leapy<-function(y) {
  	    obs<-runif(length(diff),min=0,max=0.001)
  	    mod<-a
 
- 	    metrics[s,1,3]<-length(obsWD) 		# Count
- 	    metrics[s,2,3]<-cor(modWD,obsWD)	# Correlation 
- 	    metrics[s,3,3]<-ac(obsWD,modWD)		# Anomoly correlation
- 	    metrics[s,4,3]<-var(diff)		# Variance
- 	    metrics[s,5,3]<-sqrt(var(diff))		# Standard deviation
- 	    metrics[s,6,3]<-rmserror(obsWD, modWD)	# RMSE	
- 	    metrics[s,7,3]<-magerror(obsWD, modWD)	# MAE
- 	    metrics[s,8,3]<-mbias(obsWD,modWD)	# Mean bias
- 	    metrics[s,9,3]<-mfbias(obsWD, modWD)	# Mean Fractional bias
- 	    metrics[s,10,3]<-mnbias(obsWD, modWD)	# Mean Normalized Bias
- 	    metrics[s,11,3]<-mngerror(obsWD, modWD)	# Mean Normalized Gross Error	
- 	    metrics[s,12,3]<-nmbias(obsWD, modWD)	# Normailized mean bias
- 	    metrics[s,13,3]<-nmerror(obsWD, modWD)	# Normalized mean error	
- 	    metrics[s,14,3]<-max(mod,na.rm=TRUE)	# Max difference
- 	    metrics[s,15,3]<-min(mod,na.rm=TRUE)	# Min difference
- 	    metrics[s,16,3]<-mean(mod,na.rm=TRUE)	# Mean Difference
- 	    metrics[s,17,3]<-mean(mod,na.rm=TRUE)	# Min difference
+ 	    metrics[s,1,3]<-length(obsWD)
+ 	    metrics[s,2,3]<-cor(modWD,obsWD)
+ 	    metrics[s,3,3]<-ac(obsWD,modWD)
+ 	    metrics[s,4,3]<-var(diff)
+ 	    metrics[s,5,3]<-sqrt(var(diff))
+ 	    metrics[s,6,3]<-rmserror(obsWD, modWD)
+ 	    metrics[s,7,3]<-magerror(obsWD, modWD)
+ 	    metrics[s,8,3]<-mbias(obsWD,modWD)
+ 	    metrics[s,9,3]<-mfbias(obsWD, modWD)
+ 	    metrics[s,10,3]<-mnbias(obsWD, modWD)
+ 	    metrics[s,11,3]<-mngerror(obsWD, modWD)
+ 	    metrics[s,12,3]<-nmbias(obsWD, modWD)
+ 	    metrics[s,13,3]<-nmerror(obsWD, modWD)
+ 	    metrics[s,14,3]<-max(mod,na.rm=TRUE)
+ 	    metrics[s,15,3]<-min(mod,na.rm=TRUE)
+ 	    metrics[s,16,3]<-mean(mod,na.rm=TRUE)
+ 	    metrics[s,17,3]<-mean(mod,na.rm=TRUE)
  	  }
     #############################################################
     #	Specific Humidity Statistics
@@ -621,25 +632,25 @@ leapy<-function(y) {
       }
       #############################################################
       diff<-modQ-obsQ
-      metrics[s,1,4]<-length(obsQ) 		# Count
-      metrics[s,2,4]<-cor(modQ,obsQ)		# Correlation
-      metrics[s,3,4]<-ac(obsQ,modQ)		# Anomoly correlation
-      metrics[s,4,4]<-var(diff)		# Variance
-      metrics[s,5,4]<-sqrt(var(diff))	# Standard deviation
-      metrics[s,6,4]<-rmserror(obsQ, modQ)	# RMSE
-      metrics[s,7,4]<-magerror(obsQ, modQ)	# MAE
-      metrics[s,8,4]<-mbias(obsQ,modQ)	# Mean bias
-      metrics[s,9,4]<-mfbias(obsQ, modQ)	# Mean Fractional bias
-      metrics[s,10,4]<-mnbias(obsQ, modQ)	# Mean Normalized Bias
-      metrics[s,11,4]<-mngerror(obsQ, modQ)	# Mean Normalized Gross Error
-      metrics[s,12,4]<-nmbias(obsQ, modQ)	# Normailized mean bias
-      metrics[s,13,4]<-nmerror(obsQ, modQ)	# Normalized mean error
-      metrics[s,14,4]<-max(modQ,na.rm=TRUE)-max(obsQ,na.rm=TRUE)	# Max difference
-      metrics[s,15,4]<-min(modQ,na.rm=TRUE)-min(obsQ,na.rm=TRUE)	# Min difference
-      metrics[s,14,4]<-max(modQ,na.rm=T)-min(modQ,na.rm=T)	# DTR Model
-      metrics[s,15,4]<-max(obsQ,na.rm=T)-min(obsQ,na.rm=T)	# DTR Obs
-      metrics[s,16,4]<-mean(modQ,na.rm=T)	                    # Mean Mod Wind Speed
-      metrics[s,17,4]<-mean(obsQ,na.rm=T)	                    # Mean Obs Wind Speed
+      metrics[s,1,4]<-length(obsQ)
+      metrics[s,2,4]<-cor(modQ,obsQ)
+      metrics[s,3,4]<-ac(obsQ,modQ)
+      metrics[s,4,4]<-var(diff)
+      metrics[s,5,4]<-sqrt(var(diff))
+      metrics[s,6,4]<-rmserror(obsQ, modQ)
+      metrics[s,7,4]<-magerror(obsQ, modQ)
+      metrics[s,8,4]<-mbias(obsQ,modQ)
+      metrics[s,9,4]<-mfbias(obsQ, modQ)
+      metrics[s,10,4]<-mnbias(obsQ, modQ)
+      metrics[s,11,4]<-mngerror(obsQ, modQ)
+      metrics[s,12,4]<-nmbias(obsQ, modQ)
+      metrics[s,13,4]<-nmerror(obsQ, modQ)
+      metrics[s,14,4]<-max(modQ,na.rm=TRUE)-max(obsQ,na.rm=TRUE)
+      metrics[s,15,4]<-min(modQ,na.rm=TRUE)-min(obsQ,na.rm=TRUE)
+      metrics[s,14,4]<-max(modQ,na.rm=T)-min(modQ,na.rm=T)
+      metrics[s,15,4]<-max(obsQ,na.rm=T)-min(obsQ,na.rm=T)
+      metrics[s,16,4]<-mean(modQ,na.rm=T)
+      metrics[s,17,4]<-mean(obsQ,na.rm=T)
     }
     writeLines(paste("Station ID ",statget$id[s]," has been processed. This is ",s,"out of ",ns," total stations"))
     point<-ifelse(id == statget$id[s],T,F)
@@ -665,10 +676,9 @@ leapy<-function(y) {
 # Output: List with correlation and variability of model and obs filtered timeseries.
 #
 #------------------------------------------------------------------------------------
-   station.ts.filter<-function(query,qstat, mysql, thresh=12,
-                             wsmin=1.5, wsmax=20, t.test=F, conf.level=0.95, paired=F,
-                             t.col=c(3,2), u.col=c(7,6), v.col=c(9,8), q.col=c(5,4), stat.col=1 )
- {
+   station.ts.filter <-function(query,qstat, mysql, thresh=12, wsmin=1.5, wsmax=20, 
+                                t.test=F, conf.level=0.95, paired=F, t.col=c(3,2), u.col=c(7,6),
+                                 v.col=c(9,8), q.col=c(5,4), stat.col=1 ) {
 
 
   conf.lim<-(1-conf.level)
@@ -727,15 +737,15 @@ leapy<-function(y) {
         ts_diurnal_mod	<-ts_diurnal_mod -  ts_synoptic_mod
         ts_synoptic_mod	<-ts_synoptic_mod - ts_seas_mod
 
-        metrics[s,1,1]<-var(ts_intraday_obs,na.rm=T)			# Variance
- 	metrics[s,2,1]<-var(ts_diurnal_obs,na.rm=T)			# Variance
- 	metrics[s,3,1]<-var(ts_synoptic_obs,na.rm=T)			# Variance
- 	metrics[s,4,1]<-var(ts_intraday_mod,na.rm=T)			# Variance
- 	metrics[s,5,1]<-var(ts_diurnal_mod,na.rm=T)			# Variance
- 	metrics[s,6,1]<-var(ts_synoptic_mod,na.rm=T)			# Variance
- 	metrics[s,7,1]<-cor(ts_intraday_mod, ts_intraday_obs)	# Variance
- 	metrics[s,8,1]<-cor(ts_diurnal_mod, ts_diurnal_obs)	# Variance
- 	metrics[s,9,1]<-cor(ts_synoptic_mod, ts_synoptic_obs)	# Variance
+        metrics[s,1,1]<-var(ts_intraday_obs,na.rm=T)
+ 	metrics[s,2,1]<-var(ts_diurnal_obs,na.rm=T)
+ 	metrics[s,3,1]<-var(ts_synoptic_obs,na.rm=T)
+ 	metrics[s,4,1]<-var(ts_intraday_mod,na.rm=T)
+ 	metrics[s,5,1]<-var(ts_diurnal_mod,na.rm=T)
+ 	metrics[s,6,1]<-var(ts_synoptic_mod,na.rm=T)
+ 	metrics[s,7,1]<-cor(ts_intraday_mod, ts_intraday_obs)
+ 	metrics[s,8,1]<-cor(ts_diurnal_mod, ts_diurnal_obs)
+ 	metrics[s,9,1]<-cor(ts_synoptic_mod, ts_synoptic_obs)
         writeLines("Temperature")
      }
     
@@ -765,15 +775,15 @@ leapy<-function(y) {
         ts_diurnal_mod	<-ts_diurnal_mod -  ts_synoptic_mod
         ts_synoptic_mod	<-ts_synoptic_mod - ts_seas_mod
         #############################################################
-     	metrics[s,1,2]<-var(ts_intraday_obs,na.rm=T)			# Variance
- 	metrics[s,2,2]<-var(ts_diurnal_obs,na.rm=T)			# Variance
- 	metrics[s,3,2]<-var(ts_synoptic_obs,na.rm=T)			# Variance
- 	metrics[s,4,2]<-var(ts_intraday_mod,na.rm=T)			# Variance
- 	metrics[s,5,2]<-var(ts_diurnal_mod,na.rm=T)			# Variance
- 	metrics[s,6,2]<-var(ts_synoptic_mod,na.rm=T)			# Variance	
- 	metrics[s,7,2]<-cor(ts_intraday_mod, ts_intraday_obs)	# Variance
- 	metrics[s,8,2]<-cor(ts_diurnal_mod, ts_diurnal_obs)	# Variance
- 	metrics[s,9,2]<-cor(ts_synoptic_mod, ts_synoptic_obs)	# Variance
+     	metrics[s,1,2]<-var(ts_intraday_obs,na.rm=T)
+ 	metrics[s,2,2]<-var(ts_diurnal_obs,na.rm=T)
+ 	metrics[s,3,2]<-var(ts_synoptic_obs,na.rm=T)
+ 	metrics[s,4,2]<-var(ts_intraday_mod,na.rm=T)
+ 	metrics[s,5,2]<-var(ts_diurnal_mod,na.rm=T)
+ 	metrics[s,6,2]<-var(ts_synoptic_mod,na.rm=T)
+ 	metrics[s,7,2]<-cor(ts_intraday_mod, ts_intraday_obs)
+ 	metrics[s,8,2]<-cor(ts_diurnal_mod, ts_diurnal_obs)
+ 	metrics[s,9,2]<-cor(ts_synoptic_mod, ts_synoptic_obs)
         writeLines("Wind Speed")
     }
     #############################################################
@@ -800,20 +810,20 @@ leapy<-function(y) {
         ts_diurnal_mod	<-ts_diurnal_mod -  ts_synoptic_mod
         ts_synoptic_mod	<-ts_synoptic_mod - ts_seas_mod
         #############################################################    	
- 	metrics[s,1,3]<-var(ts_intraday_obs,na.rm=T)		# Variance
- 	metrics[s,2,3]<-var(ts_diurnal_obs,na.rm=T)		# Variance
- 	metrics[s,3,3]<-var(ts_synoptic_obs,na.rm=T)		# Variance
- 	metrics[s,4,3]<-var(ts_intraday_mod,na.rm=T)		# Variance
- 	metrics[s,5,3]<-var(ts_diurnal_mod,na.rm=T)		# Variance
- 	metrics[s,6,3]<-var(ts_synoptic_mod,na.rm=T)		# Variance
- 	metrics[s,7,3]<-cor(ts_intraday_mod, ts_intraday_obs)	# Variance
- 	metrics[s,8,3]<-cor(ts_diurnal_mod, ts_diurnal_obs)	# Variance
- 	metrics[s,9,3]<-cor(ts_synoptic_mod, ts_synoptic_obs)	# Variance
+ 	metrics[s,1,3]<-var(ts_intraday_obs,na.rm=T)
+ 	metrics[s,2,3]<-var(ts_diurnal_obs,na.rm=T)
+ 	metrics[s,3,3]<-var(ts_synoptic_obs,na.rm=T)
+ 	metrics[s,4,3]<-var(ts_intraday_mod,na.rm=T)
+ 	metrics[s,5,3]<-var(ts_diurnal_mod,na.rm=T)
+ 	metrics[s,6,3]<-var(ts_synoptic_mod,na.rm=T)
+ 	metrics[s,7,3]<-cor(ts_intraday_mod, ts_intraday_obs)
+ 	metrics[s,8,3]<-cor(ts_diurnal_mod, ts_diurnal_obs)
+ 	metrics[s,9,3]<-cor(ts_synoptic_mod, ts_synoptic_obs)
         writeLines("Mixing Ratio")
      }     
      writeLines(paste("Station ID ",statget$id[s]," has been processed, this is ",s,"out of ",ns," total stations"))
-     point<-ifelse(id == statget$id[s],T,F)
-     tmpd<-tmpd[!point,]
+     point  <-ifelse(id == statget$id[s],T,F)
+     tmpd   <-tmpd[!point,]
      rm(obsT,modT,obsWS,modWS,obsWD,modWD,obsU,modU,obsV,modV,obsQ,modQ)
 
   }
@@ -845,8 +855,7 @@ leapy<-function(y) {
 #
 # NOTE:
 ###
- 	compressedcheck<-function(file,action,gunzip="/usr/bin/gunzip",gzip="/usr/bin/gzip")
- {
+ 	compressedcheck<-function(file,action,gunzip="/usr/bin/gunzip",gzip="/usr/bin/gzip") {
     	
     	wrd1<-unlist(strsplit(file,"/"))
 	fpart<-wrd1[length(wrd1)]
@@ -898,11 +907,10 @@ leapy<-function(y) {
 # NOTE:
 #
 ###
- 	acumprecip<-function(date,id=c("sst","nosst"),
-	                  savedir="/home/amet/archive/npa/R-save",
-	                  nummod=1,maxallow=50,minallow=0.1,
-			  fcast=F,initutc=0,fcasthrlim=c(0,24))
- {
+   acumprecip<-function(date,id=c("sst","nosst"),
+	                savedir="/home/amet/archive/npa/R-save",
+	                nummod=1,maxallow=50,minallow=0.1,
+			fcast=F,initutc=0,fcasthrlim=c(0,24)) {
 
   ly<-leapy(date$ys)
   nd=c(31,ly,31,30,31,30,31,31,30,31,30,31);	#Array that provides the number of days for each month (used in some date calculations)
@@ -1024,8 +1032,7 @@ leapy<-function(y) {
 # NOTE:
 #
 ###
- 	compute_stat<-function(var,stat="mean")
- {
+    compute_stat<-function(var,stat="mean") {
     if(stat == "mean"){
       varo<-mean(var,na.rm=TRUE)
     }
@@ -1041,16 +1048,17 @@ leapy<-function(y) {
  }
 ##############################################################################################################
 #----------------------------------------  END OF FUNCTION  ------------------------------------------------##
+##############################################################################################################
 
 ###############################################################
 #- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
 ###############################################################
 #   This script calculates great-circle distances between 
-#   the two points – that is, the shortest distance over the earth’s
-#   surface – using the ‘Haversine’ formula.
+#   the two points \96 that is, the shortest distance over the earth\92s
+#   surface \96 using the \91Haversine\92 formula.
 #
-# It assumes a spherical earth, ignoring ellipsoidal effects – which is 
-# accurate enough* for most purposes… – giving an ‘as-the-crow-flies’ distance between the two points (ignoring any hills!).
+# It assumes a spherical earth, ignoring ellipsoidal effects \96 which is 
+# accurate enough* for most purposes\85 \96 giving an \91as-the-crow-flies\92 distance between the two points (ignoring any hills!).
 #
 # Input: lat and lon of two points
 #
@@ -1064,16 +1072,17 @@ leapy<-function(y) {
    dist.lat.lon <-function(lat1, lat2, lon1, lon2 ) {
          
         # Constants 
-        deg2rad = pi/180
-        R = 6371
+        deg2rad <- pi/180
+        R       <- 6371
         
         
-        dlat = (lat2 - lat1 ) * deg2rad
-        dlon = (lon2 - lon1 ) * deg2rad
+        dlat <- (lat2 - lat1 ) * deg2rad
+        dlon <- (lon2 - lon1 ) * deg2rad
         
-        a = ( sin(dlat/2) * sin(dlat/2) )+ (cos( lat1 * deg2rad) * cos( lat2 * deg2rad ) * sin(dlon/2)*sin(dlon/2) )
-        c = 2 * atan2( sqrt(a), sqrt(1-a) )
-        d = R * c
+        a    <- ( sin(dlat/2) * sin(dlat/2) )+ (cos( lat1 * deg2rad) * cos( lat2 * deg2rad ) * sin(dlon/2)*sin(dlon/2) )
+        c    <- 2 * atan2( sqrt(a), sqrt(1-a) )
+        d    <- R * c
+
      return(d)
    }
 ##############################################################################################################

@@ -25,8 +25,7 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
-units <- db_Query(units_qs,mysql)													# Query the database for units name
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
 
 figure_diff	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_avg",sep="_")           # Filename for diff spatial plot
 figure_max	<- paste(run_name1,species,pid,"spatialplot_mtom_diff_max",sep="_")               # Filename for diff spatial plot
@@ -75,102 +74,95 @@ spch2 <- apply(matrix(plot.symbols),1,pick.symbol2.fun)
 spch<-plot.symbols
 ########################################
 
+remove_negatives <- "n"
 total_networks <- length(network_names)
 for (j in 1:total_networks) {                                            # Loop through for each network
-   sites <- NULL
-   lats <- NULL
-   lons <- NULL
-   avg_diff <- NULL
-   max_diff <- NULL
-   min_diff <- NULL
-   network   <- network_names[[j]]                                              # Set network name
-   sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the symbol name used for that network
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
+   sites	<- NULL
+   lats		<- NULL
+   lons		<- NULL
+   avg_diff	<- NULL
+   max_diff	<- NULL
+   min_diff	<- NULL
+   network   	<- network_names[[j]]                                              # Set network name
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-         qs1       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,precip_ob,precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-         aqdat1.df        <- db_Query(qs1,mysql)
-         aqdat1.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         aqdat1.df        <- sitex_info$sitex_data
+         aqdat1.df   	  <- aqdat1.df[with(aqdat1.df,order(network,stat_id)),]
+         data_exists	  <- sitex_info$data_exists
+         sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         aqdat2.df  	  <- sitex_info2$sitex_data
+         aqdat2.df	  <- aqdat2.df[with(aqdat2.df,order(network,stat_id)),]
+         data_exists2     <- sitex_info2$data_exists
+         units            <- as.character(sitex_info$units[[1]])
       }
       else {
-         qs1       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,precip_ob,precip_mod,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-         aqdat1.df <- db_Query(qs1,mysql)
+         query_result     <- query_dbase(run_name1,network,species)
+         aqdat_query.df   <- query_result[[1]]
+         data_exists      <- query_result[[2]]
+         query_result2    <- query_dbase(run_name2,network,species)
+         aqdat_query2.df  <- query_result2[[1]]
+         data_exists2     <- query_result2[[2]]
+         aqdat1.df	  <- aqdat_query.df
+         aqdat2.df 	  <- aqdat_query2.df
+         units     	  <- query_result[[3]]
       }
    }
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-         qs2       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,precip_ob,precip_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-         aqdat2.df        <- db_Query(qs2,mysql)
-         aqdat2.df$POCode <- 1
+      if ((data_exists == "n") || (data_exists2 == "n")) {
+         All_Data       <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
+         total_networks <- (total_networks-1)
+         sub_title      <- paste(sub_title,network,"=No Data; ",sep="")
       }
       else {
-         qs2       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,precip_ob,precip_mod,d.POCode from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-         aqdat2.df        <- db_Query(qs2,mysql)
+         ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
+         aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
+         aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
+         if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
+            match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
+            aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, dates=aqdat1.df$ob_dates, aqdat1.df[,10], aqdat2.df[match.ind,10], aqdat1.df[,9], aqdat2.df[match.ind,9], month=aqdat1.df$month)      # eliminate points that are not common between the two runs
+         }
+         else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
+            aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,10], aqdat2.df[,10], aqdat1.df[match.ind,9], aqdat2.df[,9], month=aqdat2.df$month)      # eliminate points that are not common between the two runs
+         }
+         aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Mod_Value1=aqdat.df[,7],Mod_Value2=aqdat.df[,6])
+
+         ### Remove NAs ###
+         indic.na <- is.na(aqdat.df$Mod_Value1)
+         aqdat.df <- aqdat.df[!indic.na,]
+         indic.na <- is.na(aqdat.df$Mod_Value2)
+         aqdat.df <- aqdat.df[!indic.na,]
+         ##################
+
+         split_sites_all  <- split(aqdat.df, aqdat.df$Stat_ID)
+         for (i in 1:length(split_sites_all)) {                                               # Run averaging for each site for each month
+            sub_all.df  <- split_sites_all[[i]]                                               # Store current site i in sub_all.df dataframe
+            if (length(sub_all.df$Stat_ID) > 0) {						# Check that site has data available
+               sites        <- c(sites, unique(sub_all.df$Stat_ID))                          	# Add current site to site list 
+               lats         <- c(lats, unique(sub_all.df$lat))                               	# Add current lat to lat list
+               lons         <- c(lons, unique(sub_all.df$lon))                               	# Add current lon to lon list
+               if ((network == 'NADP') || (species == "precip")) {
+                  avg_diff <- c(avg_diff, (sum(sub_all.df$Mod_Value2)-sum(sub_all.df$Mod_Value1)))       # Compute model/ob difference
+               }
+               else {                                                                         # use averaging for all other networks
+                  avg_diff <- c(avg_diff, (mean(sub_all.df$Mod_Value2)-mean(sub_all.df$Mod_Value1)))     # Compute model/ob difference
+               }
+               max_diff <- c(max_diff, max(sub_all.df$Mod_Value2-sub_all.df$Mod_Value1))
+               min_diff <- c(min_diff, min(sub_all.df$Mod_Value2-sub_all.df$Mod_Value1))
+            }
+         }
+         sinfo_max_data[[j]]<-list(lat=lats,lon=lons,plotval=max_diff)
+         sinfo_min_data[[j]]<-list(lat=lats,lon=lons,plotval=min_diff)
+         sinfo_diff_data[[j]]<-list(lat=lats,lon=lons,plotval=avg_diff)
+    
+         all_lats <- c(all_lats,lats)
+         all_lons <- c(all_lons,lons)
+         all_diff <- c(all_diff,avg_diff)
+         all_max  <- c(all_max,max_diff)
+         all_min  <- c(all_min,min_diff)
+         sub_title    <- paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched w/ the appropriate symbol
       }
    }
-   aqdat1.df$stat_id <- paste(aqdat1.df$stat_id,aqdat1.df$POCode,sep="")
-   aqdat2.df$stat_id <- paste(aqdat2.df$stat_id,aqdat2.df$POCode,sep="")
-   aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-   aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-   
-
-   ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
-   aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
-   aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
-   if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
-      match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, dates=aqdat1.df$ob_dates, aqdat1.df[,10], aqdat2.df[match.ind,10], aqdat1.df[,9], aqdat2.df[match.ind,9], month=aqdat1.df$month, precip_ob=aqdat1.df$precip_ob, precip_mod=aqdat1.df$precip_mod)      # eliminate points that are not common between the two runs
-
-   }
-   else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,10], aqdat2.df[,10], aqdat1.df[match.ind,9], aqdat2.df[,9], month=aqdat2.df$month, precip_ob=aqdat2.df$precip_ob, precip_mod=aqdat2.df$precip_mod)      # eliminate points that are not common between the two runs
-   }
-   aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Mod_Value1=aqdat.df[,7],Mod_Value2=aqdat.df[,6])
-
-   ### Remove NAs ###
-   indic.na <- is.na(aqdat.df$Mod_Value1)
-   aqdat.df <- aqdat.df[!indic.na,]
-   indic.na <- is.na(aqdat.df$Mod_Value2)
-   aqdat.df <- aqdat.df[!indic.na,]
-   ##################
-
-   if (remove_negatives == "y") {
-      indic.nonzero <- aqdat.df$Mod_Value1 >= 0 # determine which model values are missing (less than 0); 
-      aqdat.df <- aqdat.df[indic.nonzero,]      # remove missing model values from dataframe
-      indic.nonzero <- aqdat.df$Mod_Value2 >= 0 # determine which model values are missing (less than 0); 
-      aqdat.df <- aqdat.df[indic.nonzero,]      # remove missing model values from dataframe
-   }
-
-   split_sites_all  <- split(aqdat.df, aqdat.df$Stat_ID)
-   for (i in 1:length(split_sites_all)) {                                               # Run averaging for each site for each month
-      sub_all.df  <- split_sites_all[[i]]                                               # Store current site i in sub_all.df dataframe
-      if (length(sub_all.df$Stat_ID) > 0) {						# Check that site has data available
-         sites        <- c(sites, unique(sub_all.df$Stat_ID))                          	# Add current site to site list 
-         lats         <- c(lats, unique(sub_all.df$lat))                               	# Add current lat to lat list
-         lons         <- c(lons, unique(sub_all.df$lon))                               	# Add current lon to lon list
-         if ((species == "SO4_dep") || (species == "NO3_dep") || (species == "NH4_dep") || (species == "precip") || (species == "HGdep") || (species == "Ca_dep") || (species == "Mg_dep") || (species == "K_dep") || (species == "Na_dep") || (species == "Cl_dep")) {
-            avg_diff <- c(avg_diff, (sum(sub_all.df$Mod_Value2)-sum(sub_all.df$Mod_Value1)))       # Compute model/ob difference
-         }
-         else {                                                                         # use averaging for all other networks
-            avg_diff <- c(avg_diff, (mean(sub_all.df$Mod_Value2)-mean(sub_all.df$Mod_Value1)))     # Compute model/ob difference
-         }
-         max_diff <- c(max_diff, max(sub_all.df$Mod_Value2-sub_all.df$Mod_Value1))
-         min_diff <- c(min_diff, min(sub_all.df$Mod_Value2-sub_all.df$Mod_Value1))
-      }
-   }
-   sinfo_max_data[[j]]<-list(lat=lats,lon=lons,plotval=max_diff)
-   sinfo_min_data[[j]]<-list(lat=lats,lon=lons,plotval=min_diff)
-   sinfo_diff_data[[j]]<-list(lat=lats,lon=lons,plotval=avg_diff)
-   
-   all_lats <- c(all_lats,lats)
-   all_lons <- c(all_lons,lons)
-   all_diff <- c(all_diff,avg_diff)
-   all_max  <- c(all_max,max_diff)
-   all_min  <- c(all_min,min_diff)
 }
 #########################
 ## plot format options ##
@@ -282,7 +274,7 @@ cols_max                                <- c(low_range,"grey50",high_range)
 leg_colors_max                          <- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
-for (l in 1:j) {
+for (l in 1:total_networks) {
 
    sinfo_diff[[l]]<-list(lat=sinfo_diff_data[[l]]$lat,lon=sinfo_diff_data[[l]]$lon,plotval=sinfo_diff_data[[l]]$plotval,levs=levs_diff,levcols=cols_diff,levs_legend=levs_legend_diff,cols_legend=leg_colors_diff,convFac=.01)	# Create diff list to be used with PlotSpatial fuction
    sinfo_max[[l]]<-list(lat=sinfo_max_data[[l]]$lat,lon=sinfo_max_data[[l]]$lon,plotval=sinfo_max_data[[l]]$plotval,levs=levs_max,levcols=cols_max,levs_legend=levs_legend_max,cols_legend=leg_colors_max,convFac=.01)   # Create diff list to be used with PlotSpatial fuction
