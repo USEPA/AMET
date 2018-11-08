@@ -520,6 +520,26 @@ the setup scripts, you will need to know the “root” password for the
 MySQL administrator. Note that this is not necessarily the same as the “ametsecure”
 password that will be created using the scripts discussed below.
 
+Note that the database is required for the meteorological side of AMET. 
+However, as of AMETv1.4, the database is no longer required to process and 
+analyze air quality data. An option has been added to read the csv output
+files from site compare directly, bypassing the need to use the database. This has 
+both advantages and disadvantages. The primary advantage is that an AMET user would 
+not be required to install and setup the MySQL database for AMET, eliminating and 
+streamlining the AMET install process somewhat. The primary disadvantages 
+is that all output files must be retained and organized, as they are needed 
+to do any analysis. Also, the use of the database provides the ability to fully 
+query and subset the AQ data in the database using the metadata provided. This 
+functionality would be highly limited without the use of the database. It is up 
+to the user to choose whether or not to install and utilize the database. However, 
+keep in mind that the database is still required to process and analyze 
+meteorological data.
+
+The instructions provided below assume the use of the MySQL database. If only
+processing AQ data and not employing the use of the database, those portions of
+the instructions that deal with setuping up and interfacing with the database
+can be ignored.
+
 <a id="AMET_Setup"></a>
 5.1 AMET Setup
 ---------
@@ -878,24 +898,24 @@ for `Combine` are available in the [CMAQ GitHub repository](https://github.com/U
 For detailed instructions on using `Combine`, see
 [**https://github.com/USEPA/CMAQ/tree/5.2/POST/combine**](https://github.com/USEPA/CMAQ/tree/5.2/POST/combine).
 
-After installing the model data in the AMET directories, configure the $AMETBASE/scripts\_db/aqNC2007/aqProject.csh
+After installing the model data in the AMET directories, configure the $AMETBASE/scripts\_db/aqProject.csh
 script. The aqProject.csh script does two things:
 
-* Creates a project table in the AMET database
-* Populates that project table with model and observational data (it will also create the database if it does not already exist).
+* Creates a project table in the AMET database. It will also create the database if it does not already exist. 
+* Populates that project table with model and observational data.
+* If the AMET\_DB flag is set to F, these steps are ignored.
 
 The configuration options for the aqProject.csh script are documented in the script and briefly described below. Upon execution, the script
-calls several R scripts to run the Fortran program `Site Compare` and then populates the AMET database with
+calls several R scripts to run the Fortran program `Site Compare` and then populates the AMET database (assumed AMET\_DB = T) with
 paired model-observation data. As this script will be used for setting up different AMET-AQ projects, it will likely only need to be
 fully configured once and then reused with little modification for future projects.
 
 Set the following variables to configure the aqProject.csh script for a new project.
 * Set **AMETBASE** to the root AMET installation directory for the project.
 * Set **AMET_DATABASE** to the name of the database to use (by default this is set to "amet").
+* Set **AMET_DB** to T/F. If set to F, you can ignore setting the database only options.
 * Set **MYSQL_CONFIG** to the AMET R configuration file.
-* If desired, you can specify the MySQL login information using the **mysql_login** and **mysql_password** variables. If these variables are set to
-"config_file" the login information will be taken from the amet-config.R file. If you comment out these variables, the script
-will prompt you for the MySQL login and password.
+* If desired, you can specify the MySQL login information using the **mysql_login** and **mysql_password** variables. If these variables are set to "config_file" the login information will be taken from the amet-config.R file. If you comment out these variables, the script will prompt you for the MySQL login and password.
 * Set **AMET_PROJECT** to the name of the AMET project; this should be the same name as the project directory, it needs to be
 unique and contain no spaces.
 * Set the AQ **MODEL_TYPE** (e.g. "CMAQ" or "CAMx")
@@ -1116,6 +1136,9 @@ below in table 7-2.<a id="Table_7-2"></a>
 | **AMET\_DB**                     | Flag to indicate whether or not to get data from the MySQL database. If T, data
 will be retrieved from the database. If F, the site compare files will be read directly. If AMET_DB=F, the environment
 variable OUTDIR must be set indicating where the site compare files are located. |
+| **OUTDIR**                       | Location of the site compare output files. |
+| **AMET\_PROJECT2**               | Name of AMET project to compare AMET_PROJECT against. Comment out if not doing model to model comparisons. |
+| **OUTDIR2**                      | Location of site compare output files for AMET_PROJECT2 if AMET_DB=F. |
 | **AMET\_SDATE**                  | Start date in the form YYYYMMDD from which to begin the analysis. |
 | **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
 | **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
