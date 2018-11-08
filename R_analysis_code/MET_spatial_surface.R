@@ -6,11 +6,6 @@
 #                    Spatial Surface Statistics                         #
 #                      MET_spatial_surface.R                            #
 #                                                                       #
-#                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
-#         Contributors:	Robert Gilliam                                  #
-#                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
@@ -21,16 +16,11 @@
 #       a start day and month, and an end day and month. Also, specific database, table/project ID,
 #       area to examine (lat-lon bounds), figure and save file directories
 #
-# daily_station_stats-1.2 (09/06/2005)
-#       Modified daily_spatial.R to "new" (summer 2005) unified format that joins the web version
-#       and old automated version. This was done by using AMET environmental variables. The initalization
-#       section below 
-#
 # Modified to work with combined MET/AQ mode, Alexis Zubrow (IE UNC) Oct, 2007
 #
 # Changed name to MET_spatial_surface.R, Alexis Zubrow (IE UNC) Nov, 2007
 #
-# Version 1.2, May 8, 2013, Rob Gilliam                                 
+# Version 1.2, May 8, 2013, Robert Gilliam                                 
 # Updates: - Pulled some configurable options out of MET_spatial_surface.R    
 #            and placed into the spatial_surface.input file  
 #          - Sample threshold so sites where sample size is small are ignored 
@@ -39,7 +29,7 @@
 #            This is helpful to use in run_timeseries.csh script. File: spatial.setSITES.all.txt               
 #          - Extensive cleaning of R script, R input and .csh files
 #
-#  Version 1.3, May 15, 2017, Rob Gilliam
+#  Version 1.3, May 15, 2017, Robert Gilliam
 #  Updates: - Removed hard coded amet-config.R config option that       
 #             defined MySQL server, database and password (unsecure).   
 #             Now users define that file location in csh wrapper scripts
@@ -56,8 +46,15 @@
 #             setenv AMET_DATEE "20170510 23"
 #           - thresh was input as text instead of numeric. Fixed. Also updated
 #             the color scheme and levels for some metrics in spatial_surface.input
+#
+# Version 1.4, Sep 30, 2018, Robert Gilliam         
+#           - Headers updated. More old tab usage was changed to white spaces.
+#           - Date part of query was modified to accommodate newer MySQL date considerations.
+#             End date with no hour is considered 00 UTC on that day, so a day is added to user
+#             end date and query was changed to less than end date.
 #                  
-#########################################################################
+#-----------------------------------------------------------------------#####################################
+#############################################################################################################
 #	Load required modules
   if(!require(maps))   {stop("Required Package maps was not loaded")}
   if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
@@ -97,23 +94,21 @@
  if(!exists("thresh") ){ thresh <- 20	}
 
 
- dates<-mdy.date(month = ms, day = ds, year = ys)
- datee<-mdy.date(month = me, day = de, year = ye)
+ dates <- mdy.date(month = ms, day = ds, year = ys)
+ datee <- mdy.date(month = me, day = de, year = ye)+1
+ dateep<- mdy.date(month = me, day = de, year = ye)
 ############################################################################
 nd     <-c(31,leapy(ys),31,30,31,30,31,31,30,31,30,31)
 datex  <-dates
 while(datex <= datee) {
   if(!exists("daily")) { daily <-F }   
   if(daily) {	      
-    d1       <-date.mdy(dates)
-    d2       <-date.mdy(datee)
-    d1p      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),"_",dform(hs),sep="")
-    d2p      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),"_",dform(he),sep="")
-    d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day)," ",dform(hs),":00:00",sep="")
-    d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day)," ",dform(he),":00:00",sep="")
+    d1       <-date.mdy(datex)
+    d2       <-date.mdy(datex+1)
+    d2p      <-date.mdy(datex)
 
     d1p      <-paste(d1$year,dform(d1$month),dform(d1$day),sep="")
-    d2p      <-paste(d2$year,dform(d2$month),dform(d2$day),sep="")
+    d2p      <-paste(d2p$year,dform(d2$month),dform(d2p$day),sep="")
     d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),sep="")
     d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),sep="")
     savefile <-paste(savedir,"/",saveid,".",d1p,"-",d2p,".RData",sep="")
@@ -122,13 +117,10 @@ while(datex <= datee) {
   else {
     d1       <-date.mdy(dates)
     d2       <-date.mdy(datee)
-    d1p      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),"_",dform(hs),sep="")
-    d2p      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),"_",dform(he),sep="")
-    d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day)," ",dform(hs),":00:00",sep="")
-    d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day)," ",dform(he),":00:00",sep="")
+    d2p      <-date.mdy(dateep)
 
     d1p      <-paste(d1$year,dform(d1$month),dform(d1$day),sep="")
-    d2p      <-paste(d2$year,dform(d2$month),dform(d2$day),sep="")
+    d2p      <-paste(d2p$year,dform(d2p$month),dform(d2p$day),sep="")
     d1q      <-paste(d1$year,"-",dform(d1$month),"-",dform(d1$day),sep="")
     d2q      <-paste(d2$year,"-",dform(d2$month),"-",dform(d2$day),sep="")
     datex    <-datee       
@@ -136,7 +128,8 @@ while(datex <= datee) {
     daterange<-paste(d1p,"-",d2p,sep="")
   }
   datestr  <-paste("BETWEEN '",d1q,"' AND '",d2q,"'",sep="")
-  datestrp <-paste("BETWEEN ",d1q," AND ",d2q,sep="")
+  datestr  <-paste(">= '",d1q,"' AND d.ob_date < '",d2q,"'",sep="")
+  datestrp <-paste("BETWEEN ",d1p," AND ",d2p,sep="")
   query    <-paste("SELECT  d.stat_id,d.T_mod,d.T_ob,d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob, 
                     HOUR(d.ob_time) FROM ",sfctable,"  d, stations s  WHERE s.stat_id=d.stat_id and d.ob_date ",
                     datestr,extra," ORDER BY d.stat_id ")

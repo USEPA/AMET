@@ -25,13 +25,13 @@ site_file     <- NULL
 site_file[1]  <- "CASTNET_full_site_list.csv"                   # CASTNet site list
 site_file[2]  <- "IMPROVE_full_site_list.csv"                   # IMPROVE site list
 site_file[3]  <- "NADP_full_site_list.csv"                      # NADP site list
-site_file[4]  <- "CSN_full_site_list.csv"                       # CSN site list
-site_file[5]  <- "SEARCH_full_site_list.csv"                    # SEARCH site list
-site_file[6]  <- "AIRMON_full_site_list.csv"                    # AIRMON (NDN) site list
-site_file[7]  <- "TOXICS_full_site_list.csv"                    # Toxics data
-site_file[8]  <- "CAPMON_full_site_list.csv"                    # Canadian CAPMON network
-site_file[9]  <- "NAPS_full_site_list.csv"                      # Canadian NAPS network
-site_file[10] <- "FLUXNET_full_site_list.csv"                   # FLUXNET network
+site_file[4]  <- "SEARCH_full_site_list.csv"                    # SEARCH site list
+site_file[5]  <- "AIRMON_full_site_list.csv"                    # AIRMON (NDN) site list
+site_file[6]  <- "CAPMON_full_site_list.csv"                    # Canadian CAPMON network
+site_file[7]  <- "NAPS_full_site_list.csv"                      # Canadian NAPS network
+site_file[8]  <- "FLUXNET_full_site_list.csv"                   # FLUXNET network
+site_file[9]  <- "NOAA_ESRL_full_site_list.csv"			# NOAA ESRL O3 network
+site_file[10] <- "AQS_full_site_list.csv"			# Includes CSN sites
 
 ## European Networks
 
@@ -42,7 +42,7 @@ site_file[14] <- "AURN_full_site_list.csv"
 site_file[15] <- "EMEP_full_site_list.csv"
 site_file[16] <- "NAMN_full_site_list.csv"
 
-## AQS Network 
+## TOAR Global Network 
 
-aqs_site_file <- "AQS_full_site_list.csv"                       # AQS site list
+site_file[16] <- "TOAR_full_site_list.csv"
 

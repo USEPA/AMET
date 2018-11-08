@@ -47,23 +47,10 @@ filename_overlay	<- paste(figdir,filename_overlay,sep="/")
 }
 
 j <- 1							# only use first network (not coded for multiple networks)
-network		<-network_names[[j]]				# set network 
+network		<- network_names[[j]]				# set network 
 run_name	<- run_name1		# Set run_name to run_name1 since only using one simulation
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
-{
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-      qs <- paste("SELECT d.network,d.stat_id,s.num_stat_id,d.lat,d.lon,d.ob_dates,DATE_FORMAT(d.ob_dates,'%Y%j'),d.ob_hour,d.",species,"_ob,d.",species,"_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
-      aqdat.df$POCode <- 1
-   }
-   else {
-      qs <- paste("SELECT d.network,d.stat_id,s.num_stat_id,d.lat,d.lon,d.ob_dates,DATE_FORMAT(d.ob_dates,'%Y%j'),d.ob_hour,d.",species,"_ob,d.",species,"_mod, d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")
-      aqdat.df<-db_Query(qs,mysql)
-   }
-}
-aqdat.df$stat_id <- paste(aqdat.df$stat_id,aqdat.df$POCode,sep='')      # Create unique site using site ID and PO Code
+query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour")
+aqdat.df	<- query_result[[1]]
 
 year_day <- aqdat.df$"DATE_FORMAT(d.ob_dates,'%Y%j')"
 

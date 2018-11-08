@@ -22,8 +22,8 @@ network_name <- network_label[1]
 num_runs <- 1
 
 ### Retrieve units and model labels from database table ###
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
+#units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set filenames and titles ###
@@ -106,11 +106,31 @@ for (n in 1:5) {	# PCA Loop
       species_names  	<- NULL
       species_names2 	<- NULL
       criteria 		<- paste(" WHERE d.SO4_ob is not NULL and d.network='",network,"' ",season[p],pca[n],sep="")          # Set part of the MYSQL query
-      qs <- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.SO4_ob,d.SO4_mod,d.NO3_ob,d.NO3_mod,d.NH4_ob,d.NH4_mod,d.PM_TOT_ob,d.PM_TOT_mod,d.PM_FRM_ob,PM_FRM_mod,d.EC_ob,d.EC_mod,d.OC_ob,d.OC_mod,d.TC_ob,d.TC_mod,d.soil_ob,d.soil_mod,d.ncom_mod,d.NaCl_ob,d.NaCl_mod,d.other_ob,d.other_mod,d.other_rem_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-      qs2 		<- paste("SELECT d.proj_code,d.network,d.stat_id,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.SO4_ob,d.SO4_mod,d.NO3_ob,d.NO3_mod,d.NH4_ob,d.NH4_mod,d.PM_TOT_ob,d.PM_TOT_mod,d.PM_FRM_ob,PM_FRM_mod,d.EC_ob,d.EC_mod,d.OC_ob,d.OC_mod,d.TC_ob,d.TC_mod,d.soil_ob,d.soil_mod,d.ncom_mod,d.NaCl_ob,d.NaCl_mod,d.other_ob,d.other_mod,d.other_rem_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")
-
-      aqdat_all.df	<- db_Query(qs,mysql)
-      aqdat_all2.df	<- db_Query(qs2,mysql)
+      species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","ncom","NaCl","other","other_rem")
+      #############################################
+      ### Read sitex file or query the database ###
+      #############################################
+      {
+         if (Sys.getenv("AMET_DB") == 'F') {
+            sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+            aqdat_query.df   <- sitex_info$sitex_data
+            sitex_info       <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+            aqdat_query2.df  <- sitex_info$sitex_data
+            units            <- as.character(sitex_info$units[[1]])
+            
+         }
+         else {
+            query_result    <- query_dbase(run_name1,network,species,criteria)
+            aqdat_query.df  <- query_result[[1]]
+            query_result2   <- query_dbase(run_name2,network,species,criteria)
+            aqdat_query2.df <- query_result2[[1]]
+            units           <- query_result[[3]]
+            model_name      <- query_result[[4]]
+         }
+      }
+#############################################
+      aqdat_all.df      <- aqdat_query.df
+      aqdat_all2.df     <- aqdat_query2.df
       blank_mod		<- 0.4
       blank_mod2	<- 0.4
       blank_ob		<- 0.4
@@ -319,9 +339,9 @@ for (n in 1:5) {	# PCA Loop
 }       # End Season loop
 
 ## Convert pdf to png ##
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

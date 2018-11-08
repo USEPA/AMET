@@ -1,7 +1,7 @@
 #######################################################################################################
 #####################################################################################################
 #                                                                 ################################
-#       AMET (Atmospheric Model Evaluation Tool) Version 1.3            
+#       AMET Surface Meteorology Model-Obs Matching Driver          
 #                                                                  
 #       Meteorological Models:
 #            Model for Prediction Across Scales (MPAS)
@@ -12,15 +12,21 @@
 #       insert into AMET configured MySQL database. This specific
 #       script is the master that calls R functions that read
 #       model output, MADIS observations, interpolate, 
-#       and construct the database queries.   
+#       and construct the database queries.
+#
+#       This wrapper matches surface observations (WS, WS, T, Q and PSFC)
+#       with either WRF or MPAS surface meteorology fields.   
 #                                                            
-#       Version:        1.3                                         
-#       Date:           April 28, 2017                     
-#       Contributors:   Robert Gilliam, Russ Bullock 
-#                                                     
 #       Developed by the US EPA           
 #                                                                 ################################
 #####################################################################################################
+#######################################################################################################
+#
+#  V1.3, 2017Apr18, Robert Gilliam: Initial Development
+#  V1.4, 2018Sep30, Robert Gilliam: 
+#         - Added the matching of surface pressure for the ability
+#           to evaluate relative humidity
+#
 #######################################################################################################
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded") }
   if(!require(date))   {stop("Required Package date was not loaded")   }
@@ -75,6 +81,7 @@
   skipind        <- Sys.getenv("SKIPIND")
   interp         <- Sys.getenv("INTERP_METHOD")
   updateSiteTable<-as.logical(Sys.getenv("UPDATE_SITES"))
+  total_loop_max <- as.numeric(Sys.getenv("MAX_TIMES_SITE_CHECK"))
   autoftp        <-as.logical(Sys.getenv("AUTOFTP"))
   madis_server   <- Sys.getenv("MADIS_SERVER")
   verbose        <- as.logical(Sys.getenv("VERBOSE"))
@@ -93,12 +100,13 @@
                           mysql$passwd,"' --database=",mysql$dbase," < tmp.query",sep="")
   sitecommand    <-paste("mysql --host=",mysql$server," --user=",mysql$login," --password='",
                           mysql$passwd,"' --database=",mysql$dbase," < tmp.site.query",sep="")
-  dateO <-mdy.date(month = 1, day = 01, year = 1970)
+
   files <-system(paste("ls -lh ",met_output,"*",sep=''),intern=T)
   nf    <-length(files)
 
   # Hard coded settings now
-  buffer  <- 5
+  buffer           <- 5
+  total_loop_count <- 1 
   
   # Skip index setting for first file (1) and all after (2)
   a<-strsplit(skipind,split=" ")
@@ -160,7 +168,7 @@ for(f in 1:nf) {
   #list includes:
   #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
   #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
-  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr)
+  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr,psf=psf)
   if(metmodel == "wrf"){
     model<-wrf_surface(file)
   }
@@ -206,9 +214,9 @@ for(t in skipind:nt){
   } else if(madis_dset == "text") {
     obs<- text_surface(madisbase, datetime, model$projection$standlon, model$projection$conef)
   }
-  if(metmodel == "mpas"){
+  if(metmodel == "mpas" & total_loop_count <= total_loop_max){
     site_update <- mpas_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
-                                 obs$meta$slon, obs$meta$report_type, obs$meta$site_locname,
+                                 obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname,
                                  model$projection$lat, model$projection$lon, model$projection$latv, 
                                  model$projection$lonv, model$projection$cells_on_vertex,
                                  cind, cwgt,  mysql$dbase, sitecommand, sitemax, updateSiteTable)
@@ -217,19 +225,18 @@ for(t in skipind:nt){
     cind    <-site_update$cind
     cwgt    <-site_update$cwgt
   }
-  if(metmodel == "wrf"){
+  if(metmodel == "wrf" & total_loop_count <= total_loop_max){
     site_update <- wrf_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
-                                obs$meta$slon, obs$meta$report_type, obs$meta$site_locname, model$projection, 
-                                wrfind, interp, mysql$dbase, sitecommand, sitemax, 
+                                obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname, 
+                                model$projection, wrfind, interp, mysql$dbase, sitecommand, sitemax, 
                                 updateSiteTable, buffer=buffer)
     sitenum <-site_update$sitenum
     sitelist<-site_update$sitelist
     wrfind  <-site_update$wrfind
   }
-
 writeLines("**********************************************************************************************")
 # Open new query file
-system("rm tmp.query") 
+system("rm -f tmp.query") 
 sfile<-file("tmp.query","a")
 writeLines(paste("use",mysql$dbase,";"),con=sfile) 
 ##########################################################################
@@ -266,6 +273,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     if(is.na(obs$sfc_met$q2[sind]))  { obs$sfc_met$q2[sind]  <-"NULL" }
     if(is.na(obs$sfc_met$u10[sind])) { obs$sfc_met$u10[sind] <-"NULL" }
     if(is.na(obs$sfc_met$v10[sind])) { obs$sfc_met$v10[sind] <-"NULL" }
+    if(is.na(obs$sfc_met$psf[sind])) { obs$sfc_met$psf[sind] <-"NULL" }
 
     # Calculate model values base on barycentric interpolation if MPAS
     if(metmodel == "mpas"){
@@ -277,44 +285,53 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
                  cwgt[s,3]*model$sfc_met$u10[cind[s,3],t]
       v10_int  <-cwgt[s,1]*model$sfc_met$v10[cind[s,1],t]+cwgt[s,2]*model$sfc_met$v10[cind[s,2],t]+
                  cwgt[s,3]*model$sfc_met$v10[cind[s,3],t]
+      psf_int  <-cwgt[s,1]*model$sfc_met$psf[cind[s,1],t]+cwgt[s,2]*model$sfc_met$psf[cind[s,2],t]+
+                 cwgt[s,3]*model$sfc_met$psf[cind[s,3],t]
     }
     if(metmodel == "wrf"){
       # Compute model values from the site-mapped grid idicies. This is a bilinear interpolation
       # calculation using the four grid points surrounding observation site. It is written to
       # work with nearest neighbor where fractional grid index in x and y direction (wrfind[s,3,1:2])
       # are set to zero in the site mapping routine.
-      t2_int<- (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+       t2_int<-(model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
                (wrfind[s,3,2] * (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
                (model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$t2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$t2[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      q2_int<- (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+       q2_int<-(model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
                (wrfind[s,3,2] * (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
                (model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$q2[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$q2[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      u10_int<- (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+      u10_int<-(model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
                (wrfind[s,3,2] * (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
                (model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$u10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$u10[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
-      v10_int<- (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+      v10_int<-(model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
                (wrfind[s,3,2] * (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
                (model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
                (model$sfc_met$v10[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$v10[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
+      psf_int<-(model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t]) )) +
+               (wrfind[s,3,2] * (model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,2],t] + ( wrfind[s,3,1] * 
+               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,2],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,2],t]) ) -
+               (model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t] + ( wrfind[s,3,1] * 
+               (model$sfc_met$psf[wrfind[s,1,2],wrfind[s,2,1],t] - model$sfc_met$psf[wrfind[s,1,1],wrfind[s,2,1],t]) )) ))
     }
 
     q1    <-paste("REPLACE INTO ",ametproject,"_surface (proj_code, stat_id, ob_date, ob_time,fcast_hr, init_utc,T_ob,  T_mod,
-                   U_ob,  U_mod,  V_ob,  V_mod,  WVMR_ob, Q_ob,Q_mod)",sep="")
+                   U_ob,  U_mod,  V_ob,  V_mod,  WVMR_ob, Q_ob, Q_mod, PSFC_ob, PSFC_mod)",sep="")
     q2    <-paste("('",ametproject,"','",obs$meta$site[sind],"','",mysqltimestr,"','",
                   datetime$modeltime,"',0,00,",obs$sfc_met$t2[sind],",",t2_int,",",
                   obs$sfc_met$u10[sind],",",u10_int,",",obs$sfc_met$v10[sind],",",v10_int,",",
-                  obs$sfc_met$q2[sind],",",obs$sfc_met$q2[sind],",",q2_int,")",sep="")
+                  obs$sfc_met$q2[sind],",",obs$sfc_met$q2[sind],",",q2_int,",",
+                  obs$sfc_met$psf[sind],",",psf_int,")",sep="")
 
     query <-paste(q1,"VALUES",q2)
     writeLines(paste(query,";"),con=sfile)
@@ -324,12 +341,13 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
   # End of loop over observations sites
   ##########################################################################
   writeLines("**********************************************************************************************")
+  total_loop_count <- total_loop_count + 1
 } 
   # End of loop over times
 ##########################################################################
 
 ##########################################################################
 }  # End of loop over files
-system("rm tmp.query tmp.site.query") 
+system("rm -f tmp.query tmp.site.query") 
 quit(save="no")
 

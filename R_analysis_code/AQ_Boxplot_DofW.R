@@ -19,12 +19,7 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")	# R directory
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
-### Retrieve units label from database table ###
 network		<- network_names[1]
-units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units		<- db_Query(units_qs,mysql)
-label		<- paste(species,"(",units,")",sep=" ")
-#################################
 
 ### Set file names and titles ###
 filename_pdf <- paste(run_name1,species,pid,"boxplot_dow.pdf",sep="_")
@@ -41,25 +36,27 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
    if (custom_title == "") { title <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ") }
    else { title <- custom_title }
 }
-
-label <- paste(species,"(",units,")",sep=" ") 
 #################################
 
-criteria 		<- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-check_POCode		<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df	<- db_Query(check_POCode,mysql)
+#################################
 {
-   if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat.df <- db_Query(qs,mysql)
-      aqdat.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- (sitex_info$sitex_data)
+      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+      units            <- as.character(sitex_info$units[[1]])
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")	# Set the rest of the MYSQL query
-      aqdat.df <- db_Query(qs,mysql)
+#      units          <- db_Query(units_qs,mysql)
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      units           <- query_result[[3]]
    }
 }
-aqdat.df		<- db_Query(qs,mysql)	# Query the database and store in aqdat.df dataframe
+
+aqdat.df 	<- aqdat_query.df 
+
+label <- paste(species,"(",units,")",sep=" ")
 
 ## test that the query worked
 if (length(aqdat.df) == 0){
@@ -72,41 +69,14 @@ week_days		<- weekdays(as.Date(aqdat.df$ob_dates))
 aqdat.df$DayOfWeek	<- week_days
 aqdat.df$DayOfWeek	<- ordered(aqdat.df$DayOfWeek, levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
 
-if (remove_negatives == "y") {
-   indic.nonzero <- aqdat.df[,9] >= 0          # determine which obs are missing (less than 0); 
-   aqdat.df <- aqdat.df[indic.nonzero,]        # remove missing obs from dataframe
-   indic.nonzero <- aqdat.df[,10] >= 0          # determine which obs are missing (less than 0); 
-   aqdat.df <- aqdat.df[indic.nonzero,]        # remove missing obs from dataframe
-}
-
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
-   check_POCode            <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df     <- db_Query(check_POCode,mysql)
-   {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if project contains a POCode column
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-         aqdat2.df <- db_Query(qs,mysql)
-         aqdat2.df$POCode <- 1
-      }
-      else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod from ",network," as d, site_metadata as s",criteria," and proj_code = '",run_name2,"' ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-         aqdat2.df                    <-db_Query(qs,mysql)
-      }
-   }
-   week_days                    <- weekdays(as.Date(aqdat2.df$ob_dates))
-   aqdat2.df$DayOfWeek		<- week_days
-
-   if (remove_negatives == "y") {
-      indic.nonzero <- aqdat2.df[,9] >= 0          # determine which obs are missing (less than 0); 
-      aqdat2.df <- aqdat2.df[indic.nonzero,]        # remove missing obs from dataframe
-      indic.nonzero <- aqdat2.df[,10] >= 0          # determine which obs are missing (less than 0); 
-      aqdat2.df <- aqdat2.df[indic.nonzero,]        # remove missing obs from dataframe
-   }
-   aqdat2.df$DayOfWeek <- ordered(aqdat2.df$DayOfWeek, levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+   query_result2        <- query_dbase(run_name2,network,species)
+   aqdat2.df            <- query_result2[[1]]
+   week_days		<- weekdays(as.Date(aqdat2.df$ob_dates))
+   aqdat2.df$DayOfWeek	<- week_days
+   aqdat2.df$DayOfWeek  <- ordered(aqdat2.df$DayOfWeek, levels=c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
 }
 #######################
-
-
 
 ### Find q1, median, q2 for each group of both species ###
 q1.spec1 <- tapply(aqdat.df[,9], aqdat.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute ob 25% quartile
@@ -222,9 +192,9 @@ if (run_info_text == 'y') {
 #text(x=1:24,y=apply(cbind(q3.spec1,q3.spec2),1,max)+((y.axis.max*0.1)*.35),labels=nsamples.table,cex=1.2)
 
 ### Convert pdf to png ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

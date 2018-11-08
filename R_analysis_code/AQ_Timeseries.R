@@ -18,11 +18,9 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-if (is.na(units)) {
-   units <- 'missing'
-}
+species <- species[1]
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set file names and titles ###
@@ -97,31 +95,37 @@ num_runs <- length(run_names)
 
 for (j in 1:num_runs) {	# For each simulation being plotted
    run_name <- run_names[j]
-
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
+   #############################################
+   ### Read sitex file or query the database ###
+   #############################################
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, d.precip_ob, s.state from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")
-         aqdat_query.df<-db_Query(qs,mysql)
-         aqdat_query.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         outdir           <- "OUTDIR" 
+         if (j >1) { outdir <- paste("OUTDIR",j,sep="") }
+         sitex_info       <- read_sitex(Sys.getenv(outdir),network,run_name,species)
+         aqdat_query.df   <- sitex_info$sitex_data
+         data_exists	  <- sitex_info$data_exists
+         units            <- as.character(sitex_info$units[[1]])
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, d.precip_ob, d.POCode, s.state from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")
-         aqdat_query.df<-db_Query(qs,mysql)
+         query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
+         aqdat_query.df  <- query_result[[1]]
+         data_exists     <- query_result[[2]]
+#         units           <- db_Query(units_qs,mysql)
+#         model_name      <- db_Query(model_name_qs,mysql)
+#         model_name      <- model_name[[1]]
+         units		 <- query_result[[3]]
+         model_name	 <- query_result[[4]]
       }
    }
-   aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep="")
-   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob)
-
-   ### Remove Missing Data ###
-   indic.nonzero        <- aqdat.df$Obs_Value >= 0      # determine which obs are missing (less than 0); 
-   aqdat.df             <- aqdat.df[indic.nonzero,]     # remove missing obs from dataframe
-   indic.nonzero        <- aqdat.df$Mod_Value >= 0      # determine which obs are missing (less than 0); 
-   aqdat.df             <- aqdat.df[indic.nonzero,]     # remove missing obs from dataframe
-   ###########################
+   #############################################
+   {
+   if (data_exists == "n") {
+      All_Data.df <- merge(All_Data.df,paste("No Data for ",run_name,sep=""))
+      num_runs <- (num_runs-1)
+   }
+   else {
+   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month)
 
    Date_Hour            <- paste(aqdat.df$Start_Date," ",aqdat.df$Hour,":00:00",sep="") # Create unique Date/Hour field
    aqdat.df$Date_Hour   <- Date_Hour                                                    # Add Date_Hour field to dataframe
@@ -268,7 +272,9 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    }
    #####################################
 
-}	# End For Loop
+} # Close else statement
+} # Close if/else statement
+} # End num_runs loop
 
 ### Write data to be plotted to file ###
 write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
@@ -299,8 +305,90 @@ if (length(bias_y_axis_min) > 0) {
 
 #################################################
 
-for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
-   if (f == 1) {
+filename_pdf         <- paste(run_name1,species,pid,"timeseries.pdf",sep="_")              # Set output file name
+filename_png         <- paste(run_name1,species,pid,"timeseries.png",sep="_")
+
+filename_pdf         <- paste(figdir,filename_pdf,sep="/")           # Filename for obs spatial plot
+filename_png         <- paste(figdir,filename_png,sep="/")           # Filename for model spatial plot
+
+
+
+#####################################
+### Plot Model vs. Ob Time Series ###
+#####################################
+
+pdf(file=filename_pdf,width=11,height=13)
+par(mfrow = c(4,1),mai=c(.7,1,.4,1))
+par(cex.axis=1,las=1,mfg=c(1,1),lab=c(5,10,7))
+
+if (custom_title != "") {
+   main.title.bias <- custom_title
+}
+plot(Dates[[1]],Mod_Mean[[1]], axes=TRUE, ylim=c(ymin,ymax),type='l',ylab=paste(species,"(",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.8, xaxt="n",lwd=line_width)  # Plot model data
+if (inc_points == 'y') {
+   points(Dates[[1]],Mod_Mean[[1]],col=plot_colors[[2]])
+}
+{
+   if ((averaging == "h") || (averaging == "m") || (averaging == "a")) {
+      axis(side=1, at=Dates[[1]])
+   }
+   else if (averaging == "ym") {
+      axis.POSIXct(side=1, at=Dates[[1]],format="%b %Y")
+   }
+   else {
+      axis.POSIXct(side=1, at=Dates[[1]],format="%b %d")
+   }
+}
+lines(Dates[[1]],Obs_Mean[[1]],col=plot_colors[1],lty=1,lwd=line_width)
+if (inc_points == 'y') {
+   points(Dates[[1]],Obs_Mean[[1]],col=plot_colors[1])
+}
+legend_names <- c(network_label[1],run_names[1])
+legend_colors <- c(plot_colors[1],plot_colors[2])
+if (num_runs > 1) {
+   for (k in 2:num_runs) {
+      lines(Dates[[k]],Mod_Mean[[k]],col=plot_colors[k+1],lty=1,lwd=line_width)
+      if (inc_points == 'y') {
+         points(Dates[[k]],Mod_Mean[[k]],col=plot_colors[k+1])
+      }
+      legend_names <- c(legend_names,run_names[k])
+      legend_colors <- c(legend_colors,plot_colors[k+1])
+      if (Num_Obs[[k]] != Num_Obs[[1]]) {
+         num_diff <- abs(Num_Obs[[k]]-Num_Obs[[1]])
+         sub.title <- paste("Warning: Number of observations differ by",num_diff,"between simulations",sep=" ")
+      }
+   }   
+}
+usr <- par("usr")
+text(usr[2],usr[4],paste("# of Sites: ",num_sites,sep=""),adj=c(1.1,1.1),cex=1.1)
+if (inc_legend == 'y') {
+   legend("topleft",legend=legend_names,col=legend_colors,lty=c(1,1,1), merge=TRUE,cex=1.1, bty='n')  # Add legend
+}
+
+title(main=main.title, cex.main = 1, sub=sub.title, cex.sub = 1, col.sub = "red")
+######################################
+
+if (run_info_text == "y") {
+   if (rpo != "None") {
+      text(max(Dates[[1]]),ymax-((ymax-ymin)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=1)
+   }
+   if (pca != "None") {
+      text(max(Dates[[1]]),ymax-((ymax-ymin)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=1)
+   }
+   if (state != "All") {
+      text(max(Dates[[1]]),ymax-((ymax-ymin)*.15),paste("State: ",state,sep=""),pos=2,cex=1)
+   }
+   if (site != "All") {
+      text(max(Dates[[1]]),ymax-((ymax-ymin)*.10),paste("Site: ",site,sep=""),pos=2,cex=1)
+   }
+}
+
+#################################################
+### Plot Model Bias,RMSE and Corr Time Series ###
+#################################################
+
+for (f in 1:3) {        # Loop for plotting Bias, RMSE and Correlation
+   if (f == 3) {
       stat_func <- 'corr'
       main.title.bias <- paste("Correlation for",run_name1,species,"for",network,"for",dates,sep=" ")
       y_stat_max <- corr_max
@@ -313,96 +401,19 @@ for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
       y_stat_min <- max(0,rmse_min)
 
    }
-   if (f == 3) {
+   if (f == 1) {
       stat_func <- 'bias'
       main.title.bias <- paste("Bias for",run_name1,species,"for",network,"for",dates,sep=" ")
       y_stat_max <- bias_max
-      y_stat_min <- bias_min 
+      y_stat_min <- bias_min
    }
 
-   filename_pdf         <- paste(run_name1,species,pid,stat_func,"timeseries.pdf",sep="_")              # Set output file name
-   filename_png         <- paste(run_name1,species,pid,stat_func,"timeseries.png",sep="_")
-
-   filename_pdf         <- paste(figdir,filename_pdf,sep="/")           # Filename for obs spatial plot
-   filename_png         <- paste(figdir,filename_png,sep="/")           # Filename for model spatial plot
-
-   if (custom_title != "") {
-      main.title.bias <- custom_title
-   }
-   #####################################
-   ### Plot Model vs. Ob Time Series ###
-   #####################################
-   pdf(file=filename_pdf,width=11,height=8.5)
-   par(mfrow = c(2,1),mai=c(1,1,.5,1))
-   par(cex.axis=1,las=1,mfg=c(1,1),lab=c(5,10,7))
-   plot(Dates[[1]],Mod_Mean[[1]], axes=TRUE, ylim=c(ymin,ymax),type='l',ylab=paste(species,"(",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width)  # Plot model data
-   if (inc_points == 'y') {
-      points(Dates[[1]],Mod_Mean[[1]],col=plot_colors[[2]])
-   }
-   {
-      if ((averaging == "h") || (averaging == "m") || (averaging == "a")) {
-         axis(side=1, at=Dates[[1]])
-      }
-      else if (averaging == "ym") {
-         axis.POSIXct(side=1, at=Dates[[1]],format="%b %Y")
-      }
-      else {
-         axis.POSIXct(side=1, at=Dates[[1]],format="%b %d")
-      }
-   }
-   lines(Dates[[1]],Obs_Mean[[1]],col=plot_colors[1],lty=1,lwd=line_width)
-   if (inc_points == 'y') {
-      points(Dates[[1]],Obs_Mean[[1]],col=plot_colors[1])
-   }
-   legend_names <- c(network_label[1],run_names[1])
-   legend_colors <- c(plot_colors[1],plot_colors[2])
-   if (num_runs > 1) {
-      for (k in 2:num_runs) {
-         lines(Dates[[k]],Mod_Mean[[k]],col=plot_colors[k+1],lty=1,lwd=line_width)
-         if (inc_points == 'y') {
-            points(Dates[[k]],Mod_Mean[[k]],col=plot_colors[k+1])
-         }
-         legend_names <- c(legend_names,run_names[k])
-         legend_colors <- c(legend_colors,plot_colors[k+1])
-         if (Num_Obs[[k]] != Num_Obs[[1]]) {
-            num_diff <- abs(Num_Obs[[k]]-Num_Obs[[1]])
-            sub.title <- paste("Warning: Number of observations differ by",num_diff,"between simulations",sep=" ")
-         }
-      }   
-   }
-   usr <- par("usr")
-   text(usr[2],usr[4],paste("# of Sites: ",num_sites,sep=""),adj=c(1.1,1.1),cex=1)
-   if (inc_legend == 'y') {
-      legend("topleft",legend=legend_names,col=legend_colors,lty=c(1,1,1), merge=TRUE,cex=1, bty='n')  # Add legend
-   }
-
-   title(main=main.title, cex.main = 0.9, sub=sub.title, cex.sub = 0.75, col.sub = "red")
-   ######################################
-
-   if (run_info_text == "y") {
-      if (rpo != "None") {
-         text(max(Dates[[1]]),ymax-((ymax-ymin)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=.8)
-      }
-      if (pca != "None") {
-         text(max(Dates[[1]]),ymax-((ymax-ymin)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=.8)
-      }
-      if (state != "All") {
-         text(max(Dates[[1]]),ymax-((ymax-ymin)*.15),paste("State: ",state,sep=""),pos=2,cex=.8)
-      }
-      if (site != "All") {
-         text(max(Dates[[1]]),ymax-((ymax-ymin)*.10),paste("Site: ",site,sep=""),pos=2,cex=.8)
-      }
-   }
-
-   ###################################
-   ### Plot Model Bias Time Series ###
-   ###################################
    par(new=T)
-   par(mfg=c(2,1))
+   par(mfg=c(f+1,1),mai=c(.52,1,.4,1))
 
    {
       if (stat_func == 'corr') { # If plotting correlation instead of bias
-         plot(Dates[[1]],CORR[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab="Correlation",xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width)
+         plot(Dates[[1]],CORR[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab="Correlation",xlab=x_label,lty=1,col=plot_colors[2],cex=.8, xaxt="n",lwd=line_width)
          if (inc_points == 'y') {
             points(Dates[[1]],CORR[[1]],col=plot_colors[2])
          }
@@ -414,7 +425,7 @@ for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
          }
       }
       else {
-         plot(Dates[[1]],Bias_Mean[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab=paste(species,"(",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width)  # Plot model data
+         plot(Dates[[1]],Bias_Mean[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab=paste(species,"Bias (",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width)  # Plot model data
          if (inc_points == 'y') {
             points(Dates[[1]],Bias_Mean[[1]],col=plot_colors[2])
          }
@@ -463,11 +474,11 @@ for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
    }
    abline(h=0,col="black")
    usr <- par("usr")
-   text(usr[2],usr[4],paste("# of Sites: ",num_sites,sep=""),adj=c(1.1,1.1),cex=1)
+   text(usr[2],usr[4],paste("# of Sites: ",num_sites,sep=""),adj=c(1.1,1.1),cex=1.1)
    if (inc_legend == 'y') {
-      legend("topleft",legend=legend_names,col=legend_colors,lty=c(1,1,1), merge=TRUE,cex=1, bty='n')  # Add legend
+      legend("topleft",legend=legend_names,col=legend_colors,lty=c(1,1,1), merge=TRUE,cex=1.1, bty='n')  # Add legend
    }
-   title(main=main.title.bias, cex.main=0.9, sub=sub.title, cex.sub = 0.75, col.sub = "red")
+   title(main=main.title.bias, cex.main=1)
    ###################################
 
    if (run_info_text == "y") {
@@ -484,17 +495,18 @@ for (f in 1:3) {	# Loop for plotting Bias, RMSE and Correlation
          text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,sep=""),pos=2,cex=.8)
       } 
    }
-
-   ### Create PNG Plot ###
-   if ((ametptype == "png") || (ametptype == "both")) {
-      convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-      dev.off()
-      system(convert_command)
-
-      if (ametptype == "png") {
-         remove_command <- paste("rm ",filename_pdf,sep="")
-         system(remove_command)
-      }
-   }
-#######################
 }	# End loop for plotting Bias, RMSE and Correlation
+
+#######################
+### Create PNG Plot ###
+#######################
+dev.off()
+if ((ametptype == "png") || (ametptype == "both")) {
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
+   system(convert_command)
+    if (ametptype == "png") {
+      remove_command <- paste("rm ",filename_pdf,sep="")
+      system(remove_command)
+   }
+}
+

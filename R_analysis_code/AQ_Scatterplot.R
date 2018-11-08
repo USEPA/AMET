@@ -8,7 +8,7 @@
 ### The script will also allow a second run to plotted on top of the
 ### first run. 
 ###
-### Last Updated by Wyat Appel: June, 2017
+### Last Updated by Wyat Appel: June, 2018
 ################################################################
 
 # get some environmental variables and setup some directories
@@ -50,20 +50,9 @@ point_char   <- NULL
 point_color  <- NULL
 
 ### Retrieve units and model labels from database table ###
-network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
-model_name <- model_name[[1]]
-units_convert <- 1
-if (units == "ppm") {
-   units_convert <- 1000
-   units <- "ppb"
-}
-if (length(units) == 0) {
-   units <- ""
-}
+network 	<- network_names[1]
+#units_qs 	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 run_count <- 1
@@ -72,137 +61,137 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    num_runs <- 2								# If so, set number of runs to 2
 }
 run_name <- run_name1
-
 while (run_count <= num_runs) {
    source(ametRinput)
-   for (j in 1:length(network_names)) {
+   total_networks <- length(network_names)
+   for (j in 1:total_networks) {
       network <- network_names[[j]]						# Set network
-      criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")             # Set part of the MYSQL query
-      check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
-      query_table_info.df <-db_Query(check_POCode,mysql)
-      { 
-         if (length(query_table_info.df$COLUMN_NAME) == 0) {	# Check to see if POCode column exists or not
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-            aqdat_query.df<-db_Query(qs,mysql)
-            aqdat_query.df$POCode <- 1
+      {
+         if (Sys.getenv("AMET_DB") == 'F') {
+            sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+            aqdat_query.df   <- sitex_info$sitex_data
+            data_exists	     <- sitex_info$data_exists
+            units            <- as.character(sitex_info$units[[1]])
+            model_name	     <- "Model"
          }
          else {
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-            aqdat_query.df<-db_Query(qs,mysql)
+            query_result   <- query_dbase(run_name,network,species)
+            aqdat_query.df <- query_result[[1]]
+            data_exists    <- query_result[[2]]
+            units 	   <- query_result[[3]]
+            model_name 	   <- query_result[[4]]
          }
       }
-      aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')	# Create unique site using site ID and PO Code
-      aqdat_query.df[,9] <- aqdat_query.df[,9]*units_convert
-      aqdat_query.df[,10] <- aqdat_query.df[,10]*units_convert
-      ################################################################################
-      ### if plotting all obs, remove missing obs and zero precip obs if requested ###
-      ################################################################################
-      if (remove_negatives == "y") {
-         indic.nonzero <- aqdat_query.df[,9] >= 0                                                  # determine which obs are missing (less than 0); 
-         aqdat_query.df <- aqdat_query.df[indic.nonzero,]                                                        # remove missing obs from dataframe
-         indic.nonzero <- aqdat_query.df[,10] >= 0
-         aqdat_query.df <- aqdat_query.df[indic.nonzero,]
-      }
-      #################################################################################
+      {
+         if (data_exists == "n") {
+            total_networks <- (total_networks-1)
+            aqdat_query.df <- "No data from file or database query." 
+         }
+         else {
+            if (averaging != "n") {
+               aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+               {
+                  if (use_avg_stats == "y") {
+                     aqdat.df <- Average(aqdat.df)
+                     aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+                  }
+                  else {
+                     aqdat_stats.df <- aqdat.df
+                     aqdat.df <- Average(aqdat.df)
+                  }
+               }
+            }
+            else { 
+               aqdat.df <- aqdat_query.df
+               aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
+               aqdat_stats.df <- aqdat.df
+            }
+            axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value)) 
+            #########################################################
+            #### Calculate statistics for each requested network ####
+            #########################################################
+            ## Calculate stats using all pairs, regardless of averaging
+            data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
+            stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
+            num_pairs   <- NULL
+            mean_mod    <- NULL
+            mean_obs    <- NULL
+            corr        <- NULL
+            r_sqrd	     <- NULL
+            rmse        <- NULL
+            nmb         <- NULL
+            nme         <- NULL
+            mb          <- NULL
+            me          <- NULL
+            med_bias    <- NULL
+            med_error   <- NULL
+            fb          <- NULL
+            fe          <- NULL
+            stats_array <- NULL
+            stats_array_include <- NULL
+            stats_names_include <- NULL
+            num_pairs   <- stats.df$NUM_OBS
+            mean_obs    <- round(stats.df$MEAN_OBS,1)
+            mean_mod    <- round(stats.df$MEAN_MODEL,1)
+            nmb         <- round(stats.df$Percent_Norm_Mean_Bias,1)
+            nme         <- round(stats.df$Percent_Norm_Mean_Err,1)
+            nmdnb       <- round(stats.df$Norm_Median_Bias,1)
+            nmdne       <- round(stats.df$Norm_Median_Error,1)
+            mb          <- round(stats.df$Mean_Bias,2)
+            me          <- round(stats.df$Mean_Err,2)
+            med_bias    <- round(stats.df$Median_Bias,2)
+            med_error   <- round(stats.df$Median_Error,2)
+            fb          <- round(stats.df$Frac_Bias,2)
+            fe          <- round(stats.df$Frac_Err,2)
+            corr        <- round(stats.df$Correlation,2)
+            r_sqrd	  <- round(stats.df$R_Squared,2)
+            rmse        <- round(stats.df$RMSE,2)
+            rmse_sys    <- round(stats.df$RMSE_systematic,2)
+            rmse_unsys  <- round(stats.df$RMSE_unsystematic,2)
+            index_agr   <- round(stats.df$Index_of_Agree,2)
+            stats_array <- c(num_pairs,mean_obs,mean_mod,index_agr,corr,r_sqrd,rmse,rmse_sys,rmse_unsys,nmb,nme,nmdnb,nmdne,mb,me,med_bias,med_error,fb,fe)		# Order must be matched to AMET query page order
+            stats_names <- c("n","Mn_O","Mn_M","IofA","r",expression(paste(R^2)),"RMSE",expression(paste(RMSE[s])),expression(paste(RMSE[u])),"NMB","NME","NMdnB","NMdnE","MB","ME","MdnB","MdnE","FB","FE")	# Order must be matched to order above
+            for (k in 1:19) {
+               if (stats_flags[k] == "y") {
+                   stats_array_include <- c(stats_array_include,stats_array[k])
+                   stats_names_include <- c(stats_names_include,stats_names[k])
+               }
+            }
+            #########################################################
 
-      if (averaging != "n") {
-         aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob,precip_mod=aqdat_query.df$precip_mod)
-         {
-            if (use_avg_stats == "y") {
-               aqdat.df <- Average(aqdat.df)
-               aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+            if (run_count == 1) {
+               sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,stat1=stats_array_include[1],stat2=stats_array_include[2],stat3=stats_array_include[3],stat4=stats_array_include[4],stat5=stats_array_include[5],r_sqrd=r_sqrd)        # create of list of plot values and corresponding statistics
             }
             else {
-               aqdat_stats.df <- aqdat.df
-               aqdat.df <- Average(aqdat.df)
+               sinfo2[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,stat1=stats_array_include[1],stat2=stats_array_include[2],stat3=stats_array_include[3],stat4=stats_array_include[4],stat5=stats_array_include[5])        # create of list of plot values and corresponding statistics
             }
-         }
-      }
-      else { 
-         aqdat.df <- aqdat_query.df
-         aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month,precip_ob=aqdat.df$precip_ob)      # Create dataframe of network values to be used to create a list
-         aqdat_stats.df <- aqdat.df
-      }
-      axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value)) 
-      #########################################################
-      #### Calculate statistics for each requested network ####
-      #########################################################
-      ## Calculate stats using all pairs, regardless of averaging
-      data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value,precip_val=aqdat_stats.df$precip_ob)
-      stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
-      num_pairs   <- NULL
-      mean_mod    <- NULL
-      mean_obs	  <- NULL
-      corr        <- NULL
-      r_sqrd	  <- NULL
-      rmse        <- NULL
-      nmb         <- NULL
-      nme         <- NULL
-      mb          <- NULL
-      me          <- NULL
-      med_bias    <- NULL
-      med_error   <- NULL
-      fb          <- NULL
-      fe          <- NULL
-      stats_array <- NULL
-      stats_array_include <- NULL
-      stats_names_include <- NULL
-      num_pairs   <- stats.df$NUM_OBS
-      mean_obs    <- round(stats.df$MEAN_OBS,1)
-      mean_mod    <- round(stats.df$MEAN_MODEL,1)
-      nmb         <- round(stats.df$Percent_Norm_Mean_Bias,1)
-      nme         <- round(stats.df$Percent_Norm_Mean_Err,1)
-      nmdnb       <- round(stats.df$Norm_Median_Bias,1)
-      nmdne       <- round(stats.df$Norm_Median_Error,1)
-      mb          <- round(stats.df$Mean_Bias,2)
-      me          <- round(stats.df$Mean_Err,2)
-      med_bias    <- round(stats.df$Median_Bias,2)
-      med_error   <- round(stats.df$Median_Error,2)
-      fb          <- round(stats.df$Frac_Bias,2)
-      fe          <- round(stats.df$Frac_Err,2)
-      corr        <- round(stats.df$Correlation,2)
-      r_sqrd	  <- round(stats.df$R_Squared,2)
-      rmse        <- round(stats.df$RMSE,2)
-      rmse_sys    <- round(stats.df$RMSE_systematic,2)
-      rmse_unsys  <- round(stats.df$RMSE_unsystematic,2)
-      index_agr   <- round(stats.df$Index_of_Agree,2)
-      stats_array <- c(num_pairs,mean_obs,mean_mod,index_agr,corr,r_sqrd,rmse,rmse_sys,rmse_unsys,nmb,nme,nmdnb,nmdne,mb,me,med_bias,med_error,fb,fe)		# Order must be matched to AMET query page order
-      stats_names <- c("n","Mn_O","Mn_M","IofA","r",expression(paste(R^2)),"RMSE",expression(paste(RMSE[s])),expression(paste(RMSE[u])),"NMB","NME","NMdnB","NMdnE","MB","ME","MdnB","MdnE","FB","FE")	# Order must be matched to order above
-      for (k in 1:19) {
-         if (stats_flags[k] == "y") {
-             stats_array_include <- c(stats_array_include,stats_array[k])
-             stats_names_include <- c(stats_names_include,stats_names[k])
-         }
-      }
-      #########################################################
-
-      if (run_count == 1) {
-         sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,stat1=stats_array_include[1],stat2=stats_array_include[2],stat3=stats_array_include[3],stat4=stats_array_include[4],stat5=stats_array_include[5],r_sqrd=r_sqrd)        # create of list of plot values and corresponding statistics
-      }
-      else {
-         sinfo2[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,stat1=stats_array_include[1],stat2=stats_array_include[2],stat3=stats_array_include[3],stat4=stats_array_include[4],stat5=stats_array_include[5])        # create of list of plot values and corresponding statistics
+         }	# End no data if/else statement
       }
       ##############################
       ### Write Data to CSV File ###
       ##############################
-      if (j == 1) {
-         write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
-         write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+      if ((j == 1) && (run_count == 1)){
+         write.table(run_name,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
       }
       else {
          write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-         write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+         write.table(run_name,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       }
-   
+      write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+      write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+      write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
       ###############################
-   }				# End for loop for networks
+   }	# End for loop for networks
    run_count <- run_count+1
    run_name <- run_name2
-}				# End while loop runs
+}	# End while loop multiple runs
+
+### Error check for no data ###
+if (length(sinfo[[1]]) == 0) {
+   stop("No data were returned from either files or database queries. Perhaps you have a error in your query setup.")
+}
+###############################
+
 axis.min <- axis.max * .033
 
 ### If user sets axis maximum, compute axis minimum ###
@@ -237,15 +226,15 @@ while (run_count <= num_runs) {
       x3 <- axis.max - (axis.length * 0.290)                    # define right justification for RMSEs
       x2 <- axis.max - (axis.length * 0.370)                    # define right justification for Index of Agreement
       x1 <- axis.max - (axis.length * 0.490)                    # define right justification for Network
-      y1 <- axis.max - (axis.length * 0.890)                    # define y for labels
-      y2 <- axis.max - (axis.length * 0.850)                    # define y for run name
-      y3 <- axis.max - (axis.length * 0.920)                    # define y for network 1
-      y4 <- axis.max - (axis.length * 0.950)                    # define y for network 2
-      y5 <- axis.max - (axis.length * 0.980)                    # define y for network 3
-      y6 <- axis.max - (axis.length * 0.700)                    # define y for species text
-      y7 <- axis.max - (axis.length * 0.660)                    # define y for timescale (averaging)
-      y8 <- axis.max - (axis.length * 0.740)
-      y9 <- axis.max - (axis.length * 0.780)
+      y1 <- axis.max - (axis.length * 0.810)                    # define y for labels
+      y2 <- axis.max - (axis.length * 0.770)                    # define y for run name
+      y3 <- axis.max - (axis.length * 0.840)                    # define y for network 1
+      y4 <- axis.max - (axis.length * 0.870)                    # define y for network 2
+      y5 <- axis.max - (axis.length * 0.900)                    # define y for network 3
+      y6 <- axis.max - (axis.length * 0.660)                    # define y for species text
+      y7 <- axis.max - (axis.length * 0.620)                    # define y for timescale (averaging)
+      y8 <- axis.max - (axis.length * 0.700)
+      y9 <- axis.max - (axis.length * 0.740)
       y10 <- axis.max*0.82
       y11 <- axis.max*0.78
       x <- c(x1,x2,x3,x4,x5,x6,x7)                              # set vector of x offsets
@@ -298,33 +287,36 @@ while (run_count <= num_runs) {
       x2 <- axis.max * 0.200                    		# define right justification for RMSE
       x1 <- axis.max * 0.090                    		# define right justification for Network
       y1 <- axis.max * 0.940                    		# define y for labels
-      y2 <- axis.max * 0.980                    		# define y for run name
-      y3 <- axis.max * 0.900                    		# define y for network 1
-      y4 <- axis.max * 0.870                    		# define y for network 2
-      y5 <- axis.max * 0.840                    		# define y for network 3
-      y6 <- axis.max * 0.810
+      y2 <- axis.max * 0.900                    		# define y for run name
+      y3 <- axis.max * 0.860                    		# define y for network 1
+      y4 <- axis.max * 0.830                    		# define y for network 2
+      y5 <- axis.max * 0.810                    		# define y for network 3
+      y6 <- axis.max * 0.770
+      y7 <- axis.max * 0.730
       x2 <- c(x1,x2,x3,x4,x5,x6,x7)                    		# set vector of x offsets
-      y2 <- c(y1,y2,y3,y4,y5,y6)					# set vector of y offsets
-      text(x2[7],y2[2], run_name, cex=1)				# add run name to stats box
-      text(x2[2],y2[1], stats_names_include[1] ,font=3,cex=0.8)
-      text(x2[3],y2[1], stats_names_include[2] ,font=3,cex=0.8)	# write RMSE title
-      text(x2[4],y2[1], stats_names_include[3] ,font=3,cex=0.8)                   # write NMB title
-      text(x2[5],y2[1], stats_names_include[4] ,font=3,cex=0.8)                   # write NME title
-      text(x2[6],y2[1], stats_names_include[5] ,font=3,cex=0.8)
+      y2 <- c(y1,y2,y3,y4,y5,y6,y7)					# set vector of y offsets
+      text(x2[7],y2[1], run_name, cex=1)				# add run name to stats box
+      text(x2[2],y2[2], stats_names_include[1] ,font=3,cex=0.8)	
+      text(x2[3],y2[2], stats_names_include[2] ,font=3,cex=0.8)		# write RMSE title
+      text(x2[4],y2[2], stats_names_include[3] ,font=3,cex=0.8)         # write NMB title
+      text(x2[5],y2[2], stats_names_include[4] ,font=3,cex=0.8)         # write NME title
+      text(x2[6],y2[2], stats_names_include[5] ,font=3,cex=0.8)
       ##############################################
    }   
 
    ### Plot points and stats for each network ###
-   for (n in 1:length(network_names)) {									# loop through each network
+   for (n in 1:total_networks) {									# loop through each network
       point_color <- plot_colors[n]
       if (run_count == 1) { 
+         offset <- c(0.84,0.87,0.90,0.93,0.96)
          points(sinfo[[n]]$plotval_obs,sinfo[[n]]$plotval_mod,pch=plot_chars[n],col=plot_colors[n],cex=1)	# plot points for each network
-         text(x[1],y[n+2], network_label[n], cex=0.9)								# add network text to stats box
-         text(x[2],y[n+2], sinfo[[n]]$stat1, cex=0.9)								# write network stat1
-         text(x[3],y[n+2], sinfo[[n]]$stat2, cex=0.9)								# write network stat2
-         text(x[4],y[n+2], sinfo[[n]]$stat3, cex=0.9)                          					# write network stat3
-         text(x[5],y[n+2], sinfo[[n]]$stat4, cex=0.9)       	                    				# write netowrk stat4
-         text(x[6],y[n+2], sinfo[[n]]$stat5, cex=0.9)								# write network stat5
+         y_val <- axis.max-(axis.length * offset[n])
+         text(x[1],y_val, network_label[n], cex=0.9)								# add network text to stats box
+         text(x[2],y_val, sinfo[[n]]$stat1, cex=0.9)								# write network stat1
+         text(x[3],y_val, sinfo[[n]]$stat2, cex=0.9)								# write network stat2
+         text(x[4],y_val, sinfo[[n]]$stat3, cex=0.9)                          					# write network stat3
+         text(x[5],y_val, sinfo[[n]]$stat4, cex=0.9)       	                    				# write netowrk stat4
+         text(x[6],y_val, sinfo[[n]]$stat5, cex=0.9)								# write network stat5
       }
       else {
          points(sinfo2[[n]]$plotval_obs,sinfo2[[n]]$plotval_mod,pch=plot_chars[n],col=plot_colors[n],cex=1)	# plot points for each network
@@ -381,7 +373,7 @@ if (run_info_text == "y") {
 ### Put legend on the plot ###
 {
    if (num_runs < 2) {
-      legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1.2, bty="n")
+      legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1, bty="n")
    }
    else {
       legend(0,y2[6], legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1, bty="n")
@@ -390,9 +382,9 @@ if (run_info_text == "y") {
 ##############################
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

@@ -4,9 +4,14 @@
 ### supercede the settings here. 					###
 ###########################################################################
 
-start_date 		<- "20110701"
-end_date   		<- "20110731"
+#start_date	<- 20110701
+#end_date	<- 20110714
 
+start_date 	<- gsub('-','',Sys.getenv("AMET_SDATE"))
+end_date   	<- gsub('-','',Sys.getenv("AMET_EDATE"))
+
+
+date_query <- paste("ob_dates between ",start_date," and ",end_date," and ob_datee between ",start_date," and ",end_date,sep="")
 ### Example for seasonal analysis ###
 #batch_query <- c("month=12 or month=1 or month=2","month=3 or month=4 or month=5","month=6 or month=7 or month=8","month=9 or month=10 or month=11")
 #batch_names <- c("Winter","Spring","Summer","Fall")
@@ -14,35 +19,35 @@ end_date   		<- "20110731"
 ### Example for monthly analysis ###
 #batch_query <- c("month=1","month=2","month=3","month=4","month=5","month=6","month=7","month=8","month=9","month=10","month=11","month=12")
 #batch_names <- c("January","February","March","April","May","June","July","August","September","October","November","December")
-batch_query <- c("month=7")
-batch_names <- c("July")
+batch_query <- c(date_query)
+batch_names <- c("All")
 
-hourly_ozone_analysis   <- 'y'	# Flag to include hourly ozone analysis
-daily_ozone_analysis    <- 'y'	# Flag to include daily ozone analysis
+hourly_ozone_analysis   <- 'n'	# Flag to include hourly ozone analysis
+daily_ozone_analysis    <- 'n'	# Flag to include daily ozone analysis
 aerosol_analysis        <- 'y'	# Flag to include aerosol analysis
-dep_analysis            <- 'y'	# Flag to include analysis of deposition performance
-gas_analysis            <- 'y'	# Flag to include gas analysis
-AE6_analysis            <- 'y'	# Flag to include AERO6 soil species from CSN and IMPROVE
-AOD_analysis		<- 'y'	# Flag to include Aerosol Optical Depth (AOD) from AERONET
-PAMS_analysis		<- 'y'	# Flag to include PAMS network species from AQS (hourly and daily)
+dep_analysis            <- 'n'	# Flag to include analysis of deposition performance
+gas_analysis            <- 'n'	# Flag to include gas analysis
+AE6_analysis            <- 'n'	# Flag to include AERO6 soil species from CSN and IMPROVE
+AOD_analysis		<- 'n'	# Flag to include Aerosol Optical Depth (AOD) from AERONET
+PAMS_analysis		<- 'n'	# Flag to include PAMS network species from AQS (hourly and daily)
 
-ozone_averaging         <- 'y'  # Flag to average ozone data; options are n (none), d (daily), m (month), s (season), y (all)           
-aerosol_averaging       <- 'y'  # Flag to average aerosol data; options are n (none), d (daily), m (month), s (season), y (all)
-deposition_averaging    <- 'y'  # Flag to sum deposition data; options are n (none), d (daily), m (month), s (season), y (all)
-gas_averaging           <- 'y'  # Flag to average gas data; options are n (none), d (daily), m (month), s (season), y (all)
-AE6_averaging           <- 'y'	# Flag to soil species; options are n (none), d (daily), m (month), s (season), y (all)
-AOD_averaging		<- 'y'	# Flag to AOD; options are n (none), d (daily), m (month), s (season), y (all)
-PAMS_averaging		<- 'y'	# Flag to average PAMS species; options are n (none), d (daily), m (month), s (season), y (all)
+ozone_averaging         <- 'n'  # Flag to average ozone data; options are n (none), d (daily), m (month), s (season), y (all)           
+aerosol_averaging       <- 'n'  # Flag to average aerosol data; options are n (none), d (daily), m (month), s (season), y (all)
+deposition_averaging    <- 'n'  # Flag to sum deposition data; options are n (none), d (daily), m (month), s (season), y (all)
+gas_averaging           <- 'n'  # Flag to average gas data; options are n (none), d (daily), m (month), s (season), y (all)
+AE6_averaging           <- 'n'	# Flag to soil species; options are n (none), d (daily), m (month), s (season), y (all)
+AOD_averaging		<- 'n'	# Flag to AOD; options are n (none), d (daily), m (month), s (season), y (all)
+PAMS_averaging		<- 'n'	# Flag to average PAMS species; options are n (none), d (daily), m (month), s (season), y (all)
 
 ### Choose which spatial plots to run ###
 stat_plots 	<- 'y'	# AQ_Stats_Plots.R
-spatial_plots 	<- 'y'	# AQ_Plot_Spatial.R
-diff_plots	<- 'y'	# AQ_Plot_Spatial_Diff.R
-mtom_plots	<- 'y'	# AQ_Plot_Spatial_MtoM.R
-ratio_plots	<- 'y'	# AQ_Plot_Spatial_Ratio.R
+spatial_plots 	<- 'n'	# AQ_Plot_Spatial.R
+diff_plots	<- 'n'	# AQ_Plot_Spatial_Diff.R
+mtom_plots	<- 'n'	# AQ_Plot_Spatial_MtoM.R
+ratio_plots	<- 'n'	# AQ_Plot_Spatial_Ratio.R
 
 ### Choose which bar plots to run ###
-AE5_barplot		<- 'y'	# AQ_Stacked_Barplot.R
+AE5_barplot		<- 'n'	# AQ_Stacked_Barplot.R
 AE6_barplot		<- 'y'	# AQ_Stacked_Barplot_AE6.R
 soil_barplot		<- 'y'	# AQ_Stacked Barplot_soil.R
 soil_multi_barplot	<- 'y'	# AQ_Stacked_Barplot_soil_multi.R
@@ -61,12 +66,14 @@ scatter_plot               <- 'y'	# AQ_Scatterplot.R
 scatter_single_plot        <- 'y'	# AQ_Scatterplot_single.R
 scatter_density_plot       <- 'y'	# AQ_Scatterplot_density.R
 scatter_bins_plot          <- 'y'	# AQ_Scatterplot_bins.R
-scatter_percentiles_plot   <- 'y'	# AQ_Scatterplot_percentiles.R
+scatter_percentiles_plot   <- 'n'	# AQ_Scatterplot_percentiles.R
 scatter_skill_plot         <- 'y'	# AQ_Scatterplot_skill.R
 scatter_mtom_plot	   <- 'y'	# AQ_Scatterplot_mtom.R
+scatter_soil_plot	   <- 'y'	# AQ_Scatterplot_soil.R
 
 ### Choose to plot soccer plots ###
-soccer_plot	<- 'y'	# AQ_Soccerplot.R
+soccer_plot	<- 'n'	# AQ_Soccerplot.R
+bugle_plot      <- 'n'  # AQ_Bugleplot.R
 
 ### Use this to add additional query information (e.g. states) ###
 additional_query	<- ""
@@ -78,6 +85,17 @@ run_name5               <- ""
 run_name6               <- ""
 
 ###########################################################################
+
+################################
+### Set PNG image resolution ###
+### Integer value (100-1200) ###
+################################
+png_res <- 300
+
+##################################
+### Custom Title for All Plots ###
+##################################
+#custom_title<-"My really cool title"
 
 #####################################
 ### Spatial Decomposition Options ###
@@ -170,12 +188,13 @@ num_ints	<- 20
 perc_error_max	<- NULL
 abs_error_max	<- NULL
 rmse_range_max	<- NULL
-perc_range_min	<- NULL
-perc_range_max	<- NULL
+perc_range_min	<- -150
+perc_range_max	<- 150
 abs_range_min	<- NULL
 abs_range_max	<- NULL
 diff_range_min	<- NULL
 diff_range_max	<- NULL
+hist_max        <- NULL
 greyscale	<- "n"
 inc_counties	<- "y"
 symbsizfac	<- 1
@@ -213,6 +232,9 @@ bin_by_mod<-"n"
 density_zlim<-NULL
 num_dens_bins<-NULL
 
+### Skill plot criteria line ###
+O3_max_limit<-70
+PM_max_limit<-25
 
 ##################################
 ### Stacked Bar Charts Options ###
@@ -227,7 +249,8 @@ remove_other 	<- 'n'
 stat_file<-""
 
 ##################################
-##### Path of Network Input file ###
-####################################
+###### Path of Network Input file ###
+#####################################
 #ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
 #source(ametNetworkInput) # Network related input
+

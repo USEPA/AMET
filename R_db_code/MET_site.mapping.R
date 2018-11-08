@@ -3,16 +3,14 @@
 #                                                                 ################################
 #     AMET Observation Site Mapping to Model Grid                 ###############################
 #                                                                 ###############################
-#       Version 1.3                                               ###############################
-#       Date: April 18, 2017                                      ###############################
-#       Contributors:Robert Gilliam                               ###############################
-#                                                                 ###############################
 #     Developed by the US Environmental Protection Agency         ###############################
 #                                                                 ################################
 #####################################################################################################
 #######################################################################################################
 #
 #  V1.3, 2017Apr18, Robert Gilliam: Initial Development
+#  V1.4, 2018Sep30, Robert Gilliam: Site mapping functions for mpas and wrf were updated to insert
+#                                   site elevation and state in the database stations table.
 #
 #######################################################################################################
 #######################################################################################################
@@ -25,7 +23,7 @@
 #                          MPAS polygon grid structure. This allows AMET to calculate these
 #                          interpolation factors only once and just add new sites as they are found.
 #
-#     wrf_site_map    --> Builds sitelist, a master list of site ids that is updated each hour
+#     wrf_site_map     --> Builds sitelist, a master list of site ids that is updated each hour
 #                          with any new sites. Alongside the sitelist is an array of the same size
 #                          that contains the nearest i,j grid cell where the observation site is 
 #                          located. Also calculated is dx/dy location of the obs site from the lower
@@ -52,6 +50,7 @@
 #       sitenum        -- Number of unique sites in sitelist
 #       slat           -- Latitude of sites in hourly site array
 #       slon           -- Longitude of sites in hourly site array
+#       elev           -- Site elevation (m)
 #       report_type    -- Longitude of sites in hourly site array
 #       site_locname   -- String describing site location (i.e, for KRDU 'Raleigh-Durham, NC')
 #       lat            -- MPAS cell's latitudes
@@ -66,14 +65,14 @@
 #         supdate<-list(sitelist=sitelist, sitenum=sitenum, cind=cind, cwgt=cwgt)
 
  mpas_site_map <-function(site, sites_unique, sitelist, sitenum, 
-                          slat, slon, report_type, site_locname,
+                          slat, slon, elev, report_type, site_locname,
                           lat, lon, latv, lonv, cells_on_vertex,
                           cind, cwgt, mysqldbase, sitecommand, 
                           sitemax=15000, updateSiteTable=F) {
 
   # If update site table open temporary site query file
   if(updateSiteTable) {
-    system("rm tmp.site.query") 
+    system("rm -f tmp.site.query") 
     sfile<-file("tmp.site.query","a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
   }
@@ -114,9 +113,12 @@
                      "  MPAS cell coord:",lat[cind[sitenum,2]],lon[cind[sitenum,2]]))
 
     if(updateSiteTable){
-      writeLines(paste("Inserting sites into AMET stations table",s,nsr,sites_unique[s],site_locname[inds])) 
-      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, lat, lon) VALUES ('",sitelist[sitenum],"','",
-                   report_type[inds],"','",site_locname[inds],"','",slat[inds],"','",slon[inds],"')",sep="")
+      tmps <- trimws(unlist(strsplit(site_locname[inds],','))[2])
+      state<- ifelse(is.na(unlist(strsplit(tmps,""))[1]),'',substr(tmps,1,2))
+      elevs<- ifelse(is.na(elev[inds]),'NULL',round(elev[inds]))
+      writeLines(paste("Inserting sites into AMET stations table",s,nsr,inds,sites_unique[s],site_locname[inds], state)) 
+      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev) VALUES ('",sitelist[sitenum],"','",
+                   report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,")",sep="")
       writeLines(paste(query,";"),con=sfile)             
     }
   }
@@ -125,6 +127,7 @@
     close(sfile)
     system(sitecommand)
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
+    system("rm -f tmp.site.query")
   }
 
   writeLines(paste("Finished: Mapping observation sites to MPAS grid. Number of sites mapped:",sitenum))
@@ -147,6 +150,7 @@
 #       sitenum        -- Number of unique sites in sitelist
 #       slat           -- Latitude of sites in hourly site array
 #       slon           -- Longitude of sites in hourly site array
+#       elev           -- Site elevation (m)
 #       report_type    -- Longitude of sites in hourly site array
 #       site_locname   -- String describing site location (i.e, for KRDU 'Raleigh-Durham, NC')
 #       proj           -- WRF projection. 1- Lambert, 2-Polar Sterographic (not implemented yet)
@@ -161,13 +165,13 @@
 
 
  wrf_site_map <-function(site, sites_unique, sitelist, sitenum, slat, slon,
-                         report_type, site_locname, proj, wrfind, 
+                         elev, report_type, site_locname, proj, wrfind, 
                          interp, mysqldbase, sitecommand, sitemax=15000, 
                          updateSiteTable=F, buffer=5) {
   
   # If update site table open temporary site query file
   if(updateSiteTable) {
-    system("rm tmp.site.query") 
+    system("rm -f tmp.site.query") 
     sfile<-file("tmp.site.query","a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
   }
@@ -181,8 +185,11 @@
   nsites_outside_domain<-0 
   for(s in 1:nsr) {
     if(sites_unique[s] %in% sitelist){ next }
-
     inds             <-which(sites_unique[s] == site)[1]    
+
+    # Simple QA on site lat lon values. Some mesonet files have bad site locations.
+    if(abs(slat[inds]) > 90 || abs(slon[inds]) > 360) { next }
+
     grdind           <-lamb_latlon_to_ij(proj$lat1, proj$lon1, 1, 1, proj$truelat1, proj$truelat2, 
                                proj$standlon, proj$dx, slat[inds], slon[inds], radius= 6370000.0)
 
@@ -251,13 +258,16 @@
     }
 
     writeLines(paste("sitenum:",sitenum,"is",sitelist[sitenum],"at lat-lon: ",sprintf("%5.3f",slat[inds]),sprintf("%5.3f",slon[inds]),
-                      "     Closest WRF grid cell: ",sprintf("%5.3f",wrfind[sitenum,1,1]), sprintf("%5.3f",wrfind[sitenum,2,1]),
-                      sprintf("%5.3f",dx),sprintf("%5.3f",dy)))
+                     "     Closest WRF grid cell: ",sprintf("%5.3f",wrfind[sitenum,1,1]), sprintf("%5.3f",wrfind[sitenum,2,1]),
+                     sprintf("%5.3f",dx),sprintf("%5.3f",dy)))
 
     if(updateSiteTable){
-      writeLines(paste("Inserting sites into AMET stations table",s,nsr,inds,sites_unique[s],site_locname[inds])) 
-      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, lat, lon) VALUES ('",sitelist[sitenum],"','",
-                   report_type[inds],"','",site_locname[inds],"','",slat[inds],"','",slon[inds],"')",sep="")
+      tmps <- trimws(unlist(strsplit(site_locname[inds],','))[2])
+      state<- ifelse(is.na(unlist(strsplit(tmps,""))[1]),'',substr(tmps,1,2))
+      elevs<- ifelse(is.na(elev[inds]),'NULL',round(elev[inds]))
+      writeLines(paste("Inserting sites into AMET stations table",s,nsr,inds,sites_unique[s],site_locname[inds], state)) 
+      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev) VALUES ('",sitelist[sitenum],"','",
+                   report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,")",sep="")
       writeLines(paste(query,";"),con=sfile)             
     }
   }
@@ -265,14 +275,16 @@
     close(sfile)
     system(sitecommand)
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
+    #system("rm -f tmp.site.query")
   }
   
-  writeLines(paste("Finished: Mapping observation sites to WRF grid. Number of sites mapped:",sitenum))
-  writeLines(paste("Num sites excluded because outside of WRF domain:",nsites_outside_domain))
   writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 
+  writeLines(paste("Num sites excluded because outside of WRF domain:",nsites_outside_domain))
+  writeLines(paste("Finished: Mapping observation sites to WRF grid. Number of sites mapped:",sitenum))
 
   supdate<-list(sitelist=sitelist, sitenum=sitenum, wrfind=wrfind)
   return(supdate)
  }
 #####--------------------------	    END OF FUNCTION: WRF_SITE_MAP      -------------------------------####
 ##########################################################################################################
+
