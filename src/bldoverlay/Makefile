@@ -29,6 +29,6 @@ $(PROGRAM):  $(OBJS)
 .f.o:
 	$(FC) -c $(FC_FLAGS) $<
 
-clean
+clean:
 	rm -f $(OBJS) *.mod
 
