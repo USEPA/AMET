@@ -899,11 +899,11 @@ For detailed instructions on using `Combine`, see
 [**https://github.com/USEPA/CMAQ/tree/5.2/POST/combine**](https://github.com/USEPA/CMAQ/tree/5.2/POST/combine).
 
 After installing the model data in the AMET directories, configure the $AMETBASE/scripts\_db/aqProject.csh
-script. The aqProject.csh script does two things:
+script. The aqProject.csh script does several things:
 
-* Creates a project table in the AMET database. It will also create the database if it does not already exist. 
-* Populates that project table with model and observational data.
-* If the AMET\_DB flag is set to F, these steps are ignored.
+* Creates a project table in the AMET database (if requested). It will also create the database if it does not already exist. 
+* Creates, writes and runs site compare run scripts for each requested network. This step is required regardless of whether or not you plan to you the MySQL database.
+* Populates that database with the model and observational data from the site compare scripts. This step can also be skipped if you do not plan on using the database.
 
 The configuration options for the aqProject.csh script are documented in the script and briefly described below. Upon execution, the script
 calls several R scripts to run the Fortran program `Site Compare` and then populates the AMET database (assumed AMET\_DB = T) with
@@ -912,20 +912,19 @@ fully configured once and then reused with little modification for future projec
 
 Set the following variables to configure the aqProject.csh script for a new project.
 * Set **AMETBASE** to the root AMET installation directory for the project.
-* Set **AMET_DATABASE** to the name of the database to use (by default this is set to "amet").
-* Set **AMET_DB** to T/F. If set to F, you can ignore setting the database only options.
-* Set **MYSQL_CONFIG** to the AMET R configuration file.
+* Set **AMET_DATABASE** to the name of the database to use (by default this is set to "amet"). This does not need to be set if not using the database.
+* Set **MYSQL_CONFIG** to the AMET R configuration file. This does not to be set regardless of whether or not you are using the database since it contains the paths to the site compare executables. However, you do not need to specify the database information if you do not plan to use the database.
 * If desired, you can specify the MySQL login information using the **mysql_login** and **mysql_password** variables. If these variables are set to "config_file" the login information will be taken from the amet-config.R file. If you comment out these variables, the script will prompt you for the MySQL login and password.
 * Set **AMET_PROJECT** to the name of the AMET project; this should be the same name as the project directory, it needs to be
-unique and contain no spaces.
-* Set the AQ **MODEL_TYPE** (e.g. "CMAQ" or "CAMx")
-* Set **RUN_DESCRIPTION** to a short description of the AMET project
+unique and contain no spaces. This is required.
+* Set the AQ **MODEL_TYPE** (e.g. "CMAQ" or "CAMx"). Not required when not using the database.
+* Set **RUN_DESCRIPTION** to a short description of the AMET project. Not required when not using the database.
 * The variable **USER_NAME** will default to the system user ID and can be changed as desired. The **USER_NAME**
 is only used to identify you in the AMET database and is not used to as a login to the
- database.
+ database. Not required when not using the database.
 * Set **EMAIL_ADDR** to associate and email address with the project.  This
 setting is not currenlty used for anything in AMET and is simply stored along with the
-project information.
+project information. Not required when not using the database.
 
 The Table 6-3 below describes the other options and file locations that need to be
 specified in the aqProject.csh script.<a id="Table_6-3"></a>
@@ -934,14 +933,14 @@ specified in the aqProject.csh script.<a id="Table_6-3"></a>
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **AMET\_OBS**              | Top of the AQ observation data directory (defaults to **$AMETBASE/obs/AQ**) |
 | **SITE\_META\_LIST**       | Input file containing the list of AQ site meta data files (default is **$AMETBASE/scripts\_db/input\_files/sites\_meta.input**) |
-| **A\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/scripts\_db/input\_files/AMET\_species\_list.input** |
+| **AQ\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/scripts\_db/input\_files/AMET\_species\_list.input** |
 | **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT/sitex_output** |
 | **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
 | **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
-| **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. |
-| **UPDATE\_PROJECT**        | T/F; Flag to update project. Setting to T will re-write project info (i.e. description, user_name, email) but not affect any existing data in the database. |
-| **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. |
-| **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. |
+| **LOAD\_SITEX**            | T/F; Load the output from the site compare scripts into the amet database. Set to F if not using the database. |
+| **UPDATE\_PROJECT**        | T/F; Flag to update project. Setting to T will re-write project info (i.e. description, user_name, email) but not affect any existing data in the database. Only applicable if using the database. |
+| **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. Only applicable if using the database. |
+| **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. Only applicable if using the database. |
 | **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
 | **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
 | **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
