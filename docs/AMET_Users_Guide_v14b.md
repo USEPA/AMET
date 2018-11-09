@@ -1,5 +1,5 @@
 # Atmospheric Model Evaluation Tool (AMET)
-## Version 1.3 User’s Guide
+## Version 1.4 Beta User’s Guide
 
 -------
 
@@ -61,7 +61,7 @@ The basic structure of AMET consists of two *fields* and two *processes*.
 
 -   The two processes (actions) are **database population** and **analysis**. Database population refers to the underlying structure of AMET; after the observations and model data are paired in space and time, the pairs are inserted into a database (MySQL). Analysis refers to the statistical evaluation of these pairings and their subsequent plotting.
 
-Practically, a user may be interested in using only one of the fields (either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.3 are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement has been removed from AMETv1.3 in an effort to streamline the tool.
+Practically, a user may be interested in using only one of the fields (either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.4 are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement was removed from AMETv1.3 and beyond in an effort to streamline the tool.
 
 
 <a id="AMET_Project"></a>
@@ -115,7 +115,7 @@ community to increase AMET functionality.*
     be set by the user for a given evaluation.
 
 Before using AMET and this user’s guide, you must first install the AMET package on your
-system. For information on the installation process, please see the [Atmospheric Model Evaluation Tool (AMET) Installation Guide](https://github.com/USEPA/AMET/blob/1.3/docs/AMET_Install_Guide_v13.md).
+system. For information on the installation process, please see the [Atmospheric Model Evaluation Tool (AMET) Installation Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Install_Guide_v14b.md).
 
 <a id="Directory_Structure"></a>
 2. Directory Structure
@@ -123,13 +123,13 @@ system. For information on the installation process, please see the [Atmospheric
 
 In this guide, the top level of the AMET directory structure is referred to
 as “AMETBASE”. This environment variable is actually set in many of the
-scripts discussed below. For example, if you were to run the AMET version 1.3 installation Git command in the directory /opt:
+scripts discussed below. For example, if you were to run the AMET version 1.4b installation Git command in the directory /opt:
 
 ```
-git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
+git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b
 
 ```
-The setting of AMETBASE would be /opt/AMET_v13
+The setting of AMETBASE would be /opt/AMET_v14b
 
 
 Table 2-1 shows the directories contained in the $AMETBASE directory.
@@ -1140,7 +1140,7 @@ variable OUTDIR must be set indicating where the site compare files are located.
 | **OUTDIR2**                      | Location of site compare output files for AMET_PROJECT2 if AMET_DB=F. |
 | **AMET\_SDATE**                  | Start date in the form YYYYMMDD from which to begin the analysis. |
 | **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
-| **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code included in the AMETv1.3 as beta code. |
+| **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code that may be included in future releases of AMET. |
 | **AMET\_PTYPE**                  | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
 | **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species choosen must be one that is measured by the specified network (or networks if multiple networks are choosen).
 | **AMET\_CASTNET**                | y/n; Flag to include the CASTNET weekly data in the analysis |
