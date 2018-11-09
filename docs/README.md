@@ -1,4 +1,4 @@
-AMETv1.3 Documents 
+AMETv1.4 Beta Documents 
 ==================
 
 This directory contains the documentation for the [Atmospheric Model Evaluation Tool (AMET)](http://www.epa.gov/cmaq/atmospheric-model-evaluation-tool).
