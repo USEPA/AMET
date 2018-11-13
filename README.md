@@ -1,5 +1,5 @@
 
-Atmospheric Model Evaluation Tool (AMET) version 1.3
+Atmospheric Model Evaluation Tool (AMET) version 1.4 Beta
 =======
 
 
@@ -12,11 +12,11 @@ This AMET Git archive is organized with each official public release stored as a
 To clone code from the AMET Git archive, specify the branch (i.e. version number) and issue the following command from within
 a working directory on your server:
 ```
-git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
+git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b
 ```
 
 
-## AMET 1.3 Repository Guide
+## AMET 1.4 Repository Guide
 Source code and scripts are organized as follows:
 * **configure:** AMET configuration scripts
 * **docs:** AMET documentation
@@ -31,16 +31,16 @@ Source code and scripts are organized as follows:
 ## Documentation
 Code documentation are included within this repository (they are version-controlled along with the code itself).  
 
-[AMETv1.3 Quick Start Guide](docs/AMET_QuickStart_Guide_v13.md)   
-[AMETv1.3 User Guide](docs/AMET_Users_Guide_v1.md)   
-[AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v13.md )   
+[AMETv1.3 Quick Start Guide](docs/AMET_QuickStart_Guide_v14b.md)   
+[AMETv1.3 User Guide](docs/AMET_Users_Guide_v14b.md)   
+[AMETv1.3 Installation Guide](docs/AMET_Install_Guide_v14b.md )   
 =======
 
 The release versions of CMAQ that are currently available on Git Hub include:
 
 * [v1.2 (July 2013)](https://github.com/USEPA/AMET/tree/1.2)
 * [v1.3 (July 2017)](https://github.com/USEPA/AMET/tree/1.3)
-
+* [v1.4b (November 2018)](https://github.com/USEPA/AMET/tree/1.4b)
 
 - Surface meteorology evaluation is currently the only driver released, but it will be followed in quick succession with a model-obs driver for SurfRAD (surface radiation), wind profiler, raob, ACARS, VAD wind profiler and PRISM precipitation.
    
