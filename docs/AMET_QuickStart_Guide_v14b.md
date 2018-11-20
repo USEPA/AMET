@@ -70,8 +70,8 @@ AMET also requires the following additional R packages:
 * stats
 * plotrix
 * fields
-* leaflet
-* htmlwidgets
+* leaflet (optional for some analysis scripts)
+* htmlwidgets (optional for some analysis scripts)
 
 The easiest way to install R packages, is through the R package manager.  Once R is installed, use the following commands to install these packages (note that the ">" denotes the Linux command prompt):
 
