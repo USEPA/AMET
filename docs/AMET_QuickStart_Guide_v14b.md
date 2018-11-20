@@ -10,18 +10,24 @@ To clone the AMET installation directory to a Linux server, use the following co
 
 ``git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b``
 
-## 2.  Download AMET Test Case Data
+## 2.  Download AMET-MET Meteorology Test Case Data
 
-1) Download CMAQ test input data by navigating to https://www.cmascenter.org/ and logging into the site using the "Log In" shortcut on the top horizontal menu.
+1.	Download Meterology test model output data by navigating to https://www.cmascenter.org/ and logging into the site using the "Log In" shortcut on the top horizontal menu.
+CMAS: Community Modeling and Analysis System
+www.cmascenter.org
+The US EPA has funded the Institute for the Environment to establish a Community Modeling and Analysis System (CMAS). The CMAS is an approach to the development, application, and analysis of environmental models that leverages the community's complementary talents and resources in order to set new standards for quality in science and in the reliability of the application of the models.
+2.	Click the Software pulldown menu on the horizontal menu bar and choose AMET.
+3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4beta, platform, and compiler for your machine and click submit.
+4.	Click "Download Datasets" to download MetExample Meterology datasets from WRF and MPAS.
 
-2) Click the Software pulldown menu on the horizontal menu bar and choose CMAQ.
+## 3.  Download AMET-AQ CMAQ Test Case Data
 
-3) Click DOWNLOAD on the right-hand side of the page and choose CMAQv5.3b, platform, and compiler for your machine and click submit.
+1.	Download Meterology test model output data by navigating to https://www.cmascenter.org/ and logging into the site using the "Log In" shortcut on the top horizontal menu.
+2.	Click the Software pulldown menu on the horizontal menu bar and choose AMET.
+3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4beta, platform, and compiler for your machine and click submit.
+4.	Click "Download Datasets" to download AQExample datasets from CMAQ.
 
-4) Click "Download Datasets" for the CMAQ benchmark input data and CMAQ benchmark output data.
-
-
-## 3. Check/Install Related Software
+## 4. Check/Install Related Software
 
 The AMET distribution package consists primarily of Linux c-shell and R scripts. To work as expected for creating model performance evaluation products, the AMET scripts require a series of 3rd-party software packages to be installed on the AMET host Linux system.
 
@@ -101,7 +107,7 @@ cd ../sitecmp_dailyo3; make
 *Note: AMETBASE is the root AMET installation directory on your system*
 
 <a id=Install4></a>
-## 4. Configure AMET
+## 5. Configure AMET
 
 AMET uses a centralized R script to set up the AMET environment for loading data into the database and for producing plots.  The AMET configuration script is located in the `configure` directory under the base AMET installation area. The following environment variables in the **amet-config.R** script must be set before using any of the other AMET scripts.
 
@@ -116,7 +122,7 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 
 *Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
-## 5. Database Setup
+## 6. Database Setup
 
 Go to the AMET database setup directory
 
@@ -129,7 +135,7 @@ Change the setting of AMETBASE in create_amet_user.csh and run the script:
 ./create_amet_user.csh
 ```
 
-## 6. Create AQ and MET projects
+## 7. Create AQ and MET projects
 
 ```
 cd $AMETBASE/scripts_db/metExample
