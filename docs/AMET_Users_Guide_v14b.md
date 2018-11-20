@@ -699,21 +699,41 @@ MET_matching_surface.R that actually populates the AMET database with the projec
 Verify that the variable AMETBASE is set to the correct AMET project. The example script has detailed instructions on all variables that are passed to R. Modify according to your setup and run the script by typing
 
 ```
-./matching_surface.csh >& log.populate
+./matching_surface.csh >& log.populate.sfc
 ```
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background.
 
 This C-shell script for surface meteorology will create an empty project tables in the AMET
-database: wrfExample_\wrf\_surface. It is important to understand that if users specify a database 
+database: wrfExample_wrf_surface. It is important to understand that if users specify a database 
 via AMET_DATABASE that is not present on the MySQL server, a new database will automatically
-be created. The wrfExample_\wrf\_surface table contains the matches between the model outputs 
+be created. The wrfExample_wrf_surface table contains the matches between the model outputs 
 andÂ surface observations. After creating the table, the script then excutes the matching process. 
-This process consists of retreiving data from the MADIS web site for the modelâ€™s temporal
+This process consists of retreiving data from the MADIS web site for the model's temporal
 period, unzipping the downloaded data, finding the geographic location of each observation
 site on the model grid and interpolating to those locations, populating the
 appropriate table with the model-obs pairs for each variable, and optionally rezipping
-the data for compressed storage. Finally, the script updates the project\_log
+the data for compressed storage. Finally, the script updates the project_log
 with summary information for the wrfExample project.
+
+```
+./matching_bsrn.csh >& log.populate.bsrn
+```
+This C-shell script is executed the same as the surface script above. It is used to compare the model
+with Baseline Surface Radiation Network (BSRN) shortwave radiation measurements. The model-observation
+pairs are put in the wrfExample_wrf_surface table if already created. If not, that table is generated and
+the script will automatically download the BSRN observations from the FTP site (BSRN_SERVER) in the 
+matching_bsrn.csh script. Users should contact the BSRN organization and request a access, which will
+follow with a login and password that should be specified (BSRN_LOGIN and BSRN_PASS). These files are
+monthly text files with 1 minute data. It takes a few minutes of processing to read these file, but
+after, the script runs very fast. This is a new option in AMETv1.4.
+
+```
+./matching_raob.csh >& log.populate.raob
+```
+This C-shell is executed like the ones above. It will create a new table wrfExample_wrf_raob specifically
+for profile observations. Like the surface meteorology, this script will download MADIS rawinsonde observations
+and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
+troposphere.
 
 <!----
 The second C-shell file, metFTP.csh, is a wrapper script for calling
