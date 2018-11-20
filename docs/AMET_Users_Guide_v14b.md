@@ -688,7 +688,7 @@ In the following subsections, we describe how to run each project.
 6.1 The metExample Projects
 ----------------------
 
-Go to the metExample_wrf project directory. Note these are the same steps for metExampe_mpas.
+Go to the metExample_wrf project directory. Note these are the same steps for metExample_mpas.
 
 ```
 cd $AMETBASE/scripts_db/metExample_wrf
