@@ -201,7 +201,7 @@ and 1-month MPAS simulation provided for July 2016. We included the same period
 in case users wanted to compare the two models. These are also subsets with only the 
 variables needed for the evaluation scripts.
 
-The WRF data consist of five WRF output files in netCDF format:
+The WRF data consist of 31 WRF output files in netCDF format:
 
 > $AMETBASE/model\_data/MET/**metExample_wrf**/
 >
@@ -209,7 +209,7 @@ The WRF data consist of five WRF output files in netCDF format:
 > ...
 > wrfout\_subset\_2016-07-31\_00:00:00
 
-The WRF data consist of five WRF output files in netCDF format:
+The MPAS data consist of 31 MPAS output files in netCDF format:
 
 > $AMETBASE/model\_data/MET/**metExample_mpas**/
 >
@@ -629,6 +629,8 @@ that command will yield a table like this:
 
 | metExample\_surface |
 
+| metExample\_raob |
+
 +---------------------+
 ```
 
@@ -677,19 +679,19 @@ cd $AMETBASE/scripts_db
 This directory contains two project directories and one input files directory, in
 addition to the dbSetup directory described earlier. The projects are
 
-* metExample: a MET example for the WRF and MPAS models
+* metExample_wrf/metExample_mpas: MET examples for the WRF and MPAS models
 * aqExample: an AQ example for the CMAQ model
 
 In the following subsections, we describe how to run each project.
 
 <a id="MET_Project"></a>
-6.1 The metExample Project
+6.1 The metExample Projects
 ----------------------
 
-Go to the metExample project directory:
+Go to the metExample_wrf project directory. Note these are the same steps for metExampe_mpas.
 
 ```
-cd $AMETBASE/scripts_db/metExample
+cd $AMETBASE/scripts_db/metExample_wrf
 ```
 
 The C-shell file matching_surface.csh is a wrapper script for calling the R
@@ -701,19 +703,17 @@ Verify that the variable AMETBASE is set to the correct AMET project. The exampl
 ```
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background.
 
-This C-shell script will create three empty project tables in the AMET
-database: wrfExample\_profiler, wrfExample\_raob, and
-wrfExample\_surface. These tables correspond to the matches between the
-model outputs and (1) the wind profiler observations, (2) the radiosonde
-observations, and (3) the surface observations, respectively. After creating these
-tables, the script then begins the matching process. This process consists of
-retreiving data from the MADIS web site for the model’s temporal
-period, unzipping the downloaded data, finding the geographic location
-of each observation site on the model grid and interpolating to those
-locations, populating the appropriate table with the model-obs pairs for
-each variable, and optionally rezipping the data for compressed storage.
-Finally, the script updates the project\_log with summary information
-for the wrfExample project.
+This C-shell script for surface meteorology will create an empty project tables in the AMET
+database: wrfExample_\wrf\_surface. It is important to understand that if users specify a database 
+via AMET_DATABASE that is not present on the MySQL server, a new database will automatically
+be created. The wrfExample_\wrf\_surface table contains the matches between the model outputs 
+andÂ surface observations. After creating the table, the script then excutes the matching process. 
+This process consists of retreiving data from the MADIS web site for the modelâ€™s temporal
+period, unzipping the downloaded data, finding the geographic location of each observation
+site on the model grid and interpolating to those locations, populating the
+appropriate table with the model-obs pairs for each variable, and optionally rezipping
+the data for compressed storage. Finally, the script updates the project\_log
+with summary information for the wrfExample project.
 
 <!----
 The second C-shell file, metFTP.csh, is a wrapper script for calling
