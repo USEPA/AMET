@@ -798,7 +798,7 @@ not to do this, you will have to modify the provided run scripts to suite your o
 
 To create a new project, follow these basic steps:
 
-1.  Copy the appropriate example project (metExample) to a new directory name (see below).
+1.  Copy the appropriate example project (metExample_wrf) to a new directory name (see below).
 
 2.  Rename these directories after your new project (use the *exact* project name, as
     many scripts use the project name to navigate directories and organize analyses).
@@ -809,7 +809,8 @@ To create a new project, follow these basic steps:
 
 4.  Configure the C-shell script matching_surface.csh for the new project.
 
-5.  Run the matching_surface.csh script to populate the AMET database.
+5.  Run the matching_surface.csh (or matching_bsrn.csh, or matching_raob.csh)
+    script to populate the AMET database.
 
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
