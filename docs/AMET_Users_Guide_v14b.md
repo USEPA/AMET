@@ -197,23 +197,27 @@ The AMET release includes example datasets of both model and observational data.
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into four example projects:
 "metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
-(July 01 2016 00:00 UTC to July 31 2016 23:00 UTC) and 1-month MPAS simulation provided. 
+and 1-month MPAS simulation provided for July 2016. We included the same period 
+in case users wanted to compare the two models. These are also subsets with only the 
+variables needed for the evaluation scripts.
 
 The WRF data consist of five WRF output files in netCDF format:
 
-> $AMETBASE/model\_data/MET/**wrfExample**/
+> $AMETBASE/model\_data/MET/**metExample_wrf**/
 >
-> wrfout\_d01\_2016-07-05\_00:00:00
->
-> wrfout\_d01\_2016-07-06\_00:00:00
->
-> wrfout\_d01\_2016-07-07\_00:00:00
->
-> wrfout\_d01\_2016-07-08\_00:00:00
->
-> wrfout\_d01\_2016-07-09\_00:00:00
+> wrfout\_subset\_2016-07-01\_00:00:00
+> ...
+> wrfout\_subset\_2016-07-31\_00:00:00
 
-Note that we have bolded “metExample” in the directory name above to
+The WRF data consist of five WRF output files in netCDF format:
+
+> $AMETBASE/model\_data/MET/**metExample_mpas**/
+>
+> history.subset.2016-07-01.nc
+> ...
+> history.subset.2016-07-31.nc
+
+Note that we have bolded “metExample_*” in the directory names above to
 highlight the fact that we are using the project name to organize the
 model output files into directories.
 
