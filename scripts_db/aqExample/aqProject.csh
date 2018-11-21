@@ -45,7 +45,7 @@ set    mysql_password="config_file"
 ### Project name and details. Project will be created if it does not already exist ###
 setenv AMET_PROJECT 	"aqExample"
 setenv MODEL_TYPE 	"CMAQ"
-setenv RUN_DESCRIPTION 	"AQ example project; May 2016"
+setenv RUN_DESCRIPTION 	"AQ example project; July 2016"
 setenv USER_NAME 	`whoami`
 setenv EMAIL_ADDR 	"someone@somewhere.org"
 
@@ -73,12 +73,12 @@ setenv INC_CUTOFF 		F
 setenv TIME_SHIFT 		0
 
 ### Set start and end date for analysis in the form YYYY-MM-DD ###
-setenv START_DATE_H     "2016-05-01"	
-setenv END_DATE_H	"2016-05-31"
+setenv START_DATE_H     "2016-07-01"	
+setenv END_DATE_H	"2016-07-31"
 
 ### Set path to concentration/dep files (up to 10 files, sequentially numbered) ###
-setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
-setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/AMET_CMAQ_July_2011_Test_Data.aconc
+setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/COMBINE_ACONC_CMAQv521_AMET_201607.nc
+setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/COMBINE_DEP_CMAQv521_AMET_201607.nc
 
 ### Flag (Y/T or N/F) set by user to include data in the analysis ###
 ### Standard North America networks (should all be set to T for complete analysis) ###
@@ -96,6 +96,7 @@ setenv SEARCH_DAILY     T
 
 ### Non-standard North America networks (should be set to F unless specifically required) ###
 setenv NAPS_HOURLY      F
+setenv NAPS_DAILY_O3    F
 setenv CASTNET_DRYDEP   F
 setenv AIRMON           F
 setenv AMON		F
@@ -115,6 +116,7 @@ setenv NAMN		F
 
 ### Gloabl networks ###
 setenv TOAR		F
+setenv NOAA_ESRL_O3	F
 
 ### Flags to set ozone and precipitation units (do not change if using standard SPEC_DEF file) ###
 setenv O3_OBS_FACTOR    1
