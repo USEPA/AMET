@@ -19,12 +19,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[5.1 AMET Setup](#AMET_Setup)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[5.2 Basic MySQL Commands](#MySQL_Commands)<br>
 [6. Project Creation and Database Population](#Project_Creation)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf Project](#WRF_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf and metExample_mpas Projects](#WRF_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.2 The aqExample Project](#AQ_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
 [7. Analysis](#Analysis)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf and metExample_mpas](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
 [8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
@@ -68,7 +68,7 @@ Practically, a user may be interested in using only one of the fields (either ME
 1.2 Concept of an AMET “Project”
 ----------------------------
 
-A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2011 12-km continental U.S. simulation, and another project for a 2011 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
+A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2016 12-km continental U.S. simulation, and another project for a 2016 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample_wrf) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
 
 <a id="Users_Guide"></a>
 1.3 Organization of This User’s Guide
@@ -195,11 +195,15 @@ The AMET release includes example datasets of both model and observational data.
 ----------
 
 For the model data, we have included both meteorological and air quality
-data. We have organized the data into four example projects:
-"metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+data. We have organized the data into several example projects:
+"metExample_wrf", "metExample_mpas" and "aqExample". On the MET side, there is a 1-month WRF simulation 
 and 1-month MPAS simulation provided for July 2016. We included the same period 
-in case users wanted to compare the two models. These are also subsets with only the 
-variables needed for the evaluation scripts.
+in case users wanted to compare the two models. These are model output subsets with only the 
+variables needed for the evaluation scripts. Model outputs are availiable for download via
+the https://www.cmascenter.org/ site. Users need to register and then look under AMET options
+for the link. Note, these are rather large, so for basic testing only a few files may
+be enough for testing. The full month can allow users to fully exercise AMET before 
+their own model analysis is done.
 
 The WRF data consist of 31 WRF output files in netCDF format:
 
@@ -627,9 +631,9 @@ that command will yield a table like this:
 
 | stations |
 
-| metExample\_surface |
+| metExample_wrf_surface |
 
-| metExample\_raob |
+| metExample_wrf_raob |
 
 +---------------------+
 ```
@@ -679,7 +683,7 @@ cd $AMETBASE/scripts_db
 This directory contains two project directories and one input files directory, in
 addition to the dbSetup directory described earlier. The projects are
 
-* metExample_wrf/metExample_mpas: MET examples for the WRF and MPAS models
+* metExample_wrf and metExample_mpas: MET examples for the WRF and MPAS models
 * aqExample: an AQ example for the CMAQ model
 
 In the following subsections, we describe how to run each project.
@@ -822,14 +826,14 @@ use the following commands:
 
 > $ cd $AMETBASE/scripts\_db
 >
-> $ cp -r metExample wrfNC2007
+> $ cp -r metExample_wrf wrfNC2007
 >
 > $ cd wrfNC2007
 
 
 ```
 cd $AMETBASE/scripts_db
-cp -r metExample wrfNC2007
+cp -r metExample_wrf wrfNC2007
 ```
 Create a new model data directory and move or link model data into
 it, as follows:
@@ -1042,7 +1046,7 @@ physics or chemistry, spatial domain, scale, etc.) with the scripts used
 to analyze the AMET tables and with the output from the analysis (plots
 and data).
 
-Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample, respectively.
+Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample_wrf, respectively.
 Within each of these directories there are C-shell
 scripts and a subdirectory called **input_files** containing an input file with
 similar names as the scripts (e.g., run\_timeseries.csh and timeseries.input). These two
@@ -1082,7 +1086,7 @@ After configuring the example met analysis script, save and run the script:
 ./run_spatial_surface.csh |& tee spatial_surface.log
 ```
 
-The plots from this script will be written to the $AMETBASE/output/metExample directory. A subdirectory is created in this output directory for each analysis (e.g.; spatial_surface, summary, timeseries and daily_barplot). After the script has completed, go to the output directory to view the plots:
+The plots from this script will be written to the $AMETBASE/output/metExample_wrf directory. A subdirectory is created in this output directory for each analysis (e.g.; spatial_surface, summary, timeseries and daily_barplot). After the script has completed, go to the output directory to view the plots:
 
 ```
 cd $AMETBASE/output/metExample_wrf/spatial_surface
@@ -1092,7 +1096,7 @@ cd $AMETBASE/output/metExample_mpas/spatial_surface
 
 You should see a whole series of plots of the form:
 
-> wrfExample.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
+> wrfExample_wrf.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
 
 A brief summary of each of the C-shell scripts, with example plots from each script, is given below.
 
@@ -1576,7 +1580,7 @@ population—for example, $AMETBASE/configure/amet-config.R.
 ### MET Analysis Input Files
 
 The analysis input files are found in
-$AMETBASE/scripts\_analysis/metExample. The following is a partial list of
+$AMETBASE/scripts\_analysis/metExample_wrf. The following is a partial list of
 variables. Not all of these variables are available in every input file.
 
 <a id="Table_B-2"></a>
