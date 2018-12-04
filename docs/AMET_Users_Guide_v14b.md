@@ -846,9 +846,8 @@ ln -s <model data directory> .
 ```
 
 Here, you would replace “&lt;model data&gt;” with the path to your model
-data file(s). The matching_surface.csh script (or soon to come matching_profiler.csh, matching_acars.csh, 
-matching_raob.csh, matching_surfrad.csh and matching_prism.csh) will perform the model-obs
-matching of all model outputs in this new project directory.
+data file(s). The matching_surface.csh, matching_bsrn.csh and matching_raob.csh 
+will perform the model-obs matching of all model outputs in this new project directory.
 
 Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
 AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
@@ -863,9 +862,11 @@ cd $AMETBASE/scripts\_db/wrfNC2007
 
 The matching_surface.csh script will create a new MET project in the AMET database if
 it does not exist (a new database will also be created if it does not already exist). Specifically,
-it will create a new row in the AMET project\_log table and three new tables: 
-wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface. Once this script completes,
-the AMET database will be ready to produce meteorology model performance analysis plots and statistics.
+it will create a new row in the AMET project\_log table and wrfNC2007\_surface.
+The matching_bsrn.csh script will put radiation data into the same wrfNC2007\_surface table.
+The matching_raob.csh script will put upper-air meteorology data in a wrfNC2007\_raob table.
+Once this script completes, the AMET database will be ready to produce meteorology model 
+performance analysis plots and statistics.
 
 <a id="New_AQ_Project"></a>
 6.4 Creating a New AQ Project
