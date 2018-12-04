@@ -1111,12 +1111,12 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
 - Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
-**run\_timeseries_rh.csh** ([Example Plot1](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf) [Example Plot2](./images/metExample_wrf.JULY2016.T.diurnal.png))
+**run\_timeseries_rh.csh** ([Example Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
 - timeseries_rh.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
 - Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
 
-**run\_summary.csh** ([Example Plot](./images/metExample_wrf.JULY2016.T.ametplot.png))
+**run\_summary.csh** ([Example Plot1](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Example Plot2](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
 - Creates two plots for each met variable. A diurnal statistics plot and summary plot with panels that include scatter plot, stats table, statistics as a function of the observation range.
 - Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample_wrf.JULY2016.csv))
@@ -1125,6 +1125,23 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - daily_barplot.input
 - Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
 - Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
+
+**run\_plot\_srad.csh** ([Example Plot](./images/srad.diurnal.psu.20160701-20160801.pdf))
+- plot_srad.input
+- Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
+- Creates a csv file for  ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
+
+**run\_raob.csh** ([Example Plot](./images/metExample_wrf.JUL2016.T.daily_barplot_RMSE.pdf))
+- raob.input
+- Creates a number of plots. See script for full details.
+- Creates a csv file for timeseries and diurnal plots ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
+
+**run\_prism\_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
+- Creates a NetCDF file in the model output format.
+- Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
+- Users have the flexibility to use Verdi, ncview or other software to plot as desired.
+
+
 
 <a id="aqExample"></a>
 7.2 aqExample
