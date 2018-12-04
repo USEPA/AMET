@@ -1111,7 +1111,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
 - Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
-**run\_timeseries_rh.csh** ([Example Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
+**run\_timeseries_rh.csh** ([Example Plot1](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf) [Example Plot2](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - timeseries_rh.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
 - Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
