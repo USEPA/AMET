@@ -1101,25 +1101,30 @@ You should see a whole series of plots of the form:
 
 A brief summary of each of the C-shell scripts, with example plots from each script, is given below.
 
-**run\_spatial_surface.csh** ([Example Plot](./images/metExample_wrf.rmse.T.2011-07-01_00.2011-07-31_23.pdf))
+**run\_spatial_surface.csh** ([Example Plot](./images/metExample_mpas.rmse.T.20160701-20160801.pdf))
 - spatial_surface.input
 - Creates maps of statistics at each observation site
-- Creates a csv file of the site specific statistics ([Example csv](./images/metExample.spatial.temp2m.stats.2011-07-01_00.2011-07-31_23.csv))
+- Creates a csv file of the site specific statistics ([Example csv](./images/metExample_mpas.spatial.temp2m.stats.20160701-20160801.csv))
 
-**run\_timeseries.csh** ([Example Plot](./images/metExample_wrf.KRDU.20110701-20110801.pdf))
+**run\_timeseries.csh** ([Example Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
 - timeseries.input
-- Creates a 4 panel timeseries of model and observed temperature, moisture, wind speed and direction.
-- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20110701-20110801.txt))
+- Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
+- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
-**run\_summary.csh** ([Example Plot](./images/metExample_wrf.JULY2013_WRF.T.ametplot.png))
+**run\_timeseries_rh.csh** ([Example Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
+- timeseries_rh.input
+- Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
+- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
+
+**run\_summary.csh** ([Example Plot](./images/metExample_wrf.JULY2016.T.ametplot.png))
 - summary.input
 - Creates two plots for each met variable. A diurnal statistics plot and summary plot with panels that include scatter plot, stats table, statistics as a function of the observation range.
-- Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample_wrf.JULY2013_WRF.csv))
+- Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample_wrf.JULY2016.csv))
 
-**run\_daily\_barplot.csh** ([Example Plot](./images/metExample_wrf.JULY2011_WRF.T.daily_barplot_RMSE.pdf))
+**run\_daily\_barplot.csh** ([Example Plot](./images/metExample_wrf.JUL2016.T.daily_barplot_RMSE.pdf))
 - daily_barplot.input
 - Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
-- Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JULY2013_MPAS.T.daily_stats.csv))
+- Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
 
 <a id="aqExample"></a>
 7.2 aqExample
