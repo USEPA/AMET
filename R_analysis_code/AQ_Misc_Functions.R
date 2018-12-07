@@ -449,7 +449,7 @@ if (length(cols) != (length(bounds)-1)) {
 
 #data.df<-(network,stat_id,lat,lon,ob_val,mod_val)
 
-DomainStats<-function(data_all.df)
+DomainStats<-function(data_all.df,rm_negs="T")
 {
 
 ## Determine total numbers of observations per sites ##
@@ -462,12 +462,12 @@ data.df <- data_all.df
 #######################################################
 
 ## Remove missing and zero concentration observations from dataset ##
-#if (remove_negatives == "y") {
-#   indic.nonzero <- data.df$ob_val >= 0 
-#   data.df <- data.df[indic.nonzero,]
-#   indic.nonzero <- data.df$mod_val >= 0
-#   data.df <- data.df[indic.nonzero,]
-#}
+if ((rm_negs == "T") || (rm_negs == "t") || (rm_negs == "Y") || (rm_negs == "y")) {
+   indic.nonzero <- data.df$ob_val >= 0
+   data.df <- data.df[indic.nonzero,]
+   indic.nonzero <- data.df$mod_val >= 0
+   data.df <- data.df[indic.nonzero,]
+}
 ##############################################
 
 ## Full Domain Statistics ##
@@ -1309,7 +1309,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
    if (criteria == "Default") {
       criteria <- paste(" WHERE d.",species[1],"_ob is not NULL and d.network='",network,"'",query,sep="")                       # Set first part of the MYSQL query
    }
-   if (zeroprecip == "n") { criteria <- paste(criteria, " and d.precip_ob > 0",sep="") }
+   if (zeroprecip == "y") { criteria <- paste(criteria, " and d.precip_ob > 0",sep="") }
    if (all_valid == "y") { criteria <- paste(criteria, " and (d.valid_code != ' ' or d.valid_code IS NULL)",sep="") }
    if (all_valid_amon == "y") { criteria <- paste(criteria, " and d.valid_code != 'C'",sep="") }
    check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
