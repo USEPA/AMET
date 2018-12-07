@@ -360,7 +360,7 @@ legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_typ
 
 ### Put text stating coverage limit used ###
 if (averaging == "m") {
-   text(topright,paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
+   text("topright",paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
 }
 if (run_info_text == "y") {
    if (rpo != "None") {
