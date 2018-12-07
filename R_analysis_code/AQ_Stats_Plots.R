@@ -165,7 +165,7 @@ for (j in 1:total_networks) {
    
          ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
          data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
-         stats_all.df <-try(DomainStats(data_all.df))	# Compute stats using DomainStats function for entire domain
+         stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))	# Compute stats using DomainStats function for entire domain
          ##################################
 
          ### Write output to comma delimited file ###
