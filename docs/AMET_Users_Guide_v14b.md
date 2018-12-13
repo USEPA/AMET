@@ -1126,20 +1126,20 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
 - Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
 
-**run\_plot\_srad.csh** ([Example Plot](./images/srad.diurnal.psu.20160701-20160801.pdf))
+**run\_plot\_srad.csh** (Example plots: [Diurnal](./images/srad.diurnal.psu.20160701-20160801.pdf), [Spatial](./images/srad.spatial.late-afternoon.20160701-20160801.pdf), [Timeseries](./images/srad.timeseries.psu.20160701-20160801.pdf), [Histogram](./images/srad.histogram.psu.20160701-20160801.pdf))
 - plot_srad.input
 - Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
-- Creates a csv file for  ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
+- Creates a csv file for  ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
 
-**run\_raob.csh** ([Example Plot](./images/metExample_wrf.JUL2016.T.daily_barplot_RMSE.pdf))
+**run\_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
 - raob.input
-- Creates a number of plots. See script for full details.
-- Creates a csv file for timeseries and diurnal plots ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
+- Creates a number of plots. Not all are shown above. See script for full details.
+- Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.csv))
 
 **run\_prism\_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
 - Creates a NetCDF file in the model output format.
 - Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
-- Users have the flexibility to use Verdi, ncview or other software to plot as desired.
+- Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
 
 
 
