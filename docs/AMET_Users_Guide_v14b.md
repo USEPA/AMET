@@ -1104,7 +1104,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 **run\_spatial_surface.csh** ([Example Plot](./images/metExample_mpas.rmse.T.20160701-20160801.pdf))
 - spatial_surface.input
 - Creates maps of statistics at each observation site
-- Creates a csv file of the site specific statistics ([Example csv](./images/metExample_mpas.spatial.temp2m.stats.20160701-20160801.csv))
+- Creates a csv file of the site specific statistics ([Example csv](./images/wrf_conus12_oaqps.rmse.T.20160101-20160131.pdf))
 
 **run\_timeseries.csh** ([Example Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
 - timeseries.input
