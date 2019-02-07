@@ -449,7 +449,7 @@ if (length(cols) != (length(bounds)-1)) {
 
 #data.df<-(network,stat_id,lat,lon,ob_val,mod_val)
 
-DomainStats<-function(data_all.df,rm_negs="T")
+DomainStats<-function(data_all.df,rm_negs=T)
 {
 
 ## Determine total numbers of observations per sites ##
@@ -463,7 +463,7 @@ data.df <- data_all.df
 
 ## Remove missing and zero concentration observations from dataset ##
 if ((rm_negs == "T") || (rm_negs == "t") || (rm_negs == "Y") || (rm_negs == "y")) {
-   indic.nonzero <- data.df$ob_val >= 0
+   indic.nonzero <- data.df$ob_val >= 0 
    data.df <- data.df[indic.nonzero,]
    indic.nonzero <- data.df$mod_val >= 0
    data.df <- data.df[indic.nonzero,]
@@ -892,9 +892,9 @@ Average<-function(datain.df) {
       datain.df$State <- "NA"
    }
    datain.df$good_ob	<- 0							# Assign a new column indicating whether ob is good or not (default in not good)
-
-   indic.nonzero <- datain.df$Mod_Value >= 0
-   datain.df     <- datain.df[indic.nonzero,]
+   datain.df$Year <- substr(datain.df$Start_Date,1,4)
+   indic.nonzero  <- datain.df$Mod_Value >= 0
+   datain.df      <- datain.df[indic.nonzero,]
   
    indic.na <- datain.df$Obs_Value < 0
    datain.df$Obs_Value[indic.na] <- NA
@@ -942,6 +942,10 @@ Average<-function(datain.df) {
          avg_text_1 <- "Monthly "
       }
       else if (averaging == "a") {
+         split_all <- split(datain.df,datain.df$Year)
+         avg_text_1 <- "Annual "
+      }
+      else if (averaging == "e") {
          split_all <- split(datain.df,datain.df$Stat_ID)
          avg_text_1 <- "Period "
       }
@@ -1191,7 +1195,7 @@ aggregate_query <- function(data_in.df)
 {
 #   print(data_in.df)
    data_in.df[data_in.df==-999] <- NA
-   agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour),FUN=function(x)mean(x,na.rm=T))
+   agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour,state=data_in.df$state),FUN=function(x)mean(x,na.rm=T))
    agg_data[is.na(agg_data)] <- -999
    agg_data <- cbind(network=network,agg_data)
    #Order the outgoing data by start date and hour. Required for time series plots since the sorting is lost after the aggregate is run
@@ -1310,8 +1314,17 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
       criteria <- paste(" WHERE d.",species[1],"_ob is not NULL and d.network='",network,"'",query,sep="")                       # Set first part of the MYSQL query
    }
    if (zeroprecip == "y") { criteria <- paste(criteria, " and d.precip_ob > 0",sep="") }
-   if (all_valid == "y") { criteria <- paste(criteria, " and (d.valid_code != ' ' or d.valid_code IS NULL)",sep="") }
-   if (all_valid_amon == "y") { criteria <- paste(criteria, " and d.valid_code != 'C'",sep="") }
+   if (all_valid == "y") { criteria <- paste(criteria, " and (d.valid_code != ' ' or d.valid_code = 'A' or d.valid_code = 'B' or d.valid_code IS NULL)",sep="") }
+   ##########################################################
+   ### Remove T replicates, which identifies field blanks ###
+   ##########################################################
+   check_replicate	<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'replicate';",sep="")
+   query_table_info.df <-db_Query(check_replicate,mysql)
+   if (length(query_table_info.df$COLUMN_NAME) != 0) {	# Check if replicate column exisits or not
+      if ((all_valid == "y") && (network == 'AMON')) { criteria <- paste(criteria, " and (d.replicate != 'T' or d.replicate IS NULL)",sep="") }
+   }
+   ###########################################################
+   
    check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
    query_table_info.df <-db_Query(check_POCode,mysql)
    {
@@ -1321,7 +1334,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
 #         aqdat_query.df$POCode <- 1
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",POCode,s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",d.POCode,s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
          aqdat_query.df<-db_Query(qs,mysql)
       }
    }
@@ -1340,7 +1353,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
                data_exists_flag <- "n"
             }
             else {
-               if ((all_valid == "y") && ((network == "NADP") || (network == "AMON") || (network == "MDN"))) {
+               if ((all_valid == "y") && ((network == "NADP") || (network == "MDN"))) {
                   indic.missing <- aqdat_query.df[,ob_col] < 0  # Check for observations that are less than 0
                   aqdat_query.df[indic.missing,ob_col] <- 0     # Replace those observations with 0 (we assume a valid observation, just not negative). Applies primarily to NTN networks (i.e. NADP, AMON, MDN)
                }
