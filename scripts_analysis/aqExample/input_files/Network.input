@@ -3,6 +3,7 @@
 # to set up the network arrays used by AMET.          #
 #                                                     #
 # Initial Version: Neil Davis (04/29/2008)            #
+# Last Updated: Wyat Appel (02/2019)		      #
 #######################################################
 
 ###############################################
@@ -37,8 +38,8 @@ inc_namn		<-Sys.getenv("AMET_NAMN")
 inc_admn		<-Sys.getenv("AMET_ADMN")
 
 ### Global Networks ###
-inc_noaa_esrl_o3<-	<-Sys.getenv("AMET_NOAA_ESRL_O3")
-inc_toar<-		<-Sys.getenv("AMET_TOAR")
+inc_noaa_esrl_o3	<-Sys.getenv("AMET_NOAA_ESRL_O3")
+inc_toar		<-Sys.getenv("AMET_TOAR")
 
 #############################
 ### Setup Networks Arrays ###
@@ -47,112 +48,111 @@ inc_toar<-		<-Sys.getenv("AMET_TOAR")
 network_names <- NULL
 network_label <- NULL
 
-if (inc_improve == "y") {   
+if ((inc_improve == "y") || (inc_improve == "Y") || (inc_improve == "t") || (inc_improve == "T")) {   
    network_names <- c(network_names,"IMPROVE")     
    network_label <- c(network_label,"IMPROVE")
 }
-if (inc_csn == "y") {   
+if ((inc_csn == "y") || (inc_csn == "Y") || (inc_csn == "t") || (inc_csn == "T")) {   
    network_names <- c(network_names,"CSN")         
    network_label <- c(network_label,"CSN")
 }
-if (inc_castnet == "y") {
+if ((inc_castnet == "y") || (inc_castnet == "Y") || (inc_castnet == "t") ||(inc_castnet == "T")) {
    network_names <- c(network_names,"CASTNET")
    network_label <- c(network_label,"CASTNET")
 }
-if (inc_castnet_hr == "y") {
+if ((inc_castnet_hr == "y") || (inc_castnet_hr == "Y") || (inc_castnet_hr == "t") || (inc_castnet_hr == "T")) {
    network_names <- c(network_names,"CASTNET_Hourly")
    network_label <- c(network_label,"CASTNet_hourly")
 }
-if (inc_castnet_daily_O3 == "y") {
+if ((inc_castnet_daily_O3 == "y") || (inc_castnet_daily_O3 == "Y") || (inc_castnet_daily_O3 == "t") || (inc_castnet_daily_O3 == "T")) {
    network_names <- c(network_names,"CASTNet_Daily_O3")
    network_label <- c(network_label,"CASTNet_daily")
 }
-if (inc_nadp == "y") {
+if ((inc_nadp == "y") || (inc_nadp == "Y") || (inc_nadp == "t") || (inc_nadp == "T")) {
    network_names <- c(network_names,"NADP")
    network_label <- c(network_label,"NADP")
 }
-if (inc_mdn == "y") {
+if ((inc_mdn == "y") || (inc_mdn == "Y") || (inc_mdn == "t") || (inc_mdn == "T")) {
    network_names <- c(network_names,"MDN")
    network_label <- c(network_label,"MDN")
 }
-if (inc_airmon_dep == "y") {
+if ((inc_airmon_dep == "y") || (inc_airmon_dep == "Y") || (inc_airmon_dep == "t") || (inc_airmon_dep == "T")) {
    network_names <- c(network_names,"AIRMON")
    network_label <- c(network_label,"AIRMON")
 }
-if (inc_aqs_hourly == "y") {
+if ((inc_aqs_hourly == "y") || (inc_aqs_hourly == "Y") || (inc_aqs_hourly == "t") || (inc_aqs_hourly == "T")) {
    network_names <- c(network_names,"AQS_Hourly")        
    network_label <- c(network_label,"AQS")
 }
-if (inc_aqs_daily_O3 == "y") {
+if ((inc_aqs_daily_O3 == "y") || (inc_aqs_daily_O3 == "Y") || (inc_aqs_daily_O3 == "t") || (inc_aqs_daily_O3 == "T")) {
    network_names <- c(network_names,"AQS_Daily_O3")
    network_label <- c(network_label,"AQS")
 }
-if (inc_aqs_daily == "y") {
+if ((inc_aqs_daily == "y") || (inc_aqs_daily == "Y") || (inc_aqs_daily == "t") || (inc_aqs_daily == "T")) {
    network_names <- c(network_names,"AQS_Daily")
    network_label <- c(network_label,"AQS")
 }
-if (inc_search == "y") {
+if ((inc_search == "y") || (inc_search == "Y") || (inc_search == "t") || (inc_search == "T")) {
    network_names <- c(network_names,"SEARCH")      
    network_label <- c(network_label,"SEARCH")
 }
-if (inc_search_daily == "y") {
+if ((inc_search_daily == "y") || (inc_search_daily == "Y") || (inc_search_daily == "t") || (inc_search_daily == "T")) {
    network_names <- c(network_names,"SEARCH_daily")
    network_label <- c(network_label,"SEARCH_daily")
 }
-if (inc_naps == "y") {
+if ((inc_naps == "y") || (inc_naps == "Y") || (inc_naps == "t") || (inc_naps == "T")) {
    network_names <- c(network_names,"NAPS")
    network_label <- c(network_label,"NAPS")
 }
-if (inc_naps_daily_o3 == "y") {
+if ((inc_naps_daily_o3 == "y") || (inc_naps_daily_o3 == "Y") || (inc_naps_daily_o3 == "t") || (inc_naps_daily_o3 == "T")) {
    network_names <- c(network_names,"NAPS_Daily_O3")
    network_label <- c(network_label,"NAPS")
 }
 
 ### Europe Networks ###
-
-if (inc_namn == "y") {
+if ((inc_namn == "y") || (inc_namn == "Y") || (inc_namn == "t") || (inc_namn == "T")) {
    network_names <- c(network_names,"NAMN")
    network_label <- c(network_label,"NAMN")
 }
-if (inc_admn == "y") {
+if ((inc_admn == "y") || (inc_admn == "Y") || (inc_admn == "t") || (inc_admn == "T")) {
    network_names <- c(network_names,"ADMN")
    network_label <- c(network_label,"ADMN")
 }
-if (inc_aganet == "y") {
+if ((inc_aganet == "y") || (inc_aganet == "Y") || (inc_aganet == "t") || (inc_aganet == "T")) {
    network_names <- c(network_names,"AGANET")
    network_label <- c(network_label,"AGANET")
 }
-if (inc_airbase_hourly == "y") {
+if ((inc_airbase_hourly == "y") || (inc_airbase_hourly == "Y") || (inc_airbase_hourly == "t") || (inc_airbase_hourly == "T")) {
    network_names <- c(network_names,"AirBase_Hourly")
    network_label <- c(network_label,"AirBase")
 }
-if (inc_airbase_daily == "y") {
+if ((inc_airbase_daily == "y") || (inc_airbase_daily == "Y") || (inc_airbase_daily == "t") || (inc_airbase_daily == "T")) {
    network_names <- c(network_names,"AirBase_Daily")
    network_label <- c(network_label,"AirBase")
 }
-if (inc_aurn_hourly == "y") {
+if ((inc_aurn_hourly == "y") || (inc_aurn_hourly == "Y") || (inc_aurn_hourly == "t") || (inc_aurn_hourly == "T")) {
    network_names <- c(network_names,"AURN_Hourly")
    network_label <- c(network_label,"AURN")
 }
-if (inc_aurn_daily == "y") {
+if ((inc_aurn_daily == "y") || (inc_aurn_daily == "Y") || (inc_aurn_daily == "t") || (inc_aurn_daily == "T")) {
    network_names <- c(network_names,"AURN_Daily")
    network_label <- c(network_label,"AURN")
 }
-if (inc_emep_hourly == "y") {
+if ((inc_emep_hourly == "y") || (inc_emep_hourly == "Y") || (inc_emep_hourly == "t") || (inc_emep_hourly == "T")) {
    network_names <- c(network_names,"EMEP_Hourly")
    network_label <- c(network_label,"EMEP")
 }
-if (inc_emep_daily == "y") {
+if ((inc_emep_daily == "y") || (inc_emep_daily == "Y") || (inc_emep_daily == "t") || (inc_emep_daily == "T")) {
    network_names <- c(network_names,"EMEP_Daily")
    network_label <- c(network_label,"EMEP")
 }
 
 ## Global Networks ###
-if (inc_noaa_esrl_o3 == "y") {
+if ((inc_noaa_esrl_o3 == "y") || (inc_noaa_esrl_o3 == "Y") || (inc_noaa_esrl_o3 == "t") || (inc_noaa_esrl_o3 == "T")) {
    network_names <- c(network_names,"NOAA_ESRL_O3")
    network_label <- c(network_label,"NOAA_ESRL")
 }
-if (inc_toar == "y") {
+if ((inc_toar == "y") || (inc_toar == "Y") || (inc_toar == "t") || (inc_toar == "T")) {
    network_names <- c(network_names,"TOAR")
    network_label <- c(network_label,"TOAR")
 }
