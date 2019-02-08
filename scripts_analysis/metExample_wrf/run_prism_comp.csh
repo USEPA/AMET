@@ -24,8 +24,7 @@
  setenv R_SCRIPT $AMETBASE/R_analysis_code/MET_prism_precip.R
  ##########################################################################
 
- # AMETBASE directory and Project/Model ID name
- setenv AMETBASE /home/user/AMET_v13
+ # Project/Model ID name
 
  setenv AMET_PROJECT metExample_mpas
 
