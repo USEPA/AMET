@@ -37,8 +37,8 @@ inc_namn		<-Sys.getenv("AMET_NAMN")
 inc_admn		<-Sys.getenv("AMET_ADMN")
 
 ### Global Networks ###
-inc_noaa_esrl_o3<-	<-Sys.getenv("AMET_NOAA_ESRL_O3")
-inc_toar<-		<-Sys.getenv("AMET_TOAR")
+inc_noaa_esrl_o3	<-Sys.getenv("AMET_NOAA_ESRL_O3")
+inc_toar		<-Sys.getenv("AMET_TOAR")
 
 #############################
 ### Setup Networks Arrays ###

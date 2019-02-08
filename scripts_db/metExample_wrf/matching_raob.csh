@@ -3,7 +3,7 @@
 #                          USER CONFIGURATION
 
 # Main directories of AMET and MADIS data
-setenv AMETBASE  /home/user/AMET_v13
+#setenv AMETBASE  /proj/ie/proj/CMAS/AMET/AMET_v14b
 
 # Define Database and Password from argument input
 setenv MYSQL_LOGIN   xxxxxxx

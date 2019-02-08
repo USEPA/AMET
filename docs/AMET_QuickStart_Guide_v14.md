@@ -72,12 +72,13 @@ AMET also requires the following additional R packages:
 * fields
 * leaflet
 * htmlwidgets
+* akima
 
 The easiest way to install R packages, is through the R package manager.  Once R is installed, use the following commands to install these packages (note that the ">" denotes the Linux command prompt):
 
 ```
 > sudo R
-> install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "Fields"))
+> install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "fields", "akima"))
 ```
 
 ### Install AMET Source Code and Tier 3 Software
@@ -132,7 +133,7 @@ Change the setting of AMETBASE in create_amet_user.csh and run the script:
 ## 6. Create AQ and MET projects
 
 ```
-cd $AMETBASE/scripts_db/metExample
+cd $AMETBASE/scripts_db/metExample_wrf
 ```
 Change the setting of AMETBASE in matching_surface.csh and run the script:
 
@@ -143,6 +144,7 @@ Change the setting of AMETBASE in matching_surface.csh and run the script:
 cd $AMETBASE/scripts_db/aqExample
 ```
 Change the setting of AMETBASE in aqProject.csh and run the script:
+Check and Change the setting of the Start and End Date
 
 ```
 ./aqProject.csh >& log.populate
@@ -152,7 +154,7 @@ Change the setting of AMETBASE in aqProject.csh and run the script:
 Use the following command to navigate to the met analysis example project directory:
 
 ```
-cd $AMETBASE/scripts_analysis/metExample
+cd $AMETBASE/scripts_analysis/metExample_wrf
 ```
 Change the setting of AMETBASE in run_spatial_surface.csh, save and run the script:
 
@@ -163,7 +165,7 @@ Change the setting of AMETBASE in run_spatial_surface.csh, save and run the scri
 Go to the output directory to view the plots:
 
 ```
-cd $AMETBASE/output/metExample/spatial_surface
+cd $AMETBASE/output/metExample_wrf/spatial_surface
 ```
 
 Use the following command to navigate to the air quality analysis example project directory:

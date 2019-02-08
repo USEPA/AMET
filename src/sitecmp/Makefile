@@ -1,6 +1,6 @@
 # make file to build sitecmp program
 
-AMETBASE = /proj/ie/apps/AMET/CEMPD_AMET_v13
+AMETBASE = /proj/ie/proj/CMAS/AMET/AMET_v14b
 PROGRAM = $(AMETBASE)/bin/sitecmp.exe
 
 IOAPI = $(IOAPI_DIR)/lib
@@ -10,7 +10,7 @@ FC = ${myFC}
 FC_FLAGS = ${myFFLAGS} -I${IOAPI} -I.
 
 #   Libraries
- LIBRARIES = -L${IOAPI} -lioapi -L${NETCDF} -lnetcdf -L${NETCDF} -lnetcdff ${extra_lib} 
+ LIBRARIES = -L${IOAPI} -lioapi -L${NETCDF} -lnetcdff -L${NETCDF} -lnetcdf ${extra_lib} 
 
 OBJS=	\
  module_envvar.o \
