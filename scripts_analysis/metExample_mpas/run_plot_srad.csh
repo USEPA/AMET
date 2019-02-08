@@ -10,8 +10,6 @@
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
   
-  #  Top of AMET directory
-  setenv AMETBASE /home/user/AMET_v13 
 
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
