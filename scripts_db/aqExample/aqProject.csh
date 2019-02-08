@@ -95,6 +95,7 @@ setenv SEARCH_DAILY     T
 
 ### Non-standard North America networks (should be set to F unless specifically required) ###
 setenv NAPS_HOURLY      F
+setenv NAPS_DAILY_O3    F
 setenv CASTNET_DRYDEP   F
 setenv AIRMON           F
 setenv AMON		F
@@ -114,6 +115,7 @@ setenv NAMN		F
 
 ### Gloabl networks ###
 setenv TOAR		F
+setenv NOAA_ESRL_O3	F
 
 ### Flags to set ozone and precipitation units (do not change if using standard SPEC_DEF file) ###
 setenv O3_OBS_FACTOR    1

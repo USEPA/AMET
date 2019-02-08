@@ -449,7 +449,7 @@ if (length(cols) != (length(bounds)-1)) {
 
 #data.df<-(network,stat_id,lat,lon,ob_val,mod_val)
 
-DomainStats<-function(data_all.df)
+DomainStats<-function(data_all.df,rm_negs=T)
 {
 
 ## Determine total numbers of observations per sites ##
@@ -462,12 +462,12 @@ data.df <- data_all.df
 #######################################################
 
 ## Remove missing and zero concentration observations from dataset ##
-#if (remove_negatives == "y") {
-#   indic.nonzero <- data.df$ob_val >= 0 
-#   data.df <- data.df[indic.nonzero,]
-#   indic.nonzero <- data.df$mod_val >= 0
-#   data.df <- data.df[indic.nonzero,]
-#}
+if ((rm_negs == "T") || (rm_negs == "t") || (rm_negs == "Y") || (rm_negs == "y")) {
+   indic.nonzero <- data.df$ob_val >= 0 
+   data.df <- data.df[indic.nonzero,]
+   indic.nonzero <- data.df$mod_val >= 0
+   data.df <- data.df[indic.nonzero,]
+}
 ##############################################
 
 ## Full Domain Statistics ##
@@ -645,22 +645,20 @@ for (i in 1:length(temp)) {
    sub.df <- temp[[i]]
    num_good_obs <- length(sub.df$stat_id)			# First assume all queried obs are valid
 #   if ((valid_only == "y") && (remove_negatives == "y")) {	# Check that we assuming all records are valid and we are removing negative values
-   if (valid_only == "y") {
-      indic.missing <- sub.df$ob_val < 0			# Check for observations that are less than 0
-      sub.df$ob_val[indic.missing] <- 0				# Replace those observations with 0 (we assume a valid observation, just not negative)
-      indic.missing <- sub.df$mod_val >= 0			# Find all the good model values
-      sub.df <- sub.df[indic.missing,]				# Remove any records with a missing modeled value
-      num_good_obs <- length(sub.df$stat_id)			# Count the remaining records
-   }
-   else {
-#      if (remove_negatives == "y") {	# If removing negative observations and valid_only (which applies only to NADP) is not checked
-         indic.missing <- sub.df$ob_val >= 0 
-         sub.df <- sub.df[indic.missing,]
-         indic.missing <- sub.df$mod_val >= 0
-         sub.df <- sub.df[indic.missing,]
-         num_good_obs <- length(sub.df$stat_id)
-#      }
-   }
+#   if (valid_only == "y") {
+#      indic.missing <- sub.df$ob_val < 0			# Check for observations that are less than 0
+#      sub.df$ob_val[indic.missing] <- 0				# Replace those observations with 0 (we assume a valid observation, just not negative)
+#      indic.missing <- sub.df$mod_val >= 0			# Find all the good model values
+#      sub.df <- sub.df[indic.missing,]				# Remove any records with a missing modeled value
+#      num_good_obs <- length(sub.df$stat_id)			# Count the remaining records
+#   }
+#   else {
+   indic.missing <- sub.df$ob_val >= 0 
+   sub.df <- sub.df[indic.missing,]
+   indic.missing <- sub.df$mod_val >= 0
+   sub.df <- sub.df[indic.missing,]
+   num_good_obs <- length(sub.df$stat_id)
+#   }
    coverage <- round((num_good_obs/total_obs[i])*100)
    if ((length(sub.df$stat_id) > 0) && (coverage >= coverage_limit) && (num_good_obs >= num_obs_limit)) {	# number of observations necessary for evaluation(completeness criteria)
       site_coverage <- c(site_coverage, coverage)
@@ -795,14 +793,14 @@ for (i in 1:length(temp)) {
    sub.df <- temp[[i]]
    num_good_obs <- length(sub.df$Date_Hour)                       # First assume all queried obs are valid
 #   if ((valid_only == "y") && (remove_negatives == "y")) {      # Check that we assuming all records are valid and we are removing negative values
-   if (valid_only == "y") {
-      indic.missing <- sub.df$ob_val < 0                        # Check for observations that are less than 0
-      sub.df$ob_val[indic.missing] <- 0                         # Replace those observations with 0 (we assume a valid observation, just not negative)
-      indic.missing <- sub.df$mod_val >= 0                      # Find all the good model values
-      sub.df <- sub.df[indic.missing,]                          # Remove any records with a missing modeled value
-      num_good_obs <- length(sub.df$Date_Hour)                    # Count the remaining records
-   }
-   else {
+#   if (valid_only == "y") {
+#      indic.missing <- sub.df$ob_val < 0                        # Check for observations that are less than 0
+#      sub.df$ob_val[indic.missing] <- 0                         # Replace those observations with 0 (we assume a valid observation, just not negative)
+#      indic.missing <- sub.df$mod_val >= 0                      # Find all the good model values
+#      sub.df <- sub.df[indic.missing,]                          # Remove any records with a missing modeled value
+#      num_good_obs <- length(sub.df$Date_Hour)                    # Count the remaining records
+#   }
+#   else {
 #      if (remove_negatives == "y") {    # If removing negative observations and valid_only (which applies only to NADP) is not checked
          indic.missing <- sub.df$ob_val >= 0
          sub.df <- sub.df[indic.missing,]
@@ -810,7 +808,7 @@ for (i in 1:length(temp)) {
          sub.df <- sub.df[indic.missing,]
          num_good_obs <- length(sub.df$Date_Hour)
 #      }
-   }
+#   }
    coverage <- round((num_good_obs/total_obs[i])*100)
    if ((length(sub.df$Date_Hour) > 0) && (coverage >= coverage_limit) && (num_good_obs >= num_obs_limit)) {       # number of observations necessary for evaluation(completeness criteria)
       hour_coverage	<- c(hour_coverage, coverage)
@@ -887,11 +885,16 @@ Average<-function(datain.df) {
    Sites		<- NULL
    Lats         	<- NULL
    Lons			<- NULL
+   States	        <- NULL
    category		<- NULL
+   names(datain.df)
+   if (!"State" %in% colnames(datain.df)) {
+      datain.df$State <- "NA"
+   }
    datain.df$good_ob	<- 0							# Assign a new column indicating whether ob is good or not (default in not good)
-
-   indic.nonzero <- datain.df$Mod_Value >= 0
-   datain.df     <- datain.df[indic.nonzero,]
+   datain.df$Year <- substr(datain.df$Start_Date,1,4)
+   indic.nonzero  <- datain.df$Mod_Value >= 0
+   datain.df      <- datain.df[indic.nonzero,]
   
    indic.na <- datain.df$Obs_Value < 0
    datain.df$Obs_Value[indic.na] <- NA
@@ -939,6 +942,10 @@ Average<-function(datain.df) {
          avg_text_1 <- "Monthly "
       }
       else if (averaging == "a") {
+         split_all <- split(datain.df,datain.df$Year)
+         avg_text_1 <- "Annual "
+      }
+      else if (averaging == "e") {
          split_all <- split(datain.df,datain.df$Stat_ID)
          avg_text_1 <- "Period "
       }
@@ -980,6 +987,7 @@ Average<-function(datain.df) {
 #         Precip_Ob_Sum  <- c(Precip_Ob_Sum,tapply(data_split.df$precip_ob,data_split.df$Stat_ID,sum,na.rm=T))
 #         Precip_Mod_Sum <- c(Precip_Mod_Sum,tapply(data_split.df$precip_mod,data_split.df$Stat_ID,sum,na.rm=T))
          Sites          <- c(Sites,tapply(data_split.df$Stat_ID,data_split.df$Stat_ID,unique))
+         States         <- c(States,tapply(as.character(data_split.df$State),data_split.df$Stat_ID,unique))
          Lats           <- c(Lats,tapply(data_split.df$lat,data_split.df$Stat_ID,unique))
          Lons           <- c(Lons,tapply(data_split.df$lon,data_split.df$Stat_ID,unique))
          avg_text	<- paste(avg_text_1, " Accumulated",sep="")          # set averaging text to accumulated
@@ -992,6 +1000,7 @@ Average<-function(datain.df) {
 #         Precip_Ob_Sum  <- c(Precip_Ob_Sum,tapply(data_split.df$precip_ob,data_split.df$Stat_ID,sum,na.rm=T))
 #         Precip_Mod_Sum <- c(Precip_Mod_Sum,tapply(data_split.df$precip_mod,data_split.df$Stat_ID,sum,na.rm=T))
          Sites          <- c(Sites,tapply(data_split.df$Stat_ID,data_split.df$Stat_ID,unique))
+         States         <- c(States,tapply(as.character(data_split.df$State),data_split.df$Stat_ID,unique))
          Lats           <- c(Lats,tapply(data_split.df$lat,data_split.df$Stat_ID,unique))
          Lons           <- c(Lons,tapply(data_split.df$lon,data_split.df$Stat_ID,unique)) 
          avg_text      <- paste("VW ",avg_text_1, "Average",sep="")                         # set text as volume weighted average
@@ -1008,6 +1017,7 @@ Average<-function(datain.df) {
 #         Precip_Ob_Sum	<- c(Precip_Ob_Sum,tapply(data_split.df$precip_ob,data_split.df$Stat_ID,sum,na.rm=T))
 #         Precip_Mod_Sum	<- c(Precip_Mod_Sum,tapply(data_split.df$precip_mod,data_split.df$Stat_ID,sum,na.rm=T))
          Sites		<- c(Sites,tapply(data_split.df$Stat_ID,data_split.df$Stat_ID,unique))
+         States         <- c(States,tapply(as.character(data_split.df$State),data_split.df$Stat_ID,unique))
          Lats		<- c(Lats,tapply(data_split.df$lat,data_split.df$Stat_ID,unique))
          Lons		<- c(Lons,tapply(data_split.df$lon,data_split.df$Stat_ID,unique))
          avg_text       <- paste(avg_text_1, " Average",sep="")
@@ -1015,7 +1025,7 @@ Average<-function(datain.df) {
    }
    coverage <- (Obs_Good/Obs_Count*100)
 #   data_out.df			<- data.frame(Stat_ID=I(Sites),lat=Lats,lon=Lons,Obs_Value=Obs_Mean,Mod_Value=Mod_Mean,precip_ob=Precip_Ob_Sum, precip_mod=Precip_Mod_Sum,Month=I(category),YearMonth=I(category),Coverage=coverage)
-   data_out.df                 <- data.frame(Stat_ID=I(Sites),lat=Lats,lon=Lons,Obs_Value=Obs_Mean,Mod_Value=Mod_Mean,Month=I(category),YearMonth=I(category),Coverage=coverage)
+   data_out.df                 <- data.frame(Stat_ID=I(Sites),State=I(States),lat=Lats,lon=Lons,Obs_Value=Obs_Mean,Mod_Value=Mod_Mean,Month=I(category),YearMonth=I(category),Coverage=coverage)
    indic.nan			<- is.nan(data_out.df$Obs_Value)		# check for NaNs
    data_out.df			<- data_out.df[!indic.nan,]			# remove records with NaNs
    indic.good			<- data_out.df$Coverage >= coverage_limit	# check to see if site coverage matches limit
@@ -1185,7 +1195,7 @@ aggregate_query <- function(data_in.df)
 {
 #   print(data_in.df)
    data_in.df[data_in.df==-999] <- NA
-   agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour),FUN=function(x)mean(x,na.rm=T))
+   agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour,state=data_in.df$state),FUN=function(x)mean(x,na.rm=T))
    agg_data[is.na(agg_data)] <- -999
    agg_data <- cbind(network=network,agg_data)
    #Order the outgoing data by start date and hour. Required for time series plots since the sorting is lost after the aggregate is run
@@ -1202,7 +1212,6 @@ aggregate_query <- function(data_in.df)
 read_sitex <- function(directory,network,run_name,species)
 {
    if (!exists("aggregate_data")) { aggregate_data <- "y" }
-#   skip 	<- 2
    sitex_file 	<- paste(directory,"/",network,"_",run_name,".csv",sep="")
    species_ob 	<- paste(species[1],"_ob",sep="")
    species_mod 	<- paste(species[1],"_mod",sep="")
@@ -1211,9 +1220,9 @@ read_sitex <- function(directory,network,run_name,species)
       if ((network == "AQS_Daily_O3") || (network == "CASTNET_Daily") || (network == "NAPS_Daily_O3") || (network == "EMEP_Daily_O3")) {
          data_in.df$Shh <- 0
       }
-      ob_date_start <-paste(data_in.df$SYYYY,sprintf("%02d",data_in.df$SMM),sprintf("%02d",data_in.df$SDD),sep="-")
-      ob_date_end 	 <-paste(data_in.df$EYYYY,sprintf("%02d",data_in.df$EMM),sprintf("%02d",data_in.df$EDD),sep="-")
-      all_species <- c(paste(species[1],"_ob",sep=""), paste(species[1],"_mod",sep=""))
+      ob_date_start <- paste(data_in.df$SYYYY,sprintf("%02d",data_in.df$SMM),sprintf("%02d",data_in.df$SDD),sep="-")
+      ob_date_end   <- paste(data_in.df$EYYYY,sprintf("%02d",data_in.df$EMM),sprintf("%02d",data_in.df$EDD),sep="-")
+      all_species   <- c(paste(species[1],"_ob",sep=""), paste(species[1],"_mod",sep=""))
       i <- 2
       while (i <= length(species)) {
          all_species <- c(all_species, paste(species[i],"_ob",sep=""), paste(species[i],"_mod",sep=""))
@@ -1231,13 +1240,13 @@ read_sitex <- function(directory,network,run_name,species)
          }
       }
       species_units    <- read.csv(sitex_file,skip=3,nrows=1,header=F)
-      header	    <- names(data_in.df)
-      ob_unit	    <- species_units[which(header==species_ob)]
+      header	       <- names(data_in.df)
+      ob_unit	       <- species_units[which(header==species_ob)]
       data_exists_flag <- "y"
-      num_specs 	    <- length(species)-1
+      num_specs        <- length(species)-1
       for (k in 0:num_specs) {
-         ob_col  <- 9+2*k
-         mod_col <- 10+2*k
+         ob_col  <- 9  + (2*k)
+         mod_col <- 10 + (2*k)
          {
             if (length(sitex_data.df$stat_id > 0)) {
                count <- sum(is.na(sitex_data.df[,ob_col]))
@@ -1267,7 +1276,6 @@ read_sitex <- function(directory,network,run_name,species)
          }
       }
       if (data_exists_flag == "y") {
-   #      if (length(query_table_info.df$COLUMN_NAME) == 0) { sitex_data.df$POCode <- 1 }
          if ((aggregate_data == 'y') || (aggregate_data == 'Y') || (aggregate_data == 't') || (aggregate_data == 'T')) {
             sitex_data.df <- aggregate_query(sitex_data.df)
          }
@@ -1305,16 +1313,28 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
    if (criteria == "Default") {
       criteria <- paste(" WHERE d.",species[1],"_ob is not NULL and d.network='",network,"'",query,sep="")                       # Set first part of the MYSQL query
    }
+   if (zeroprecip == "y") { criteria <- paste(criteria, " and d.precip_ob > 0",sep="") }
+   if (all_valid == "y") { criteria <- paste(criteria, " and (d.valid_code != ' ' or d.valid_code = 'A' or d.valid_code = 'B' or d.valid_code IS NULL)",sep="") }
+   ##########################################################
+   ### Remove T replicates, which identifies field blanks ###
+   ##########################################################
+   check_replicate	<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'replicate';",sep="")
+   query_table_info.df <-db_Query(check_replicate,mysql)
+   if (length(query_table_info.df$COLUMN_NAME) != 0) {	# Check if replicate column exisits or not
+      if ((all_valid == "y") && (network == 'AMON')) { criteria <- paste(criteria, " and (d.replicate != 'T' or d.replicate IS NULL)",sep="") }
+   }
+   ###########################################################
+   
    check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
    query_table_info.df <-db_Query(check_POCode,mysql)
    {
       if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string," from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
          aqdat_query.df<-db_Query(qs,mysql)
 #         aqdat_query.df$POCode <- 1
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",POCode from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",d.POCode,s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
          aqdat_query.df<-db_Query(qs,mysql)
       }
    }
@@ -1333,6 +1353,10 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
                data_exists_flag <- "n"
             }
             else {
+               if ((all_valid == "y") && ((network == "NADP") || (network == "MDN"))) {
+                  indic.missing <- aqdat_query.df[,ob_col] < 0  # Check for observations that are less than 0
+                  aqdat_query.df[indic.missing,ob_col] <- 0     # Replace those observations with 0 (we assume a valid observation, just not negative). Applies primarily to NTN networks (i.e. NADP, AMON, MDN)
+               }
                if ((remove_negatives == 'y') || (remove_negatives == 'Y') || (remove_negatives == 't') || (remove_negatives == 'T')) {
                   indic.nonzero       <- aqdat_query.df[,ob_col] >= 0
                   aqdat_query.df      <- aqdat_query.df[indic.nonzero,]
@@ -1358,7 +1382,9 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
       if ((aggregate_data == 'y') || (aggregate_data == 'Y') || (aggregate_data == 't') || (aggregate_data == 'T')) {
          aqdat_query.df <- aggregate_query(aqdat_query.df)
       }
-      aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')
+      if ((!exists("merge_statid_POC") || merge_statid_POC == "y")) {
+         aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')
+      }
    }
    units_qs        <- paste("SELECT ",species[1]," from project_units where proj_code = '",run_name,"' and network = '",network,"'", sep="")
    units           <- db_Query(units_qs,mysql)

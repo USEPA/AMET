@@ -19,12 +19,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[5.1 AMET Setup](#AMET_Setup)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[5.2 Basic MySQL Commands](#MySQL_Commands)<br>
 [6. Project Creation and Database Population](#Project_Creation)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The wrfExample Project](#WRF_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf and metExample_mpas Projects](#WRF_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.2 The aqExample Project](#AQ_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
 [7. Analysis](#Analysis)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf and metExample_mpas](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
 [8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
@@ -68,7 +68,7 @@ Practically, a user may be interested in using only one of the fields (either ME
 1.2 Concept of an AMET “Project”
 ----------------------------
 
-A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2011 12-km continental U.S. simulation, and another project for a 2011 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
+A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2016 12-km continental U.S. simulation, and another project for a 2016 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample_wrf) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
 
 <a id="Users_Guide"></a>
 1.3 Organization of This User’s Guide
@@ -195,11 +195,15 @@ The AMET release includes example datasets of both model and observational data.
 ----------
 
 For the model data, we have included both meteorological and air quality
-data. We have organized the data into four example projects:
-"metExample" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+data. We have organized the data into several example projects:
+"metExample_wrf", "metExample_mpas" and "aqExample". On the MET side, there is a 1-month WRF simulation 
 and 1-month MPAS simulation provided for July 2016. We included the same period 
-in case users wanted to compare the two models. These are also subsets with only the 
-variables needed for the evaluation scripts.
+in case users wanted to compare the two models. These are model output subsets with only the 
+variables needed for the evaluation scripts. Model outputs are availiable for download via
+the https://www.cmascenter.org/ site. Users need to register and then look under AMET options
+for the link. Note, these are rather large, so for basic testing only a few files may
+be enough for testing. The full month can allow users to fully exercise AMET before 
+their own model analysis is done.
 
 The WRF data consist of 31 WRF output files in netCDF format:
 
@@ -627,9 +631,9 @@ that command will yield a table like this:
 
 | stations |
 
-| metExample\_surface |
+| metExample_wrf_surface |
 
-| metExample\_raob |
+| metExample_wrf_raob |
 
 +---------------------+
 ```
@@ -679,7 +683,7 @@ cd $AMETBASE/scripts_db
 This directory contains two project directories and one input files directory, in
 addition to the dbSetup directory described earlier. The projects are
 
-* metExample_wrf/metExample_mpas: MET examples for the WRF and MPAS models
+* metExample_wrf and metExample_mpas: MET examples for the WRF and MPAS models
 * aqExample: an AQ example for the CMAQ model
 
 In the following subsections, we describe how to run each project.
@@ -688,7 +692,7 @@ In the following subsections, we describe how to run each project.
 6.1 The metExample Projects
 ----------------------
 
-Go to the metExample_wrf project directory. Note these are the same steps for metExampe_mpas.
+Go to the metExample_wrf project directory. Note these are the same steps for metExample_mpas.
 
 ```
 cd $AMETBASE/scripts_db/metExample_wrf
@@ -699,21 +703,41 @@ MET_matching_surface.R that actually populates the AMET database with the projec
 Verify that the variable AMETBASE is set to the correct AMET project. The example script has detailed instructions on all variables that are passed to R. Modify according to your setup and run the script by typing
 
 ```
-./matching_surface.csh >& log.populate
+./matching_surface.csh >& log.populate.sfc
 ```
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background.
 
 This C-shell script for surface meteorology will create an empty project tables in the AMET
-database: wrfExample_\wrf\_surface. It is important to understand that if users specify a database 
+database: wrfExample_wrf_surface. It is important to understand that if users specify a database 
 via AMET_DATABASE that is not present on the MySQL server, a new database will automatically
-be created. The wrfExample_\wrf\_surface table contains the matches between the model outputs 
+be created. The wrfExample_wrf_surface table contains the matches between the model outputs 
 andÂ surface observations. After creating the table, the script then excutes the matching process. 
-This process consists of retreiving data from the MADIS web site for the modelâ€™s temporal
+This process consists of retreiving data from the MADIS web site for the model's temporal
 period, unzipping the downloaded data, finding the geographic location of each observation
 site on the model grid and interpolating to those locations, populating the
 appropriate table with the model-obs pairs for each variable, and optionally rezipping
-the data for compressed storage. Finally, the script updates the project\_log
+the data for compressed storage. Finally, the script updates the project_log
 with summary information for the wrfExample project.
+
+```
+./matching_bsrn.csh >& log.populate.bsrn
+```
+This C-shell script is executed the same as the surface script above. It is used to compare the model
+with Baseline Surface Radiation Network (BSRN) shortwave radiation measurements. The model-observation
+pairs are put in the wrfExample_wrf_surface table if already created. If not, that table is generated and
+the script will automatically download the BSRN observations from the FTP site (BSRN_SERVER) in the 
+matching_bsrn.csh script. Users should contact the BSRN organization and request a access, which will
+follow with a login and password that should be specified (BSRN_LOGIN and BSRN_PASS). These files are
+monthly text files with 1 minute data. It takes a few minutes of processing to read these file, but
+after, the script runs very fast. This is a new option in AMETv1.4.
+
+```
+./matching_raob.csh >& log.populate.raob
+```
+This C-shell is executed like the ones above. It will create a new table wrfExample_wrf_raob specifically
+for profile observations. Like the surface meteorology, this script will download MADIS rawinsonde observations
+and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
+troposphere.
 
 <!----
 The second C-shell file, metFTP.csh, is a wrapper script for calling
@@ -778,7 +802,7 @@ not to do this, you will have to modify the provided run scripts to suite your o
 
 To create a new project, follow these basic steps:
 
-1.  Copy the appropriate example project (metExample) to a new directory name (see below).
+1.  Copy the appropriate example project (metExample_wrf) to a new directory name (see below).
 
 2.  Rename these directories after your new project (use the *exact* project name, as
     many scripts use the project name to navigate directories and organize analyses).
@@ -789,7 +813,8 @@ To create a new project, follow these basic steps:
 
 4.  Configure the C-shell script matching_surface.csh for the new project.
 
-5.  Run the matching_surface.csh script to populate the AMET database.
+5.  Run the matching_surface.csh (or matching_bsrn.csh, or matching_raob.csh)
+    script to populate the AMET database.
 
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
@@ -801,14 +826,14 @@ use the following commands:
 
 > $ cd $AMETBASE/scripts\_db
 >
-> $ cp -r metExample wrfNC2007
+> $ cp -r metExample_wrf wrfNC2007
 >
 > $ cd wrfNC2007
 
 
 ```
 cd $AMETBASE/scripts_db
-cp -r metExample wrfNC2007
+cp -r metExample_wrf wrfNC2007
 ```
 Create a new model data directory and move or link model data into
 it, as follows:
@@ -821,9 +846,8 @@ ln -s <model data directory> .
 ```
 
 Here, you would replace “&lt;model data&gt;” with the path to your model
-data file(s). The matching_surface.csh script (or soon to come matching_profiler.csh, matching_acars.csh, 
-matching_raob.csh, matching_surfrad.csh and matching_prism.csh) will perform the model-obs
-matching of all model outputs in this new project directory.
+data file(s). The matching_surface.csh, matching_bsrn.csh and matching_raob.csh 
+will perform the model-obs matching of all model outputs in this new project directory.
 
 Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
 AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
@@ -838,9 +862,11 @@ cd $AMETBASE/scripts\_db/wrfNC2007
 
 The matching_surface.csh script will create a new MET project in the AMET database if
 it does not exist (a new database will also be created if it does not already exist). Specifically,
-it will create a new row in the AMET project\_log table and three new tables: 
-wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface. Once this script completes,
-the AMET database will be ready to produce meteorology model performance analysis plots and statistics.
+it will create a new row in the AMET project\_log table and wrfNC2007\_surface.
+The matching_bsrn.csh script will put radiation data into the same wrfNC2007\_surface table.
+The matching_raob.csh script will put upper-air meteorology data in a wrfNC2007\_raob table.
+Once this script completes, the AMET database will be ready to produce meteorology model 
+performance analysis plots and statistics.
 
 <a id="New_AQ_Project"></a>
 6.4 Creating a New AQ Project
@@ -1021,7 +1047,7 @@ physics or chemistry, spatial domain, scale, etc.) with the scripts used
 to analyze the AMET tables and with the output from the analysis (plots
 and data).
 
-Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample, respectively.
+Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample_wrf, respectively.
 Within each of these directories there are C-shell
 scripts and a subdirectory called **input_files** containing an input file with
 similar names as the scripts (e.g., run\_timeseries.csh and timeseries.input). These two
@@ -1031,13 +1057,15 @@ allows users who are not very familiar with R to perform a set of predefined
 analyses with AMET.
 
 <a id="metExample"></a>
-7.1 metExample
+7.1 metExample_wrf or metExample_mpas
 ----------
 
 Use the following command to navigate to the met analysis example project directory:
 
 ```
-cd $AMETBASE/scripts_analysis/metExample
+cd $AMETBASE/scripts_analysis/metExample_wrf
+or
+cd $AMETBASE/scripts_analysis/metExample_mpas
 ```
 
 This directory contains a series of C-shell scripts and their accompanying
@@ -1059,37 +1087,61 @@ After configuring the example met analysis script, save and run the script:
 ./run_spatial_surface.csh |& tee spatial_surface.log
 ```
 
-The plots from this script will be written to the $AMETBASE/output/metExample directory. A subdirectory is created in this output directory for each analysis (e.g.; spatial_surface, summary, timeseries and daily_barplot). After the script has completed, go to the output directory to view the plots:
+The plots from this script will be written to the $AMETBASE/output/metExample_wrf directory. A subdirectory is created in this output directory for each analysis (e.g.; spatial_surface, summary, timeseries and daily_barplot). After the script has completed, go to the output directory to view the plots:
 
 ```
-cd $AMETBASE/output/metExample/spatial_surface
+cd $AMETBASE/output/metExample_wrf/spatial_surface
+or
+cd $AMETBASE/output/metExample_mpas/spatial_surface
 ```
 
 You should see a whole series of plots of the form:
 
-> wrfExample.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
+> wrfExample_wrf.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
 
 A brief summary of each of the C-shell scripts, with example plots from each script, is given below.
 
-**run\_spatial_surface.csh** ([Example Plot](./images/metExample.rmse.T.2011-07-01_00.2011-07-31_23.pdf))
+**run\_spatial_surface.csh** ([Example Spatial Plot](./images/metExample_mpas.rmse.T.20160701-20160801.pdf))
 - spatial_surface.input
 - Creates maps of statistics at each observation site
-- Creates a csv file of the site specific statistics ([Example csv](./images/metExample.spatial.temp2m.stats.2011-07-01_00.2011-07-31_23.csv))
+- Creates a csv file of the site specific statistics ([Example csv](./images/wrf_conus12_oaqps.rmse.T.20160101-20160131.pdf))
 
-**run\_timeseries.csh** ([Example Plot](./images/metExample.KRDU.20110701-20110801.pdf))
+**run\_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
 - timeseries.input
-- Creates a 4 panel timeseries of model and observed temperature, moisture, wind speed and direction.
-- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample.KRDU.20110701-20110801.txt))
+- Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
+- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
-**run\_summary.csh** ([Example Plot](./images/metExample.JULY2013_WRF.T.ametplot.png))
+**run\_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
+- timeseries_rh.input
+- Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
+- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
+
+**run\_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
 - Creates two plots for each met variable. A diurnal statistics plot and summary plot with panels that include scatter plot, stats table, statistics as a function of the observation range.
-- Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample.JULY2013_WRF.csv))
+- Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample_wrf.JULY2016.csv))
 
-**run\_daily\_barplot.csh** ([Example Plot](./images/metExample.JULY2011_WRF.T.daily_barplot_RMSE.pdf))
+**run\_daily\_barplot.csh** ([Example Daily Plot](./images/metExample_wrf.JUL2016.T.daily_barplot_RMSE.pdf))
 - daily_barplot.input
 - Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
-- Creates a csv file of daily statistics ([Example csv](./images/metExample.JULY2013_MPAS.T.daily_stats.csv))
+- Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
+
+**run\_plot\_srad.csh** (Example plots: [Diurnal](./images/srad.diurnal.psu.20160701-20160801.pdf), [Spatial](./images/srad.spatial.late-afternoon.20160701-20160801.pdf), [Timeseries](./images/srad.timeseries.psu.20160701-20160801.pdf), [Histogram](./images/srad.histogram.psu.20160701-20160801.pdf))
+- plot_srad.input
+- Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
+- Creates a csv file for  ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
+
+**run\_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
+- raob.input
+- Creates a number of plots. Not all are shown above. See script for full details.
+- Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.csv))
+
+**run\_prism\_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
+- Creates a NetCDF file in the model output format.
+- Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
+- Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
+
+
 
 <a id="aqExample"></a>
 7.2 aqExample
@@ -1551,7 +1603,7 @@ population—for example, $AMETBASE/configure/amet-config.R.
 ### MET Analysis Input Files
 
 The analysis input files are found in
-$AMETBASE/scripts\_analysis/metExample. The following is a partial list of
+$AMETBASE/scripts\_analysis/metExample_wrf. The following is a partial list of
 variables. Not all of these variables are available in every input file.
 
 <a id="Table_B-2"></a>
