@@ -44,6 +44,7 @@ if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 
 
 ## Load Required Libraries
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
+#if(!require(RMariaDB)){stop("Required Package RMariaDB was not loaded")}
 
 mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)           # Set MYSQL login and query options
 ##############################
@@ -136,13 +137,15 @@ if (length(cols) != (length(bounds)-1)) {
  	db_Query<-function(query,mysql,get=1,verbose=FALSE)
  {
   db<-dbDriver("MySQL")				# MySQL Database type
+#  db<-dbDriver("MariaDB")
   con <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server,dbname=mysql$dbase)		# Database connect
 
   for (q in 1:length(query)){
     rs<-dbSendQuery(con,query[q])	# Send query and place results in data frame
     if(verbose){ print(query[q]) }
   }
-  if(get == 1){df<-fetch(rs,n=mysql$maxrec)}
+#  if(get == 1){df<-fetch(rs,n=mysql$maxrec)}
+  if(get == 1){df<-dbFetch(rs,n=mysql$maxrec)}
   
   dbClearResult(rs)
   dbDisconnect(con)		# Database disconnect
@@ -1195,6 +1198,9 @@ aggregate_query <- function(data_in.df)
 {
 #   print(data_in.df)
    data_in.df[data_in.df==-999] <- NA
+   if (!("state" %in% colnames(data_in.df))) {
+      data_in.df$state <- "NA"
+   }
    agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour,state=data_in.df$state),FUN=function(x)mean(x,na.rm=T))
    agg_data[is.na(agg_data)] <- -999
    agg_data <- cbind(network=network,agg_data)
@@ -1317,14 +1323,12 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
    if (all_valid == "y") { criteria <- paste(criteria, " and (d.valid_code != ' ' or d.valid_code = 'A' or d.valid_code = 'B' or d.valid_code IS NULL)",sep="") }
    ##########################################################
    ### Remove T replicates, which identifies field blanks ###
-   ##########################################################
    check_replicate	<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'replicate';",sep="")
    query_table_info.df <-db_Query(check_replicate,mysql)
    if (length(query_table_info.df$COLUMN_NAME) != 0) {	# Check if replicate column exisits or not
       if ((all_valid == "y") && (network == 'AMON')) { criteria <- paste(criteria, " and (d.replicate != 'T' or d.replicate IS NULL)",sep="") }
    }
    ###########################################################
-   
    check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
    query_table_info.df <-db_Query(check_POCode,mysql)
    {
