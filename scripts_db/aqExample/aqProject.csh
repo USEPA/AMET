@@ -33,7 +33,6 @@
 
 ## setup:
 ### AMET base directory and database 
-setenv AMETBASE 	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13 
 setenv AMET_DATABASE 	amet
 setenv MYSQL_CONFIG     $AMETBASE/configure/amet-config.R
 

@@ -17,7 +17,7 @@
 # Any one of the computed statistics can be plotted with a small
 # change to the script.  The script works with multiple years as
 # well. This script is new to the AMETv1.2 code and has been updated
-# for AMETv1.3.
+# for AMETv1.3 and AMET_v14b.
 #
 # Initial version:  Wyat Appel - Dec, 2012
 #
@@ -29,7 +29,6 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  setenv AMETBASE       /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R

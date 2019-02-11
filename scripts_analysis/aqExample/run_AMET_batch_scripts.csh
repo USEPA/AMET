@@ -29,14 +29,13 @@ setenv AMET_DB	T
 #setenv OUTDIR	$AMETBASE/output/$AMET_PROJECT/
 
 ### Set the location of the base AMET installation, database name and project name ###
-setenv AMETBASE 	/project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
 setenv AMET_DATABASE 	amet 
 setenv AMET_PROJECT	aqExample
 setenv MYSQL_CONFIG	$AMETBASE/configure/amet-config.R
 
 ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
-setenv AMET_SDATE "2016-05-01"
-setenv AMET_EDATE "2016-05-31"
+setenv AMET_SDATE "2016-07-01"
+setenv AMET_EDATE "2016-07-31"
 
 ### Set the project name to be used for model-to-model comparisons ###
 setenv AMET_PROJECT2 aqExample 

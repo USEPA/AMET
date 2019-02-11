@@ -1,89 +1,56 @@
-***Atmospheric Model Evaluation Tool (AMET)  
-User’s Guide***
+# Atmospheric Model Evaluation Tool (AMET)  
+# User’s Guide for v1.4
 
 **Contents**
 
-1. Overview
-
-   1.1 Overall Objective and Basic Structure
-
-   1.2 Concept of an AMET “Project”
-
-   1.3 Organization of This User’s Guide
-
-2. Directory Structure
-
-3. Configuration
-
-   3.1 R Configuration File (amet-config.R)
-
-4. Datasets
-
-   4.1 Model Data
-
-   4.2 Observational Data
-
-5. Database Setup
-
-   5.1 AMET Setup
-
-   5.2 Basic MySQL Commands
-
-6. Project Creation and Database Population
-
-   6.1 The wrfExample Project
-
-   6.2 The aqExample Project
-
-   6.3 Creating a New MET Project
-
-   6.4 Creating a New AQ Project
- 
-7. Analysis
-
-   7.1 wrfExample
-
-   7.2 aqExample
-
-   7.3 Creating a New Analysis Project
-
-8. CMAS Support for AMET
-
-References
-
-Appendix A: Overview Flow Diagram
-
-**Appendix B: Configuration and Input Files**
+[1. Overview](#Overview)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Overall Objective and Basic Structure](#Basic_Structure)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Concept of an AMET “Project”](#AMET_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[1.3 Organization of This User’s Guide](#Users_Guide)<br>
+[2. Directory Structure](#Directory_Structure)<br>
+[3. Configuration](#Configuration)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[3.1 R Configuration File (amet-config.R)](#Configuration_File)<br>
+[4. Datasets](#Datasets)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[4.1 Model Data](#Model_Data)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[4.2 Observational Data](#Observational_Data)<br>
+[5. Database Setup](#Database_Setup)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[5.1 AMET Setup](#AMET_Setup)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[5.2 Basic MySQL Commands](#MySQL_Commands)<br>
+[6. Project Creation and Database Population](#Project_Creation)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The wrfExample Project](#WRF_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.2 The aqExample Project](#AQ_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
+[7. Analysis](#Analysis)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
+[References](#References)<br>
+[Appendix A: Overview Flow Diagram](#Appendix_A)<br>
+[Appendix B: Configuration and Input Files](#Appendix_B)<br>
 
   
 Tables
 ======
 
-Table 2‑1. Directories under $AMETBASE
+[Table 2‑1. Directories under $AMETBASE](#Table_2-1)<br>
+[Table 3‑1. Most common variables that need to be changed in amet-config.R](#Table_3-1)<br>
+[Table 6‑3. aqProject.csh script options](#Table_6-3)<br>
+[Table 7‑1. MET analysis scripts](#Table_7-1)<br>
+[Table 7‑2. AQ analysis script options](#Table_7-2)<br>
+[Table B‑1. amet-config.R](#Table_B-1)<br>
+[Table B‑2. MET setup\_project.input](#Table_B-2)<br>
+[Table B‑2. MET populate\_project.input](#Table_B-3)<br>
+[Table B‑4. MET analysis input variables](#Table_B-4)<br>
+[Table B‑5. AQ analysis input variables](#Table_B-5)<br>
 
-Table 3‑1. Most common variables that need to be changed in
-amet-config.R
 
-Table 7‑1. MET analysis scripts
-
-Table 7‑2. AQ analysis scripts
-
-Table B‑1. amet-config.R 
-
-Table B-2. MET setup\_project.input
-
-Table B‑3. MET populate\_project.input 
-
-Table B‑4. MET analysis input variables 
-
-Table B‑5. AQ analysis input variables 
-
-1.  Overview
-    ========
-
-    1.  Overall Objective and Basic Structure
-        -------------------------------------
-
+<a id="Overview"></a>1. Overview
+===========
+   
+<a id="Basic_Structure"></a>1.1 Overall Objective and Basic Structure
+-------------------------------------
+       
 The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a
 suite of software designed to facilitate the analysis and evaluation of
 meteorological and air quality models. AMET matches the model output for
@@ -118,7 +85,8 @@ and graphics). The previous versions of AMET also utilized **perl** (an
 open-source cross-platform programming language), but the **perl** requirement
 has been removed from AMETv1.3.
 
-Concept of an AMET “Project”
+<a id="AMET_Project"></a>
+1.2 Concept of an AMET “Project”
 ----------------------------
 
 A central organizing structure for AMET applications is a *project*. A
@@ -135,7 +103,8 @@ projects, by copying one of the three example directories (aqExample,
 mm5Example, wrfExample) provided with the installation and then renaming
 it to the new project’s name.
 
-Organization of This User’s Guide
+<a id="Users_Guide"></a>
+1.3 Organization of This User’s Guide
 ---------------------------------
 
 The Community Modeling and Analysis System (CMAS) Center has created
@@ -189,8 +158,9 @@ Before using AMET and this user’s guide, you must first install the AMET packa
 system. For information on the installation process, please see the separate *Atmospheric 
 Model Evaluation Tool (AMET) Installation Guide* that can be downloaded from the CMAS web site.
 
-2.  Directory Structure
-    ========
+<a id="Directory_Structure"></a>
+2. Directory Structure
+===================
 
 In our discussions, we refer to the top of the AMET directory structure
 as “AMETBASE”. This environment variable is actually set in many of the
@@ -219,8 +189,7 @@ class="anchor"></span></span>Table 2‑1. Directories under $AMETBASE.
 long period of time, it may be prudent to link these data within the
 appropriate AMET directories rather than moving or copying them.
 
-3.  Configuration
-    ========
+# 3 Configuration
 
 After untarring the AMET code and data and installing/building the
 required two tiers of software components (as discussed in the AMET
@@ -231,8 +200,7 @@ files:
 -   An R configuration file (amet-config.R)
 
 
-3.1 R Configuration File (amet-config.R)
-------------------------------------
+## 3.1 R Configuration File (amet-config.R)
 
 The R configuration file is used by the underlying R programs to perform
 AMET setup and statistical analysis on your model-obs pairs. Most users will 
@@ -257,15 +225,13 @@ A word about specifying the **amet_login** and **amet_pass**. Obviously these ar
 
 For simplicity, it is suggested that the MySQL credentials specified in the amet-config.R file be for a user with full database permissions.
 
-4.  Datasets
-    ========
+# 4 Datasets
 
 The AMET release includes both model and observational datasets provided
 as examples. You should have downloaded these into the proper
 directories during the installation process.
 
-4.1 Model Data
-----------
+## 4.1 Model Data
 
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into four example projects:
@@ -305,8 +271,7 @@ CMAQ, after they have been postprocessed with the combine utility.
 All of the spatial domains cover the continental U.S. and have a 12-km
 grid resolution.
 
-4.2 Observational Data
-------------------
+## 4.2 Observational Data
 
 As with the model data, the observations directory structure is divided
 between MET and AQ fields. On the MET side, all of the observations come
@@ -694,8 +659,7 @@ files are available for download from the CMAS website.
 >
 > PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)
 
-5.  Database Setup
-    ========
+# 5 Database Setup
 
 The next step in using AMET is to set up the MySQL database. Please 
 refer to the flow diagram in Appendix A to understand the overall flow
@@ -734,8 +698,7 @@ processing AQ data and not employing the use of the database, those portions of
 the instructions that deal with setuping up and interfacing with the database
 can be ignored.
 
-5.1 AMET Setup
----------
+## 5.1 AMET Setup
 
 Go to the setup directory
 
@@ -767,8 +730,7 @@ delete all of the data in the database corresponding to **all** of the
 projects (**both MET and AQ**).*
 
 
-5.2 Basic MySQL Commands
---------------------
+## 5.2 Basic MySQL Commands
 
 As you begin to go through the amet database setup and the
 project-specific database populate process, you may want to query the
@@ -837,8 +799,7 @@ To determine which networks are included in the aqExample project:
 
 > mysql&gt; select distinct network from aqExample;
 
-6.  Project Creation and Database Population
-    ========
+# 6 Project Creation and Database Population
 
 The database population phase of AMET must be performed for each new
 project. As discussed in Section 1.2, the *project* is the organizing
@@ -857,8 +818,7 @@ addition to the setup directories described earlier. The projects are
 
 In the following subsections, we describe how to run each project.
 
-6.1 The wrfExample Project
-----------------------
+## 6.1 The wrfExample Project
 
 Go to the project directory
 
@@ -905,8 +865,7 @@ downloaded once for a given time period and will subsequently be
 available to all projects.
 
 
-6.2 The aqExample Project
----------------------
+## 6.2 The aqExample Project
 
 Go to the project directory:
 
@@ -945,8 +904,7 @@ defines the physical units of the species variables for this network (e.g., ppb 
 µg/m<sup>3</sup>). Finally, the script updates the aq\_project\_log with
 summary information for the aqExample project.
 
-6.3 Creating a New MET Project
---------------------------
+## 6.3 Creating a New MET Project
 
 When you create your own projects, we recommend that you utilize the
 structure of naming your directories after your projects. If you choose
@@ -1004,8 +962,7 @@ This will create a new MET project in the amet database. Specifically,
 it will create a new row in your project\_log table and three new
 tables: wrfNC2007\_profiler, wrfNC2007\_raob, and wrfNC2007\_surface.
 
-6.4 Creating a New AQ Project
--------------------------
+## 6.4 Creating a New AQ Project
 
 Before describing the creation of a new AQ project, we need to clarify a
 potentially confusing issue: the relationship between model species and
@@ -1169,8 +1126,7 @@ will create a new row in your aq\_project\_log table, a series of new
 rows (one for each network) in your project\_units table, and a new
 project table: aqNC2007.
 
-7.  Analysis
-    ========
+# 7 Analysis
 
 The analysis phase of AMET consists of performing statistical analyses
 on the model-obs pairs and creating plots of the resulting statistics.
@@ -1203,8 +1159,7 @@ $AMETBASE/R and then they run that script. The use of the C-shell interface
 allows users who are not very familiar with R to perform these predefined 
 analyses, shielding them from the actual R code.
 
-7.1 wrfExample
-----------
+## 7.1 wrfExample
 
 Go to the project directory:
 
@@ -1262,8 +1217,7 @@ inputs are basically treated the same in terms of analysis. You could
 easily add a new project directory for mm5Example or mcipExample by
 following the instructions in Section 7.3.
 
-7.2 aqExample
----------
+## 7.2 aqExample
 
 Go to the project directory:
 
@@ -1509,7 +1463,7 @@ A brief summary of each of the C-shell scripts is given below.
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model
    - single network;single species; multiple simulations
    
-**run\_timeseries.csh**
+**run\_timeseries\_interactive.csh**
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R leaflet package to allow time-series zooming
    - single network;single species; multiple simulations
 
@@ -1522,8 +1476,7 @@ A brief summary of each of the C-shell scripts is given below.
    - multiple networks;single species; multiple simulations
 
 
-7.3 Creating a New Analysis Project
--------------------------------
+## 7.3 Creating a New Analysis Project
 
 Creating a new analysis project requires the same basic steps for both
 the MET and the AQ models. When you create your own analysis projects,
@@ -1557,32 +1510,7 @@ titles in many of the scripts.
 
 Run the desired analysis scripts from your new project directory.
 
-8.  CMAS Support for AMET
-    ========
-
-We have added AMET to Bugzilla, the CMAS bug-tracking and support
-request software system. You are encouraged to contact CMAS via bugzilla
-if you have bugs to report, or if you would like assistance with a
-specific component of AMET. The Bugzilla site for AMET is
-[**http://bugz.unc.edu/enter\_bug.cgi?product=AMET**](http://bugz.unc.edu/enter_bug.cgi?product=AMET).
-If you have never accessed this site before, a user account needs to be
-created by sending an email request to the CMAS administrator. We have
-created the following subsections on the Bugzilla AMET page:
-
--   AQ Analyses
-
--   AQ Database
-
--   Installation
-
--   Met Analyses
-
--   Met Database
-
--   Other
-
-References
-==========
+# References
 
 Appel, K.W., Gilliam, R.C., Davis, N., Zubrow, A., and Howard, S.C.: Overview of the Atmospheric Model Evaluation Tool (AMET) v1.1 for evaluating meteorological and air quality models, Environ. Modell. Softw.,26, 4, 434-443, 2011.
 

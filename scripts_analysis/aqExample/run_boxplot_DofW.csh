@@ -19,7 +19,6 @@
   # These are the main controlling variables for the R script
   
   ###  AMET base directory, database, project and configure file location
-  setenv AMETBASE       /project/amet_aq/AMET_Code/Release_Code_v13/AMET_v13
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
@@ -40,8 +39,8 @@
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_dofw
 
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
-  setenv AMET_SDATE "2016-05-01"
-  setenv AMET_EDATE "2016-05-11"
+  setenv AMET_SDATE "2016-07-01"
+  setenv AMET_EDATE "2016-07-31"
 
   ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
   ### The PID is particularly important if using the AMET web interface and is determined there through

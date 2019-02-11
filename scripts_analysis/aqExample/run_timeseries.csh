@@ -18,7 +18,6 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  setenv AMETBASE       ~/AMET
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
@@ -39,8 +38,8 @@
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries
 
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
-  setenv AMET_SDATE "2016-05-01"
-  setenv AMET_EDATE "2016-05-11"
+  setenv AMET_SDATE "2016-07-01"
+  setenv AMET_EDATE "2016-07-11"
 
   ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
   ### The PID is particularly important if using the AMET web interface and is determined there through

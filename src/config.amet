@@ -11,7 +11,7 @@
 # =================================================================== #
 
 #> model source code repository location
- setenv AMETBASE /proj/ie/apps/AMET/AMET_v13 # [Add AMETv1.3 Install Directory Here]
+ setenv AMETBASE /proj/ie/proj/CMAS/AMET/AMET_v14b # [Add AMETv1.4b Install Directory Here]
 
 #===============================================================================
 #> architecture & compiler specific settings
@@ -21,8 +21,8 @@
  setenv compiler intel  #> options: intel, pgi, gcc
 
 #> I/O API, netCDF, and MPI libraries 
- setenv IOAPI_DIR /proj/ie/apps/CMAQ/CMAQ_v5.2Beta_UNC_Testing/lib/x86_64/intel/ioapi     #> I/O API directory path
- setenv NETCDF_DIR /proj/ie/apps/CMAQ/CMAQ_v5.2Beta_UNC_Testing/lib/x86_64/intel/netcdf   #> netCDF directory path
+ setenv IOAPI_DIR /proj/ie/proj/CMAS/CMAQ/CMAQv5.3beta/mvapich2_2.3rc1_intel_17.2/lib/x86_64/intel/ioapi     #> I/O API directory path
+ setenv NETCDF_DIR /proj/ie/proj/CMAS/CMAQ/CMAQv5.3beta/mvapich2_2.3rc1_intel_17.2/lib/x86_64/intel/netcdf   #> netCDF directory path
 
 #> Compiler flags and settings
  switch ( $compiler )

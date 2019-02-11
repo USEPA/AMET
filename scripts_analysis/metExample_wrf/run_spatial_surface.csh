@@ -17,7 +17,6 @@
 #                          USER CONFIGURATION OPTIONS
 
   #  Top of AMET directory
-  setenv AMETBASE /home/user/AMET_v13
 
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
@@ -28,7 +27,7 @@
 
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   mysql.server.gov
+  setenv MYSQL_SERVER   localhost
 
   #  AMET project id or simulation id
    setenv AMET_PROJECT metExample_wrf
@@ -59,7 +58,7 @@
   # Option to do daily statistics over the specified period above
   # Or statistics for the entire period.
   setenv DAILY F
-  
+
   # lat-lon plot bounds. Note that all sites in a domain
   # will be considered when stats are calculated, but the
   # spatial plots will only cover the area below.
