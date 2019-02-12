@@ -76,6 +76,8 @@ network <- network_names[[1]]						# Set network
       model_name      <- query_result[[4]]
    }
 }
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 #############################################
 
 #########################################################
@@ -83,7 +85,7 @@ network <- network_names[[1]]						# Set network
 #########################################################
 
 ## Calculate stats using all pairs, regardless of averaging
-data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,9],mod_val=aqdat_query.df[,10])
+data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[[ob_col_name]],mod_val=aqdat_query.df[[mod_col_name]])
 stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
 corr        <- NULL
 rmse        <- NULL
@@ -113,7 +115,7 @@ index_agr   <- round(stats.df$Index_of_Agree,2)
 #########################################################
  
 ######################
-aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Month=aqdat_query.df$month)	# Create dataframe of network values to be used to create a list
+aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Month=aqdat_query.df$month)	# Create dataframe of network values to be used to create a list
 sinfo<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics
 for (i in 1:length(sinfo$plotval_obs)) {
    if (sinfo$plotval_obs[i] >= max_limit) {

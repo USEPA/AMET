@@ -114,53 +114,57 @@ for (j in 1:total_networks) {							# Loop through for each network
    network        	<- network_names[[j]]					# Determine network name from loop value
    {
       if (Sys.getenv("AMET_DB") == 'F') {
-         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         data_exists      <- sitex_info$data_exists
+         sitex_info        <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         data_exists       <- sitex_info$data_exists
          if (data_exists == 'y') {
-            aqdat1.df        <- sitex_info$sitex_data
-            aqdat1.df        <- aqdat1.df[with(aqdat1.df,order(network,stat_id)),]
+            aqdat_query.df <- sitex_info$sitex_data
+            aqdat_query.df <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
          }
-         sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
-         data_exists2     <- sitex_info2$data_exists
+         sitex_info2        <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         data_exists2       <- sitex_info2$data_exists
          if (data_exists2 == 'y') {
-            aqdat2.df        <- sitex_info2$sitex_data
-            aqdat2.df        <- aqdat2.df[with(aqdat2.df,order(network,stat_id)),]
+            aqdat_query2.df <- sitex_info2$sitex_data
+            aqdat_query2.df <- aqdat_query2.df[with(aqdat_query2.df,order(network,stat_id)),]
          }
-         units            <- as.character(sitex_info$units[[1]])
+         units              <- as.character(sitex_info$units[[1]])
       }
       else {
          query_result     <- query_dbase(run_name1,network,species)
-         aqdat1.df        <- query_result[[1]]
+         aqdat_query.df   <- query_result[[1]]
          data_exists      <- query_result[[2]]
          query_result2    <- query_dbase(run_name2,network,species)
-         aqdat2.df        <- query_result2[[1]]
+         aqdat_query2.df  <- query_result2[[1]]
          data_exists2     <- query_result2[[2]]
-         units		  <- query_result[[3]]
+         units            <- query_result[[3]]
       }
    }
+   aqdat1.df <- aqdat_query.df
+   aqdat2.df <- aqdat_query2.df
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
    {
       if ((data_exists == "n") || (data_exists2 == "n")) {
-         All_Data 	<- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
+         All_Data       <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
          total_networks <- (total_networks-1)
-         sub_title	<- paste(sub_title,network,"=No Data; ",sep="")
+         sub_title      <- paste(sub_title,network,"=No Data; ",sep="")
       }
 
       ### If there are data, continue ###
       else {
-         aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-         aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-         aqdat1.df$ob_datee <- aqdat1.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-         aqdat2.df$ob_datee <- aqdat2.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat1.df$ob_datee <- aqdat1.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat2.df$ob_datee <- aqdat2.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
 
-         ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
+### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
          aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_datee,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
          aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_datee,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
          if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
             match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-            aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=I(aqdat1.df$stat_id), lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Mod_Value_1=aqdat1.df[,10], Mod_Value_2=aqdat2.df[match.ind,10], Ob_Value_1=aqdat1.df[,9], Ob_Value_2=aqdat2.df[match.ind,9], month=aqdat1.df$month)      # eliminate points that are not common between the two runs
+            aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=I(aqdat1.df$stat_id), lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Mod_Value_1=aqdat1.df[[mod_col_name]], Mod_Value_2=aqdat2.df[match.ind,mod_col_name], Ob_Value_1=aqdat1.df[[ob_col_name]], Ob_Value_2=aqdat2.df[match.ind,ob_col_name], month=aqdat1.df$month)      # eliminate points that are not common between the two runs
          }
          else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-            aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=I(aqdat2.df$stat_id), lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Mod_Value_1=aqdat1.df[match.ind,10], Mod_Value_2=aqdat2.df[,10], Ob_Value_1=aqdat1.df[match.ind,9], Ob_Value_2=aqdat2.df[,9], month=aqdat2.df$month)      # eliminate points that are not common between the two runs
+            aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=I(aqdat2.df$stat_id), lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Mod_Value_1=aqdat1.df[match.ind,mod_col_name], Mod_Value_2=aqdat2.df[[mod_col_name]], Ob_Value_1=aqdat1.df[match.ind,ob_col_name], Ob_Value_2=aqdat2.df[[ob_col_name]], month=aqdat2.df$month)      # eliminate points that are not common between the two runs
          }
          remove(aqdat1.df,aqdat2.df)
 
@@ -173,24 +177,24 @@ for (j in 1:total_networks) {							# Loop through for each network
          aqdat.df <- aqdat.df[indic.na,]
          ######################################
 
-         split_sites_all  <- split(aqdat.df, aqdat.df$stat_id)	# Split all data by site
-         for (i in 1:length(split_sites_all)) {	# Run averaging for each site for each month
-            sub_all.df  <- split_sites_all[[i]]	# Store current site i in sub_all.df dataframe
-            num_total_obs <- length(sub_all.df[,9])	# Count the total number of obs available for the site
-            num_good_obs <- 0				# Set number of good obs to 0
-            for (k in 1:length(sub_all.df[,9])) { 	# Count the number of non-missing obs (good obs)
-               if (sub_all.df[k,9] >= -90) {		# If ob value is >= 0, count as good
-                  num_good_obs <- num_good_obs+1	# Increment good ob count by one
+         split_sites_all  <- split(aqdat.df, aqdat.df$stat_id)  # Split all data by site
+         for (i in 1:length(split_sites_all)) { # Run averaging for each site for each month
+            sub_all.df  <- split_sites_all[[i]] # Store current site i in sub_all.df dataframe
+            num_total_obs <- length(sub_all.df$Ob_Value_1)      # Count the total number of obs available for the site
+            num_good_obs <- 0                           # Set number of good obs to 0
+            for (k in 1:length(sub_all.df$Ob_Value_1)) {        # Count the number of non-missing obs (good obs)
+               if (sub_all.df[k,Ob_Value_1] >= -90) {           # If ob value is >= 0, count as good
+                  num_good_obs <- num_good_obs+1        # Increment good ob count by one
                }
             }
-            coverage <- (num_good_obs/num_total_obs)*100	# Compute coverage value for good_obs/total_obs
-            if (coverage >= coverage_limit) {  			# determine if the number of non-missing obs is >= to the coverage limit
-               indic.nonzero <- sub_all.df[,6] >= -90		# Identify good obs in dataframe
-               sub_good.df <- sub_all.df[indic.nonzero,]	# Update dataframe to only include good obs (remove missing obs)
-               indic.nonzero <- sub_good.df[,7] >= -90
+            coverage <- (num_good_obs/num_total_obs)*100        # Compute coverage value for good_obs/total_obs
+            if (coverage >= coverage_limit) {                   # determine if the number of non-missing obs is >= to the coverage limit
+               indic.nonzero <- sub_all.df$Mod_Value_1 >= -90           # Identify good obs in dataframe
+               sub_good.df <- sub_all.df[indic.nonzero,]        # Update dataframe to only include good obs (remove missing obs)
+               indic.nonzero <- sub_good.df$Mod_Value_2 >= -90
                sub_good.df <- sub_good.df[indic.nonzero,]
-               indic.nonzero <- sub_good.df[,8] >= -90
-               sub_good.df <- sub_good.df[indic.nonzero,] 
+               indic.nonzero <- sub_good.dfOb_Value_1 >= -90
+               sub_good.df <- sub_good.df[indic.nonzero,]
                sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
                lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
                lons         <- c(lons, unique(sub_good.df$lon))				# Add current lon to lon list
@@ -263,10 +267,15 @@ for (i in 1:6) {
 
   data.df <- data.frame(site.id=all_sites,latitude=all_lats,longitude=all_lons,o3.obs=plot_data[[i]])
 
+  range_max <- max(abs(min(quantile(plot_data[[i]],probs=0.999),na.rm=T)),max(quantile(plot_data[[i]],probs=0.999),na.rm=T))
+#range_max <- max(abs(min(plot_data[[i]],na.rm=T)),max(plot_data[[i]],na.rm=T))
 
-  data.seq <- pretty(seq(min(plot_data[[i]]),max(plot_data[[i]],na.rm=T)),n=20)
+#  data.seq <- pretty(seq(min(plot_data[[i]]),max(plot_data[[i]],na.rm=T)),n=20)
+#  data.seq <- pretty(seq(range_max,-range_max),n=20)
+   data.seq <- pretty(c(-range_max,range_max),n=20)
+
   if ((length(diff_range_min) != 0) || (length(diff_range_max) != 0)) {
-     data.seq <- pretty(seq(diff_range_min,diff_range_max,na.rm=T),n=20)
+     data.seq <- pretty(c(diff_range_min,diff_range_max),n=20)
   }
   if (i < 4) { name <- "Bias" }
   if (i > 3) { name <- "Error" }
@@ -275,14 +284,34 @@ for (i in 1:6) {
   n.bins <- length(data.seq)
   binpal2 <- colorBin(my.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
 
-  contents <- paste("Site:",all_sites,"<br/>",name,"Value:",round(plot_data[[i]],2),units,sep=" ")
+  contents <- paste("Site: ", all_sites,
+                  "<br/>",
+                  "Bias1: ", round(plot_data[[1]], 2),units,
+                  "<br/>",
+                  "Bias2: ", round(plot_data[[2]], 2),units,
+                  "<br/>",
+                  "Bias Diff:", round(plot_data[[3]], 2),units,
+                  "<br/>",
+                  "Error1: ", round(plot_data[[4]], 2),units,
+                  "<br/>",
+                  "Error2: ", round(plot_data[[5]], 2),units,
+                  "<br/>",
+                  "Error Diff:", round(plot_data[[6]], 2),units, sep=" ")
+
+  contents2 <- paste("Site:",all_sites,name,"Value:",round(plot_data[[i]],2),units,sep=" ")
+
+leaflet_map <- c("OpenStreetMap.Mapnik","OpenStreetMap.BlackAndWhite","OpenTopoMap","Esri.WorldImagery","HERE.hybridDay")
 
 #  Other available maps: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
-#my.leaf <- leaflet(data=mapStates) %>% addTiles() %>% addProviderTiles("MapQuestOpen.Aerial")  %>%
-my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik")  %>%
+#my.leaf <- leaflet(data=mapStates)  %>% addProviderTiles("MapQuestOpen.Aerial")  %>%
+#my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.BlackAndWhite")  %>%
+#my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik")  %>%
+#my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenTopoMap")  %>%
+my.leaf <- leaflet(data=mapStates) %>% addProviderTiles(leaflet_map[map_type])  %>%
 
 #        addRasterImage(o3.mod.raster,colors=binpal2,opacity=.5) %>%
-        addCircles(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=60,data=data.df,opacity=1,fillOpacity=1,popup=contents)%>%
+#        addCircles(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=60,data=data.df,opacity=1,fillOpacity=1,popup=contents)%>%
+        addCircleMarkers(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=6,data=data.df,opacity=1,fillOpacity=1,popup=contents,label=contents2)%>%
     addLegend("bottomright", pal = binpal2, values = c(min.data,max.data),
     title = title,
     opacity = 2)

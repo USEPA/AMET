@@ -119,7 +119,7 @@ for (n in 1:4) {
       ##########################################################
       ### Average all data for a species into a single value ###
       ##########################################################
-      l <- 8                                                  # offset for first species ob value
+      l <- 10                                                  # offset for first species ob value
 
       aqdat_sub.df <- aqdat_query.df
       len <- length(aqdat_sub.df)

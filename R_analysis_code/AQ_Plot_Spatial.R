@@ -126,7 +126,9 @@ for (j in 1:total_networks) {							# Loop through for each network
          ## Compute Averages for Each Site ##
          ####################################
          averaging <- "a"
-         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+         ob_col_name <- paste(species,"_ob",sep="")
+         mod_col_name <- paste(species,"_mod",sep="")
+         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
          aqdat.df <- Average(aqdat_in.df)
          Mod_Obs_Diff <- aqdat.df$Mod_Value-aqdat.df$Obs_Value
          Mod_Obs_Rat  <- aqdat.df$Mod_Value/aqdat.df$Obs_Value

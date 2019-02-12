@@ -143,7 +143,7 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_SITE_timeseries.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_timeseries.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

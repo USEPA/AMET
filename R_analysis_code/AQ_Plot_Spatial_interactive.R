@@ -113,6 +113,8 @@ for (j in 1:total_networks) {							# Loop through for each network
 
 #   if (count != len) {	# Continue if query returned non-missing data
 
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
    { 
       if (data_exists == "n") {
 #            stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
@@ -125,7 +127,7 @@ for (j in 1:total_networks) {							# Loop through for each network
          ## Compute Averages for Each Site ##
          ####################################
          averaging <- "a"
-         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
          aqdat.df <- Average(aqdat_in.df)
          Mod_Obs_Diff <- aqdat.df$Mod_Value-aqdat.df$Obs_Value
          Mod_Obs_Rat  <- aqdat.df$Mod_Value/aqdat.df$Obs_Value
@@ -183,7 +185,7 @@ for (i in 1:3) {
 
   data.df <- data.frame(site.id=all_site,latitude=all_lats,longitude=all_lons,data.obs=plot_data[[i]])
   
-  data.seq <- pretty(seq(min(plot_data[[i]]),max(plot_data[[i]],na.rm=T)),n=20)
+  data.seq <- pretty(seq(min(quantile(plot_data[[i]],probs=0.001)),max(quantile(plot_data[[i]],probs=0.999),na.rm=T)),n=20)
   if (i < 3) {
      if ((length(abs_range_min) != 0) || (length(abs_range_max) != 0)) {
         data.seq <- pretty(seq(abs_range_min,abs_range_max,na.rm=T),n=20)
@@ -196,21 +198,34 @@ for (i in 1:3) {
   }
   min.data <- min(data.seq)
   max.data <- max(data.seq)
-  
+
   n.bins <- length(data.seq)
   binpal2 <- colorBin(my.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
 
   contents <- paste("Site: ", all_site,
                   "<br/>",
-                  "Value: ", round(plot_data[[i]], 2), units, sep=" ")
+                  "Obs: ", round(plot_data[[1]], 2),units,
+                  "<br/>",
+                  "Mod: ", round(plot_data[[2]], 2),units,
+                  "<br/>",
+                  "Diff:", round(plot_data[[3]], 2),units, sep=" ")
+
+  contents2 <- paste("Site: ", all_site,"   Value: ", round(plot_data[[i]], 2), units, sep=" ")
+
+
+leaflet_map <- c("OpenStreetMap.Mapnik","OpenStreetMap.BlackAndWhite","OpenTopoMap","Esri.WorldImagery","HERE.hybridDay")
 
 #  Other available maps: http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 #my.leaf <- leaflet(data=mapStates)  %>% addProviderTiles("MapQuestOpen.Aerial")  %>%
 #my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.BlackAndWhite")  %>%
-my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik")  %>%
+#my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenStreetMap.Mapnik")  %>%
+#my.leaf <- leaflet(data=mapStates) %>% addProviderTiles("OpenTopoMap")  %>%
+my.leaf <- leaflet(data=mapStates) %>% addProviderTiles(leaflet_map[map_type])  %>%
+
 
 #        addRasterImage(o3.mod.raster,colors=binpal2,opacity=.5) %>%
-        addCircles(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=60,data=data.df,opacity=1,fillOpacity=1,popup=contents)%>%
+#        addCircles(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=100,data=data.df,opacity=1,fillOpacity=1,popup=contents)%>%
+        addCircleMarkers(all_lons,all_lats,color=~binpal2(plot_data[[i]]),radius=5,data=data.df,opacity=1,fillOpacity=1,popup=contents,label=contents2)%>%
     addLegend("bottomright", pal = binpal2, values = c(min.data,max.data),
     title = title,
     opacity = 2)

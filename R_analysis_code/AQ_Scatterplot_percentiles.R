@@ -79,23 +79,24 @@ network <- network_names[1]
       model_name 	<- query_result[[4]]
    }
 }
-
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 ################################################
 ### Calculate percentiles based on each site ###
 ################################################
 temp <- split(aqdat_query.df,aqdat_query.df$stat_id)
 for (i in 1:length(temp)) { 
    sub.df <- temp[[i]]
-   percentile_5_ob <- c(percentile_5_ob, quantile(sub.df[,9],.05))
-   percentile_5_mod <- c(percentile_5_mod, quantile(sub.df[,10],.05))
-   percentile_25_ob <- c(percentile_25_ob, quantile(sub.df[,9],.25))
-   percentile_25_mod <- c(percentile_25_mod, quantile(sub.df[,10],.25))
-   percentile_50_ob <- c(percentile_50_ob, quantile(sub.df[,9],.50))
-   percentile_50_mod <- c(percentile_50_mod, quantile(sub.df[,10],.50))
-   percentile_75_ob <- c(percentile_75_ob, quantile(sub.df[,9],.75))
-   percentile_75_mod <- c(percentile_75_mod, quantile(sub.df[,10],.75))
-   percentile_95_ob <- c(percentile_95_ob, quantile(sub.df[,9],.95))
-   percentile_95_mod <- c(percentile_95_mod, quantile(sub.df[,10],.95))
+   percentile_5_ob <- c(percentile_5_ob, quantile(sub.df[[ob_col_name]],.05))
+   percentile_5_mod <- c(percentile_5_mod, quantile(sub.df[[mod_col_name]],.05))
+   percentile_25_ob <- c(percentile_25_ob, quantile(sub.df[[ob_col_name]],.25))
+   percentile_25_mod <- c(percentile_25_mod, quantile(sub.df[[mod_col_name]],.25))
+   percentile_50_ob <- c(percentile_50_ob, quantile(sub.df[[ob_col_name]],.50))
+   percentile_50_mod <- c(percentile_50_mod, quantile(sub.df[[mod_col_name]],.50))
+   percentile_75_ob <- c(percentile_75_ob, quantile(sub.df[[ob_col_name]],.75))
+   percentile_75_mod <- c(percentile_75_mod, quantile(sub.df[[mod_col_name]],.75))
+   percentile_95_ob <- c(percentile_95_ob, quantile(sub.df[[ob_col_name]],.95))
+   percentile_95_mod <- c(percentile_95_mod, quantile(sub.df[[mod_col_name]],.95))
 }
 #################################################
 

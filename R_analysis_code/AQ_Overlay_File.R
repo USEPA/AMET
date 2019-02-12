@@ -54,13 +54,14 @@ aqdat.df	<- query_result[[1]]
 
 year_day <- aqdat.df$"DATE_FORMAT(d.ob_dates,'%Y%j')"
 
+ob_col_name <- paste(species,"_ob",sep="")
 {
    if (network == "CASTNet_hourly") {
-      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$lon,aqdat.df$lat,aqdat.df[,9],sep=",")	# set output to be written 
+      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$lon,aqdat.df$lat,aqdat.df[[ob_col_name]],sep=",")	# set output to be written 
       write.table(output, file=filename_out, append=F ,sep="",col.names=F,row.names=F,quote=F)		# write data to be used by bldoverlay.exe
    }
    else {
-      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$num_stat_id,aqdat.df$lon,aqdat.df$lat,aqdat.df[,9],sep=",")    # set output to be written 
+      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$num_stat_id,aqdat.df$lon,aqdat.df$lat,aqdat.df[[ob_col_name]],sep=",")    # set output to be written 
       write.table(output, file=filename_out, append=F ,sep="",col.names=F,row.names=F,quote=F)             # write data to be used by bldoverlay.exe
    }
 }

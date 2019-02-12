@@ -52,9 +52,13 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
       units	      <- query_result[[3]]
    }
 }
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 aqdat.df <- aqdat_query.df
-names(aqdat.df)[9]  <-"Obs_Value"
-names(aqdat.df)[10] <-"Mod_Value"
+names(aqdat.df)[names(aqdat.df) == ob_col_name] <- "Obs_Value"
+names(aqdat.df)[names(aqdat.df) == mod_col_name] <- "Mod_Value"
+#names(aqdat.df)[9]  <-"Obs_Value"
+#names(aqdat.df)[10] <-"Mod_Value"
 
 
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
@@ -71,8 +75,10 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
       }
    }
    aqdat2.df <- aqdat_query2.df
-   names(aqdat2.df)[9]  <-"Obs_Value"
-   names(aqdat2.df)[10] <-"Mod_Value"
+   names(aqdat2.df)[names(aqdat2.df) == ob_col_name] <- "Obs_Value"
+   names(aqdat2.df)[names(aqdat2.df) == mod_col_name] <- "Mod_Value"
+#   names(aqdat2.df)[9]  <-"Obs_Value"
+#   names(aqdat2.df)[10] <-"Mod_Value"
 }
 
 if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
@@ -89,8 +95,10 @@ if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
       }
    }
    aqdat3.df <- aqdat_query3.df
-   names(aqdat3.df)[9]  <-"Obs_Value"
-   names(aqdat3.df)[10] <-"Mod_Value"
+   names(aqdat3.df)[names(aqdat3.df) == ob_col_name] <- "Obs_Value"
+   names(aqdat3.df)[names(aqdat3.df) == mod_col_name] <- "Mod_Value"
+#   names(aqdat3.df)[9]  <-"Obs_Value"
+#   names(aqdat3.df)[10] <-"Mod_Value"
 }
 
 #######################

@@ -67,6 +67,7 @@ rmse_unsys2    <- NULL
 
 criteria <- paste(" WHERE d.Fe_ob is not NULL and d.network='",network_names[1],"' ",query,sep="")          # Set part of the MYSQL query
 
+total_networks <- length(network_names)
 species <- c("Cl","Na","Fe","Al","Si","Ti","Ca","Mg","K","Mn")  
 #############################################
 ### Read sitex file or query the database ###
@@ -109,7 +110,7 @@ if (total_networks > 1) {
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 9							# offset for first species ob value
+l <- 10							# offset for first species ob value
 
 aqdat_sub.df <- aqdat_query.df
 len <- length(aqdat_sub.df)
@@ -135,7 +136,7 @@ data.df		<- aqdat_sub.df[8:len]
 ##############################################################
 total_networks <- length(network_names)
 if (total_networks > 1) {
-   l <- 9                                          # offset for first specie ob value
+   l <- 10                                          # offset for first specie ob value
 
    aqdat_sub2.df <- aqdat_query2.df
    len <- length(aqdat_sub2.df)

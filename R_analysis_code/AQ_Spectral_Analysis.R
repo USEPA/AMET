@@ -63,9 +63,11 @@ network <- network_names[[j]]                                             # Set 
       model_name      <- query_result[[4]]
    }
 }
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 #############################################
 
-aqdat.df 	<- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Month=aqdat_query.df$month)      # Create dataframe of network values to be used to create a list
+aqdat.df 	<- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Month=aqdat_query.df$month)      # Create dataframe of network values to be used to create a list
 aqdat_stats.df <- aqdat.df
 
 #########################################################
