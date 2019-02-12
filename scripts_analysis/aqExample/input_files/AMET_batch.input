@@ -127,7 +127,8 @@ zeroprecip<-"n"
 
 ### Numerical Limit for Data Completeness ###
 coverage_limit<-50
-valid_only<-""
+all_valid<-"y"
+all_valid_amon<-"y"
 
 ### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
 soccerplot_opt<-1
