@@ -94,6 +94,8 @@ network_name<-network_label[[1]]
 #######################################
 #start_month     <- month_start
 #end_month       <- month_end
+if(!exists("year_start")) { year_start <- substr(start_date,1,4) }
+if(!exists("year_end")) { year_end <- substr(end_date,1,4) }
 start_month     <- substr(start_date,5,6)
 end_month       <- substr(end_date,5,6)
 num_years       <- (year_end-year_start)+1
@@ -151,8 +153,10 @@ for (y in 1:num_years) {
       ###################################################################################################################
       ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
       ###################################################################################################################
+      ob_col_name <- paste(species,"_ob",sep="")
+      mod_col_name <- paste(species,"_mod",sep="")
       if (length(aqdat_query.df$stat_id) > 0) {
-         data_stats.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,9],mod_val=aqdat_query.df[,10],precip_val=aqdat_query.df$precip_ob)
+         data_stats.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[[ob_col_name]],mod_val=aqdat_query.df[[mod_col_name]])
          stats_all.df 	<- try(DomainStats(data_stats.df))      # Compute stats using DomainStats function for entire domain
          mod_obs_diff 	<- data_stats.df$mod_val-data_stats.df$ob_val
       }

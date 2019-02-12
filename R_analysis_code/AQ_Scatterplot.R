@@ -82,6 +82,8 @@ while (run_count <= num_runs) {
             model_name 	   <- query_result[[4]]
          }
       }
+      ob_col_name <- paste(species,"_ob",sep="")
+      mod_col_name <- paste(species,"_mod",sep="") 
       {
          if (data_exists == "n") {
             total_networks <- (total_networks-1)
@@ -89,7 +91,7 @@ while (run_count <= num_runs) {
          }
          else {
             if (averaging != "n") {
-               aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+               aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
                {
                   if (use_avg_stats == "y") {
                      aqdat.df <- Average(aqdat.df)
@@ -103,7 +105,7 @@ while (run_count <= num_runs) {
             }
             else { 
                aqdat.df <- aqdat_query.df
-               aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
+               aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[[ob_col_name]],5),Mod_Value=round(aqdat.df[[mod_col_name]],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
                aqdat_stats.df <- aqdat.df
             }
             axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value)) 

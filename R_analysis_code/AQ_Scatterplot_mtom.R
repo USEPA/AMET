@@ -46,24 +46,28 @@ remove_negatives <- "n"
 
 for (j in 1:length(network_names)) {						# Loop through for each network
    network		<- network_names[[j]]						# Set network name
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info      <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         aqdat1.df       <- sitex_info$sitex_data
-         aqdat1.df       <- aqdat1.df[,-9]
+         aqdat_query.df  <- sitex_info$sitex_data
+         aqdat_query.df  <- aqdat_query.df[,-ob_col_name]
          sitex_info      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
-         aqdat2.df       <- sitex_info$sitex_data
-         aqdat2.df       <- aqdat2.df[,-9]
+         aqdat_query2.df <- sitex_info$sitex_data
+         aqdat_query2.df <- aqdat_query2.df[,-ob_col_name]
          units           <- as.character(sitex_info$units[[1]])
       }
       else {
-         query_result   <- query_dbase(run_name1,network,species)
-         aqdat1.df      <- query_result[[1]]
-         query_result2  <- query_dbase(run_name2,network,species)
-         aqdat2.df 	<- query_result2[[1]]
-         units 		<- query_result[[3]]
+         query_result    <- query_dbase(run_name1,network,species)
+         aqdat_query.df  <- query_result[[1]]
+         query_result2   <- query_dbase(run_name2,network,species)
+         aqdat_query2.df <- query_result2[[1]]
+         units 		 <- query_result[[3]]
       }
    }
+   aqdat1.df <- aqdat_query.df
+   aqdat2.df <- aqdat_query2.df
    aqdat1.df$ob_dates	<- aqdat1.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
    aqdat2.df$ob_dates	<- aqdat2.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
 
@@ -73,10 +77,10 @@ for (j in 1:length(network_names)) {						# Loop through for each network
    {
       if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {				# If more obs in run 1 than run 2
          match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)					# Match the unique column (statdate) between the two runs
-         aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, aqdat1.df[,10], aqdat2.df[match.ind,10], month=aqdat1.df$month)	# eliminate points that are not common between the two runs
+         aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, aqdat1.df[[mod_col_name]], aqdat2.df[match.ind,mod_col_name], month=aqdat1.df$month)	# eliminate points that are not common between the two runs
       }
       else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate) 				# If more obs in run 2 than run 1
-         aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,10], aqdat2.df[,10], month=aqdat2.df$month)	# eliminate points that are not common between the two runs
+         aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,mod_col_name], aqdat2.df[[mod_col_name]], month=aqdat2.df$month)	# eliminate points that are not common between the two runs
       }
    }
    #######################################################################################################################

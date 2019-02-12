@@ -147,7 +147,7 @@ for (n in 1:5) {	# PCA Loop
          blank_mod2 <- 0
       }
 
-      l <- 8                                                  # offset for first species ob value
+      l <- 10                                                  # offset for first species ob value
 
       aqdat_sub.df <- aqdat_all.df
       len <- length(aqdat_sub.df)
@@ -172,7 +172,7 @@ for (n in 1:5) {	# PCA Loop
       }
 ##############################################################
       if (num_runs > 1) {
-         l <- 8                                          # offset for first specie ob value
+         l <- 10                                          # offset for first specie ob value
 
          aqdat_sub2.df <- aqdat_all2.df
          len <- length(aqdat_sub2.df)

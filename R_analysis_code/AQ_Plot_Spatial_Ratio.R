@@ -97,6 +97,8 @@ for (j in 1:total_networks) {							# Loop through for each network
    }
    #######################
 
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
    {
       if ((data_exists == "n") || (data_exists2 == "n")) {
 #            stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
@@ -109,7 +111,7 @@ for (j in 1:total_networks) {							# Loop through for each network
          ## Compute Averages for Each Site ##
          ####################################
          averaging <- "a"
-         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
          aqdat.df <- Average(aqdat_in.df)
 
          aqdat_in2.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df$PM_TOT_ob,Mod_Value=aqdat_query.df$PM_TOT_mod,Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)

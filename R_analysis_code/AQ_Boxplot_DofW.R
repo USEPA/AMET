@@ -78,13 +78,15 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
 }
 #######################
 
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 ### Find q1, median, q2 for each group of both species ###
-q1.spec1 <- tapply(aqdat.df[,9], aqdat.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute ob 25% quartile
-q1.spec2 <- tapply(aqdat.df[,10], aqdat.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute model 25% quartile
-median.spec1 <- tapply(aqdat.df[,9], aqdat.df$DayOfWeek, median, na.rm=T)		# Compute ob median value
-median.spec2 <- tapply(aqdat.df[,10], aqdat.df$DayOfWeek, median, na.rm=T)	# Compute model median value
-q3.spec1 <- tapply(aqdat.df[,9], aqdat.df$DayOfWeek, quantile, 0.75, na.rm=T)	# Compute ob 75% quartile
-q3.spec2 <- tapply(aqdat.df[,10], aqdat.df$DayOfWeek, quantile, 0.75, na.rm=T)	# Compute model 75% quartile
+q1.spec1 <- tapply(aqdat.df[[ob_col_name]], aqdat.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute ob 25% quartile
+q1.spec2 <- tapply(aqdat.df[[mod_col_name]], aqdat.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute model 25% quartile
+median.spec1 <- tapply(aqdat.df[[ob_col_name]], aqdat.df$DayOfWeek, median, na.rm=T)		# Compute ob median value
+median.spec2 <- tapply(aqdat.df[[mod_col_name]], aqdat.df$DayOfWeek, median, na.rm=T)	# Compute model median value
+q3.spec1 <- tapply(aqdat.df[[ob_col_name]], aqdat.df$DayOfWeek, quantile, 0.75, na.rm=T)	# Compute ob 75% quartile
+q3.spec2 <- tapply(aqdat.df[[mod_col_name]], aqdat.df$DayOfWeek, quantile, 0.75, na.rm=T)	# Compute model 75% quartile
 ################################################
 
 q1.spec3     <- NULL
@@ -92,9 +94,9 @@ median.spec3 <- NULL
 q3.spec3     <- NULL
 
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
-   q1.spec3     <- tapply(aqdat2.df[,10], aqdat2.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute model 25% quartile
-   median.spec3 <- tapply(aqdat2.df[,10], aqdat2.df$DayOfWeek, median, na.rm=T)		# Compute model median value
-   q3.spec3     <- tapply(aqdat2.df[,10], aqdat2.df$DayOfWeek, quantile, 0.75, na.rm=T)	# Compute model 75% quartile
+   q1.spec3     <- tapply(aqdat2.df[[mod_col_name]], aqdat2.df$DayOfWeek, quantile, 0.25, na.rm=T)	# Compute model 25% quartile
+   median.spec3 <- tapply(aqdat2.df[[mod_col_name]], aqdat2.df$DayOfWeek, median, na.rm=T)		# Compute model median value
+   q3.spec3     <- tapply(aqdat2.df[[mod_col_name]], aqdat2.df$DayOfWeek, quantile, 0.75, na.rm=T)	# Compute model 75% quartile
 }
 
 ### Set up axes so that they will be big enough for both data species  that will be added ###
@@ -123,13 +125,13 @@ legend_colors <- c(1,"blue")
 legend_type <- c(1,2)
 
 par(mai=c(1,1,0.5,0.5))								# Set plot margins
-boxplot(split(aqdat.df[,9], aqdat.df$DayOfWeek), range=0, border="transparent", col="gray65", ylim=c(y.axis.min, y.axis.max), xlab="Day of Week", ylab=label, cex.axis=0.9, cex.lab=1.3)	# Create boxplot
+boxplot(split(aqdat.df[[ob_col_name]], aqdat.df$DayOfWeek), range=0, border="transparent", col="gray65", ylim=c(y.axis.min, y.axis.max), xlab="Day of Week", ylab=label, cex.axis=0.9, cex.lab=1.3)	# Create boxplot
 
 ## Do the same thing for model values.  Use a different color for the background.
-boxplot(split(aqdat.df[,10],aqdat.df$DayOfWeek), range=0, border="transparent", col="gray45", boxwex=0.6, add=T, cex.axis=0.9, cex.lab=1.3)	# Plot model values on existing plot
+boxplot(split(aqdat.df[[mod_col_name]],aqdat.df$DayOfWeek), range=0, border="transparent", col="gray45", boxwex=0.6, add=T, cex.axis=0.9, cex.lab=1.3)	# Plot model values on existing plot
 
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
-   boxplot(split(aqdat2.df[,10],aqdat2.df$DayOfWeek), range=0, border="transparent", col="gray25", boxwex=0.3, add=T, cex.axis=0.9, cex.lab=1.3)
+   boxplot(split(aqdat2.df[[mod_col_name]],aqdat2.df$DayOfWeek), range=0, border="transparent", col="gray25", boxwex=0.3, add=T, cex.axis=0.9, cex.lab=1.3)
    legend_names <- c(legend_names, run_name2)
    legend_fill <- c(legend_fill, "gray30")
    legend_colors <- c(legend_colors,"red")

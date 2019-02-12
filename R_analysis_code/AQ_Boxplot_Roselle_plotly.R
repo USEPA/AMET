@@ -125,7 +125,7 @@ for (j in 1:num_runs) {
             }
             else {
                legend_names <- c(legend_names,run_names[j])
-               mod_values[[j]] <- aqdat.df[[mod_col_name]]
+               mod_values[[j]] <- aqdat.df[[mod_col_name]
             }
          }
          #######################
@@ -137,15 +137,15 @@ for (j in 1:num_runs) {
 
          ### Find q1, median, q2 for each group of both species ###
          q0.spec1[j] <- quantile(aqdat.df[[ob_col_name]], 0.05, na.rm=T)		# Compute ob 25% quartile
-         q0.spec2[j] <- quantile(aqdat.df[[mod_col_name]], 0.05, na.rm=T)	# Compute model 25% quartile
+         q0.spec2[j] <- quantile(aqdat.df[[mod_col_name], 0.05, na.rm=T)	# Compute model 25% quartile
          q1.spec1[j] <- quantile(aqdat.df[[ob_col_name]], 0.25, na.rm=T)		# Compute ob 25% quartile
-         q1.spec2[j] <- quantile(aqdat.df[[mod_col_name]], 0.25, na.rm=T)	# Compute model 25% quartile
+         q1.spec2[j] <- quantile(aqdat.df[[mod_col_name], 0.25, na.rm=T)	# Compute model 25% quartile
          median.spec1[j] <- median(aqdat.df[[ob_col_name]],na.rm=T)		# Compute ob median value
-         median.spec2[j] <- median(aqdat.df[[mod_col_name]], na.rm=T)		# Compute model median value
+         median.spec2[j] <- median(aqdat.df[[mod_col_name], na.rm=T)		# Compute model median value
          q3.spec1[j] <- quantile(aqdat.df[[ob_col_name]], 0.75, na.rm=T)		# Compute ob 75% quartile
-         q3.spec2[j] <- quantile(aqdat.df[[mod_col_name]], 0.75, na.rm=T)	# Compute model 75% quartile
+         q3.spec2[j] <- quantile(aqdat.df[[mod_col_name], 0.75, na.rm=T)	# Compute model 75% quartile
          q4.spec1[j] <- quantile(aqdat.df[[ob_col_name]], 0.95, na.rm=T)		# Compute ob 75% quartile
-         q4.spec2[j] <- quantile(aqdat.df[[mod_col_name]], 0.95, na.rm=T)	# Compute model 75% quartile
+         q4.spec2[j] <- quantile(aqdat.df[[mod_col_name], 0.95, na.rm=T)	# Compute model 75% quartile
          ################################################
 
          #########################################################
@@ -154,7 +154,7 @@ for (j in 1:num_runs) {
          ## Calculate stats using all pairs, regardless of averaging
          data_all.df <- NULL
          stats.df    <- NULL
-         data_all.df <- data.frame(network=I(aqdat.df$network),stat_id=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df[[ob_col_name]],mod_val=aqdat.df[[mod_col_name]])
+         data_all.df <- data.frame(network=I(aqdat.df$network),stat_id=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df[[ob_col_name]],mod_val=aqdat.df[[mod_col_name])
          stats.df      <- try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
          nmb[j]        <- round(stats.df$Percent_Norm_Mean_Bias,1)
          nme[j]        <- round(stats.df$Percent_Norm_Mean_Err,1)

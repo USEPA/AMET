@@ -108,6 +108,8 @@ for (j in 1:num_runs) {
          model_name 	<- query_result[[4]]
       }
    }
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
    {
       if (data_exists == "n") {
          num_runs <- (num_runs-1)
@@ -115,7 +117,7 @@ for (j in 1:num_runs) {
       }
       else {
          if (averaging != "n") {
-            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
             {
                if (use_avg_stats == "y") {
                   aqdat.df <- Average(aqdat.df)
@@ -129,7 +131,7 @@ for (j in 1:num_runs) {
          }
          else {
             aqdat.df <- aqdat_query.df
-            aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
+            aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[[ob_col_name]],5),Mod_Value=round(aqdat.df[[mod_col_name]],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
             aqdat_stats.df <- aqdat.df
          }
          sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics 
@@ -171,6 +173,7 @@ for (j in 1:num_runs) {
       write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
       write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+      write.table(paste(species,"(",units,")"),file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
    }
