@@ -46,13 +46,13 @@ filename_bias_png	<- paste(figdir,filename_bias_png,sep="/")                  # 
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-      aqdat_stats.df   <- sitex_info$sitex_data
-      aqdat_stats.df   <- aqdat_stats.df[with(aqdat_stats.df,order(network,stat_id)),]
+      aqdat_query.df   <- sitex_info$sitex_data
+      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
       units            <- as.character(sitex_info$units[[1]])
    }
    else {
       query_result    <- query_dbase(run_name1,network,species)
-      aqdat_stats.df  <- query_result[[1]]
+      aqdat_query.df  <- query_result[[1]]
       units	      <- query_result[[3]]
    }
 }
@@ -63,13 +63,13 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name2,species)
-         aqdat_stats2.df  <- sitex_info$sitex_data
-         aqdat_stats2.df  <- aqdat_stats2.df[with(aqdat_stats2.df,order(network,stat_id)),]
+         aqdat_query2.df  <- sitex_info$sitex_data
+         aqdat_query2.df  <- aqdat_query2.df[with(aqdat_query2.df,order(network,stat_id)),]
          units            <- as.character(sitex_info$units[[1]])
       }
       else {
          query_result2    <- query_dbase(run_name2,network,species)
-         aqdat_stats2.df  <- query_result2[[1]]
+         aqdat_query2.df  <- query_result2[[1]]
       }
    }
 }
@@ -81,56 +81,58 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
 ## Calculate stats using all pairs, regardless of averaging
 if ((network ==  "NADP_dep") || (network == "NADP_conc")) {                               # If NADP and remove 0 precip obs selected
    if (zeroprecip == 'n') {
-      indic.noprecip <- aqdat_stats.df$precip_ob > 0                                                # determine where precipitation obs are 0
-      aqdat_stats.df <- aqdat_stats.df[indic.noprecip,]                                                   # remove 0 precip pairs from dataframe
+      indic.noprecip <- aqdat_query.df$precip_ob > 0                                                # determine where precipitation obs are 0
+      aqdat_query.df <- aqdat_query.df[indic.noprecip,]                                                   # remove 0 precip pairs from dataframe
    }
 }
-aqdat_stats.df <- data.frame(network=aqdat_stats.df$network,stat_id=aqdat_stats.df$stat_id,lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,Obs=aqdat_stats.df[,9],Mod=aqdat_stats.df[,10],month=aqdat_stats.df$month)
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
+aqdat_stats.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],month=aqdat_query.df$month)
    
-n <- length(aqdat_stats.df$Obs)
-obs.mean <- mean(aqdat_stats.df$Obs)
-obs.sd   <- sqrt(var(aqdat_stats.df$Obs) * ((n-1)/n))
-mod.mean <- mean(aqdat_stats.df$Mod)
-mod.sd   <- sqrt(var(aqdat_stats.df$Mod) * ((n-1)/n))
-bias     <- aqdat_stats.df$Mod-aqdat_stats.df$Obs
-x.seq.ob <- seq(min(aqdat_stats.df$Obs), max(aqdat_stats.df$Obs), length=100)
-x.seq.mod <- seq(min(aqdat_stats.df$Mod), max(aqdat_stats.df$Mod), length=100)
-obs.mean.log <- mean(log(aqdat_stats.df$Obs))
-mod.mean.log <- mean(log(aqdat_stats.df$Mod))
-obs.sd.log <- sqrt(var(log(aqdat_stats.df$Obs)) * ((n-1)/n))
-mod.sd.log <- sqrt(var(log(aqdat_stats.df$Mod)) * ((n-1)/n))
+n <- length(aqdat_stats.df$Obs_Value)
+obs.mean <- mean(aqdat_stats.df$Obs_Value)
+obs.sd   <- sqrt(var(aqdat_stats.df$Obs_Value) * ((n-1)/n))
+mod.mean <- mean(aqdat_stats.df$Mod_Value)
+mod.sd   <- sqrt(var(aqdat_stats.df$Mod_Value) * ((n-1)/n))
+bias     <- aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value
+x.seq.ob <- seq(min(aqdat_stats.df$Obs_Value), max(aqdat_stats.df$Obs_Value), length=100)
+x.seq.mod <- seq(min(aqdat_stats.df$Mod_Value), max(aqdat_stats.df$Mod_Value), length=100)
+obs.mean.log <- mean(log(aqdat_stats.df$Obs_Value))
+mod.mean.log <- mean(log(aqdat_stats.df$Mod_Value))
+obs.sd.log <- sqrt(var(log(aqdat_stats.df$Obs_Value)) * ((n-1)/n))
+mod.sd.log <- sqrt(var(log(aqdat_stats.df$Mod_Value)) * ((n-1)/n))
 
 
 ### If plotting another simulation ###
 if (run2 == "True") {
    if ((network ==  "NADP_dep") || (network == "NADP_conc")) {                               # If NADP and remove 0 precip obs selected
       if (zeroprecip == 'n') {
-         indic.noprecip <- aqdat_stats2.df$precip_ob > 0                                                # determine where precipitation obs are 0
-         aqdat_stats2.df <- aqdat_stats2.df[indic.noprecip,]                                                   # remove 0 precip pairs from dataframe
+         indic.noprecip <- aqdat_query2.df$precip_ob > 0                                                # determine where precipitation obs are 0
+         aqdat_query2.df <- aqdat_query2.df[indic.noprecip,]                                                   # remove 0 precip pairs from dataframe
       }
    }
-   aqdat_stats2.df <- data.frame(network=aqdat_stats2.df$network,stat_id=aqdat_stats2.df$stat_id,lat=aqdat_stats2.df$lat,lon=aqdat_stats2.df$lon,Obs=aqdat_stats2.df[,9],Mod=aqdat_stats2.df[,10],month=aqdat_stats2.df$month)
+   aqdat_stats2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,Obs_Value=aqdat_query2.df[[ob_col_name]],Mod_Value=aqdat_query2.df[[mod_col_name]],month=aqdat_query2.df$month)
 
-   n2 <- length(aqdat_stats2.df$Mod)
-   mod.mean2 <- mean(aqdat_stats2.df$Mod)
-   mod.sd2   <- sqrt(var(aqdat_stats2.df$Mod) * ((n2-1)/n2))
-   bias2     <- aqdat_stats2.df$Mod-aqdat_stats2.df$Obs
-   x.seq.mod2 <- seq(min(aqdat_stats2.df$Mod), max(aqdat_stats2.df$Mod), length=100)
-   mod.mean.log2 <- mean(log(aqdat_stats2.df$Mod))
-   mod.sd.log2 <- sqrt(var(log(aqdat_stats2.df$Mod)) * ((n2-1)/n2))
+   n2 <- length(aqdat_stats2.df$Mod_Value)
+   mod.mean2 <- mean(aqdat_stats2.df$Mod_Value)
+   mod.sd2   <- sqrt(var(aqdat_stats2.df$Mod_Value) * ((n2-1)/n2))
+   bias2     <- aqdat_stats2.df$Mod_Value-aqdat_stats2.df$Obs_Value
+   x.seq.mod2 <- seq(min(aqdat_stats2.df$Mod_Value), max(aqdat_stats2.df$Mod_Value), length=100)
+   mod.mean.log2 <- mean(log(aqdat_stats2.df$Mod_Value))
+   mod.sd.log2 <- sqrt(var(log(aqdat_stats2.df$Mod_Value)) * ((n2-1)/n2))
 }
 #######################################
 
-x.axis.max <- max(aqdat_stats.df$Obs,aqdat_stats.df$Mod)*.95
+x.axis.max <- max(aqdat_stats.df$Obs_Value,aqdat_stats.df$Mod_Value)*.95
 
 pdf(file=filename_all_pdf,width=8,height=8)
-plot_hist_obs <- hist(aqdat_stats.df$Obs, plot=F)
-plot_hist_mod <- hist(aqdat_stats.df$Mod, plot=F)
+plot_hist_obs <- hist(aqdat_stats.df$Obs_Value, plot=F)
+plot_hist_mod <- hist(aqdat_stats.df$Mod_Value, plot=F)
 xmax <- max(plot_hist_obs$breaks,plot_hist_mod$breaks)
 ymax <- max(plot_hist_obs$density,plot_hist_mod$density)*1.05
 hist_breaks <- seq(0,xmax,length.out=10)
-hist(aqdat_stats.df$Obs, col=NULL, border='red', breaks=hist_breaks, ylim=c(0,ymax), xlim=c(0,xmax), prob=T, main=main.title, xlab=paste("Concentration (",units,")"),cex.main=.9)
-hist(aqdat_stats.df$Mod, col=NULL, border='blue', breaks=hist_breaks, cex=1, prob=T, axes=F, main="", xlab="", ylab="", add=T)
+hist(aqdat_stats.df$Obs_Value, col=NULL, border='red', breaks=hist_breaks, ylim=c(0,ymax), xlim=c(0,xmax), prob=T, main=main.title, xlab=paste("Concentration (",units,")"),cex.main=.9)
+hist(aqdat_stats.df$Mod_Value, col=NULL, border='blue', breaks=hist_breaks, cex=1, prob=T, axes=F, main="", xlab="", ylab="", add=T)
 lines(x.seq.ob, dnorm(x.seq.ob, mean=obs.mean, sd=obs.sd), col="blue")
 lines(x.seq.ob, dnorm(x.seq.mod, mean=mod.mean, sd=mod.sd), col="red")
 legend("topright", c(network,'CMAQ'), lty=c(1,1), col=c("red","blue"), merge=F, cex=1.2, bty="n")

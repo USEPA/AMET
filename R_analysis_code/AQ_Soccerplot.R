@@ -71,7 +71,7 @@ for (j in 1:length(network_names)) {	# Loop through each network
    }
    #############################################
 
-   l <- 9
+   l <- 10 
    for (i in 1:length(species)) { 								# For each species, calculate several statistics
      data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,l],mod_val=aqdat_query.df[,(l+1)])	# Create properly formatted dataframe to use with DomainStats function
       good_count <- sum(!is.na(data_all.df$ob_val))		# Count the number of non-missing values

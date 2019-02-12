@@ -105,9 +105,6 @@ mb_max       <- NULL
 mb_min	     <- NULL
 rmse_max     <- NULL
 num_runs     <- length(run_names)
-if ((network ==  "NADP_dep") || (network == "NADP_conc")) {
-   species <- c(species,"precip")
-}
 for (j in 1:num_runs) {
    {
       if (pca_flag == "y") {
@@ -131,6 +128,8 @@ for (j in 1:num_runs) {
          units 	        <- query_result[[3]]
       }
    }
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
    {
       if (data_exists == "n") {
          num_runs <- (num_runs-1)
@@ -140,7 +139,7 @@ for (j in 1:num_runs) {
       else {
          if (pca_flag == "n") { legend_names <- c(legend_names,run_names[j]) }
          if (averaging != "n") {
-            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
             {
                if (use_avg_stats == "y") {
                   aqdat.df <- Average(aqdat.df)
@@ -154,7 +153,7 @@ for (j in 1:num_runs) {
          }
          else { 
             aqdat.df <- aqdat_query.df
-            aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
+            aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[[ob_col_name]],5),Mod_Value=round(aqdat.df[[mod_col_name]],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
             aqdat_stats.df <- aqdat.df
          }
          aqdat.df$Bin_Value <- aqdat.df$Obs_Value

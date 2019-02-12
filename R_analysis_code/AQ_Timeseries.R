@@ -102,7 +102,7 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       if (Sys.getenv("AMET_DB") == 'F') {
          outdir           <- "OUTDIR" 
          if (j >1) { outdir <- paste("OUTDIR",j,sep="") }
-         sitex_info       <- read_sitex(Sys.getenv(outdir),network,run_name,species)
+         sitex_info       <- read_sitex(Sys.getenv(outdir),network,run_name,species) 
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
          units            <- as.character(sitex_info$units[[1]])
@@ -125,8 +125,10 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       num_runs <- (num_runs-1)
    }
    else {
-   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month)
-
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
+#   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,10],Mod_Value=aqdat_query.df[,11],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month)
+   aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month)
    Date_Hour            <- paste(aqdat.df$Start_Date," ",aqdat.df$Hour,":00:00",sep="") # Create unique Date/Hour field
    aqdat.df$Date_Hour   <- Date_Hour                                                    # Add Date_Hour field to dataframe
    if (obs_per_day_limit > 0) {
@@ -276,6 +278,10 @@ for (j in 1:num_runs) {	# For each simulation being plotted
 } # Close if/else statement
 } # End num_runs loop
 
+### Stop script if no data available ###
+if (length(Dates[[1]]) == 0) { stop("Stopping because length of dates was zero. Likely no data found for query.") }
+########################################
+
 ### Write data to be plotted to file ###
 write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
 ########################################
@@ -311,12 +317,9 @@ filename_png         <- paste(run_name1,species,pid,"timeseries.png",sep="_")
 filename_pdf         <- paste(figdir,filename_pdf,sep="/")           # Filename for obs spatial plot
 filename_png         <- paste(figdir,filename_png,sep="/")           # Filename for model spatial plot
 
-
-
 #####################################
 ### Plot Model vs. Ob Time Series ###
 #####################################
-
 pdf(file=filename_pdf,width=11,height=13)
 par(mfrow = c(4,1),mai=c(.7,1,.4,1))
 par(cex.axis=1,las=1,mfg=c(1,1),lab=c(5,10,7))
@@ -483,16 +486,16 @@ for (f in 1:3) {        # Loop for plotting Bias, RMSE and Correlation
 
    if (run_info_text == "y") {
       if (rpo != "None") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=.8)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=1)
       }
       if (pca != "None") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=.8)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=1)
       }
       if (state != "All") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.15),paste("State: ",state,sep=""),pos=2,cex=.8)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.15),paste("State: ",state,sep=""),pos=2,cex=1)
       }
       if (site != "All") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,sep=""),pos=2,cex=.8)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,sep=""),pos=2,cex=1)
       } 
    }
 }	# End loop for plotting Bias, RMSE and Correlation
