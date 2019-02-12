@@ -12,7 +12,7 @@
 suppressMessages(require(RMySQL))	# Use RMYSQL package
 
 amet_base <- Sys.getenv('AMETBASE')
-if (!exists("amet_base")) {
+iof (!exists("amet_base")) {
    stop("Must set AMETBASE environment variable")
 }
 
@@ -37,6 +37,7 @@ remake_table	<- Sys.getenv('REMAKE_PROJECT')
 update_table	<- Sys.getenv('UPDATE_PROJECT')
 
 project_id 	<- gsub("[.]","_",project_id)
+project_id      <- gsub("[-]","_",project_id)
 
 args              <- commandArgs(2)
 mysql_login       <- args[1]
