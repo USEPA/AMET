@@ -32,6 +32,7 @@ dtype             <- args[4]
 sitex_file        <- args[5]
 
 project_id        <- gsub("[.]","_",project_id)
+project_id        <- gsub("[-]","_",project_id)
 
 cat(paste("\nProject_ID: ",project_id,"\n",sep=""))
 cat(paste("Network: ",dtype,"\n",sep=""))
