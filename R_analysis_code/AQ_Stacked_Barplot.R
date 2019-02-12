@@ -120,7 +120,7 @@ if (num_runs > 1) {
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 9                                                  # offset for first species ob value
+l <- 10                                                  # offset for first species ob value
 
 aqdat_sub.df <- aqdat_query.df
 len <- length(aqdat_sub.df)
@@ -147,7 +147,7 @@ TC_mod <- medians.df$EC_mod+medians.df$OC_mod
 ##############################################################
 
 if (num_runs > 1) {
-   l <- 9                                          # offset for first species ob value
+   l <- 10                                          # offset for first species ob value
 
    aqdat_sub2.df <- aqdat_query2.df
    len <- length(aqdat_sub2.df)

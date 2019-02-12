@@ -87,12 +87,12 @@ for (j in 1:total_networks) {                                            # Loop 
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         aqdat1.df        <- sitex_info$sitex_data
-         aqdat1.df   	  <- aqdat1.df[with(aqdat1.df,order(network,stat_id)),]
+         aqdat_query.df   <- sitex_info$sitex_data
+         aqdat_query.df	  <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
          data_exists	  <- sitex_info$data_exists
          sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
-         aqdat2.df  	  <- sitex_info2$sitex_data
-         aqdat2.df	  <- aqdat2.df[with(aqdat2.df,order(network,stat_id)),]
+         aqdat_query2.df  <- sitex_info2$sitex_data
+         aqdat_query2.df  <- aqdat_query2.df[with(aqdat_query2.df,order(network,stat_id)),]
          data_exists2     <- sitex_info2$data_exists
          units            <- as.character(sitex_info$units[[1]])
       }
@@ -103,11 +103,14 @@ for (j in 1:total_networks) {                                            # Loop 
          query_result2    <- query_dbase(run_name2,network,species)
          aqdat_query2.df  <- query_result2[[1]]
          data_exists2     <- query_result2[[2]]
-         aqdat1.df	  <- aqdat_query.df
-         aqdat2.df 	  <- aqdat_query2.df
          units     	  <- query_result[[3]]
       }
    }
+   aqdat1.df        <- aqdat_query.df
+   aqdat2.df        <- aqdat_query2.df
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
+
    {
       if ((data_exists == "n") || (data_exists2 == "n")) {
          All_Data       <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
@@ -120,10 +123,10 @@ for (j in 1:total_networks) {                                            # Loop 
          aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
          if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
             match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-            aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, dates=aqdat1.df$ob_dates, aqdat1.df[,10], aqdat2.df[match.ind,10], aqdat1.df[,9], aqdat2.df[match.ind,9], month=aqdat1.df$month)      # eliminate points that are not common between the two runs
+            aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, dates=aqdat1.df$ob_dates, aqdat1.df[[mod_col_name]], aqdat2.df[match.ind,mod_col_name], aqdat1.df[,ob_col_name], aqdat2.df[match.ind,ob_col_name], month=aqdat1.df$month)      # eliminate points that are not common between the two runs
          }
          else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-            aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,10], aqdat2.df[,10], aqdat1.df[match.ind,9], aqdat2.df[,9], month=aqdat2.df$month)      # eliminate points that are not common between the two runs
+            aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,mod_col_name], aqdat2.df[[mod_col_name]], aqdat1.df[match.ind,ob_col_name], aqdat2.df[[ob_col_name]], month=aqdat2.df$month)      # eliminate points that are not common between the two runs
          }
          aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Mod_Value1=aqdat.df[,7],Mod_Value2=aqdat.df[,6])
 

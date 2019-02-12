@@ -87,6 +87,8 @@ criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",netw
 
 aqdat1.df <- aqdat_query.df
 aqdat2.df <- aqdat_query2.df
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 
 if ((site != "All") && (custom_title == "")) {
    main.title      <- paste(run_name1,species,"for",network,"Site:",site,"in",aqdat1.df$state[1],sep=" ")
@@ -99,10 +101,10 @@ aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour
 {
    if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
       match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Hour=aqdat1.df$ob_hour, Mod1_Value=aqdat1.df[,10], Mod2_Value=aqdat2.df[match.ind,10], month=aqdat1.df$month)       # eliminate points that are not common between the two runs
+      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Hour=aqdat1.df$ob_hour, Mod1_Value=aqdat1.df[[mod_col_name]], Mod2_Value=aqdat2.df[match.ind,mod_col_name], month=aqdat1.df$month)       # eliminate points that are not common between the two runs
    }
    else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Hour=aqdat2.df$ob_hour, Mod1_Value=aqdat1.df[match.ind,10], Mod2_Value=aqdat2.df[,10], month=aqdat2.df$month)       # eliminate points that are not common between the two runs
+      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Hour=aqdat2.df$ob_hour, Mod1_Value=aqdat1.df[match.ind,mod_col_name], Mod2_Value=aqdat2.df[[mod_col_name]], month=aqdat2.df$month)       # eliminate points that are not common between the two runs
    }
 }
    #######################################################################################################################

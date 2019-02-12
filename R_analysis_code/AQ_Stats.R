@@ -100,6 +100,8 @@ for (k in 1:total_networks) {
             model_name     <- query_result[[4]]
          }
       }
+      ob_col_name <- paste(species,"_ob",sep="")
+      mod_col_name <- paste(species,"_mod",sep="")
       #############################################
       if (j == 1) {
          write.table(run_name1,file=filename_txt,append=F,row.names=F,sep=",")                       # Write header for raw data file
@@ -125,12 +127,9 @@ for (k in 1:total_networks) {
 
          ### If there are data, continue ###
          else {
+            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],State=aqdat_query.df$state)
             if (use_avg_stats == "y") {
-               aqdat.df <- Average(aqdat_query.df)
-               aqdat.df <- data.frame(Network=I(aqdat.df$Network),Stat_ID=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=aqdat.df$Obs_Value,Mod_Value=aqdat.df$Mod_Value)
-            }
-            else {
-               aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10])
+               aqdat.df <- Average(aqdat.df)
             }
    
             ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###

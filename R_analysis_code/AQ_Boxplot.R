@@ -116,24 +116,25 @@ if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
 }
 total_days <- as.numeric(max(as.Date(aqdat_query.df$ob_datee))-min(as.Date(aqdat_query.df$ob_dates)))	# Calculate the total length, in days, of the period being plotted
 x.axis.min <- min(aqdat_query.df$month)	# Find the first month available from the query
-
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 {
 if ((total_days <= 31) && (averaging == "n")) {	# If only plotting one month, plot all times instead of averaging to a single month
-   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Month=aqdat_query.df$month,Split_On=aqdat_query.df$ob_dates)
+   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Month=aqdat_query.df$month,Split_On=aqdat_query.df$ob_dates)
 if (run2 == "True") {
-      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[,9],Mod_Value=aqdat_query2.df[,10],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$ob_dates)
+      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[[ob_col_name]],Mod_Value=aqdat_query2.df[[mod_col_name]],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$ob_dates)
    }
    if (run3 == "True") {
-      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[,9],Mod_Value=aqdat_query3.df[,10],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$ob_dates)
+      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[[ob_col_name]],Mod_Value=aqdat_query3.df[[mod_col_name]],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$ob_dates)
    }
 }
 else {
-   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Month=aqdat_query.df$month,Split_On=aqdat_query.df$YearMonth)
+   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Month=aqdat_query.df$month,Split_On=aqdat_query.df$YearMonth)
    if (run2 == "True") {
-      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[,9],Mod_Value=aqdat_query2.df[,10],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$YearMonth)
+      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[[ob_col_name]],Mod_Value=aqdat_query2.df[[mod_col_name]],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$YearMonth)
    }
    if (run3 == "True") {
-      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[,9],Mod_Value=aqdat_query3.df[,10],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$YearMonth)
+      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[[ob_col_name]],Mod_Value=aqdat_query3.df[[mod_col_name]],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$YearMonth)
    }
 }
 }
@@ -360,7 +361,7 @@ legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_typ
 
 ### Put text stating coverage limit used ###
 if (averaging == "m") {
-   text("topright",paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
+   text(topright,paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
 }
 if (run_info_text == "y") {
    if (rpo != "None") {

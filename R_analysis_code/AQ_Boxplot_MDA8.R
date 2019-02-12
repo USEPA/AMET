@@ -60,13 +60,15 @@ hour <- NULL
 day  <- NULL
 stat_id <- NULL
 
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 split_sites <- split(aqdat_query.df,aqdat_query.df$stat_id)
 for (s in 1:length(split_sites)) {
    sub.df <- split_sites[[s]]
    for (i in 1:(length(sub.df$stat_id)-7)) {
-      hr_avg_ob2 <- mean(c(sub.df[i,9],sub.df[(i+1),9],sub.df[(i+2),9],sub.df[(i+3),9],sub.df[(i+4),9],sub.df[(i+5),9],sub.df[(i+6),9],sub.df[(i+7),9]))
+      hr_avg_ob2 <- mean(c(sub.df[i,ob_col_name],sub.df[(i+1),ob_col_name],sub.df[(i+2),ob_col_name],sub.df[(i+3),ob_col_name],sub.df[(i+4),ob_col_name],sub.df[(i+5),ob_col_name],sub.df[(i+6),ob_col_name],sub.df[(i+7),ob_col_name]))
       hr_avg_ob <- c(hr_avg_ob,hr_avg_ob2) 
-      hr_avg_mod2 <- mean(c(sub.df[i,10],sub.df[(i+1),10],sub.df[(i+2),10],sub.df[(i+3),10],sub.df[(i+4),10],sub.df[(i+5),10],sub.df[(i+6),10],sub.df[(i+7),10]))
+      hr_avg_mod2 <- mean(c(sub.df[i,mod_col_name],sub.df[(i+1),mod_col_name],sub.df[(i+2),mod_col_name],sub.df[(i+3),mod_col_name],sub.df[(i+4),mod_col_name],sub.df[(i+5),mod_col_name],sub.df[(i+6),mod_col_name],sub.df[(i+7),mod_col_name]))
       hr_avg_mod <- c(hr_avg_mod,hr_avg_mod2)
       hour <- c(hour,sub.df$ob_hour[i])
       day <- c(day,sub.df$ob_dates[i])

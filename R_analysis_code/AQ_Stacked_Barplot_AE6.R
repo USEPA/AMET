@@ -143,7 +143,7 @@ if ((network == 'IMPROVE') && (num_runs > 1)) {
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 9							# offset for first species ob value
+l <- 10							# offset for first species ob value
 
 aqdat_sub.df <- aqdat_all.df
 len <- length(aqdat_sub.df)
@@ -167,7 +167,7 @@ data.df		<- aqdat_sub.df[8:len]
 }
 ##############################################################
 if (num_runs > 1) {
-   l <- 9                                          # offset for first specie ob value
+   l <- 10                                          # offset for first specie ob value
 
    aqdat_sub2.df <- aqdat_all2.df
    len <- length(aqdat_sub2.df)
