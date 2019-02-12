@@ -91,8 +91,9 @@ averaging<-"n"
 ### Flag to Include or Remove Zero Precipitation Observations ###
 zeroprecip	<- 'n'
 ### Data Completeness ###
-coverage_limit	<- 50
-valid_only	<- 'n'
+coverage_limit<-50
+all_valid<-"y"
+all_valid_amon<-"y"
 ### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
 soccerplot_opt	<- 1
 ### Flag for PAVE Overlay; 1=hourly, 2=daily ###

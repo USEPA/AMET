@@ -28,7 +28,7 @@ network <- network_names[1]
 run_name <- run_name1
 {
    if (Sys.getenv("AMET_DB") == 'F') {
-      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name[j],species)
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
       aqdat_query.df   <- sitex_info$sitex_data
    }
    else {
