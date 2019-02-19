@@ -71,27 +71,18 @@ for (j in 1:total_networks) {							# Loop through for each network
    #########################
    {
       if (Sys.getenv("AMET_DB") == 'F') {
-         sitex_info                     <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         sitex_info                     <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,c(species,"PM_TOT"))
          data_exists                    <- sitex_info$data_exists
          if (data_exists == "y") {
             aqdat_query.df                 <- sitex_info$sitex_data
             aqdat_query.df                 <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
-            aqdat_query.df$PM_TOT_ob       <- aqdat_query.df[,9]
-            aqdat_query.df$PM_TOT_mod      <- aqdat_query.df[,10]
             units                          <- as.character(sitex_info$units[[1]])
-         }
-         sitex_info2                    <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,"PM_TOT")
-         data_exists2                   <- sitex_info2$data_exists
-         if (data_exists2 == "y") {
-            aqdat_query2.df                <- sitex_info2$sitex_data
-            aqdat_query2.df                 <- aqdat_query2.df[with(aqdat_query2.df,order(network,stat_id)),]
          }
       }
       else {
          query_result   <- query_dbase(run_name1,network,c(species,"PM_TOT"))
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
-         data_exists2   <- "y"
          units 	        <- query_result[[3]]
       }
    }
@@ -100,7 +91,7 @@ for (j in 1:total_networks) {							# Loop through for each network
    ob_col_name <- paste(species,"_ob",sep="")
    mod_col_name <- paste(species,"_mod",sep="")
    {
-      if ((data_exists == "n") || (data_exists2 == "n")) {
+      if (data_exists == "n") {
 #            stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
 #            sites_stats.df <- "No site stats available.  Perhaps you choose a species for a network that does not observe that species."
             total_networks <- (total_networks-1)

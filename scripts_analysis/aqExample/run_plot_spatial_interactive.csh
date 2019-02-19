@@ -28,13 +28,13 @@
   setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ### Set the project name to be used for model-to-model comparisons ###
   setenv AMET_PROJECT2  aqExample
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/
+  #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
 
   ###  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/plot_spatial_interactive
@@ -111,7 +111,7 @@
 ##--------------------------------------------------------------------------##
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/nput_files/all_scripts.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scripts.input  
   setenv AMET_NET_INPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
   
   # Check for plot and text output directory, create if not present

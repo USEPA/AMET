@@ -27,7 +27,7 @@
   setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"

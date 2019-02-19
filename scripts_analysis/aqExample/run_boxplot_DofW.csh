@@ -27,13 +27,13 @@
   setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ### Set the project name to be used for model-to-model comparisons ###
   setenv AMET_PROJECT2  aqExample
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/
+  #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
 
   ###  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/boxplot_dofw
@@ -79,8 +79,8 @@
   #  setenv AMET_NADP           T
   #  setenv AMET_AIRMON         T
   #  setenv AMET_AQS_Hourly     T
-  #  setenv AMET_AQS_Daily_O3   T
-    setenv AMET_AQS_Daily       T
+    setenv AMET_AQS_Daily_O3   T
+  #  setenv AMET_AQS_Daily       T
   #  setenv AMET_SEARCH         T
   #  setenv AMET_SEARCH_Daily   T
   #  setenv AMET_NAPS_Hourly    T

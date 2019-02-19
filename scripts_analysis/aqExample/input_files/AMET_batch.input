@@ -150,6 +150,9 @@ num_obs_limit<-1
 ### Flag to use average values for computing statistics; default is no (""); set to "y" to use average stats ###
 use_avg_stats<- ""
 
+#### Aggregate data from multiple POCs
+aggregate_data<-"y"
+
 #########################
 ### Axis Plot Options ###
 #########################
@@ -180,7 +183,8 @@ inc_legend		<- 'y'
 obs_per_day_limit	<- 0
 avg_func		<-"mean"
 line_width		<- "1"
-
+inc_bias 		<- 'y'
+inc_rmse 		<- 'y'
 
 ############################
 ### Spatial Plot Options ###
@@ -201,6 +205,14 @@ inc_counties	<- "y"
 symbsizfac	<- 1
 map_leg_size	<-.65
 
+### Select background map type for interactive spatial plots ###
+##1 = OpenStreetMap.Mapnik
+##2 = OpenStreetMap.BlackAndWhite
+##3 = OpenTopoMap"
+##4 = Esri.WorldImagery
+##5 = HERE.hybridDay
+map_type        <- 1
+#################################################################
 
 #######################
 ### Boxplot Options ###
