@@ -59,6 +59,8 @@ network <- network_names[1]
 #model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
+
 if (length(num_ints) == 0) {
    num_ints <- 20 
 }

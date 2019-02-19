@@ -130,7 +130,7 @@ for (j in 1:num_runs) {
          }
          #######################
          if (j > 1) {
-            bias_values[j-1] <- aqdat.df[[mod_col_name]]-aqdat.df[[ob_col_name]]
+            bias_values[[j-1]] <- aqdat.df[[mod_col_name]]-aqdat.df[[ob_col_name]]
             bias_max <- max(bias_max,bias_values[[j-1]])
             bias_min <- min(bias_min,bias_values[[j-1]])
          }
