@@ -32,7 +32,7 @@
   setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ###  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot_panel

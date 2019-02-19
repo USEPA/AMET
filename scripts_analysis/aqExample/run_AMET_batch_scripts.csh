@@ -26,7 +26,7 @@ setenv R_EXEC_LOC /share/linux86_64/bin
 setenv AMET_DB	T
 
 ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-#setenv OUTDIR	$AMETBASE/output/$AMET_PROJECT/
+#setenv OUTDIR	$AMETBASE/output/$AMET_PROJECT/sitex_output
 
 ### Set the location of the base AMET installation, database name and project name ###
 setenv AMET_DATABASE 	amet 
