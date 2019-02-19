@@ -183,7 +183,7 @@ for (j in 1:total_networks) {							# Loop through for each network
             num_total_obs <- length(sub_all.df$Ob_Value_1)      # Count the total number of obs available for the site
             num_good_obs <- 0                           # Set number of good obs to 0
             for (k in 1:length(sub_all.df$Ob_Value_1)) {        # Count the number of non-missing obs (good obs)
-               if (sub_all.df[k,Ob_Value_1] >= -90) {           # If ob value is >= 0, count as good
+               if (sub_all.df[k,8] >= -90) {           # If ob value is >= 0, count as good
                   num_good_obs <- num_good_obs+1        # Increment good ob count by one
                }
             }
@@ -193,7 +193,7 @@ for (j in 1:total_networks) {							# Loop through for each network
                sub_good.df <- sub_all.df[indic.nonzero,]        # Update dataframe to only include good obs (remove missing obs)
                indic.nonzero <- sub_good.df$Mod_Value_2 >= -90
                sub_good.df <- sub_good.df[indic.nonzero,]
-               indic.nonzero <- sub_good.dfOb_Value_1 >= -90
+               indic.nonzero <- sub_good.df$Ob_Value_1 >= -90
                sub_good.df <- sub_good.df[indic.nonzero,]
                sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
                lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
@@ -267,7 +267,7 @@ for (i in 1:6) {
 
   data.df <- data.frame(site.id=all_sites,latitude=all_lats,longitude=all_lons,o3.obs=plot_data[[i]])
 
-  range_max <- max(abs(min(quantile(plot_data[[i]],probs=0.999),na.rm=T)),max(quantile(plot_data[[i]],probs=0.999),na.rm=T))
+  range_max <- max(abs(min(quantile(plot_data[[i]],probs=0.001),na.rm=T)),max(quantile(plot_data[[i]],probs=0.999),na.rm=T))
 #range_max <- max(abs(min(plot_data[[i]],na.rm=T)),max(plot_data[[i]],na.rm=T))
 
 #  data.seq <- pretty(seq(min(plot_data[[i]]),max(plot_data[[i]],na.rm=T)),n=20)
