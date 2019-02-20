@@ -12,7 +12,7 @@
 suppressMessages(require(RMySQL))	# Use RMYSQL package
 
 amet_base <- Sys.getenv('AMETBASE')
-iof (!exists("amet_base")) {
+if (!exists("amet_base")) {
    stop("Must set AMETBASE environment variable")
 }
 
