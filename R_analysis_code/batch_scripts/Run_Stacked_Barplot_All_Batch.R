@@ -1,14 +1,16 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED SCATTER PLOT.
-################################################################
-
-batch <- 'y'
-
-amet_base        <- Sys.getenv("AMETBASE")
+ametbase         <- Sys.getenv("AMETBASE")
 dbase            <- Sys.getenv("AMET_DATABASE")
 out_dir          <- Sys.getenv("AMET_OUT")
 ametRinput       <- Sys.getenv("AMETRINPUT")
+config_file      <- Sys.getenv("MYSQL_CONFIG")                   # MySQL configuration file
+ametR            <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
+
 source(ametRinput)
+source(config_file)
+source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
+
+if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
+mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)           # Set MYSQL login and query options
 
 ###################################
 ### Does not need to be changed ###
@@ -43,8 +45,16 @@ run_name2               <- Sys.getenv("AMET_PROJECT2")     # Additional run to i
 custom_title <- ""
 ##############################
 
+### Set default value for by_site flag ###
+if(!exists("by_site")) {
+   print("by_site flag not set. Defaulting to n. Set by_site flag in config file to create plots by individual site id.")
+   by_site <- "n"
+}
+if ((by_site == 'T') || (by_site == "t") || (by_site == "Y")) { by_site <- "y" }
+
 ### Main Database Query String. ###
 query_string<-paste(" and s.stat_id=d.stat_id and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
+#query_string2<-paste(" and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
 
 ### Set and create output directory ###
 #out_dir                 <- paste(out_dir,"bar_plots",sep="/")
@@ -59,6 +69,8 @@ run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_soil
 #run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_panel.R",sep="")
 #run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_panel_AE6.R",sep="")
 #run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_panel_AE6_multi.R",sep="")
+run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_AE6_ggplot.R",sep="")
+run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_AE6_plotly.R",sep="")
 
 ###############################################################################################
 ### This portion of the code will create seasonal soccer goal plots for the various species ###
@@ -71,31 +83,47 @@ run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_soil
 for (m in 1:length(batch_query)) {
    species_list         <- c("PM_TOT","soil")
    for (i in 1:length(species_list)) {
-      species		<- species_list[i]
+      species_in	<- species_list[i]
       dates 		<- batch_names[m]
-      figdir                 <- paste(out_dir,species,sep="/")
+      figdir                 <- paste(out_dir,species_in,sep="/")
       if (batch_names[m] != "None") {
-         figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+         figdir                 <- paste(out_dir,batch_names[m],species_in,sep="/")
       }
       mkdir_command     <- paste("mkdir -p",figdir)
       network_names 	<- c("CSN")
       network_label 	<- c("CSN")
       pid 		<- network_names
       query 		<- paste(query_string,"and (",batch_query[m],")",sep="")
-      if (species == "PM_TOT") {
-         if (AE5_barplot == 'y') { 
-            system(mkdir_command) 
-            try(source(run_script_command1)) 
-         }
-         if (AE6_barplot == 'y') {
-            system(mkdir_command)
-            try(source(run_script_command2)) 
-         }
+      sites <- "All"
+      if (by_site == 'y') {
+         qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+         sites.df <- db_Query(qs,mysql)
+         sites    <- sites.df$stat_id
+         if (length(sites) == 0) { sites <- "All" }
       }
-      if (species == "soil") {
-         if (soil_barplot == 'y') { 
-            system(mkdir_command) 
-            try(source(run_script_command3)) 
+      for (s in 1:length(sites)) {
+         if (sites[s] != "All") {
+            pid   <- paste(network_label,sites[s],sep="_")
+            query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+            site  <- sites[s]
+         }
+         if (species_in == "PM_TOT") {
+            if (AE5_barplot == 'y') { 
+               system(mkdir_command) 
+               try(source(run_script_command1)) 
+            }
+            if (AE6_barplot == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command2))
+               try(source(run_script_command5))
+               try(source(run_script_command6))
+            }
+         }
+         if (species_in == "soil") {
+            if (soil_barplot == 'y') { 
+               system(mkdir_command) 
+               try(source(run_script_command3)) 
+            }
          }
       }
    }
@@ -104,31 +132,92 @@ for (m in 1:length(batch_query)) {
 for (m in 1:length(batch_query)) {
    species_list         <- c("PM_TOT","soil")
    for (i in 1:length(species_list)) {
-      species           <- species_list[i]
+      species_in        <- species_list[i]
       dates             <- batch_names[m]
-      figdir                 <- paste(out_dir,species,sep="/")
+      figdir                 <- paste(out_dir,species_in,sep="/")
       if (batch_names[m] != "None") {
-         figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+         figdir                 <- paste(out_dir,batch_names[m],species_in,sep="/")
       }
       mkdir_command     <- paste("mkdir -p",figdir)
       network_names     <- c("IMPROVE")
       network_label     <- c("IMPROVE")
       pid               <- network_names
       query             <- paste(query_string,"and (",batch_query[m],")",sep="")
-      if (species == "PM_TOT") {
-         if (AE5_barplot == 'y') { 
-            system(mkdir_command) 
-            try(source(run_script_command1)) 
+      sites <- "All"
+      if (by_site == 'y') {
+         qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+         sites.df <- db_Query(qs,mysql)
+         sites    <- sites.df$stat_id
+         if (length(sites) == 0) { sites <- "All" }
+      }
+      for (s in 1:length(sites)) {
+         if (sites[s] != "All") {
+            pid   <- paste(network_label,sites[s],sep="_")
+            query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+            site  <- sites[s]
          }
-         if (AE6_barplot == 'y') { 
-            system(mkdir_command) 
-            try(source(run_script_command2)) 
+         if (species_in == "PM_TOT") {
+            if (AE5_barplot == 'y') { 
+               system(mkdir_command) 
+               try(source(run_script_command1)) 
+            }
+            if (AE6_barplot == 'y') { 
+               system(mkdir_command) 
+               try(source(run_script_command2)) 
+               try(source(run_script_command5))
+               try(source(run_script_command6))
+               try(source(run_script_command7))
+            }
+         }
+         if (species_in == "soil") {
+            if (soil_barplot == 'y') { 
+               system(mkdir_command) 
+               try(source(run_script_command3)) 
+            }
          }
       }
-      if (species == "soil") {
-         if (soil_barplot == 'y') { 
-            system(mkdir_command) 
-            try(source(run_script_command3)) 
+   }
+}
+
+for (m in 1:length(batch_query)) {
+   species_list         <- c("PM_TOT")
+   for (i in 1:length(species_list)) {
+      species_in        <- species_list[i]
+      dates             <- batch_names[m]
+      figdir            <- paste(out_dir,species_in,sep="/")
+      if (batch_names[m] != "None") {
+         figdir                 <- paste(out_dir,batch_names[m],species_in,sep="/")
+      }
+      mkdir_command     <- paste("mkdir -p",figdir)
+      network_names     <- c("AQS_Daily")
+      network_label     <- c("AQS_Daily")
+      pid               <- network_names
+      query             <- paste(query_string,"and (",batch_query[m],")",sep="")
+      sites <- "All"
+      if (by_site == 'y') {
+         qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+         sites.df <- db_Query(qs,mysql)
+         sites    <- sites.df$stat_id
+         if (length(sites) == 0) { sites <- "All" }
+      }
+      for (s in 1:length(sites)) {
+         if (sites[s] != "All") {
+            pid   <- paste(network_label,sites[s],sep="_")
+            query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+            site  <- sites[s]
+         }
+         if (species_in == "PM_TOT") {
+            if (AE5_barplot == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command1))
+            }
+            if (AE6_barplot == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command2))
+               try(source(run_script_command5))
+               try(source(run_script_command6))
+               try(source(run_script_command7))
+            }
          }
       }
    }
@@ -137,32 +226,45 @@ for (m in 1:length(batch_query)) {
 for (m in 1:length(batch_query)) {
    species_list         <- c("PM_TOT","soil")
    for (i in 1:length(species_list)) {
-      species <- species_list[i]
+      species_in	   <- species_list[i]
       dates                <- batch_names[m]
-      figdir                 <- paste(out_dir,species,sep="/")
+      figdir               <- paste(out_dir,species_in,sep="/")
       if (batch_names[m] != "None") {
-         figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+         figdir            <- paste(out_dir,batch_names[m],species_in,sep="/")
       }
       mkdir_command        <- paste("mkdir -p",figdir)
       network_names        <- c("CSN","IMPROVE")
       network_label        <- c("CSN","IMPROVE")
       pid                  <- "multi_network"
       query                <- paste(query_string,"and (",batch_query[m],")",sep="")
-      if (species == "soil") {
-         if (soil_multi_barplot == 'y') { 
-            system(mkdir_command)
-            try(source(run_script_command4)) 
-         }
+      sites <- "All"
+      if (by_site == 'y') {
+         qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+         sites.df <- db_Query(qs,mysql)
+         sites    <- sites.df$stat_id
+         if (length(sites) == 0) { sites <- "All" }
       }
-      if (species == "PM_TOT") {
-#         if (panel_AE6_multi_barplot == 'y') { 
-#             system(mkdir -p_command) 
-#             try(source(run_script_command7)) 
-#         }
+      for (s in 1:length(sites)) {
+         if (sites[s] != "All") {
+            pid   <- paste(network_label,sites[s],sep="_")
+            query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+            site  <- sites[s]
+         }
+         if (species_in == "soil") {
+            if (soil_multi_barplot == 'y') { 
+               system(mkdir_command)
+               try(source(run_script_command4)) 
+            }
+         }
+         if (species_in == "PM_TOT") {
+   #         if (panel_AE6_multi_barplot == 'y') { 
+   #             system(mkdir -p_command) 
+   #             try(source(run_script_command7)) 
+   #         }
+         }
       }
    }
 }
-
 
 ####################################
 ### End Monthly Analysis Section ###

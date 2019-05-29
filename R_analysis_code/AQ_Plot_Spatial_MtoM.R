@@ -23,6 +23,9 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
+if(!exists("quantile_min")) { quantile_min <- 0.001 }
+if(!exists("quantile_max")) { quantile_max <- 0.950 }
+
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
 #units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
@@ -103,7 +106,7 @@ for (j in 1:total_networks) {                                            # Loop 
          query_result2    <- query_dbase(run_name2,network,species)
          aqdat_query2.df  <- query_result2[[1]]
          data_exists2     <- query_result2[[2]]
-         units     	  <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
    aqdat1.df        <- aqdat_query.df
@@ -116,6 +119,7 @@ for (j in 1:total_networks) {                                            # Loop 
          All_Data       <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
          total_networks <- (total_networks-1)
          sub_title      <- paste(sub_title,network,"=No Data; ",sep="")
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
       }
       else {
          ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
@@ -186,7 +190,7 @@ if (length(sites) > 10000) {
 ####################################################################
 levs <- NULL
 if (length(num_ints) == 0) {
-   num_ints <- 10
+   num_ints <- 20
 }
 intervals <- num_ints
 ####################################################################
@@ -197,7 +201,7 @@ intervals <- num_ints
 intervals <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      diff_max <- max(abs(all_diff))
+      diff_max <- max(quantile(abs(all_diff),quantile_max))
       levs_diff <- pretty(c(-diff_max,diff_max),intervals,min.n=5)
       diff_range <- range(levs_diff)
       power <- abs(levs_diff[1]) - abs(levs_diff[2])
@@ -241,7 +245,7 @@ leg_colors_diff                         <- c(low_range,"grey50","grey50",high_ra
 intervals <- num_ints
 {
    if ((length(abs_range_min) == 0) || (length(abs_range_max) == 0)) {
-      max_max <- max(c(abs(all_max),abs(all_min)))
+      max_max <- max(c(quantile(abs(all_max),quantile_max),quantile(abs(all_min),quantile_max)))
       levs_max <- pretty(c(-max_max,max_max),intervals,min.n=5)
       max_range <- range(levs_max)
       power <- abs(levs_max[1]) - abs(levs_max[2])

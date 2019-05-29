@@ -26,6 +26,7 @@ source(ametRinput)
 ######################################
 run_name1               <- Sys.getenv("AMET_PROJECT")	# AMET project name
 run_name2               <- Sys.getenv("AMET_PROJECT2")	# Additional run to include on plot 
+print(run_name2)
 #start_date             <- "20060101"                           # Set the start date of the analysis
 #end_date               <- "20061231"                           # Set the end date of the analysis
 #batch_query            <- c("month=1","month=2","month=3","month=4","month=5","month=6","month=7","month=8","month=9","month=10","month=11","month=12",
@@ -72,6 +73,7 @@ run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_MtoM.R"
 run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_Ratio.R",sep="")
 run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_interactive.R",sep="")
 run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_Diff_interactive.R",sep="")
+run_script_command8 <- paste(amet_base,"/R_analysis_code/AQ_Stats_Plots_interactive.R",sep="")
 
 ##########################################################################################
 ### This portion of the code will create monthly spatial plots for the various species ###
@@ -90,18 +92,25 @@ if (hourly_ozone_analysis == 'y') {
       }
       mkdir_command	<- paste("mkdir -p",figdir)
       dates 		<- batch_names[m]
-      network_names 	<- c("AQS_Hourly","NAPS","EMEP_Hourly")
-      network_label 	<- c("AQS","NAPS","EMEP")
+      network_names 	<- c("AQS_Hourly","CASTNET_Hourly","NAPS","EMEP_Hourly")
+      network_label 	<- c("AQS","CASTNET","NAPS","EMEP")
       pid               <- "multi_network"
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
       print(query)
       system(mkdir_command)
-      if (stat_plots    == 'y')	{ try(source(run_script_command1)) }
-      if (spatial_plots == 'y')	{ try(source(run_script_command2)) }
-      if (diff_plots    == 'y')	{ try(source(run_script_command3)) }
-      if (mtom_plots    == 'y')	{ try(source(run_script_command4)) }
-      if (spatial_plots == 'y') { try(source(run_script_command6)) }
-      if (diff_plots    == 'y') { try(source(run_script_command7)) }
+      if (stat_plots    == 'y')	{ 
+         try(source(run_script_command1))
+         try(source(run_script_command8)) 
+      }
+      if (spatial_plots == 'y')	{ 
+         try(source(run_script_command2)) 
+         try(source(run_script_command6))
+      }
+      if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { 
+         try(source(run_script_command3)) 
+         try(source(run_script_command7))
+      }
+      if ((mtom_plots   == 'y')	&& (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
    }
 }
 
@@ -121,12 +130,19 @@ if (daily_ozone_analysis == 'y') {
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
 #      print(query)
       system(mkdir_command)
-      if (stat_plots    == 'y') { try(source(run_script_command1)) }
-      if (spatial_plots == 'y') { try(source(run_script_command2)) }
-      if (diff_plots    == 'y') { try(source(run_script_command3)) }
-      if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (spatial_plots == 'y') { try(source(run_script_command6)) }
-      if (diff_plots    == 'y') { try(source(run_script_command7)) }
+      if (stat_plots    == 'y') { 
+         try(source(run_script_command1)) 
+         try(source(run_script_command8))
+      }
+      if (spatial_plots == 'y') {
+         try(source(run_script_command2))
+         try(source(run_script_command6))
+      }
+      if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+         try(source(run_script_command3))
+         try(source(run_script_command7))
+      }
+      if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
    }
    for (m in 1:length(batch_query)) {
       species 		<- "O3_8hrmax"
@@ -141,12 +157,19 @@ if (daily_ozone_analysis == 'y') {
       pid            	<- "multi_network"
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
       system(mkdir_command)
-      if (stat_plots    == 'y') { try(source(run_script_command1)) }
-      if (spatial_plots == 'y') { try(source(run_script_command2)) }
-      if (diff_plots    == 'y') { try(source(run_script_command3)) }
-      if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (spatial_plots == 'y') { try(source(run_script_command6)) }
-      if (diff_plots    == 'y') { try(source(run_script_command7)) }
+      if (stat_plots    == 'y') { 
+         try(source(run_script_command1))
+         try(source(run_script_command8)) 
+      }
+      if (spatial_plots == 'y') {
+         try(source(run_script_command2))
+         try(source(run_script_command6))
+      }
+      if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+         try(source(run_script_command3))
+         try(source(run_script_command7))
+      }
+      if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
    }
 }
 
@@ -157,9 +180,9 @@ if (aerosol_analysis == 'y') {
       for (i in 1:length(species_list)) { 
          species	<- species_list[i]
          dates 		<- batch_names[m]
-         figdir                 <- paste(out_dir,species,sep="/")
+         figdir         <- paste(out_dir,species,sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir      <- paste(out_dir,batch_names[m],species,sep="/")
          }
          mkdir_command	<- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE","CSN","CASTNET")
@@ -168,12 +191,19 @@ if (aerosol_analysis == 'y') {
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          print(query)
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1)) 
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -191,12 +221,19 @@ if (aerosol_analysis == 'y') {
          pid 		<- network_names 
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1))
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -207,17 +244,24 @@ if (aerosol_analysis == 'y') {
       }
       mkdir_command 	<- paste("mkdir -p",figdir)
       dates 		<- batch_names[m]
-      network_names 	<- c("IMPROVE","CSN","AQS_Daily","AQS_Hourly")
-      network_label 	<- c("IMPROVE","CSN","AQS_Daily","AQS_Hourly")
+      network_names 	<- c("IMPROVE","CSN","AQS_Daily","AQS_Hourly","NAPS")
+      network_label 	<- c("IMPROVE","CSN","AQS_Daily","AQS_Hourly","NAPS")
       pid 		<- "multi_network"
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
       system(mkdir_command)
-      if (stat_plots    == 'y') { try(source(run_script_command1)) }
-      if (spatial_plots == 'y') { try(source(run_script_command2)) }
-      if (diff_plots    == 'y') { try(source(run_script_command3)) }
-      if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (spatial_plots == 'y') { try(source(run_script_command6)) }
-      if (diff_plots    == 'y') { try(source(run_script_command7)) }
+      if (stat_plots    == 'y') { 
+         try(source(run_script_command1))
+         try(source(run_script_command8))
+      }
+      if (spatial_plots == 'y') {
+         try(source(run_script_command2))
+         try(source(run_script_command6))
+      }
+      if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+         try(source(run_script_command3))
+         try(source(run_script_command7))
+      }
+      if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
    }
    for (m in 1:length(batch_query)) {
       species_list <- c("EC","OC","TC") 
@@ -235,13 +279,20 @@ if (aerosol_analysis == 'y') {
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          print(query)
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1))
+            try(source(run_script_command8)) 
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
          if (ratio_plots   == 'y') { try(source(run_script_command5)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
       }
    }
 }
@@ -260,16 +311,23 @@ if (dep_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("NADP")
          network_label 	<- c("NADP")
-         pid 		<- network_names
+         pid 		<- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          print(query)
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1)) 
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }      
 }
@@ -277,7 +335,7 @@ if (dep_analysis == 'y') {
 if (gas_analysis == 'y') {
    averaging <- gas_averaging
    for (m in 1:length(batch_query)) {
-      species_list <- c("SO2","NO2","NOY","NOX","CO")
+      species_list <- c("SO2","NO","NO2","NOY","NOX","CO")
       for (i in 1:length(species_list)) {
          species        <- species_list[i]
          figdir                 <- paste(out_dir,species,sep="/")
@@ -286,17 +344,24 @@ if (gas_analysis == 'y') {
          }
          mkdir_command  <- paste("mkdir -p",figdir)
          dates          <- batch_names[m]
-         network_names  <- c("AQS_Hourly")
-         network_label  <- c("AQS")
-         pid            <- network_names
+         network_names  <- c("AQS_Hourly","NAPS")
+         network_label  <- c("AQS","NAPS")
+         pid            <- "multi_network"
          query          <- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1)) 
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -312,12 +377,19 @@ if (gas_analysis == 'y') {
       pid            <- network_names
       query          <- paste(query_string,"and (",batch_query[m],")",sep=" ")
       system(mkdir_command)
-      if (stat_plots    == 'y') { try(source(run_script_command1)) }
-      if (spatial_plots == 'y') { try(source(run_script_command2)) }
-      if (diff_plots    == 'y') { try(source(run_script_command3)) }
-      if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-      if (spatial_plots == 'y') { try(source(run_script_command6)) }
-      if (diff_plots    == 'y') { try(source(run_script_command7)) }
+      if (stat_plots    == 'y') { 
+         try(source(run_script_command1)) 
+         try(source(run_script_command8))
+      }
+      if (spatial_plots == 'y') {
+         try(source(run_script_command2))
+         try(source(run_script_command6))
+      }
+      if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+         try(source(run_script_command3))
+         try(source(run_script_command7))
+      }
+      if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
    }
 }
 
@@ -337,13 +409,20 @@ if (AE6_analysis == 'y') {
          pid 		<- "multi_network"
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1))
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
          if (ratio_plots   == 'y') { try(source(run_script_command5)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
       }
    }
 }
@@ -363,12 +442,19 @@ if (AOD_analysis == 'y') {
          pid 		<- paste(run_name1,dates,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1)) 
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }
 }
@@ -388,12 +474,19 @@ if (PAMS_analysis == 'y') {
          pid 		<- paste(run_name1,dates,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)        
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1)) 
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }
    species_list <- c("Isoprene","Ethane","Ethylene","Toluene","Acetaldehyde","Formaldehyde")
@@ -411,12 +504,19 @@ if (PAMS_analysis == 'y') {
          pid 		<- paste(run_name1,dates,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (stat_plots    == 'y') { try(source(run_script_command1)) }
-         if (spatial_plots == 'y') { try(source(run_script_command2)) }
-         if (diff_plots    == 'y') { try(source(run_script_command3)) }
-         if (mtom_plots    == 'y') { try(source(run_script_command4)) }
-         if (spatial_plots == 'y') { try(source(run_script_command6)) }
-         if (diff_plots    == 'y') { try(source(run_script_command7)) }
+         if (stat_plots    == 'y') { 
+            try(source(run_script_command1)) 
+            try(source(run_script_command8))
+         }
+         if (spatial_plots == 'y') {
+            try(source(run_script_command2))
+            try(source(run_script_command6))
+         }
+         if ((diff_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+            try(source(run_script_command3))
+            try(source(run_script_command7))
+         }
+         if ((mtom_plots   == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command4)) }
       }
    }
 }

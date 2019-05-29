@@ -53,22 +53,39 @@ filename_bias_pdf        <- paste(figdir,filename_bias_pdf,sep="/")
 filename_bias_png        <- paste(figdir,filename_bias_png,sep="/")
 filename_norm_bias_pdf   <- paste(figdir,filename_norm_bias_pdf,sep="/")
 filename_norm_bias_png   <- paste(figdir,filename_norm_bias_png,sep="/")
-
 #################################
+
+q1.bias2 	<- NULL
+q1.bias3 	<- NULL
+q3.bias2 	<- NULL
+q3.bias3 	<- NULL
+q1.norm_bias2   <- NULL
+q1.norm_bias3   <- NULL
+q2.norm_bias2	<- NULL
+q2.norm_bias3 	<- NULL
+q3.norm_bias2   <- NULL
+q3.norm_bias3   <- NULL
+
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-      aqdat_query.df   <- (sitex_info$sitex_data)
-      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
-      units            <- as.character(sitex_info$units[[1]])
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") {
+         aqdat_query.df   <- (sitex_info$sitex_data)
+         aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+         units            <- as.character(sitex_info$units[[1]])
+      }
    }
    else {
 #      units	      <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units	      <- query_result[[3]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
    }
 }
+if (data_exists == "n") { stop("Stopping because data_exists flag is false. Likely no data found for query.") }
+
 years   <- substr(aqdat_query.df$ob_dates,1,4)
 months  <- substr(aqdat_query.df$ob_dates,6,7)
 yearmonth <- paste(years,months,sep="_")
@@ -266,19 +283,19 @@ y.axis.max <- c(sum((y.axis.max.value * 0.25),y.axis.max.value))		# Set y-axis m
 if (length(y_axis_max) > 0) { 					# Set user defined y axis limit
    y.axis.max <- y_axis_max						# Set y-axis max based on user input
 }
-bias.y.axis.min <- min(q1.bias)
-bias.y.axis.max.value <- max(q3.bias)
+bias.y.axis.min <- min(q1.bias,q1.bias2,q1.bias3)
+bias.y.axis.max.value <- max(q3.bias,q3.bias2,q3.bias3)
 if (inc_whiskers == 'y') {
-   bias.y.axis.min <- min(Bias)                              # Set y-axis minimum values
-   bias.y.axis.max.value <- max(Bias)                        # Determine y-axis maximum value
+   bias.y.axis.min <- min(Bias,Bias2,Bias3)                              # Set y-axis minimum values
+   bias.y.axis.max.value <- max(Bias,Bias2,Bias3)                        # Determine y-axis maximum value
 }
 bias.y.axis.max <- bias.y.axis.max.value+((bias.y.axis.max.value-bias.y.axis.min)*0.25)
 
-norm_bias.y.axis.min <- min(q1.norm_bias)
-norm_bias.y.axis.max.value <- max(q3.norm_bias)
+norm_bias.y.axis.min <- min(q1.norm_bias,q1.norm_bias2,q1.norm_bias3)
+norm_bias.y.axis.max.value <- max(q3.norm_bias,q3.norm_bias2,q3.norm_bias3)
 if (inc_whiskers == 'y') {
-   norm_bias.y.axis.min <- min(Norm_Bias)                              # Set y-axis minimum values
-   norm_bias.y.axis.max.value <- max(Norm_Bias)                        # Determine y-axis maximum value
+   norm_bias.y.axis.min <- min(Norm_Bias,Norm_Bias2,Norm_Bias3)                              # Set y-axis minimum values
+   norm_bias.y.axis.max.value <- max(Norm_Bias,Norm_Bias2,Norm_Bias3)                        # Determine y-axis maximum value
 }
 norm_bias.y.axis.max <- norm_bias.y.axis.max.value+((norm_bias.y.axis.max.value-norm_bias.y.axis.min)*0.25)
 
@@ -309,8 +326,8 @@ if (run2 == "True") {
    legend_names <- c(legend_names, run_name2)
 }
 if (run3 == "True") {
-    boxplot(split(aqdat3.df$Mod_Value,aqdat3.df$Split_On), range=0, border=plot_colors[4], col=plot_colors[4], staplecol=whisker_color[4], boxwex=bar_width[4], add=T, cex.axis=1.0, cex.lab=1.3)
-   legend_names <- c(legend_names, run_name2)
+    boxplot(split(aqdat3.df$Mod_Value,aqdat3.df$Split_On), range=0, border=plot_colors[4], whiskcol=whisker_color[4], staplecol=whisker_color[4], col=plot_colors[4], boxwex=bar_width[4], add=T, cex.axis=1.0, cex.lab=1.3)
+   legend_names <- c(legend_names, run_name3)
 }
 ###############################################################
 
@@ -360,9 +377,9 @@ legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_typ
 ##############################
 
 ### Put text stating coverage limit used ###
-if (averaging == "m") {
-   text(topright,paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
-}
+#if (averaging == "m") {
+#   text("topright",paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
+#}
 if (run_info_text == "y") {
    if (rpo != "None") {
       text(x.axis.max,y.axis.max*.93,paste("RPO = ",rpo,sep=""),adj=c(0.5,.5),cex=.9)

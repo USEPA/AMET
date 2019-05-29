@@ -42,17 +42,22 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-      aqdat_query.df   <- (sitex_info$sitex_data)
-      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
-      units            <- as.character(sitex_info$units[[1]])
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") {
+         aqdat_query.df   <- (sitex_info$sitex_data)
+         aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+         units            <- as.character(sitex_info$units[[1]])
+      }
    }
    else {
 #      units          <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units           <- query_result[[3]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
    }
 }
+if (data_exists == "n") { stop("Stopping because data_exists flag is false. Likely no data found for query.") }
 
 aqdat.df 	<- aqdat_query.df 
 

@@ -96,7 +96,7 @@ for (k in 1:total_networks) {
             query_result   <- query_dbase(run_name1,network,species)
             aqdat_query.df <- query_result[[1]]
             data_exists	   <- query_result[[2]]
-            units          <- query_result[[3]]
+            if (data_exists == "y") { units <- query_result[[3]] }
             model_name     <- query_result[[4]]
          }
       }

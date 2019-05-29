@@ -97,14 +97,14 @@ for (j in 1:num_runs) {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
-         units            <- as.character(sitex_info$units[[1]])
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
          model_name	  <- "Model"
       }
       else {
          query_result   <- query_dbase(run_name,network,species)
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
-         units 	        <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
          model_name 	<- query_result[[4]]
       }
    }
@@ -114,6 +114,7 @@ for (j in 1:num_runs) {
       if (data_exists == "n") {
          num_runs <- (num_runs-1)
          aqdat_query.df <- "No Data"
+         if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
       }
       else {
          if (averaging != "n") {
@@ -169,7 +170,7 @@ for (j in 1:num_runs) {
    ##############################
    ### Write Data to CSV File ###
    ##############################
-   if (j == 1) {
+   if (!file.exists(filename_txt)) {
       write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
       write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")

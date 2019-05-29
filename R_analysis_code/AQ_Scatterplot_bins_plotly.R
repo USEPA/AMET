@@ -39,12 +39,10 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 sub.title       <- ""
 
 filename_html <- paste(run_name1,species,pid,"scatterplot_bins.html",sep="_")                          # Set PDF filename
-filename_png <- paste(run_name1,species,pid,"scatterplot_bins.png",sep="_")                          # Set PNG filenam
 filename_txt <- paste(run_name1,species,pid,"scatterplot_bins.csv",sep="_")     # Set output file name
 
 ## Create a full path to file
 filename_html <- paste(figdir,filename_html,sep="/")                          # Set PDF filename
-filename_png <- paste(figdir,filename_png,sep="/")                          # Set PNG filenam
 filename_txt <- paste(figdir,filename_txt,sep="/")     # Set output file name
 
 axis.max     <- NULL
@@ -92,13 +90,13 @@ for (j in 1:num_runs) {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_names[j],species)
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
-         units            <- as.character(sitex_info$units[[1]])
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
          query_result   <- query_dbase(run_names[j],network,species,criteria)
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
-         units 	        <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
    ob_col_name <- paste(species,"_ob",sep="")
@@ -106,8 +104,8 @@ for (j in 1:num_runs) {
    {
       if (data_exists == "n") {
          num_runs <- (num_runs-1)
-#            aqdat_out.df <- "No Data"
          sinfo[[j]] <- "No Data"
+         if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
       }
       else {
          if (averaging != "n") {
@@ -160,15 +158,15 @@ for (j in 1:num_runs) {
          for (n in 1:length(bin_range)) {            
             if (n != max(length(bin_range))) {
                if (j == 1) {
-                  bin_names <- c(bin_names,paste(sprintf("%02d",bin_range[n]),"to",sprintf("%02d",bin_range[n+1])))
+                  bin_names <- c(bin_names,paste(sprintf("%.02f",bin_range[n]),"to",sprintf("%.02f",bin_range[n+1])))
                }
-               aqdat.df$bin[aqdat.df$Bin_Value >= bin_range[n] & aqdat.df$Bin_Value < bin_range[n+1]] <- paste(sprintf("%02d",bin_range[n]),"to",sprintf("%02d",bin_range[n+1]))
+               aqdat.df$bin[aqdat.df$Bin_Value >= bin_range[n] & aqdat.df$Bin_Value < bin_range[n+1]] <- paste(sprintf("%.02f",bin_range[n]),"to",sprintf("%.02f",bin_range[n+1]))
             }
             if (n == max(length(bin_range))) {
                if (j == 1) {
-                  bin_names <- c(bin_names,paste(sprintf("%02d",bin_range[n]),"+",sep=""))
+                  bin_names <- c(bin_names,paste(sprintf("%.02f",bin_range[n]),"+",sep=""))
                }
-               aqdat.df$bin[aqdat.df$Bin_Value > bin_range[n]] <- paste(sprintf("%02d",bin_range[n]),"+",sep="")
+               aqdat.df$bin[aqdat.df$Bin_Value > bin_range[n]] <- paste(sprintf("%.02f",bin_range[n]),"+",sep="")
             }
          }
          data_count[[j]] <- table(factor(aqdat.df$bin, levels=bin_names))        

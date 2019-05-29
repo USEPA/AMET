@@ -96,12 +96,14 @@ for (j in 1:length(run_names)) {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
          aqdat_query.df   <- sitex_info$sitex_data
-         units            <- as.character(sitex_info$units[[1]])
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
          query_result    <- query_dbase(run_name,network,species)
          aqdat_query.df  <- query_result[[1]]
-         units           <- query_result[[3]]
+         data_exists	 <- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
          model_name      <- query_result[[4]]
       }
    }
@@ -282,7 +284,7 @@ p <- plot_ly(data=merged.df,x=ob_mod,y=~SO4,type="bar",height=img_height,width=i
   add_trace(y=~Cl, name="Cl", marker=list(color="lightseagreen"), text=paste("% of total:",Cl_perc)) %>%
   add_trace(y=~NCOM, name="NCOM", marker=list(color="pink"), text=paste("% of total:",NCOM_perc)) %>%
   add_trace(y=~OTHR, name="Other", marker=list(color="lightgray"), text=paste("% of total:",OTHR_perc)) %>%
-  layout(title=title,yaxis=list(title=paste("Species (",units,")")),barmode='stack', xaxis=xform)
+  layout(title=title,yaxis=list(title=paste("Mean Concentration (",units,")")),barmode='stack', xaxis=xform)
 
 saveWidget(p, file=filename_html,selfcontained=T)
 

@@ -52,6 +52,11 @@ setenv EMAIL_ADDR 	"someone@somewhere.org"
 setenv AMET_OBS 	$AMETBASE/obs/AQ
 setenv SITES_META_LIST	$AMETBASE/scripts_db/input_files/sites_meta.input
 setenv AQ_SPECIES_LIST 	$AMETBASE/scripts_db/input_files/AQ_species_list.input
+setenv RELOAD_METADATA  T 
+
+### Environment setting to use metadata csv files instead of tab delimited txt file for network site info
+#setenv SITE_FILE_FORMAT txt
+setenv SITE_FILE_FORMAT csv
 
 ### Output directory -- post-processed data will be written here ###
 setenv AMET_OUT 	$AMETBASE/output/$AMET_PROJECT/sitex_output

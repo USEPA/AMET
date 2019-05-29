@@ -105,13 +105,13 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
          sitex_info       <- read_sitex(Sys.getenv(outdir),network,run_name,species)
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
-         units            <- as.character(sitex_info$units[[1]])
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
          query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
          aqdat_query.df  <- query_result[[1]]
          data_exists     <- query_result[[2]]
-         units	         <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
          model_name      <- query_result[[4]]
       }
    }
