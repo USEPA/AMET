@@ -36,6 +36,7 @@ delete_table	<- Sys.getenv('DELETE_PROJECT')
 remake_table	<- Sys.getenv('REMAKE_PROJECT')
 update_table	<- Sys.getenv('UPDATE_PROJECT')
 
+log_id		<- project_id
 project_id 	<- gsub("[.]","_",project_id)
 project_id      <- gsub("[-]","_",project_id)
 
@@ -56,7 +57,7 @@ MYSQL_tables    <- dbListTables(con)
 ##################################################
 create_table<-function()
 {
-   aq_new_1 <- paste("create table ",project_id," (proj_code varchar(100), POCode integer, valid_code character(10), invalid_code character(10), network varchar(25), stat_id varchar(25), stat_id_POCode varchar(100), lat double, lon double, i integer(4), j integer(4), ob_dates date, ob_datee date, ob_hour integer(2), month integer(2), precip_ob double, precip_mod double)",sep="")
+   aq_new_1 <- paste("create table ",project_id," (proj_code varchar(100), POCode integer, valid_code character(10), invalid_code character(10), replicate varchar(10), network varchar(25), stat_id varchar(25), stat_id_POCode varchar(100), lat double, lon double, i integer(4), j integer(4), ob_dates date, ob_datee date, ob_hour integer(2), month integer(2), precip_ob double, precip_mod double)",sep="")
    aq_new_2 <- paste("alter table ",project_id," add UNIQUE(network, stat_id,POCode,ob_dates,ob_datee,ob_hour)",sep="")
    aq_new_3 <- paste("alter table ",project_id," add INDEX(month)",sep="")
    create_table_log1 <- dbSendQuery(con,aq_new_1)
@@ -78,7 +79,7 @@ if (length(MYSQL_tables) != 0) {
       if ((delete_table == 'y') || (delete_table == 'Y') || (delete_table == 't') || (delete_table == 'T')) {
          drop <- paste("drop table ",project_id,sep="")
          mysql_result <- dbSendQuery(con,drop)
-         drop2 <- paste("delete from aq_project_log where proj_code = '",project_id,"'",sep="")
+         drop2 <- paste("delete from aq_project_log where proj_code = '",log_id,"'",sep="")
          mysql_result <- dbSendQuery(con,drop2)
          cat("The following MySQL database tables have been successfully removed from the database. \n")
       }
@@ -99,7 +100,7 @@ if (length(MYSQL_tables) != 0) {
             proj_time <- current_time
             proj_date <- paste(year,mon,day,sep="")
             cat(paste("\nproj_date=",proj_date))
-            table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",project_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
+            table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",log_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
             mysql_result <- dbSendQuery(con,table_query)
             cat("\nThe following existing project description has been successfully updated.  Please review the following for accuracy, then use the link below to advance to the next step.")
          }
@@ -135,15 +136,15 @@ if (exists != "y") {
    day  <- substr(current_date,9,10)
    proj_date <- paste(year,mon,day,sep="")
    proj_time <- current_time
-   table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",project_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
+   table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",log_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
    mysql_result <- dbSendQuery(con,table_query)
    create_table()
    cat("\n### The following database tables have been successfully generated.  Please review the following for accuracy. ### \n")
 }
 
-query_min <- paste("SELECT * from aq_project_log where proj_code='",project_id,"' ",sep="")
+query_min <- paste("SELECT * from aq_project_log where proj_code='",log_id,"' ",sep="")
 query_results <- suppressWarnings(dbGetQuery(con,query_min))
-cat(paste("project_id  = ",project_id,"\n",sep=""))
+cat(paste("project_id  = ",log_id,"\n",sep=""))
 cat(paste("model       = ",query_results$model,"\n",sep=""))
 cat(paste("user        = ",query_results$user,"\n",sep=""))
 cat(paste("email       = ",query_results$email,"\n",sep=""))

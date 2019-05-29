@@ -1,6 +1,6 @@
 #!/bin/csh -f
 
-# ================== AMET1.3 Configuration Script =================== #
+# ================== AMET1.4 Configuration Script =================== #
 # Requirements: I/O API & netCDF libraries                            #
 #               PGI, Intel, or Gnu Fortran compiler                   #
 #                                                                     #

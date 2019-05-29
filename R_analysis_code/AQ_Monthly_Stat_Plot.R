@@ -96,8 +96,8 @@ network_name<-network_label[[1]]
 #end_month       <- month_end
 if(!exists("year_start")) { year_start <- substr(start_date,1,4) }
 if(!exists("year_end")) { year_end <- substr(end_date,1,4) }
-start_month     <- substr(start_date,5,6)
-end_month       <- substr(end_date,5,6)
+start_month     <- as.integer(substr(start_date,5,6))
+end_month       <- as.integer(substr(end_date,5,6))
 num_years       <- (year_end-year_start)+1
 years           <- seq(year_start,year_end,by=1)
 months          <- NULL
@@ -148,8 +148,10 @@ for (y in 1:num_years) {
       query	      <- paste(query_in," and month = ",m,sep="")
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units	      <- query_result[[3]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
       model_name      <- query_result[[4]]
+      if (data_exists == "n") { stop("Stopping because data_exists is false. Likely no data found for query.") }
       ###################################################################################################################
       ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
       ###################################################################################################################

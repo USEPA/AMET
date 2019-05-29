@@ -23,6 +23,9 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
+if(!exists("quantile_min")) { quantile_min <- 0.001 }
+if(!exists("quantile_max")) { quantile_max <- 0.950 }
+
 ### Retrieve units label from database table ###
 network		<- network_names[1] # When using mutiple networks, units from network 1 will be used
 #units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="") # Create MYSQL query from units table
@@ -104,7 +107,7 @@ for (j in 1:total_networks) {							# Loop through for each network
          query_result   <- query_dbase(run_name1,network,species)
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
-         units		<- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
    #######################
@@ -116,10 +119,9 @@ for (j in 1:total_networks) {							# Loop through for each network
 
    { 
       if (data_exists == "n") {
-#            stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
-#            sites_stats.df <- "No site stats available.  Perhaps you choose a species for a network that does not observe that species."
-            total_networks <- (total_networks-1)
-            sub_title<-paste(sub_title,network_label[j],"=No Data; ",sep="")      # Set subtitle based on network matched with the appropriate symbol
+         total_networks <- (total_networks-1)
+         sub_title<-paste(sub_title,network_label[j],"=No Data; ",sep="")      # Set subtitle based on network matched with the appropriate symbol
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
       }
       else {
          ####################################
@@ -177,12 +179,13 @@ if (length(unique(aqdat_in.df$Stat_ID)) > 10000) {
 ####################################################################
 levs <- NULL
 if (length(num_ints) == 0) {
-   num_ints <- 10
+   num_ints <- 20
 }
 intervals <- num_ints
 {
    if ((length(abs_range_min) == 0) || (length(abs_range_max) == 0)) {
-      levs <- pretty(c(0,all_obs,all_mod),intervals,min.n=5)
+      all_data <- c(all_obs,all_mod)
+      levs <- pretty(c(0,quantile(all_data,quantile_max)),intervals,min.n=5)
    }
    else {
       levs <- pretty(c(abs_range_min,abs_range_max),intervals,min.n=5)
@@ -209,7 +212,7 @@ leg_colors		<- colors
 levs_low <- seq(0,0.9,by=.1)	# Fix the scale from 0 to 1
 cols_low <- cool_colors(10)	# Fix the colors from 0 to 1
 if (length(perc_error_max) == 0) {	# Check to see if user defined max value
-   perc_error_max <- quantile(abs(aqdat.df$Mod_Obs_Rat),0.95,na.rm=T)
+   perc_error_max <- quantile(abs(aqdat.df$Mod_Obs_Rat),quantile_max,na.rm=T)
 }
 high_range <- c(1,all_rat)      # Set hot color range from 1 to whatever
 intervals <- num_ints
@@ -246,7 +249,7 @@ leg_labels_rat			  <- levs_legend_rat
 intervals <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      diff_max <- max(abs(all_diff))
+      diff_max <- max(quantile(abs(all_diff),quantile_max))
       levs_diff <- pretty(c(-diff_max,diff_max),intervals,min.n=5)
       diff_range <- range(levs_diff)
       power <- abs(levs_diff[1]) - abs(levs_diff[2])

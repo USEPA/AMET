@@ -62,13 +62,17 @@ for (j in 1:length(network_names)) {
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         aqdat_query.df   <- sitex_info$sitex_data
-         units            <- as.character(sitex_info$units[[1]])
+         data_exists         <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df   <- sitex_info$sitex_data
+            units            <- as.character(sitex_info$units[[1]])
+         }
       }
       else {
          query_result    <- query_dbase(run_name1,network,species)
          aqdat_query.df  <- query_result[[1]]
-         units		 <- query_result[[3]]
+         data_exists     <- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
    if (soccerplot_opt == 1) { 			# If using NMB/NME, set appropriate axis labels
@@ -78,6 +82,10 @@ for (j in 1:length(network_names)) {
    else { 					# If using FB/FE, set appropriate axis labels
       ylabel1 <- "Fractional Bias (%)"
       ylabel2 <- "Fractional Error (%)"
+   }
+   if (data_exists == "n") {
+      total_networks <- (total_networks-1)
+      if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
    }
 
    ### Create properly formatted dataframe and then call DomainStats and SitesStats to create statistics ###

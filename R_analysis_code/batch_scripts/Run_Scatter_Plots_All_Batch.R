@@ -65,6 +65,9 @@ run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_percenti
 run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_skill.R",sep="")
 run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_mtom.R",sep="")
 run_script_command8 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_soil.R",sep="")
+run_script_command9 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_Multisim_plotly.R",sep="")
+run_script_command10 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_bins_plotly.R",sep="")
+run_script_command11 <- paste(amet_base,"/R_analysis_code/AQ_Scatterplot_density_ggplot.R",sep="")
 
 #######################################################################################
 ### This portion of the code will create monthly stat plots for the various species ###
@@ -92,13 +95,22 @@ if (hourly_ozone_analysis == 'y') {
          pid                 <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot		== 'y') { try(source(run_script_command1)) }
+         if (scatter_plot		== 'y') { 
+            try(source(run_script_command1))
+            try(source(run_script_command9)) 
+         }
          if (scatter_single_plot	== 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot	== 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot		== 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot	== 'y') { 
+            try(source(run_script_command3)) 
+            try(source(run_script_command11))
+         }
+         if (scatter_bins_plot		== 'y') { 
+            try(source(run_script_command4)) 
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot	== 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot		== 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot		== 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot		== 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }
@@ -120,13 +132,22 @@ if (daily_ozone_analysis == 'y') {
          pid		<- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+	 if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+         if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }
@@ -149,13 +170,22 @@ if (aerosol_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -173,13 +203,22 @@ if (aerosol_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+	 if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+         if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
-         if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) } 
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -197,13 +236,22 @@ if (aerosol_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -222,13 +270,22 @@ if (aerosol_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
    for (m in 1:length(batch_query)) {
@@ -246,13 +303,22 @@ if (aerosol_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }
@@ -274,13 +340,22 @@ if (dep_analysis == 'y') {
          pid            <- network_label
          query		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }
@@ -302,13 +377,22 @@ if (gas_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
    species_list <- c("SO2","NO2","NOX","NOY","CO")
@@ -326,13 +410,22 @@ if (gas_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }
@@ -356,13 +449,22 @@ if (AE6_analysis == 'y') {
          if ((scatter_plot == 'y') || (scatter_single_plot == 'y') || (scatter_density_plot == 'y') || (scatter_bins_plot == 'y') || (scatter_percentiles_plot == 'y') || (scatter_skill_plot == 'y') || (scatter_mtom_plot == 'y')) {
             system(mkdir_command)
          }
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
          if (species == 'soil') { 
             if (scatter_soil_plot          == 'y') { 
                system(mkdir_command)
@@ -388,13 +490,22 @@ if (AE6_analysis == 'y') {
          if ((scatter_plot == 'y') || (scatter_single_plot == 'y') || (scatter_density_plot == 'y') || (scatter_bins_plot == 'y') || (scatter_percentiles_plot == 'y') || (scatter_skill_plot == 'y') || (scatter_mtom_plot == 'y')) {
             system(mkdir_command)
          }
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
          if (species == 'soil') { 
             if (scatter_soil_plot          == 'y') { 
                system(mkdir_command)
@@ -423,13 +534,22 @@ if (AOD_analysis == 'y') {
          pid            <- network_label
          query <- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+	 if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+         if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }
@@ -450,13 +570,22 @@ if (PAMS_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+	 if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
    species_list <- c("Isoprene","Ethane","Ethylene","Toluene","Acetaldehyde","Formaldehyde")
@@ -474,13 +603,22 @@ if (PAMS_analysis == 'y') {
          pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
-         if (scatter_plot               == 'y') { try(source(run_script_command1)) }
+         if (scatter_plot               == 'y') {
+            try(source(run_script_command1))
+            try(source(run_script_command9))
+         }
          if (scatter_single_plot        == 'y') { try(source(run_script_command2)) }
-         if (scatter_density_plot       == 'y') { try(source(run_script_command3)) }
-         if (scatter_bins_plot          == 'y') { try(source(run_script_command4)) }
+         if (scatter_density_plot       == 'y') {
+            try(source(run_script_command3))
+            try(source(run_script_command11))
+         }
+         if (scatter_bins_plot          == 'y') {
+            try(source(run_script_command4))
+            try(source(run_script_command10))
+         }
          if (scatter_percentiles_plot   == 'y') { try(source(run_script_command5)) }
          if (scatter_skill_plot         == 'y') { try(source(run_script_command6)) }
-         if (scatter_mtom_plot          == 'y') { try(source(run_script_command7)) }
+         if ((scatter_mtom_plot         == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) { try(source(run_script_command7)) }
       }
    }
 }

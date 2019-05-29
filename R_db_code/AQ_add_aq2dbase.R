@@ -31,10 +31,11 @@ project_id        <- args[3]
 dtype             <- args[4]
 sitex_file        <- args[5]
 
+log_id		  <- project_id
 project_id        <- gsub("[.]","_",project_id)
 project_id        <- gsub("[-]","_",project_id)
 
-cat(paste("\nProject_ID: ",project_id,"\n",sep=""))
+cat(paste("\nProject_ID: ",log_id,"\n",sep=""))
 cat(paste("Network: ",dtype,"\n",sep=""))
 cat(paste("Sitex File: ",sitex_file,"\n",sep=""))
 cat(paste("MySQL Server: ",mysql_server,"\n",sep=""))
@@ -211,27 +212,35 @@ cat("Checking for missing sites in the site_metadata table...")
 existing_sites_query    <- paste("select stat_id,num_stat_id from ",dbase,".site_metadata;",sep="")
 query_table_info.df     <- db_Query(existing_sites_query,mysql)
 existing_sites		<- query_table_info.df[,1]
-missing_sites           <- sitex_in$SiteId[!(sitex_in$SiteId %in% existing_sites)]
-max_num_stat_id		<- max(query_table_info.df[,2])
-#cat(missing_sites)
-#query_table_info.df     <- suppressMessages(db_Query(check_unit_names,mysql))
-#units_to_add            <- unit_query_names[!toupper(unit_query_names)%in%toupper(query_table_info.df$COLUMN_NAME)]
-cat("done. \n")
+missing_sites           <- unique(sitex_in$SiteId[!(sitex_in$SiteId %in% existing_sites)])
+
 {
-   if (length(missing_sites) > 0) {
-      cat("the following sites will be added to the site_metadata table: \n")
-      for (i in 1:length(missing_sites)) {
-         num_stat_id <- max_num_stat_id+i
-         cat(paste(missing_sites[i],"\n"))
-         latitude       <- sitex_in$Latitude[sitex_in$SiteId==missing_sites[i]]
-         longitude      <- sitex_in$Longitude[sitex_in$SiteId==missing_sites[i]]
-         add_site_query <- paste("REPLACE INTO ",dbase,".site_metadata (stat_id, num_stat_id, network, lat, lon) values ('",missing_sites[i],"','",num_stat_id,"','",sitex_in$dtype[i],"',",latitude,",",longitude,");",sep="")
-         mysql_result   <- dbSendQuery(con,add_site_query)
-      }
-      cat("Done adding missing sites. Consider updating the network site list to include these missing sites with additional metadata.\n\n")
+   if (length(query_table_info.df[,2]) == 0) {
+      cat("***No sites found in site metadata table. Check your database setup log file for errors loading site metadata. Skipping the check for missing sites.***\n\n") 
    }
    else {
-         cat("No missing sites found in the site_metadata table. \n")
+      max_num_stat_id		<- max(query_table_info.df[,2])
+      #cat(missing_sites)
+      #query_table_info.df     <- suppressMessages(db_Query(check_unit_names,mysql))
+      #units_to_add            <- unit_query_names[!toupper(unit_query_names)%in%toupper(query_table_info.df$COLUMN_NAME)]
+      cat("done. \n")
+      {
+         if (length(missing_sites) > 0) {
+            cat("The following sites will be added to the site_metadata table: \n")
+            for (i in 1:length(missing_sites)) {
+               num_stat_id <- max_num_stat_id+i
+               cat(paste(missing_sites[i],"\n"))
+               latitude       <- sitex_in$Latitude[sitex_in$SiteId==missing_sites[i]]
+               longitude      <- sitex_in$Longitude[sitex_in$SiteId==missing_sites[i]]
+               add_site_query <- paste("REPLACE INTO ",dbase,".site_metadata (stat_id, num_stat_id, network, lat, lon) values ('",missing_sites[i],"','",num_stat_id,"','",sitex_in$dtype[i],"',",latitude,",",longitude,");",sep="")
+               mysql_result   <- dbSendQuery(con,add_site_query)
+            }
+            cat("Done adding missing sites. Consider updating the network site list to include these missing sites with additional metadata.\n\n")
+         }
+         else {
+               cat("No missing sites found in the site_metadata table. \n")
+         }
+      }
    }
 }
 
@@ -272,7 +281,7 @@ if (dtype == 'NADP') {
    q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, j, ob_dates, ob_datee, ob_hour, month, valid_code, invalid_code"
 }
 if (dtype == 'AMON') {
-   q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, j, ob_dates, ob_datee, ob_hour, month, valid_code"
+   q2_main <- " (proj_code, network, stat_id, POCode, stat_id_POCode, lat, lon, i, j, ob_dates, ob_datee, ob_hour, month, valid_code, replicate"
 }
 for (i in 1:length(database_species_names)) {
    q2_main <- paste(q2_main,database_species_names[i],sep=", ")
@@ -283,7 +292,7 @@ if (dtype == 'NADP') {
    q3_main <- data.frame(project_id=paste("'",sitex_in$project_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,valid_code=paste("'",sitex_in$Valcode,"'",sep=""),invalid_code=paste("'",sitex_in$Invalcode,"'",sep=""),sitex_in[(col_offset+1):num_cols])
 }
 if (dtype == 'AMON') {
-   q3_main <- data.frame(project_id=paste("'",sitex_in$project_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,valid_code=paste("'",sitex_in$QR,"'",sep=""),sitex_in[(col_offset+1):num_cols])
+   q3_main <- data.frame(project_id=paste("'",sitex_in$project_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,valid_code=paste("'",sitex_in$QR,"'",sep=""),replicate=paste("'",sitex_in$REPLICATE,"'",sep=""),sitex_in[(col_offset+1):num_cols])
 }
 q3_main2 <- apply(q3_main,1,reformat)
 query <- paste("REPLACE INTO ",project_id,q2_main,") VALUES (",q3_main2,"); ",sep="")
