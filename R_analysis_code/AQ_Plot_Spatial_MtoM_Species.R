@@ -113,7 +113,7 @@ for (j in 1:total_networks) {                                            # Loop 
          query_result2    <- query_dbase(run_name1,network,species[2])
          aqdat_query2.df  <- query_result2[[1]]
          data_exists2     <- query_result2[[2]]
-         units     	  <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
    aqdat1.df        <- aqdat_query.df
@@ -123,6 +123,7 @@ for (j in 1:total_networks) {                                            # Loop 
          All_Data       <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
          total_networks <- (total_networks-1)
          sub_title      <- paste(sub_title,network,"=No Data; ",sep="")
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
       }
       else {
          ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
@@ -196,7 +197,7 @@ if (length(sites) > 10000) {
 ####################################################################
 levs <- NULL
 if (length(num_ints) == 0) {
-   num_ints <- 10
+   num_ints <- 20
 }
 intervals <- num_ints
 ####################################################################
@@ -207,7 +208,7 @@ intervals <- num_ints
 intervals <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      diff_max <- max(abs(all_diff))
+      diff_max <- max(quantile(abs(all_diff)),quantile_max)
       levs_diff <- pretty(c(-diff_max,diff_max),intervals,min.n=5)
       diff_range <- range(levs_diff)
       power <- abs(levs_diff[1]) - abs(levs_diff[2])
@@ -249,7 +250,7 @@ leg_colors_diff                         <- c(low_range,"grey50","grey50",high_ra
 ### Create NMB Scales ###
 #########################
 if ((length(perc_range_min) == 0) || (length(perc_range_max) == 0)) {
-   perc_range_max <- quantile(abs(perc_diff),.95,na.rm=T)
+   perc_range_max <- quantile(abs(perc_diff),quantile_max,na.rm=T)
    perc_range_min <- -perc_range_max
 }
 bias_range <- c(perc_range_min,perc_range_max)
@@ -288,7 +289,7 @@ leg_colors_nmb                  <- c(low_range,"grey50","grey50",high_range)
 intervals <- num_ints
 {
    if ((length(abs_range_min) == 0) || (length(abs_range_max) == 0)) {
-      max_max <- max(c(abs(all_max),abs(all_min)))
+      max_max <- max(c(quantile(abs(all_max),quantile_max),quantile(abs(all_min),quantile_max)))
       levs_max <- pretty(c(-max_max,max_max),intervals,min.n=5)
       max_range <- range(levs_max)
       power <- abs(levs_max[1]) - abs(levs_max[2])

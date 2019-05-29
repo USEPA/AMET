@@ -124,7 +124,7 @@
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R/AQ_Boxplot_Hourly.R $AMET_LOG
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Boxplot_Hourly.R $AMET_LOG
   setenv AMET_R_STATUS $status
   
   if($AMET_R_STATUS == 0) then

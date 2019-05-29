@@ -135,6 +135,8 @@
 #> Set the location of the observation data (probably do not have to change this).
 # setenv OBS_DATA_DIR  /work/MOD3EVAL/aq_obs/routine	
  setenv OBS_DATA_DIR /work/MOD3EVAL/wtt/obs_data/Release_Obs_Dev
+ setenv RELOAD_METADATA  T
+
 #> Set the format of the site files needed for sitecmp and sitecmp_dailyo3.  
 #> Options: txt or csv   The .csv files include metadata about the monitoring site (e.g. county, elevation).
  setenv SITE_FILE_FORMAT csv

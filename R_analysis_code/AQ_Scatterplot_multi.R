@@ -82,109 +82,123 @@ for (j in 1:length(run_names)) {
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info      <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
-         aqdat_query.df  <- sitex_info$sitex_data
-         units           <- as.character(sitex_info$units[[1]])
-         model_name	 <- "Model"
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df  <- sitex_info$sitex_data
+            units           <- as.character(sitex_info$units[[1]])
+            model_name	 <- "Model"
+         }
       }
       else {
          query_result    <- query_dbase(run_name,network,species)
          aqdat_query.df  <- query_result[[1]]
-         units 		 <- query_result[[3]]
+         data_exists     <- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
          model_name 	 <- query_result[[4]]         
       }
    }
-   ob_col_name <- paste(species,"_ob",sep="")
-   mod_col_name <- paste(species,"_mod",sep="")
-   if (averaging != "n") {
-      aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
-      {
-         if (use_avg_stats == "y") {
-            aqdat.df <- Average(aqdat.df)
-            aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+   { # Check to see if there is any data from the database query
+      if (data_exists == "n") {
+         num_runs <- (num_runs-1)
+         if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
+      }
+      ##################################################################
+
+      ### If there are data, continue ###
+      else {
+         ob_col_name <- paste(species,"_ob",sep="")
+         mod_col_name <- paste(species,"_mod",sep="")
+         if (averaging != "n") {
+            aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+            {
+               if (use_avg_stats == "y") {
+                  aqdat.df <- Average(aqdat.df)
+                  aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+               }
+               else {
+                  aqdat_stats.df <- aqdat.df
+                  aqdat.df <- Average(aqdat.df)
+               }
+            }
+         }
+         else { 
+            aqdat.df <- aqdat_query.df
+            aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[[ob_col_name]],5),Mod_Value=round(aqdat.df[[mod_col_name]],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
+            aqdat_stats.df <- aqdat.df
+         }
+         axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value),na.rm=T) 
+         #########################################################
+         #### Calculate statistics for each requested network ####
+         #########################################################
+         ## Calculate stats using all pairs, regardless of averaging
+         data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
+         stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
+         num_pairs   <- NULL
+         mean_mod    <- NULL
+         mean_obs    <- NULL
+         corr        <- NULL
+         r_sqrd	     <- NULL
+         rmse        <- NULL
+         nmb         <- NULL
+         nme         <- NULL
+         mb          <- NULL
+         me          <- NULL
+         med_bias    <- NULL
+         med_error   <- NULL
+         fb          <- NULL
+         fe          <- NULL
+         stats_array <- NULL
+         stats_array_include <- NULL
+         stats_names_include <- NULL
+         num_pairs   <- stats.df$NUM_OBS
+         mean_obs    <- round(stats.df$MEAN_OBS,1)
+         mean_mod    <- round(stats.df$MEAN_MODEL,1)
+         nmb         <- round(stats.df$Percent_Norm_Mean_Bias,1)
+         nme         <- round(stats.df$Percent_Norm_Mean_Err,1)
+         nmdnb       <- round(stats.df$Norm_Median_Bias,1)
+         nmdne       <- round(stats.df$Norm_Median_Error,1)
+         mb          <- round(stats.df$Mean_Bias,2)
+         me          <- round(stats.df$Mean_Err,2)
+         med_bias    <- round(stats.df$Median_Bias,2)
+         med_error   <- round(stats.df$Median_Error,2)
+         fb          <- round(stats.df$Frac_Bias,2)
+         fe          <- round(stats.df$Frac_Err,2)
+         corr        <- round(stats.df$Correlation,2)
+         r_sqrd      <- round(stats.df$R_Squared,2)
+         rmse        <- round(stats.df$RMSE,2)
+         rmse_sys    <- round(stats.df$RMSE_systematic,2)
+         rmse_unsys  <- round(stats.df$RMSE_unsystematic,2)
+         index_agr   <- round(stats.df$Index_of_Agree,2)
+         stats_array <- c(num_pairs,mean_obs,mean_mod,index_agr,corr,r_sqrd,rmse,rmse_sys,rmse_unsys,nmb,nme,nmdnb,nmdne,mb,me,med_bias,med_error,fb,fe)		# Order must be matched to AMET query page order
+         stats_names <- c("n","Mn_O","Mn_M","IofA","r",expression(paste(R^2)),"RMSE",expression(paste(RMSE[s])),expression(paste(RMSE[u])),"NMB","NME","NMdnB","NMdnE","MB","ME","MdnB","MdnE","FB","FE")	# Order must be matched to order above
+         for (i in 1:19) {
+            if (stats_flags[i] == "y") {
+               stats_array_include <- c(stats_array_include,stats_array[i])
+               stats_names_include <- c(stats_names_include,stats_names[i])
+            }
+         }
+         #########################################################
+
+         sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,stat1=stats_array_include[1],stat2=stats_array_include[2],stat3=stats_array_include[3],stat4=stats_array_include[4],stat5=stats_array_include[5])        # create of list of plot values and corresponding statistics
+         ##############################
+         ### Write Data to CSV File ###
+         ##############################
+         if (!file.exists(filename_txt)) {
+            write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
+            write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+            write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+            write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+            write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
          }
          else {
-            aqdat_stats.df <- aqdat.df
-            aqdat.df <- Average(aqdat.df)
+            write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+            write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+            write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
          }
-      }
+         ###############################
+      }			
    }
-   else { 
-      aqdat.df <- aqdat_query.df
-      aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[[ob_col_name]],5),Mod_Value=round(aqdat.df[[mod_col_name]],5),Month=aqdat.df$month)      # Create dataframe of network values to be used to create a list
-      aqdat_stats.df <- aqdat.df
-   }
-   axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value),na.rm=T) 
-   #########################################################
-   #### Calculate statistics for each requested network ####
-   #########################################################
-   ## Calculate stats using all pairs, regardless of averaging
-   data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
-   stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
-   num_pairs   <- NULL
-   mean_mod    <- NULL
-   mean_obs	  <- NULL
-   corr        <- NULL
-   r_sqrd	  <- NULL
-   rmse        <- NULL
-   nmb         <- NULL
-   nme         <- NULL
-   mb          <- NULL
-   me          <- NULL
-   med_bias    <- NULL
-   med_error   <- NULL
-   fb          <- NULL
-   fe          <- NULL
-   stats_array <- NULL
-   stats_array_include <- NULL
-   stats_names_include <- NULL
-   num_pairs   <- stats.df$NUM_OBS
-   mean_obs    <- round(stats.df$MEAN_OBS,1)
-   mean_mod    <- round(stats.df$MEAN_MODEL,1)
-   nmb         <- round(stats.df$Percent_Norm_Mean_Bias,1)
-   nme         <- round(stats.df$Percent_Norm_Mean_Err,1)
-   nmdnb       <- round(stats.df$Norm_Median_Bias,1)
-   nmdne       <- round(stats.df$Norm_Median_Error,1)
-   mb          <- round(stats.df$Mean_Bias,2)
-   me          <- round(stats.df$Mean_Err,2)
-   med_bias    <- round(stats.df$Median_Bias,2)
-   med_error   <- round(stats.df$Median_Error,2)
-   fb          <- round(stats.df$Frac_Bias,2)
-   fe          <- round(stats.df$Frac_Err,2)
-   corr        <- round(stats.df$Correlation,2)
-   r_sqrd	  <- round(stats.df$R_Squared,2)
-   rmse        <- round(stats.df$RMSE,2)
-   rmse_sys    <- round(stats.df$RMSE_systematic,2)
-   rmse_unsys  <- round(stats.df$RMSE_unsystematic,2)
-   index_agr   <- round(stats.df$Index_of_Agree,2)
-   stats_array <- c(num_pairs,mean_obs,mean_mod,index_agr,corr,r_sqrd,rmse,rmse_sys,rmse_unsys,nmb,nme,nmdnb,nmdne,mb,me,med_bias,med_error,fb,fe)		# Order must be matched to AMET query page order
-   stats_names <- c("n","Mn_O","Mn_M","IofA","r",expression(paste(R^2)),"RMSE",expression(paste(RMSE[s])),expression(paste(RMSE[u])),"NMB","NME","NMdnB","NMdnE","MB","ME","MdnB","MdnE","FB","FE")	# Order must be matched to order above
-   for (i in 1:19) {
-      if (stats_flags[i] == "y") {
-          stats_array_include <- c(stats_array_include,stats_array[i])
-          stats_names_include <- c(stats_names_include,stats_names[i])
-      }
-   }
-   #########################################################
-
-   sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,stat1=stats_array_include[1],stat2=stats_array_include[2],stat3=stats_array_include[3],stat4=stats_array_include[4],stat5=stats_array_include[5])        # create of list of plot values and corresponding statistics
-   ##############################
-   ### Write Data to CSV File ###
-   ##############################
-   if (j == 1) {
-      write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
-      write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
-   }
-   else {
-      write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
-   }
- 
-   ###############################
-}				# End for loop for networks
+} # End for loop for networks
 
 axis.min <- axis.max * .033
 

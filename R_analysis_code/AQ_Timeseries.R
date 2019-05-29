@@ -105,16 +105,13 @@ for (j in 1:num_runs) {	# For each simulation being plotted
          sitex_info       <- read_sitex(Sys.getenv(outdir),network,run_name,species) 
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
-         units            <- as.character(sitex_info$units[[1]])
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
          query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
          aqdat_query.df  <- query_result[[1]]
          data_exists     <- query_result[[2]]
-#         units           <- db_Query(units_qs,mysql)
-#         model_name      <- db_Query(model_name_qs,mysql)
-#         model_name      <- model_name[[1]]
-         units		 <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
          model_name	 <- query_result[[4]]
       }
    }
@@ -123,6 +120,7 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    if (data_exists == "n") {
       All_Data.df <- merge(All_Data.df,paste("No Data for ",run_name,sep=""))
       num_runs <- (num_runs-1)
+      if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
    }
    else {
    ob_col_name <- paste(species,"_ob",sep="")
@@ -486,16 +484,16 @@ for (f in 1:3) {        # Loop for plotting Bias, RMSE and Correlation
 
    if (run_info_text == "y") {
       if (rpo != "None") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=.8)
       }
       if (pca != "None") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=.8)
       }
       if (state != "All") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.15),paste("State: ",state,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.15),paste("State: ",state,sep=""),pos=2,cex=.8)
       }
       if (site != "All") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,sep=""),pos=2,cex=.8)
       } 
    }
 }	# End loop for plotting Bias, RMSE and Correlation

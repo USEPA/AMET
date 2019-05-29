@@ -107,6 +107,7 @@ for (n in 1:4) {
       species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","ncom","NaCl","other","other_rem")
       query_result      <- query_dbase(run_name1,network,species,criteria)
       aqdat_query.df    <- query_result[[1]]
+      data_exists       <- query_result[[2]]
       model_name	<- query_result[[4]]
       aqdat_all.df      <- aggregate_query(aqdat_query.df)
 

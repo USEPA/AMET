@@ -51,90 +51,108 @@ for (j in 1:length(network_names)) {						# Loop through for each network
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info      <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         aqdat_query.df  <- sitex_info$sitex_data
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df  <- sitex_info$sitex_data
+            aqdat_query.df  <- aqdat_query.df[,-ob_col_name]
+         }
          sitex_info      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
-         aqdat_query2.df <- sitex_info$sitex_data
-         units           <- as.character(sitex_info$units[[1]])
+         data_exists2    <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query2.df <- sitex_info$sitex_data
+            aqdat_query2.df <- aqdat_query2.df[,-ob_col_name]
+            units           <- as.character(sitex_info$units[[1]])
+         }
       }
       else {
          query_result    <- query_dbase(run_name1,network,species)
          aqdat_query.df  <- query_result[[1]]
+         data_exists     <- query_result[[2]]
          query_result2   <- query_dbase(run_name2,network,species)
          aqdat_query2.df <- query_result2[[1]]
-         units 		 <- query_result[[3]]
+         data_exists2    <- query_result2[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
-   aqdat1.df <- aqdat_query.df
-   aqdat2.df <- aqdat_query2.df
-   aqdat1.df$ob_dates	<- aqdat1.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-   aqdat2.df$ob_dates	<- aqdat2.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-
-   ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
-   aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_hour,sep="")	# Create unique column that combines the site name with the ob start date for run 1
-   aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour,sep="")	# Create unique column that combines the site name with the ob start date for run 2
    {
-      if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {				# If more obs in run 1 than run 2
-         match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)					# Match the unique column (statdate) between the two runs
-         aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, aqdat1.df[[mod_col_name]], aqdat2.df[match.ind,mod_col_name], month=aqdat1.df$month)	# eliminate points that are not common between the two runs
-      }
-      else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate) 				# If more obs in run 2 than run 1
-         aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,mod_col_name], aqdat2.df[[mod_col_name]], month=aqdat2.df$month)	# eliminate points that are not common between the two runs
-      }
-   }
-   #######################################################################################################################
-
-   aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=aqdat.df[,7],Mod_Value=aqdat.df[,6],Start_Date=aqdat.df$ob_dates,Month=aqdat.df$month)
-
-   ### Remove missing model values ###
-   indic.na <- is.na(aqdat.df$Mod_Value)        # Indentify NA records
-   aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
-   ###################################
-
-   {
-      if (averaging != "n") {                                               # Average observations to a monthly average if requested
-         if (use_avg_stats == "y") {
-            aqdat.df <- Average(aqdat.df)
-            aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
-         }
-         else {
-            aqdat_stats.df <- aqdat.df
-            aqdat.df <- Average(aqdat.df)
-         }
+      if ((data_exists == "n") || (data_exists2 == "n")) {
+         total_networks <- (total_networks-1)
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
       }
       else {
-         aqdat_stats.df <- aqdat.df
-      }
-      indic.na <- is.na(aqdat.df$Obs_Value)        # Indentify NA records
-      aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
-      indic.na <- is.na(aqdat.df$Mod_Value)        # Indentify NA records
-      aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
-   }
+         aqdat1.df <- aqdat_query.df
+         aqdat2.df <- aqdat_query2.df
+         aqdat1.df$ob_dates	<- aqdat1.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+         aqdat2.df$ob_dates	<- aqdat2.df[,5]		# remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
 
-   #### Calculate statistics for each requested network ####
-   bias <- NULL
-   rmse <- NULL
-   nmb <- NULL
+         ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
+         aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_hour,sep="")	# Create unique column that combines the site name with the ob start date for run 1
+         aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour,sep="")	# Create unique column that combines the site name with the ob start date for run 2
+         {
+            if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {				# If more obs in run 1 than run 2
+               match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)					# Match the unique column (statdate) between the two runs
+               aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=aqdat1.df$stat_id, lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, aqdat1.df[[mod_col_name]], aqdat2.df[match.ind,mod_col_name], month=aqdat1.df$month)	# eliminate points that are not common between the two runs
+            }
+            else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate) 				# If more obs in run 2 than run 1
+               aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=aqdat2.df$stat_id, lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, aqdat1.df[match.ind,mod_col_name], aqdat2.df[[mod_col_name]], month=aqdat2.df$month)	# eliminate points that are not common between the two runs
+            }
+         }
+         #######################################################################################################################
 
-   indic.nonzero <- aqdat_stats.df$Obs_Value >= 0	# Identify missing values (there should be none sinces it is modeled data)
-   aqdat_stats.df <- aqdat_stats.df[indic.nonzero,]	# Remove missing values (again, there should be none)
-   indic.nonzero <- aqdat_stats.df$Mod_Value >= 0       # Identify missing values (there should be none sinces it is modeled data)
-   aqdat_stats.df <- aqdat_stats.df[indic.nonzero,]     # Remove missing values (again, there should be none)
+         aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=aqdat.df[,7],Mod_Value=aqdat.df[,6],Start_Date=aqdat.df$ob_dates,Month=aqdat.df$month)
+
+         ### Remove missing model values ###
+         indic.na <- is.na(aqdat.df$Mod_Value)        # Indentify NA records
+         aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
+         ###################################
+
+         {
+            if (averaging != "n") {                                               # Average observations to a monthly average if requested
+               if (use_avg_stats == "y") {
+                  aqdat.df <- Average(aqdat.df)
+                  aqdat_stats.df <- aqdat.df                               # Call Monthly_Average function in Misc_Functions.R
+               }
+               else {
+                  aqdat_stats.df <- aqdat.df
+                  aqdat.df <- Average(aqdat.df)
+               }
+            }
+            else {
+               aqdat_stats.df <- aqdat.df
+            }
+            indic.na <- is.na(aqdat.df$Obs_Value)        # Indentify NA records
+            aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
+            indic.na <- is.na(aqdat.df$Mod_Value)        # Indentify NA records
+            aqdat.df <- aqdat.df[!indic.na,]             # Remove NA records
+         }
+
+         #### Calculate statistics for each requested network ####
+         bias <- NULL
+         rmse <- NULL
+         nmb <- NULL
+
+         indic.nonzero <- aqdat_stats.df$Obs_Value >= 0	# Identify missing values (there should be none sinces it is modeled data)
+         aqdat_stats.df <- aqdat_stats.df[indic.nonzero,]	# Remove missing values (again, there should be none)
+         indic.nonzero <- aqdat_stats.df$Mod_Value >= 0       # Identify missing values (there should be none sinces it is modeled data)
+         aqdat_stats.df <- aqdat_stats.df[indic.nonzero,]     # Remove missing values (again, there should be none)
    
-   num_obs <- length(aqdat_stats.df$Obs_Value)									# Count number of obs
-   bias <- round(c(bias,sum(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value)/num_obs),2)				# Compute the bias
-   rmse <- round(sqrt(c(rmse, sum((aqdat_stats.df$Mod_Value - aqdat_stats.df$Obs_Value)^2)/num_obs)),2)			# Compute the RMSE
-   nmb <- round(c(nmb, (sum(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value)/(sum(aqdat_stats.df$Obs_Value)))*100),2)		# Compute the NMB
-   max_diff <- round(max(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value),2)
-   min_diff <- round(min(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value),2)
-   sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,BIAS=bias,NMB=nmb,RMSE=rmse,MaxDiff=max_diff,MinDiff=min_diff)	# Store plot values in a list
-
-   count <- sum(is.na(aqdat.df$Obs_Value))    								# Count number of NAs in column
-   len   <- length(aqdat.df$Obs_Value)									# Determine the total length of the column
-   if (count != len) {  										# test to see if data is available, if so, compute axis.max		
-      axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value))
-      axis.min <- axis.max * .033
+         num_obs <- length(aqdat_stats.df$Obs_Value)									# Count number of obs
+         bias <- round(c(bias,sum(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value)/num_obs),2)				# Compute the bias
+         rmse <- round(sqrt(c(rmse, sum((aqdat_stats.df$Mod_Value - aqdat_stats.df$Obs_Value)^2)/num_obs)),2)			# Compute the RMSE
+         nmb <- round(c(nmb, (sum(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value)/(sum(aqdat_stats.df$Obs_Value)))*100),2)		# Compute the NMB
+         max_diff <- round(max(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value),2)
+         min_diff <- round(min(aqdat_stats.df$Mod_Value-aqdat_stats.df$Obs_Value),2)
+         sinfo[[j]]<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value,BIAS=bias,NMB=nmb,RMSE=rmse,MaxDiff=max_diff,MinDiff=min_diff)	# Store plot values in a list
+         count <- sum(is.na(aqdat.df$Obs_Value))# Count number of NAs in column
+         len   <- length(aqdat.df$Obs_Value)	# Determine the total length of the column
+         if (count != len) {	# test to see if data is available, if so, compute axis.max
+            axis.max <- max(c(axis.max,aqdat.df$Obs_Value,aqdat.df$Mod_Value))
+            axis.min <- axis.max * .033
+         }
+      }
    }
 }
+
 ### If user sets axis maximum, compute axis minimum ###
 if ((length(y_axis_max) > 0) || (length(x_axis_max) > 0)) {
    axis.max <- max(y_axis_max,x_axis_max)

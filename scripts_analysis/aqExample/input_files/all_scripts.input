@@ -86,12 +86,12 @@ pca	<- 'None'
 ### Various Option Flags ###
 ############################
 
-### Time average flag (n=none; hour=h; day=d; month=m; season=s; all=a; year/month=ym)
+### Time average flag (n=none; hour=h; day=d; month=m; season=s; annual=a; entire period=e; year/month=ym)
 averaging<-"n"
 ### Flag to Include or Remove Zero Precipitation Observations ###
 zeroprecip	<- 'n'
 ### Data Completeness ###
-coverage_limit<-50
+coverage_limit<-25
 all_valid<-"y"
 all_valid_amon<-"y"
 ### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
@@ -109,9 +109,14 @@ num_obs_limit	<- 1
 ### Flag to use average values for computing statistics; default is no (""); set to "y" to use average stats ###
 use_avg_stats	<- 'n'
 ### Default resolution of the png files in dpi. 300 is considered medium quality
-png_res<-300
+png_res		<- 300 
+
+### Plotly Image File Dimentions ###
+img_height<-NULL
+img_width<-NULL
+
 ### Aggregate data from multiple POCs
-aggregate_data<-"y"
+aggregate_data<-"n"
 
 
 #########################
@@ -138,24 +143,22 @@ plot_symbols    <- c(16,17,15,18,11,8,4)
 ################################
 ### Time Series Plot Options ###
 ################################
-
-use_var_mean 	<- 'n'
-
-### Include points ###
-inc_points 	<- 'y'
-### Includ a legend ###
-inc_legend	<- 'y' 
-### Specify a minimum number of obs required per day ###
+use_var_mean 		<- 'n'
+inc_points 		<- 'y'
+line_width		<- 1
+inc_legend		<- 'y' 
 obs_per_day_limit	<- 0
+
 ### Specify which type of value to plot (mean, median or sum) ###
 avg_func	<- 'mean'
 #avg_func	<- 'median'
 #avg_func	<- 'sum'
-### Specify a multiplier for the line width (default is 1) ###
-line_width	<- '1'
-### Include bias,rmse on interactive plot ###
-inc_bias <- 'y'
-inc_rmse <- 'y'
+
+### Include bias,rmse on plotly timeseries plot ###
+inc_bias  <- 'y'
+inc_rmse  <- 'y'
+inc_corr  <- 'y'
+inc_error <- 'y'
 
 ############################
 ### Spatial Plot Options ###
@@ -175,15 +178,8 @@ inc_counties	<- "y"
 symbsizfac	<- 1
 map_leg_size	<- 0.65
 hist_max	<- NULL
-
-### Select background map type for interactive spatial plots ###
-#1 = OpenStreetMap.Mapnik
-#2 = OpenStreetMap.BlackAndWhite
-#3 = OpenTopoMap"
-#4 = Esri.WorldImagery
-#5 = HERE.hybridDay
-map_type	<- 1
-################################################################
+quantile_min	<- 0.001
+quantile_max	<- 0.999
 
 #######################
 ### Boxplot Options ###

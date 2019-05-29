@@ -46,16 +46,22 @@ filename_bias_png	<- paste(figdir,filename_bias_png,sep="/")                  # 
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-      aqdat_query.df   <- sitex_info$sitex_data
-      aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
-      units            <- as.character(sitex_info$units[[1]])
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") {
+         aqdat_query.df   <- sitex_info$sitex_data
+         aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
+         units            <- as.character(sitex_info$units[[1]])
+      }
    }
    else {
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units	      <- query_result[[3]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
    }
 }
+if (data_exists == "n") { stop("Stopping because data_exists is false. Likely no data found for query.") }
+
 ### If plotting another simulation ###
 run2 <- "False"
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
@@ -79,12 +85,6 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
 #### Calculate statistics for each requested network ####
 #########################################################
 ## Calculate stats using all pairs, regardless of averaging
-if ((network ==  "NADP_dep") || (network == "NADP_conc")) {                               # If NADP and remove 0 precip obs selected
-   if (zeroprecip == 'n') {
-      indic.noprecip <- aqdat_query.df$precip_ob > 0                                                # determine where precipitation obs are 0
-      aqdat_query.df <- aqdat_query.df[indic.noprecip,]                                                   # remove 0 precip pairs from dataframe
-   }
-}
 ob_col_name <- paste(species,"_ob",sep="")
 mod_col_name <- paste(species,"_mod",sep="")
 aqdat_stats.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],month=aqdat_query.df$month)

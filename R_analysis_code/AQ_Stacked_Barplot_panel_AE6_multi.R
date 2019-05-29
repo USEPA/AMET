@@ -116,7 +116,7 @@ for (n in 1:5) {	# PCA Loop
             aqdat_query.df   <- sitex_info$sitex_data
             sitex_info       <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
             aqdat_query2.df  <- sitex_info$sitex_data
-            units            <- as.character(sitex_info$units[[1]])
+            if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
             
          }
          else {
@@ -124,7 +124,8 @@ for (n in 1:5) {	# PCA Loop
             aqdat_query.df  <- query_result[[1]]
             query_result2   <- query_dbase(run_name2,network,species,criteria)
             aqdat_query2.df <- query_result2[[1]]
-            units           <- query_result[[3]]
+            data_exists     <- query_result[[2]]
+            if (data_exists == "y") { units <- query_result[[3]] }
             model_name      <- query_result[[4]]
          }
       }
