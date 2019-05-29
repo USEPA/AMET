@@ -69,7 +69,7 @@ criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",netw
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
       aqdat_query.df   <- sitex_info$sitex_data
       data_exists      <- sitex_info$data_exists
-      units            <- as.character(sitex_info$units[[1]])
+      if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
       aqdat_query2.df  <- sitex_info2$sitex_data
       data_exists2     <- sitex_info2$data_exists
@@ -79,7 +79,7 @@ criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",netw
       aqdat_query.df  <- query_result[[1]]
       query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"),criteria=criteria)
       aqdat_query2.df <- query_result2[[1]]
-      units           <- query_result[[3]]
+      if (data_exists == "y") { units <- query_result[[3]] }
       model_name      <- query_result[[4]]
    }
 }

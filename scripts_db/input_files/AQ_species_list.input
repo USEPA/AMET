@@ -219,7 +219,7 @@ if (year > 2014) {
 #     setenv AERO_4 \"88101,ug/m3,",PM_MOD_SPEC,",,PM_TOT\"          # PM2.5
 #     setenv AERO_5 \"88101,ug/m3,PMIJ_FRM,,PM_FRM\"      # FRM Equivalent PM2.5
      setenv AERO_6 \"88320,ug/m3, AOCIJ,,OC\"                   # Organic Carbon
-     setenv AERO_7 \"88320,ug/m3, AECIJ,,EC\"                      # Elemental Carbon
+     setenv AERO_7 \"88321,ug/m3, AECIJ,,EC\"                      # Elemental Carbon
      setenv AERO_8 \"88320+88321,ug/m3,AOCIJ+AECIJ,,TC\"    # Total Carbon
    ",sep = "")
 
@@ -512,7 +512,8 @@ species_AMON <- "
 
 # AEROSOL Variables  - compute average over time
 
-  setenv CHAR_1 \"QR\"
+  setenv CHAR_1 \"REPLICATE\"
+  setenv CHAR_2 \"QR\"
   setenv AERO_1 \"CONC,ug/m3,NH3_UGM3,ug/m3,NH3\"                               # Ammonia
 "
 species_cutoff_AMON <- ""

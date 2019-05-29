@@ -44,7 +44,6 @@ if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                 
 
 ## Load Required Libraries
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
-#if(!require(RMariaDB)){stop("Required Package RMariaDB was not loaded")}
 
 mysql <- list(login=amet_login, passwd=amet_pass, server=mysql_server, dbase=dbase, maxrec=maxrec)           # Set MYSQL login and query options
 ##############################
@@ -137,7 +136,6 @@ if (length(cols) != (length(bounds)-1)) {
  	db_Query<-function(query,mysql,get=1,verbose=FALSE)
  {
   db<-dbDriver("MySQL")				# MySQL Database type
-#  db<-dbDriver("MariaDB")
   con <-dbConnect(db,user=mysql$login,pass=mysql$passwd,host=mysql$server,dbname=mysql$dbase)		# Database connect
 
   for (q in 1:length(query)){
@@ -145,8 +143,8 @@ if (length(cols) != (length(bounds)-1)) {
     if(verbose){ print(query[q]) }
   }
 #  if(get == 1){df<-fetch(rs,n=mysql$maxrec)}
-  if(get == 1){df<-dbFetch(rs,n=mysql$maxrec)}
-  
+  if(get == 1){df<-dbFetch(rs,n=mysql$maxrec)} 
+ 
   dbClearResult(rs)
   dbDisconnect(con)		# Database disconnect
   
@@ -890,8 +888,9 @@ Average<-function(datain.df) {
    Lons			<- NULL
    States	        <- NULL
    category		<- NULL
-   names(datain.df)
-   if (!"State" %in% colnames(datain.df)) {
+#   names(datain.df)
+#   datain.df$Stat_ID <- paste(datain.df$Stat_ID,datain.df$POCode,sep="")
+   if ((!"state" %in% colnames(datain.df)) && (!"State" %in% colnames(datain.df))) {
       datain.df$State <- "NA"
    }
    datain.df$good_ob	<- 0							# Assign a new column indicating whether ob is good or not (default in not good)
@@ -1198,14 +1197,14 @@ aggregate_query <- function(data_in.df)
 {
 #   print(data_in.df)
    data_in.df[data_in.df==-999] <- NA
-   if (!("state" %in% colnames(data_in.df))) {
-      data_in.df$state <- "NA"
-   }
-   agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,7)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour,state=data_in.df$state),FUN=function(x)mean(x,na.rm=T))
+   agg_data <- aggregate(data_in.df[,-c(1,2,3,4,5,6,11,12)],by=list(stat_id=data_in.df$stat_id,lat=data_in.df$lat,lon=data_in.df$lon,ob_dates=data_in.df$ob_dates,ob_datee=data_in.df$ob_datee,ob_hour=data_in.df$ob_hour,state=data_in.df$state),FUN=function(x)mean(x,na.rm=T))
+   # Convert NAs to -999 to be removed later
    agg_data[is.na(agg_data)] <- -999
+   # Add network to outgoing dataframe
    agg_data <- cbind(network=network,agg_data)
-   #Order the outgoing data by start date and hour. Required for time series plots since the sorting is lost after the aggregate is run
+   # Order the outgoing data by start date and hour. Required for time series plots since the sorting is lost after the aggregate is run
    agg_data <- agg_data[order(agg_data$ob_dates,agg_data$ob_hour),]	
+   # Add back POC. The POCs were lost during aggregation, so I just assign a new POC of 1 to all records
    agg_data$POCode <- 1
    return(agg_data)
 }
@@ -1217,12 +1216,14 @@ aggregate_query <- function(data_in.df)
 ############################################
 read_sitex <- function(directory,network,run_name,species)
 {
-   if (!exists("aggregate_data")) { aggregate_data <- "y" }
-   sitex_file 	<- paste(directory,"/",network,"_",run_name,".csv",sep="")
-   species_ob 	<- paste(species[1],"_ob",sep="")
-   species_mod 	<- paste(species[1],"_mod",sep="")
+   if (!exists("aggregate_data")) { aggregate_data <- "n" }
+   sitex_file   <- paste(directory,"/",network,"_",run_name,".csv",sep="")
+   cat(paste("Reading data from",sitex_file,"\n\n",sep=" "))
+   species_ob   <- paste(species[1],"_ob",sep="")
+   species_mod  <- paste(species[1],"_mod",sep="")
    if(file.exists(sitex_file)) {
-      data_in.df 	<- read.csv(sitex_file,skip=5,header=T,as.is=T)
+      if (file.info(sitex_file)$size == 0) { stop("Stopping because file size is zero. Please check your site compare output file for accuracy.") }
+      data_in.df <- read.csv(sitex_file,skip=5,header=T,as.is=T)
       if ((network == "AQS_Daily_O3") || (network == "CASTNET_Daily") || (network == "NAPS_Daily_O3") || (network == "EMEP_Daily_O3")) {
          data_in.df$Shh <- 0
       }
@@ -1239,8 +1240,11 @@ read_sitex <- function(directory,network,run_name,species)
          all_species <- c(all_species,"Precip_ob","Precip_mod")
       }
       sitex_data.df <- data.frame(network=network,stat_id=data_in.df$SiteId,lat=data_in.df$Latitude,lon=data_in.df$Longitude,ob_dates=ob_date_start,ob_datee=ob_date_end,ob_hour=sprintf("%02d",data_in.df$Shh),month=sprintf("%02d",data_in.df$SMM),stringsAsFactors=F)
+#      if ((!"State" %in% colnames(datain.df)) {
+      sitex_data.df$state <- "NA"
+#      }
       for (j in 1:length(all_species)) {
-         { 
+         {
             if (!(all_species[j]%in%names(data_in.df))) { sitex_data.df[all_species[j]] <- "-999" }
             else { sitex_data.df[all_species[j]] <- data_in.df[,all_species[j]] }
          }
@@ -1296,15 +1300,15 @@ read_sitex <- function(directory,network,run_name,species)
 }
 ############################################
 
-##################################
-### Function to query database ###
-##################################
+#####################################
+### Function to AQ query database ###
+#####################################
 
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_dates","ob_hour"))
 {
    run_name     <- gsub("[.]","_",project_id)
    run_name     <- gsub("[-]","_",project_id)
-   if (!exists("aggregate_data")) { aggregate_data <- "y" }
+   if (!exists("aggregate_data")) { aggregate_data <- "n" }
    data_order <- orderby[1]
    i <- 2 
    while (i <= length(orderby)) {
@@ -1321,7 +1325,12 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
       criteria <- paste(" WHERE d.",species[1],"_ob is not NULL and d.network='",network,"'",query,sep="")                       # Set first part of the MYSQL query
    }
    if (zeroprecip == "y") { criteria <- paste(criteria, " and d.precip_ob > 0",sep="") }
-   if (all_valid == "y") { criteria <- paste(criteria, " and (d.valid_code != ' ' or d.valid_code = 'A' or d.valid_code = 'B' or d.valid_code IS NULL)",sep="") }
+   if ((all_valid == "y") && (network == "NADP")) { # valid flags for NADP obs
+      criteria <- paste(criteria, " and (d.valid_code = 't' or d.valid_code = 'd' or d.valid_code = 'w' or d.valid_code = 'wi' or d.valid_code = 'wd')",sep="") 
+   } 
+   if ((all_valid == "y") && (network == "AMON")) { # valid flags for AMON obs
+      criteria <- paste(criteria, " and (d.valid_code = ' ' or d.valid_code = 'A' or d.valid_code = 'B' or d.valid_code IS NULL)",sep="") 
+   }
    ##########################################################
    ### Remove T replicates, which identifies field blanks ###
    check_replicate	<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'replicate';",sep="")
@@ -1334,16 +1343,19 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
    query_table_info.df <-db_Query(check_POCode,mysql)
    {
       if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         qs <- paste("SELECT d.network,d.stat_id,s.lat,s.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         print(qs)
          aqdat_query.df<-db_Query(qs,mysql)
 #         aqdat_query.df$POCode <- 1
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",d.POCode,s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         qs <- paste("SELECT d.network,d.stat_id,s.lat,s.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",d.POCode,s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+         print(qs)
          aqdat_query.df<-db_Query(qs,mysql)
       }
    }
-   print(qs)
+#   ob_col_name <- paste(species,"_ob",sep="")
+#   mod_col_name <- paste(species,"_mod",sep="")
    data_exists_flag <- "y"
    num_specs <- length(species)-1
    for (k in 0:num_specs) {
@@ -1402,3 +1414,129 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
    return(list(aqdat_query.df,data_exists_flag,units,model_name))
 }
 ########################################
+
+library(data.table)
+
+#------------------------------------------------------
+# FUNCTION: binval
+#------------------------------------------------------
+ binval <- function(dt,mn,mx,sp,value.var='value') {
+  if(!is.null(value.var)) setnames(dt,value.var,'value')
+
+  bin   <- seq(from=mn,to=mx,by=sp)
+  if(sign(mn) < 0 & sign(mx) > 0) bin   <- bin[-which(bin==0)]
+  nbin  <- length(bin) - 1
+  reset.mn <- F
+  if(dt[,min(value,na.rm=F)] < mn) {
+   dt[,value:=ifelse(value<mn,mn+0.0001,value)]
+   reset.mn <- T
+  }
+  reset.mx <- F
+  if(dt[,max(value,na.rm=F)]>mx) {
+   dt[,value:=ifelse(value>mx,mx,value)]
+   reset.mx <- T
+  }
+  dt[,fac:=cut(value,bin)]
+
+  dt[,fac:=factor(fac,levels=levels(fac),labels=gsub('\\]','',gsub('\\[','',gsub('\\(','',gsub(',',' to ',levels(fac))))))]
+  if(reset.mn & reset.mx) {
+   dum1 <- sapply(strsplit(dt[,levels(fac)][1],split=' ',fixed=T),function(x){x[[3]]})
+   dum2 <- sapply(strsplit(dt[,levels(fac)][nbin-1],split=' ',fixed=T),function(x){x[[3]]})
+   dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0('< ',dum1),levels(fac)[2:(nbin-1)],paste0('> ',dum2)))]
+  } else if(reset.mn) {
+#   dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0('< ',mn,' to ',sp),levels(fac)[2:(nbin)]))]
+    dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0(mn,' to ',mn+sp),levels(fac)[2:(nbin)]))]
+  } else if(reset.mx) {
+   dum <- sapply(strsplit(dt[,levels(fac)][nbin-1],split=' ',fixed=T),function(x){x[[3]]})
+   dt[,fac:=factor(fac,levels=levels(fac),labels=c(levels(fac)[1:(nbin-1)],paste0('> ',dum)))]
+  }
+  if(!is.null(value.var)) setnames(dt,'value',value.var)
+
+  return(dt)
+ } # endfun
+#-----------------------------------------
+
+if(!exists("Met_query")) { Met_query <- "F" }
+if (Met_query == "T") {
+######################################
+### Function to query MET database ###
+######################################
+
+query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_date","ob_time"))
+{
+   run_name     <- gsub("[.]","_",project_id)
+   run_name     <- gsub("[-]","_",project_id)
+   data_order <- orderby[1]
+   i <- 2
+   while (i <= length(orderby)) {
+      data_order <- paste(data_order,orderby[i],sep=",")
+      i <- i+1
+   }
+   species_query_string <- met_query_string
+   if (criteria == "Default") {
+#      criteria <- paste(" WHERE d.",species[1],"_ob is not NULL and d.network='",network,"'",query,sep="")                       # Set first part of the MYSQL query
+      criteria <- paste(" WHERE d.",species,"_ob is not NULL",query,sep="")             # Set part of the MYSQL query
+      if (network != "All") {
+         criteria <- paste(criteria," and s.ob_network='",network,"'",sep="")             # Set part of the MYSQL query
+      }
+   }
+#   criteria <- paste(" WHERE d.T_ob is not NULL",query,sep="")
+
+#   qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month",species_query_string,",s.state from ",run_name," as d, site_metadata as s",criteria,"ORDER BY",data_order,sep=" ")      # Set the rest of the MYSQL query
+   qs <- paste("SELECT s.ob_network,d.stat_id,s.lat,s.lon,d.ob_date,d.ob_time,",species_query_string,",s.state from ",run_name,"_surface as d, stations as s",criteria," ORDER BY ob_date, ob_time ",sep="")      # Set the rest of the MYSQL query
+   print(qs)
+   aqdat_query_temp.df<-db_Query(qs,mysql)
+    names(aqdat_query_temp.df)[7] <- paste(species,"_ob",sep="")
+    names(aqdat_query_temp.df)[8] <- paste(species,"_mod",sep="")
+#   print(aqdat_query_temp.df)
+   aqdat_query.df <- data.frame(network=aqdat_query_temp.df$ob_network,stat_id=aqdat_query_temp.df$stat_id,lat=aqdat_query_temp.df$lat,lon=aqdat_query_temp.df$lon,ob_dates=aqdat_query_temp.df$ob_date,ob_datee=aqdat_query_temp.df$ob_date,ob_hour=aqdat_query_temp.df$ob_time,aqdat_query_temp.df[7],aqdat_query_temp.df[8])
+   aqdat_query.df$month <- substr(as.character(aqdat_query_temp.df$ob_date),9,10)
+   
+   aqdat_query.df$POCode <- 1
+   aqdat_query.df$state <- aqdat_query_temp.df$state
+   data_exists_flag <- "y"
+   num_specs <- length(species)-1
+#   print(names(aqdat_query.df))
+   for (k in 0:num_specs) {
+      ob_col  <- 8+2*k
+      mod_col <- 9+2*k
+      {
+         if (length(aqdat_query.df$stat_id > 0)) {
+            count_na <- sum(is.na(aqdat_query.df[,ob_col]))     # Check for all data not available
+            count_missing <- sum(aqdat_query.df[,ob_col] < -900, na.rm=T) # Check for all data missing
+            len   <- length(aqdat_query.df[,mod_col])
+            if ((count_na == len) || (count_missing == len)) {
+               data_exists_flag <- "n"
+            }
+            else {
+               if ((remove_negatives == 'y') || (remove_negatives == 'Y') || (remove_negatives == 't') || (remove_negatives == 'T')) {
+                  indic.nonzero       <- aqdat_query.df[,ob_col] >= 0
+                  aqdat_query.df      <- aqdat_query.df[indic.nonzero,]
+                  indic.nonzero       <- aqdat_query.df[,mod_col] >= 0
+                  aqdat_query.df      <- aqdat_query.df[indic.nonzero,]
+               }
+               if (obs_per_day_limit > 0) {
+                  num_obs_value <- tapply(aqdat_query.df[,ob_col],aqdat_query.df$ob_dates,function(x)sum(!is.na(x)))
+                  drop_days <- names(num_obs_value)[num_obs_value < obs_per_day_limit]
+                  aqdat_temp.df <- subset(aqdat_query.df,!(ob_dates%in%drop_days))
+                  aqdat_temp.df$ob_dates <- factor(aqdat_temp.df$ob_dates)
+                  aqdat_query.df <- aqdat_temp.df
+               }
+            }
+         }
+         else {
+            data_exists_flag <- "n"
+         }
+      }
+   }
+#   if (species == "T") { units <- "K" }
+#   if (species == "PCP1H") { units <- "mm" }
+#   if (species == "WVMR") { units <- "g/kg" }
+#   if (species == "Wind Speed") { units <- "m/s" }
+#   if (species == "SRAD") { units <- "watts/m2" }
+#   if (species == "PSFC") { units <- "hPa" }
+   model_name <- "WRF/MPAS" 
+   return(list(aqdat_query.df,data_exists_flag,units,model_name))
+}
+########################################
+}

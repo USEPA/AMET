@@ -12,7 +12,6 @@
 ###
 ### Last updated by Wyat Appel: September 2018
 ################################################################
-
 library(plotly)
 library(xts)
 library(htmlwidgets)
@@ -107,13 +106,13 @@ for (j in 1:num_runs) {	# For each simulation being plotted
          sitex_info       <- read_sitex(Sys.getenv(outdir),network,run_name,species)
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists	  <- sitex_info$data_exists
-         units            <- as.character(sitex_info$units[[1]])
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
          query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
          aqdat_query.df  <- query_result[[1]]
          data_exists     <- query_result[[2]]
-         units	         <- query_result[[3]]
+         if (data_exists == "y") { units <- query_result[[3]] }
          model_name      <- query_result[[4]]
       }
    }
@@ -124,6 +123,7 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    if (data_exists == "n") {
       All_Data.df <- merge(All_Data.df,paste("No Data for ",run_name,sep=""))
       num_runs <- (num_runs-1)
+      if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
    }
    else {
    aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Hour=aqdat_query.df$ob_hour,Start_Date=I(aqdat_query.df[,5]),End_Date=I(aqdat_query.df[,6]),Month=aqdat_query.df$month)
@@ -306,6 +306,10 @@ for (j in 1:num_runs) {	# For each simulation being plotted
 } # Close else statement
 } # Close if/else statement
 } # End num_runs loop
+
+### Stop script if no data available ###
+if (length(Dates[[1]]) == 0) { stop("Stopping because length of dates was zero. Likely no data found for query.") }
+########################################
 
 ### Write data to be plotted to file ###
 write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file

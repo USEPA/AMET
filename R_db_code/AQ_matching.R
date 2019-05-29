@@ -252,15 +252,13 @@ run_sitex <- function(network) {
    }
    j <- 1
    m3_files=""
+   M3_FILE <- Sys.getenv('CONC_FILE_1')
    if ((network == "NADP") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3")) {
       M3_FILE <- Sys.getenv('DEP_FILE_1')
    }
-   else if (network == "TOAR") {
-      M3_FILE_IN <- Sys.getenv('HR2DAY_FILE_1')
+   if (network == "TOAR") {
+      M3_FILE <- Sys.getenv('HR2DAY_FILE_1')
 #      M3_FILE <- paste(M3_FILE_IN,".hr2day",sep="")
-   }
-   else {
-      M3_FILE <- Sys.getenv('CONC_FILE_1')
    }
    while (M3_FILE != "") {
       m3_files <- paste(m3_files,"  setenv M3_FILE_",j," ",M3_FILE,"

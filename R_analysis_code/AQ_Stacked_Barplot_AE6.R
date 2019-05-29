@@ -70,7 +70,8 @@ rmse_unsys2    <- NULL
 
 remove_negatives <- "n"
 criteria <- paste(" WHERE d.SO4_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NCOM","NaCl","OTHER","OTHER_REM")
+#species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NCOM","NaCl","OTHER","OTHER_REM")
+species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NaCl","NCOM","OTHER","OTHER_REM")
 #############################################
 ### Read sitex file or query the database ###
 #############################################
@@ -78,21 +79,24 @@ species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NCOM","N
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
       aqdat_query.df   <- sitex_info$sitex_data
-      units            <- as.character(sitex_info$units[[1]])
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
    }
    else {
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units           <- query_result[[3]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
       model_name      <- query_result[[4]]
-      print("got here")
    }
 }
 #############################################
 aqdat_all.df <- aqdat_query.df
+aqdat_all.df[aqdat_all.df == -999] <- NA
+
 ### Calculate NH4 from NO3 and SO4 if unavailable ###
-aqdat_all.df$NH4_ob[aqdat_all.df$NH4 == -999] <- 0.2903*aqdat_all.df$NO3_ob+0.375*aqdat_all.df$SO4_ob
-aqdat_all.df$OTHER_ob[aqdat_all.df$OTHER_ob == -999] <- aqdat_all.df$PM_TOT_ob-aqdat_all.df$SO4_ob-aqdat_all.df$NO3_ob-(0.2903*aqdat_all.df$NO3_ob+0.375*aqdat_all.df$SO4_ob)-aqdat_all.df$OC_ob-aqdat_all.df$EC_ob-aqdat_all.df$NaCl_ob-aqdat_all.df$soil_ob
+aqdat_all.df$NH4_ob[is.na(aqdat_all.df$NH4)] <- 0.2903*aqdat_all.df$NO3_ob+0.375*aqdat_all.df$SO4_ob
+#aqdat_all.df$OTHER_ob[is.na(aqdat_all.df$OTHER_ob)] <- aqdat_all.df$PM_TOT_ob-aqdat_all.df$SO4_ob-aqdat_all.df$NO3_ob-(0.2903*aqdat_all.df$NO3_ob+0.375*aqdat_all.df$SO4_ob)-aqdat_all.df$OC_ob-aqdat_all.df$EC_ob-aqdat_all.df$NaCl_ob-aqdat_all.df$soil_ob
 
 if (num_runs > 1) {
    #############################################
@@ -102,16 +106,10 @@ if (num_runs > 1) {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info2      <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
          aqdat_query2.df  <- sitex_info2$sitex_data
-#         units            <- as.character(sitex_info$units[[1]])
       }
       else {
          query_result2   <- query_dbase(run_name2,network,species)
          aqdat_query2.df <- query_result2[[1]]
-#         units           <- db_Query(units_qs,mysql)
-#         model_name      <- db_Query(model_name_qs,mysql)
-#         model_name      <- model_name[[1]]
-         print("got here")
-
       }
    }
    #############################################
@@ -139,64 +137,65 @@ if ((network == 'IMPROVE') && (num_runs > 1)) {
    blank_mod2 <- 0
 }
 
+print(aqdat_all.df)
+aqdat_all.df     <- aqdat_all.df[ -c(1,3,4,6,7,8,33,35,36)]
+aqdat_agg.df     <- aggregate(aqdat_all.df, by=list(aqdat_all.df$stat_id,aqdat_all.df$ob_dates), FUN=mean, na.rm=TRUE)
+aqdat_agg.df$OTHER_ob[is.na(aqdat_agg.df$OTHER_ob)] <- aqdat_agg.df$PM_TOT_ob-aqdat_agg.df$SO4_ob-aqdat_agg.df$NO3_ob-(0.2903*aqdat_agg.df$NO3_ob+0.375*aqdat_agg.df$SO4_ob)-aqdat_agg.df$OC_ob-aqdat_agg.df$EC_ob-aqdat_agg.df$NaCl_ob-aqdat_agg.df$soil_ob
+complete_records <- complete.cases(aqdat_agg.df[,5:29])
+aqdat_sub.df     <- aqdat_agg.df[complete_records,]
+data.df 	 <- aqdat_sub.df
+
+print(data.df)
+
+if (num_runs > 1) {
+   aqdat_all2.df    <- aqdat_all2.df[ -c(1,3,4,6,7,8,33,35,36)]
+   aqdat_agg2.df    <- aggregate(aqdat_all2.df, by=list(aqdat_all2.df$stat_id,aqdat_all2.df$ob_dates), FUN=mean, na.rm=TRUE)
+   aqdat_agg2.df$OTHER_ob[is.na(aqdat_agg2.df$OTHER_ob)] <- aqdat_agg2.df$PM_TOT_ob-aqdat_agg2.df$SO4_ob-aqdat_agg2.df$NO3_ob-(0.2903*aqdat_agg2.df$NO3_ob+0.375*aqdat_agg2.df$SO4_ob)-aqdat_agg2.df$OC_ob-aqdat_agg2.df$EC_ob-aqdat_agg2.df$NaCl_ob-aqdat_agg2.df$soil_ob
+   complete_records <- complete.cases(aqdat_agg2.df[,5:29])
+   aqdat_sub2.df    <- aqdat_agg2.df[complete_records,]
+   data2.df	    <- aqdat_sub2.df
+}
+
 
 ##########################################################
 ### Average all data for a species into a single value ###
 ##########################################################
-l <- 10							# offset for first species ob value
+num_sites    <- length(unique(aqdat_sub.df$Group.1))
+num_pairs    <- length(aqdat_sub.df$Group.1)
 
-aqdat_sub.df <- aqdat_all.df
-len <- length(aqdat_sub.df)
-while (l < len) { 					# loop through each column
-   indic.nonzero <- aqdat_sub.df[,l] >= 0		# determine missing data from ob column
-   aqdat_sub.df <- aqdat_sub.df[indic.nonzero,]		# remove missing model/ob pairs from dataframe
-   l <- l+1
-}  
-
-num_sites	<- length(unique(aqdat_sub.df$stat_id))
-num_pairs	<- length(aqdat_sub.df$stat_id)   
- 
-data.df		<- aqdat_sub.df[8:len]
+data.df              <- aqdat_sub.df[5:length(aqdat_sub.df)]
 {
    if (use_median == "y") {
-      medians.df        <- lapply(data.df,median)
+      medians.df        <- lapply(data.df,median, na.rm=TRUE)
    }
    else {
-      medians.df   <- lapply(data.df,mean)
+      medians.df   <- lapply(data.df,mean, na.rm=TRUE)
    }
 }
+
+
+
 ##############################################################
 if (num_runs > 1) {
-   l <- 10                                          # offset for first specie ob value
+   num_sites    <- length(unique(aqdat_sub2.df$Group.1))
+   num_pairs    <- length(aqdat_sub2.df$Group.1)
 
-   aqdat_sub2.df <- aqdat_all2.df
-   len <- length(aqdat_sub2.df)
-
-   while (l < len) {                                       # loop through each column
-      indic.nonzero <- aqdat_sub2.df[,l] >= 0               # determine missing data from ob column
-      aqdat_sub2.df <- aqdat_sub2.df[indic.nonzero,]         # remove missing model/ob pairs from dataframe
-      l <- l+1
-   }  
-
-   data2.df	<- aqdat_sub2.df[8:len]
+   data.df              <- aqdat_sub2.df[5:length(aqdat_sub2.df)]
    {
       if (use_median == "y") {
-         medians2.df        <- lapply(data2.df,median)
+         medians2.df        <- lapply(data2.df,median, na.rm=TRUE)
       }
       else {
-         medians2.df   <- lapply(data2.df,mean)
+         medians2.df   <- lapply(data2.df,mean, na.rm=TRUE)
       }
    }
- 
-   num_sites_2	<- length(unique(aqdat_sub2.df$stat_id)) 
-   num_pairs_2	<- length(aqdat_sub2.df$stat_id)
 }
-
 ##############################################################
 
 ########################################################################################
 ### Calculate percent of total PM2.5 (without other category) each species comprises ###
 ########################################################################################
+#   print(medians.df)
    water_ob             <- 0.24*(medians.df$SO4_ob+medians.df$NH4_ob)
    NCOM_ob              <- 0.8*medians.df$OC_ob
    other_ob             <- medians.df$OTHER_ob-(water_ob+blank_ob+NCOM_ob)

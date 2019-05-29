@@ -68,17 +68,22 @@ network <- network_names[1]
 {
    if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info      <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
-         aqdat_query.df  <- sitex_info$sitex_data
-         units           <- as.character(sitex_info$units[[1]])
-         model_name	 <- "Model"
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df  <- sitex_info$sitex_data
+            units           <- as.character(sitex_info$units[[1]])
+            model_name	 <- "Model"
+         }
    }
    else {
       query_result	<- query_dbase(run_name1,network,species)
       aqdat_query.df	<- query_result[[1]]
-      units      	<- query_result[[3]]
+      data_exists    <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
       model_name 	<- query_result[[4]]
    }
 }
+if (data_exists == "n") { stop("Stopping because data_exists is false. Likely no data found for query.") }
 ob_col_name <- paste(species,"_ob",sep="")
 mod_col_name <- paste(species,"_mod",sep="")
 ################################################

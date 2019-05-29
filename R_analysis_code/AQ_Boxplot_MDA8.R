@@ -48,7 +48,8 @@ label <- "MDA8 Ozone (ppb)"
 #      units <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
-      units	      <- query_result[[3]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
    }
 }
 hr_avg_ob   <- NULL
