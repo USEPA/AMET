@@ -1383,63 +1383,65 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
    - single network; single species; multiple simulations
 
+**run\_stacked\_barplot.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot.png))
+   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Does not include soil, so is compatible with simulations using CMAQ aerosol modules prior to AERO6.
+   - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
+
 **run\_stacked\_barplot\_AE6.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6.png))
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
+   
+**run\_stacked\_barplot\_AE6\_ggplot.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6_ggplot.png))
+   - Creates a single stacked bar plot. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the ggplot2 R package
+   - CSN or IMPROVE; species predefined; multiple simulations
 
-**run\_stacked\_barplot.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot.png))
-   - stacked\_barplot.input
-   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes
-   - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
+**run\_stacked\_barplot\_AE6\_plotly.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6.html))
+   - Creates a single interactive stacked bar plot. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the plotly R package
+   - CSN or IMPROVE; species predefined; multiple simulations
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
-   - stacked\_barplot\_panel\_AE6.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions
    - CSN, IMPROVE or SEARCH; species predefined; single simulation
 
 **run\_stacked\_barplot\_panel\_AE6\_multi.csh**
-   - stacked\_barplot\_panel\_AE6\_multi.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions for multiple simulations
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
-   - stacked\_barplot\_panel\_AE6.input
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions
    - CSN, IMPROVE or SEARCH; species predefined; single simulation
 
 **run\_stacked\_barplot\_soil.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_soil.png))
-   - stacked\_barplot\_soil.input
    - Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes
    - CSN and IMPROVE networks; species predefined; single simulation
 
 **run\_stacked\_barplot\_soil\_multi.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_soil_multi.png))
-   - stacked\_barplot\_soil\_multi.input
    - Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes
    - CSN and IMPROVE networks; species predefined; multiple simulations
 
 **run\_stats\_plots.csh** ([Example Plot](./images/aqExample_SO4_aqExample_stats_plot_MB.png))
-   - stats\_plots.input
    - Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included
    - multiple networks; single species; single simulation
 
 **run\_timeseries.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries.png))
-   - timeseries.input
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model
    - single network;single species; multiple simulations
    
-**run\_timeseries\_interactive.csh**
-   - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R leaflet package to allow time-series zooming
+**run\_timeseries\_dygraph.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries_dygraph.html))
+   - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R dygraph package to allow time-series zooming
    - single network;single species; multiple simulations
 
 **run\_timeseries\_mtom.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries_mtom.png))
-   - timeseries\_mtom.input
    - Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model
    - single network;single species; multiple simulations
 
 **run\_timeseries\_multi.csh** ([Example Plot](./images/aqExample_SO4_aqExample_timeseries_multi.png))
-   - timeseries\_multi\_networks.input
    - Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model
    - multiple networks;single species; multiple simulations
+
+**run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries.html))
+   - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
+   - single network;single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>
 7.3 Creating a New Analysis Project
