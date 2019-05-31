@@ -45,9 +45,9 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 sub.title	<- ""
 
 
-filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
+filename_html   <- paste(run_name1,species,pid,"timeseries_dygraph.html",sep="_")              # Set output file name
 filename_html   <- paste(figdir,filename_html,sep="/")
-filename_txt	<- paste(run_name1,species,pid,"timeseries.csv",sep="_")
+filename_txt	<- paste(run_name1,species,pid,"timeseries_dygraph.csv",sep="_")
 filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
 
