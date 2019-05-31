@@ -1803,7 +1803,6 @@ files. Not all of these variables are available in every input file.
 | **use\_avg\_stats**      | Use time-averaged statistics: “**y**” or “**n**”. |
 | **use\_median**          | Use median instead of mean for stacked bar plots: “**y**” or “**n**”. |
 | **use\_var\_mean**       | Remove the observation/model mean value from the time series plots, thereby only plotting the variation from the mean: “**y**” or “**n**”. |
-| **valid\_only**          | Flag to include only valid observations from the NADP network |
 | **x\_axis\_min**         | Specify the minimum value for the x-axis on a plot. **NULL**” – script defined limit |
 | **x\_axis\_max**         | Specify the maximum value for the x-axis on a plot. **NULL**” – script defined limit |
 | **y\_axis\_min**         | Specify the minimum value for the y-axis on a plot. **NULL**” – script defined limit |
