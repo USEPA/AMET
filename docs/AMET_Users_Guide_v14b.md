@@ -1744,12 +1744,19 @@ files. Not all of these variables are available in every input file.
 | **error\_range\_max**    | Error range max limit: “**NULL**” – script defined limit  |
 | **figdir**               | Output directory for plots.|
 | **greyscale**            | Option to use greyscale for the spatial plots:  “**y**” or “**n**”. |
+| **histmax**              | Value for the y-axis max on histogram plot |
+| **img\_height**          | Numerical value for the image height for plots generated using plotly. It is only necessary to set this value if converting the html file to png using the builtin function. Example value for a time series plot would be 900 |
+| **img\_width**           | Numerical value for the image width for plots generated using plotly. It is only necessary to set this value if converting the html file to png using the builtin function. Example value for a time series plot would be 1600 |
+| **inc\_bias**            | Option to include bias on interactive plotly time series:  “**y**” or “**n**”. |
+| **inc\_corr**            | Option to include correlation on interactive plotly time series:  “**y**” or “**n**”. |
 | **inc\_counties**        | Option to include county borders on spatial plots:  “**y**” or “**n**”. |
+| **inc\_error**           | Option to include error on interactive plotly time series:  “**y**” or “**n**”. |
 | **inc\_FRM\_adj**        | Include FRM adjustment on stacked bar plots. Most users will set this to  “**n**”. Advanced users that calculated the FRM adjusted values for the CSN network may set this to  “**y**”. Default is  “**n**”. |
 | **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
 | **inc\_median\_lines**   | Include median lines on box plots: “**y**” or “**n**”. |
 | **inc\_median\_points**  | Include median points on box plots: “**y**” or “**n**”. |
 | **inc\_ranges**          | Include quartile ranges on box plots: “**y**” or “**n**”. |
+| **inc\_rmse**            | Option to include rmse on interactive plotly time series:  “**y**” or “**n**”. |
 | **inc\_points**          | Include point symbols on the time series plot: “**y**” or “**n**”. |
 | **line\_width**          | Specify the line width for the time series plot (default is 1). Smaller number result is a thinner line, while larger numbers result in a thicker line. |
 | **inc\_whiskers**        | Include whiskers on the box plots: “**y**” or “**n**”. |
@@ -1770,6 +1777,8 @@ files. Not all of these variables are available in every input file.
 | **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
 | **png\_res**             | Set resolution of output png files in DPI. Default is 300 dpi |
+| **quantile\_max**        | This is used to remove outliers when determining the plot scale to prevent very large scale values. Value between 0 and 1. Default is 0.999.  |
+| **quantile\_min**        | This is used to remove outliers when determining the plot scale to prevent very large scale values. Value between 0 and 1. Default is 0.001.  |
 | **query**                | MySQL query to select data from database. In most cases, this is only part of the query. The complete query is constructed in the corresponding R script. |
 | **remove\_mean**         | Remove the observation/model mean statistics calculation, thereby just calculating the difference from the mean value |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
