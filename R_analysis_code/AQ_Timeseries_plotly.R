@@ -28,8 +28,6 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1]
-#units_qs <- paste("SELECT ",species[1]," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 ### Set file names and titles ###
@@ -275,11 +273,6 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    col_name5               <- paste(run_names[j],"_Corr_Average",sep="")
    
       if (j == 1) {
-#         col_name1               <- paste(run_names[1],"_Obs_Average",sep="")
-#         col_name2               <- paste(run_names[1],"_Model_Average",sep="")
-#         col_name3               <- paste(run_names[1],"_Bias_Average",sep="")
-#         col_name4               <- paste(run_names[1],"_RMSE_Average",sep="")
-#         col_name5               <- paste(run_names[1],"_Corr_Average",sep="")
          All_Data.df             <- data.frame(Date=Dates[[j]])
          All_Data.df[,col_name1] <- signif((Obs_Mean[[j]]),6)
          All_Data.df[,col_name2] <- signif((Mod_Mean[[j]]),6)
@@ -288,11 +281,6 @@ for (j in 1:num_runs) {	# For each simulation being plotted
          All_Data.df[,col_name5] <- signif((Corr_Mean[[j]]),3)
       }
       else {
-#         col_name1 <- paste(run_names[j],"_Obs_Average",sep="")
-#         col_name2 <- paste(run_names[j],"_Model_Average",sep="")
-#         col_name3 <- paste(run_names[j],"_Bias_Average",sep="")
-#         col_name4 <- paste(run_names[j],"_RMSE_Average",sep="")
-#         col_name5 <- paste(run_names[j],"_Corr_Average",sep="")
          temp.df <- data.frame(Date=Dates[[j]])
          temp.df[,col_name1] <- signif((Obs_Mean[[j]]),6)
          temp.df[,col_name2] <- signif((Mod_Mean[[j]]),6)
@@ -340,16 +328,6 @@ for (j in 1:num_runs) {
    }
 }
 
-#On Newton:
-#saveWidget(plot.ts, file="/home/kfoley/LINKS/tools/Rcode/dygraphs/sitecompare_time_series_example_on_newton.html",selfcontained=F)
+#api_create(p, filename = "r-timeseries")
+
 saveWidget(p, file=filename_html,selfcontained=T)
-#Sys.setenv('MAPBOX_TOKEN' = 'sk.eyJ1IjoibmJyYXppbDY5IiwiYSI6ImNqb3ltczFxYTJrbGcza3FpcTQwb3pqbmcifQ.MVgK-DcM1Q8N3A8sBUB2uw')
-#orca(p,filename_png,format=png)
-#export(p,filename_png)
-
-#On windows:
-#saveWidget(plot.ts, file="B:/LINKS/tools/Rcode/dygraphs/sitecompare_time_series_example_selfcontained.html",selfcontained=T)
-
-#delete_command <- paste("sed -i '1,3d;12,13d' ",filename_html,sep="")
-
-#system(delete_command)
