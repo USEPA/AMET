@@ -1307,7 +1307,7 @@ read_sitex <- function(directory,network,run_name,species)
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_dates","ob_hour"))
 {
    run_name     <- gsub("[.]","_",project_id)
-   run_name     <- gsub("[-]","_",project_id)
+   run_name     <- gsub("[-]","_",run_name)
    if (!exists("aggregate_data")) { aggregate_data <- "n" }
    data_order <- orderby[1]
    i <- 2 
