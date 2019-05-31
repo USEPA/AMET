@@ -1705,8 +1705,8 @@ variables. Not all of these variables are available in every input file.
 ## AQ Analysis Input Files
 
 The analysis input files are found in $AMETBASE/scripts\_analysis/aqExample/input\_files.
-The following is a partial list of variables in the AQ analysis input
-files. Not all of these variables are available in every input file.
+The following is a list of the variables found in the AQ analysis input
+files all\_script.input and AMET\_batch.input. 
 
 <a id="Table_B-3"></a>
 **Table B‑3. AQ analysis input variables**
