@@ -1718,6 +1718,8 @@ files. Not all of these variables are available in every input file.
 | **abs\_range\_max**      | Specify the maximum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
 | **aggregate\_data**      | Flag (y/n) to indicate whether or not to aggregate data from sites with multiple Parameter Occurrance Codes (POCs). If set to Y, data with different POCs from the same site will be averaged and compared to the model grid-cell value as a single data point. If set to N, the data will be treated as unique observations and each POC data point will be paired to the same model grid-cell value.    |
+| **all\_valid**           | Option to include only and all valid samples from the NADP (NTN) network:  “**y**” or “**n**”. Valid samples are based on the valid flag provided in the NADP obs file |
+| **all\_valid\_amon**     | Option to include only and all valid samples from the NADP AMON network:  “**y**” or “**n**”. Valid samples are based on the valid and replicates flags in the NTN obs file |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
 | **aq\_network**          | AQ monitoring network. |
 | **aq\_project**          | AQ project name. |
