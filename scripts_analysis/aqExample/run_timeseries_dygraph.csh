@@ -1,6 +1,6 @@
 #!/bin/csh -f
 # --------------------------------
-# Interactive Timeseries
+# Interactive Timeseries using dygraph
 # -----------------------------------------------------------------------
 # Purpose:
 # This is an example c-shell script to run the R-script that generates
@@ -35,7 +35,7 @@
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
 
   ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_interactive
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_dygraph
 
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"
@@ -106,7 +106,7 @@
 #  setenv AMET_NAMN y
 
   # Log File for R script
-  setenv AMET_LOG timeseries_interactive.log
+  setenv AMET_LOG timeseries_interactive_dygraph.log
   
 ##--------------------------------------------------------------------------##
 ##                Most users will not need to change below here
@@ -123,14 +123,14 @@ setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scrip
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Timeseries_interactive.R $AMET_LOG
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Timeseries_dygraph.R $AMET_LOG
   setenv AMET_R_STATUS $status
   
   if($AMET_R_STATUS == 0) then
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries_dygraph.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

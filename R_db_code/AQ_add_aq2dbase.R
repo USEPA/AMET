@@ -317,7 +317,8 @@ min_date <- min(start_time)
 max_date <- max(end_time)
 
 cat("Updating project log...")
-query_all <- paste("SELECT proj_code,model,user_id,passwd,email,description,DATE_FORMAT(proj_date,'%Y%m%d'),proj_time,DATE_FORMAT(min_date,'%Y%m%d'),DATE_FORMAT(max_date,'%Y%m%d') from aq_project_log where proj_code='",project_id,"' ",sep="")    # set query for project log table for all information regarding current project
+query_all <- paste("SELECT proj_code,model,user_id,passwd,email,description,DATE_FORMAT(proj_date,'%Y%m%d'),proj_time,DATE_FORMAT(min_date,'%Y%m%d'),DATE_FORMAT(max_date,'%Y%m%d') from aq_project_log where proj_code='",log_id,"' ",sep="")    # set query for project log table for all information regarding current project
+print(query_all)
 info_all <- dbGetQuery(con,query_all)
 model        <- info_all[,2] 
 user_id      <- info_all[,3]
@@ -328,6 +329,9 @@ proj_date    <- info_all[,7]
 proj_time    <- info_all[,8]
 min_date_old <- info_all[,9]
 max_date_old <- info_all[,10]
+
+print(info_all)
+print(min_date_old)
 
 if ((is.na(min_date_old)) || (min_date_old == '00000000')) {        # override the initial value of 0 for the earliest date record
    min_date_old <- min_date
@@ -341,7 +345,7 @@ if (min_date > min_date_old)  {
 if (max_date < max_date_old) {
    max_date <- max_date_old
 }
-query_dates <- paste("REPLACE INTO aq_project_log (proj_code,model,user_id,passwd,email,description,proj_date,proj_time,min_date,max_date) values ('",project_id,"','",model,"','",user_id,"','",password,"','",email,"','",description,"','",proj_date,"','",proj_time,"','",min_date,"','",max_date,"')",sep="")                    # put first and last dates into project log
+query_dates <- paste("REPLACE INTO aq_project_log (proj_code,model,user_id,passwd,email,description,proj_date,proj_time,min_date,max_date) values ('",log_id,"','",model,"','",user_id,"','",password,"','",email,"','",description,"','",proj_date,"','",proj_time,"','",min_date,"','",max_date,"')",sep="")                    # put first and last dates into project log
 mysql_result <- dbSendQuery(con,query_dates)
 cat("done.\n\n")
 #######################################################################################################################################
