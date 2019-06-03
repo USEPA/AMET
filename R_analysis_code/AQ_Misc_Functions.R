@@ -1465,7 +1465,7 @@ if (Met_query == "T") {
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_date","ob_time"))
 {
    run_name     <- gsub("[.]","_",project_id)
-   run_name     <- gsub("[-]","_",project_id)
+   run_name     <- gsub("[-]","_",run_name)
    data_order <- orderby[1]
    i <- 2
    while (i <= length(orderby)) {
