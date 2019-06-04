@@ -1287,11 +1287,11 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a histogram of model-obs quartiles
    - single network; single species; multi simulation
 
-**run\_kellyplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_kellyplot.png))
+**run\_kellyplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_Kellyplot.png))
    - Creates a kellyplot of model performance color coded by season and NOAA climate region
    - single network; single species; single simulation; full year data required
    
-**run\_kellyplot_multisim.csh** ([Example Plot](./images/aqExample_SO4_aqExample_kellyplot_multisim.png))
+**run\_kellyplot_multisim.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_Kellyplot_multisim_NMB.png))
    - Creates a kellyplot of model performance color coded by simulation and NOAA climate region
    - single network; single species; multiple simulations allowed; 
 
