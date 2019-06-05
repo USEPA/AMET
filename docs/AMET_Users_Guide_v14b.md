@@ -1263,7 +1263,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a box plot of model-obs quartiles parsed by the day of the week
    - single network; single species; single simulation
 
-**run\_boxplot\_ggplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_boxplot_ggplot.png))
+**run\_boxplot\_ggplot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_boxplot_ggplot.png))
    - Creates a box plot of model-obs quartiles using the ggplot2 R package
    - single network; single species; multi simulation
 
