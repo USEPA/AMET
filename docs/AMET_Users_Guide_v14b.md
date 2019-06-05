@@ -1271,7 +1271,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates side-by-side boxplots to create a diurnal average curve. Hourly data only
    - single network; hourly species only; multi simulation
    
- **run\_boxplot\_plotly.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_boxplot.html))
+ **run\_boxplot\_plotly.csh** ([Example Plot](./images/aqExample_SO4_aqExample_boxplot.html))
    - Creates a interactive box plot of model-obs quartiles using the plotly R package
    - single network; single species; multi simulation
 
@@ -1287,11 +1287,11 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a histogram of model-obs quartiles
    - single network; single species; multi simulation
 
-**run\_kellyplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_Kellyplot.png))
+**run\_kellyplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_kellyplot_NMB.png))
    - Creates a kellyplot of model performance color coded by season and NOAA climate region
    - single network; single species; single simulation; full year data required
    
-**run\_kellyplot_multisim.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_Kellyplot_multisim_NMB.png))
+**run\_kellyplot_multisim.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_kellyplot_multisim_NMB.png))
    - Creates a kellyplot of model performance color coded by simulation and NOAA climate region
    - single network; single species; multiple simulations allowed; 
 
@@ -1303,7 +1303,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
 
-**run\_plot\_spatial_leaflet.csh**
+**run\_plot\_spatial_leaflet.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_diff.html))
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; single simulation
 
@@ -1311,7 +1311,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; multi simulations required
 
-**run\_plot\_spatial\_diff_leaflet.csh**
+**run\_plot\_spatial\_diff_leaflet.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_bias_diff.html))
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; multi simulations required
 
@@ -1351,7 +1351,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a single model vs. obs scatterplot with shading to represent the density of points
    - multiple networks; single species; single simulation
    
-**run\_scatterplot\_density\_ggplot.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_scatterplot_density.png))
+**run\_scatterplot\_density\_ggplot.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_scatterplot_density_ggplot.png))
    - Creates a single model vs. obs scatterplot with shading to represent the density of points. Uses the ggplot2 R package
    - multiple networks; single species; single simulation
 
