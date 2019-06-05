@@ -128,7 +128,12 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatial_plot_<TYPE>.$AMET_PTYPE"
+		echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_bias_1.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_bias_2.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_bias_diff.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_error_1.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_error_2.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_error_diff.$AMET_PTYPE"
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

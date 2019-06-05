@@ -55,7 +55,7 @@
   setenv AMET_TITLE "Boxplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
 
-  ###  Plot Type, options are "pdf" or "png"
+  ###  Plot Type, options are "pdf", "png" or "both"
   setenv AMET_PTYPE both
 
 
@@ -65,7 +65,7 @@
   ### AE6 (CMAQv5.0) Species
   ### Na,Cl,Al,Si,Ti,Ca,Mg,K,Mn,Soil,Other,Ca_dep,Ca_conc,Mg_dep,Mg_conc,K_dep,K_conc
 
-  setenv AMET_AQSPECIES PM_TOT
+  setenv AMET_AQSPECIES SO4
 
   ### Observation Network to plot -- One only
   ### Uncomment to set to 'T' and process that nework, 
@@ -76,7 +76,7 @@
   ### North America Networks ###
 
   #  setenv AMET_CSN 		T
-  #  setenv AMET_IMPROVE 	T
+    setenv AMET_IMPROVE 	T
   #  setenv AMET_CASTNET 	T
   #  setenv AMET_CASTNET_Hourly T
   #  setenv AMET_CASTNET_Drydep T
@@ -84,7 +84,7 @@
   #  setenv AMET_AIRMON 	T
   #  setenv AMET_AQS_Hourly 	T
   #  setenv AMET_AQS_Daily_O3 	T
-    setenv AMET_AQS_Daily 	T
+  #  setenv AMET_AQS_Daily 	T
   #  setenv AMET_SEARCH 	T
   #  setenv AMET_SEARCH_Daily 	T
   #  setenv AMET_NAPS_Hourly 	T
@@ -131,9 +131,8 @@
   echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_boxplot_ggplot.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_boxplot_bias_ggplot.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_boxplot_norm_bias_ggplot.$AMET_PTYPE
+		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_ggplot.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_bias_ggplot.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

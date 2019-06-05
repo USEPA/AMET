@@ -23,6 +23,8 @@ library(htmlwidgets)
 #units <- db_Query(units_qs,mysql) 
 ################################################
 
+if(!exists("x_label_angle")) { x_label_angle <- 0 }
+
 ### Set file names and titles ###
 network<-network_names[[1]]
 level_names_bias <- NULL
@@ -46,7 +48,10 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
       title <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ") 
       title_bias <- paste(run_name1,species," bias for",network_label[1],"for",dates,sep=" ")
    }
-   else { title <- custom_title }
+   else { 
+      title <- custom_title 
+      title_bias <- custom_title
+   }
 }
 
 for (j in 1:length(run_names)) {
@@ -178,7 +183,7 @@ bias.title <- title_bias
 
 pdf(file=filename_pdf,width=9,height=9)
 #sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.position="top",plot.title=element_text(hjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10)) + guides(fill=guide_legend(nrow=2,byrow=TRUE))
-sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10))
+sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10))
 sp
 dev.off()
 
@@ -194,7 +199,7 @@ if ((ametptype == "png") || (ametptype == "both")) {
 
 
 pdf(file=filename_pdf_bias,width=9,height=9)
-sp<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))
+sp<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))
 sp
 dev.off()
 

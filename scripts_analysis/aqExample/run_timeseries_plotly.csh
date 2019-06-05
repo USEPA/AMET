@@ -18,18 +18,18 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  #setenv AMETBASE       /work/MOD3EVAL/wtt/AMETv14b
-  setenv AMET_DATABASE  amad_CMAQ_v53_Dev
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
 
   ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
-  setenv AMET_DB  T 
+  setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
+
   ### Set the project name to be used for model-to-model comparisons ###
-  setenv AMET_PROJECT2  aqExample
+  #setenv AMET_PROJECT2  aqExample
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/

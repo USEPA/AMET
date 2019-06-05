@@ -23,6 +23,8 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")	# R directory
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
+
 filename_pdf <- paste(run_name1,species,pid,"scatterplot_ggplot.pdf",sep="_")             # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot_ggplot.png",sep="_")
 filename_txt  <- paste(run_name1,species,pid,"scatterplot_ggplot.csv",sep="_")       # Set output file name
