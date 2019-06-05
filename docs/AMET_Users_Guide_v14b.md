@@ -1253,7 +1253,7 @@ You should see files of the form:
 
 > aqExample\_SO4\_scatterplot.pdf
 
-A brief summary of each of the C-shell scripts, with example plots from each script, is given below.
+A brief summary of each of the C-shell scripts, with example plots from each script, is given below. To view the html files, you'll need to follow the link, click on "view raw", then save the page as an html file. You'll then be able to view the interactive html plot. 
 
 **run\_boxplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_boxplot_all.png))
    - Creates a box plot of model-obs quartiles
