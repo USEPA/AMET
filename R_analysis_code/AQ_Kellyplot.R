@@ -10,6 +10,9 @@
 ### region/season. This particular version of the code is designed
 ### to work for an annual simulation to provide values for each season.
 ###
+### Note that this code does not currently work without the database,
+### as database metadata are needed to identify the NOAA climate regions.
+###
 ### Original concept and some code developed by Jim Kelly of EPA.
 ###
 ### Last updated by Wyat Appel: May, 2019
@@ -34,14 +37,14 @@ num_runs <- 1
 ################################################
 ## Set output names and remove existing files ##
 ################################################
-filename_nmb    <- paste(run_name1,species,pid,"Kellyplot_NMB",sep="_")
-filename_nme    <- paste(run_name1,species,pid,"Kellyplot_NME",sep="_")
-filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_RMSE",sep="_")
-filename_mb     <- paste(run_name1,species,pid,"Kellyplot_MB",sep="_")
-filename_me     <- paste(run_name1,species,pid,"Kellyplot_ME",sep="_")
-filename_corr   <- paste(run_name1,species,pid,"Kellyplot_Corr",sep="_")
+filename_nmb    <- paste(run_name1,species,pid,"Kelly_Plot_NMB",sep="_")
+filename_nme    <- paste(run_name1,species,pid,"Kelly_Plot_NME",sep="_")
+filename_rmse   <- paste(run_name1,species,pid,"Kelly_Plot_RMSE",sep="_")
+filename_mb     <- paste(run_name1,species,pid,"Kelly_Plot_MB",sep="_")
+filename_me     <- paste(run_name1,species,pid,"Kelly_Plot_ME",sep="_")
+filename_corr   <- paste(run_name1,species,pid,"Kelly_Plot_Corr",sep="_")
 filename_txt    <- paste(run_name1,species,pid,"stats_data.csv",sep="_")      # Set output file name
-filename_zip    <- paste(run_name1,species,pid,"Kellyplot.zip",sep="_")
+filename_zip    <- paste(run_name1,species,pid,"Kelly_Plot.zip",sep="_")
 
 ## Create a full path to file
 filename        <- NULL

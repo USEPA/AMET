@@ -328,9 +328,6 @@ if (j > 1) {
 if (length(y_axis_max) > 0) { ymax <- y_axis_max }
 if (length(y_axis_min) > 0) { ymin <- y_axis_min }
 
-filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
-filename_html   <- paste(figdir,filename_html,sep="/")
-
 #Use dygraph to make interactive html plot. (https://rstudio.github.io/dygraphs/ has examples of other features to try out.)
 if (j < 2) {
    plot.ts <- dygraph(ts.combine, main=main.title, xlab=x_label, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%

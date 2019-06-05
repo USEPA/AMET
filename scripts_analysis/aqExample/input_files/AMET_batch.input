@@ -173,6 +173,9 @@ img_width<-1600
 ### Axis Plot Options ###
 #########################
 
+### Specify angle of x-axis text on ggplot boxplot
+x_label_angle <- 0
+
 ### x and y axes limits ###
 axis_max_limit	<- NULL
 axis_min_limit	<- NULL
