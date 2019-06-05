@@ -1406,6 +1406,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 **run\_stacked\_barplot\_AE6\_plotly.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6.html))
    - Creates a single interactive stacked bar plot. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the plotly R package
    - CSN or IMPROVE; species predefined; multiple simulations
+   
+**run\_stacked\_barplot\_AE6\_ts.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6_ts.html; ./images/aqExample_aqExample_stacked_barplot_AE6_ts.png))
+   - Creates static and interactive stacked bar time series plots. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the ggplot and plotly R packages
+   - CSN or IMPROVE; species predefined; multiple simulations
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions
@@ -1430,12 +1434,16 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 **run\_stats\_plots.csh** ([Example Plot](./images/aqExample_SO4_aqExample_stats_plot_MB.png))
    - Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included
    - multiple networks; single species; single simulation
+   
+**run\_stats\_plots\_leaflet.csh** ([Example Plot](./images/aqExample_SO4_aqExample_stats_plot_NMB.html))
+   - Generates a series of interactive spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included. uses the R leaflet package to create interactive html files with zoom capability
+   - multiple networks; single species; single simulation
 
 **run\_timeseries.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries.png))
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model
    - single network;single species; multiple simulations
    
-**run\_timeseries\_dygraph.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries_dygraph.html))
+**run\_timeseries\_dygraph.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries_dygraph.html))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R dygraph package to allow time-series zooming
    - single network;single species; multiple simulations
 
@@ -1447,7 +1455,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model
    - multiple networks;single species; multiple simulations
 
-**run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_bias_timeseries.html))
+**run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries.html))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
    - single network;single species; multiple simulations
 
