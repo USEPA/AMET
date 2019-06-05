@@ -27,6 +27,7 @@ if(!require(htmlwidgets)){stop("Required Package htmlwidgets was not loaded")}
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
 

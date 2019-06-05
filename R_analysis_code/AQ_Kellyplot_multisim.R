@@ -10,6 +10,9 @@
 ### region/simulation. This particular version of the code is designed
 ### to work for multiple simulations.
 ###
+### Note that this code does not currently work without the database,
+### as database metadata are needed to identify the NOAA climate regions.
+###
 ### Original concept and some code developed by Jim Kelly of EPA.  
 ###
 ### Last updated by Wyat Appel: May, 2019
