@@ -1407,7 +1407,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a single interactive stacked bar plot. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the plotly R package
    - CSN or IMPROVE; species predefined; multiple simulations
    
-**run\_stacked\_barplot\_AE6\_ts.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6_ts.html; ./images/aqExample_aqExample_stacked_barplot_AE6_ts.png))
+**run\_stacked\_barplot\_AE6\_ts.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6_ts.png))
    - Creates static and interactive stacked bar time series plots. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the ggplot and plotly R packages
    - CSN or IMPROVE; species predefined; multiple simulations
 
