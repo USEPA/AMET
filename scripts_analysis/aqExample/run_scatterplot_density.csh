@@ -28,14 +28,14 @@
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
  
-  ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_density
-
   ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
   setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
+
+  ###  Directory where figures and text output will be directed
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/scatterplot_density
 
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"
