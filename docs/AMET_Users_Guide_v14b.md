@@ -1502,7 +1502,7 @@ Adding support for a new AQ network to AMET is relatively simple, but does requi
 **1. Create a properly formatted observation data file for site compare.**
 
 This is generally the first step to setting up a new network for AMET. Format your new network obseration data in a format that site
-compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. In addition to the data file, you will need to create site list for your new network. Site files are available for download from the CMAS website along with the network data for the existing networks. These two files, the data file and site list file, will be referred to in Step 3. The data file is assumed to have the name "NewAQNet\_data\_$year.csv" and the site file is assumed to have the name "NewAQNet\_sites.txt".
+compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. In addition to the data file, you will need to create site list for your new network. Site files are available for download from the CMAS website along with the network data for the existing networks. These two files, the data file and site list file, will be referred to in Step 3. The data file is assumed to have the name "NewAQNet\_data\_$year.csv" and the site file should either be in the tab delimited text format with the name "NewAQNet\_sites.txt" or a comma separated metadata file with the name "NewAQNet\_full\_site\_list.csv". Note that the txt format of the site file is being phased out in favor of the comma separated metadata file. You will also need this site metadata file to populate the site_metadata_table in the database.
 
 **2. Modify the AQ_species_list.input file**
 
@@ -1529,7 +1529,7 @@ After you've done that, move down to the section titled "Create and Execute Site
 if ((NewAQNet\_flag == "y") || (NewAQNet\_flag == "Y") || (NewAQNet\_flag == "t") || (NewAQNet\_flag == "T")) {<br>
    table_type    <- "SEARCH"<br>
    network       <- "NewAQNet"<br>
-   site_file     <- paste(obs\_data\_dir,"/site\_files/NewAQNet\_sites.txt",sep="")<br>
+   site_file     <- paste(obs\_data\_dir,"/site\_file\_directory/NewAQNet\_site_file_name",sep="")<br>
    ob_file       <- paste(obs\_data\_dir,"/",year,"/NewAQNet\_data\_",year,".csv",sep="")<br>
    EXEC          <- EXEC\_sitex<br>
    run_sitex(network)<br>
@@ -1539,7 +1539,11 @@ Once you've modified the AQ_matching.R code as above, you can save your modified
 
 **4. Modify the aqProject.csh script**
 
-The next step is to modify the aqProject.csh script located in $AMETBASE/scripts\_db/aqExample directory. Open the aqProject.csh script and move to the section containing the flags for the networks to include in the analysis. Here you will add your network to the list of network to process using the same formatting as an existing network per the example below.
+As mentioned in step 1, you'll need to add the site_metadata table to the database in order for database queries for your new network to function properly. Follow the format of an existing network metadata file to create your new file. Once you've created your new file, place it in the $AMETBASE/obs/AQ/site\_metadata\_files directory. Next move to the $AMETBASE/scripts\_db/input\_files directory. Here you will modify the sites\_meta.input file and add your new metadata file to the list of existing files. It does not matter where in the list you place your new file, just be sure to update the file numbering according. Once you've done that, you'll next need to modify and re-run the project creation script (default name is aqProject.csh in the $AMETBASE/script_db/aqExample directory). 
+
+If you are adding a new network to an existing project (i.e. database is already created and setup), then all you need to do is re-run the loading of the site_metadata (no new tables need to be created). This can be accomplished using the flag RELOAD_METADATA in the aqProject.csh script. Setting that flag to T will reload the site metadata for all networks, regardless of whether or not the site_metadata table already exists and is populated (existing data are simply overwritten with the same data). To add your new network site metadata, set the flag to T. The next time you execute the run script, the site metadata table will be repopulated, this time including your new network. You only need to do this once. So, after you've run the script and added your new network metadata, you should set the RELOAD_METADATA flag to F. 
+
+The next step is to further modify the aqProject.csh script. Open the aqProject.csh script and move to the section containing the flags for the networks to include in the analysis. Here you will add your network to the list of network to process using the same formatting as an existing network per the example below.
 
 setenv NEWAQNET T
 
