@@ -91,7 +91,7 @@ for (j in 1:length(run_names)) {
          ob_col_name <- paste(species,"_ob",sep="")
          mod_col_name <- paste(species,"_mod",sep="")
    
-         aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,ob_day=days,ob_hour=aqdat_query.df$ob_hour,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Month=sprintf("%02d",aqdat_query.df$month))
+         aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,ob_day=days,ob_hour=aqdat_query.df$ob_hour,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Month=sprintf("%02d",as.integer(aqdat_query.df$month)))
          {
             if (averaging == "n") {
                aqdat.df$Split_On <- aqdat_query.df$ob_dates

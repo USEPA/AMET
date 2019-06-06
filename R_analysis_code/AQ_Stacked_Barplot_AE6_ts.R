@@ -107,6 +107,7 @@ for (j in 1:length(run_names)) {
          aqdat_query.df   <- sitex_info$sitex_data
          data_exists      <- sitex_info$data_exists
          if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
+         aqdat_query.df <- aqdat_query.df[, !names(aqdat_query.df) %in% c("state")]
       }
       else {
          query_result    <- query_dbase(run_name,network,species)
