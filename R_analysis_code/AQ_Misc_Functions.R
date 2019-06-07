@@ -1307,7 +1307,7 @@ read_sitex <- function(directory,network,run_name,species)
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_dates","ob_hour"))
 {
    run_name     <- gsub("[.]","_",project_id)
-   run_name     <- gsub("[-]","_",run_name)
+   run_name     <- gsub("[-]","_",project_id)
    if (!exists("aggregate_data")) { aggregate_data <- "n" }
    data_order <- orderby[1]
    i <- 2 
@@ -1354,6 +1354,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
          aqdat_query.df<-db_Query(qs,mysql)
       }
    }
+   aqdat_query.df$ob_hour <- sprintf("%02d",as.integer(aqdat_query.df$ob_hour)) 
 #   ob_col_name <- paste(species,"_ob",sep="")
 #   mod_col_name <- paste(species,"_mod",sep="")
    data_exists_flag <- "y"
@@ -1465,7 +1466,7 @@ if (Met_query == "T") {
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_date","ob_time"))
 {
    run_name     <- gsub("[.]","_",project_id)
-   run_name     <- gsub("[-]","_",run_name)
+   run_name     <- gsub("[-]","_",project_id)
    data_order <- orderby[1]
    i <- 2
    while (i <= length(orderby)) {
