@@ -1,19 +1,18 @@
-run_CMAQ_eval_AMET
+AMET Process and Analysis Script Guide v14b
 ========
 
 ## Contents
 
 [1. Overview](#Overview)<br>
-[2. Running on Atmos](#atmos)<br>
-[3. Setting environment variables](#EnvVar)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.1 Selection of analysis steps](#picksteps)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.2 Simulation information, Input/Output directories](#sim_info)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.3 System configuration, location of observations and code repositories](#config)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.4 Combine configuration options](#combine)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.5 Site compare configuration options](#sitecmp)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.6 AMET configuration options](#amet)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.7 Evaluation plotting configuration options](#plots)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[3.8 Execution of all post-processing steps](#execute)<br>
+[2. Setting environment variables](#EnvVar)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.1 Selection of analysis steps](#picksteps)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.2 Simulation information, Input/Output directories](#sim_info)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.3 System configuration, location of observations and code repositories](#config)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.4 Combine configuration options](#combine)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.5 Site compare configuration options](#sitecmp)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.6 AMET configuration options](#amet)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.7 Evaluation plotting configuration options](#plots)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.8 Execution of all post-processing steps](#execute)<br>
 
 <a id="Overview"></a>1. Overview
 ===========
@@ -28,12 +27,6 @@ Sample output is available here:
 ```
 /work/MOD3EVAL/cmaq_exp/post_scripts/ref_output/SE52BENCH_AMET
 ```
-
-<a id="atmos"></a>2. Running on atmos
-===========
-The Simple Linux Utility for Resource Managment System (SLURM) header at the top of the shell script is used to control execution of the run script on the atmos cluster.
-* User should change lines with *--gid* and *--output* to reflect their account on atmos.
-* User should **not** change the *--partition=singlepe* if they wish to access the AMET database.  
 
 <a id="EnvVar"></a>3. Setting environment variables
 ===========
