@@ -1,4 +1,4 @@
-AMET Process and Analysis Script Guide v14b
+AMET Project and Analysis Script Guide v14b
 ========
 
 ## Contents
@@ -20,7 +20,7 @@ This run script controls execution of multiple post-processing and evaluation st
 
 Location of run script on atmos: 
 ```
-/work/MOD3EVAL/cmaq_exp/post_scripts/run_CMAQ_eval_AMET.csh
+$AMETBASE/scripts\_db/aqExample/aqProject_and_Analysis.csh
 ```
 
 Sample output is available here:  
@@ -28,7 +28,7 @@ Sample output is available here:
 /work/MOD3EVAL/cmaq_exp/post_scripts/ref_output/SE52BENCH_AMET
 ```
 
-<a id="EnvVar"></a>3. Setting environment variables
+<a id="EnvVar"></a>2. Setting environment variables
 ===========
 The setting of environment variables in the run script is divided into 8 different numbered sections.  Details on the environment variables within each section are provided below. Section 8 is the portion of the script that loops through the simulations days to create the various post-processing outputs. The user will typically only need to make edits to sections 1-7.   
 
