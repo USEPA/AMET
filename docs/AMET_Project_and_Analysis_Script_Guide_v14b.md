@@ -16,7 +16,7 @@ AMET Project and Analysis Script Guide v14b
 
 <a id="Overview"></a>1. Overview
 ===========
-This run script controls execution of multiple post-processing and evaluation steps including running combine, sitecmp, sitecmp_dailyo3, loading matched model/obs data (i.e. sitecmp files) into the AMET database and creating AMET "batch" evaluation plots. It combines some of the functionality of the aqProject.csh script (without the database setup and initialization), but adds additional upfront post-processing, specifically running the combine and hr2day programs and backend AMET batch plot creation. This script is intended to be used as a "master" post-processing script used after a CMAQ simulation is complete, performing all the tasks necessary to take raw model output and produce AMET plots in a structured output directory.
+This run script controls execution of multiple post-processing and evaluation steps including running combine, sitecmp, sitecmp_dailyo3, loading matched model/obs data (i.e. sitecmp files) into the AMET database and creating AMET "batch" evaluation plots. It contains most of the functionality of the aqProject.csh script (without the database setup and initialization), but adds additional upfront post-processing, specifically running the combine and hr2day programs and backend AMET batch plot creation. This script is intended to be used as a "master" post-processing script used after a CMAQ simulation is complete, performing all the tasks necessary to take raw model output and produce AMET plots in a structured output directory.
 
 Location of run script: 
 ```
