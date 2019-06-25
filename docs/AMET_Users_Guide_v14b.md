@@ -1784,7 +1784,12 @@ files all\_script.input and AMET\_batch.input.
 | **inc\_whiskers**        | Include whiskers on the box plots: “**y**” or “**n**”. |
 | **map\_leg\_size**       | Map legend size factor. Default is 0.65. |
 | **max\_limit**           | Used in the skill scatter plot script to set the "limit" at which an exceedance occurs. The default is 70, the current standard for MDA8 O3 in the United States. |
+| **mb\_max**               | Set MB scale maximum on Kelly plots |
+| **me\_max**               | Set ME scale maximum on Kelly plots |
+| **me\_min**               | Set ME scale minimum on Kelly plots |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
+| **nmb\_max**              | Set NMB scale maximum on Kelly plots |
+| **nme\_max**              | Set NME scale maximum on Kelly plots |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
 | **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation. This can be used to eliminate days when only a small number of sites are available. |
 | **obs\_per\_day\_limit** | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation for the time series plot. This can be used to eliminate days when only a small number of sites are available. |
@@ -1805,6 +1810,8 @@ files all\_script.input and AMET\_batch.input.
 | **remove\_mean**         | Remove the observation/model mean statistics calculation, thereby just calculating the difference from the mean value |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
 | **remove\_other**        | Remove “PM other” category from stacked bar plot analysis. |
+| **rmse\_max**            | Set RMSE scale maximum on Kelly plots |
+| **rmse\_min**            | Set RMSE scale minimum on Kelly plots |
 | **rmse\_range\_max**     | **RMS Error** range max limit: “**NULL**” – script defined limit |
 | **run\_info\_text**      | Include model run info as additional text to plots: “**y**” or “**n**”  |
 | **run\_name1**           | Project name; must be unique across AQ and MET.  |
