@@ -1,14 +1,5 @@
 #!/bin/csh
 
-#PBS -N AMET_Preprocess.csh
-#PBS -l walltime=10:00:00
-#PBS -l nodes=1:ppn=1
-#PBS -q batch
-#PBS -V
-#PBS -m n
-#PBS -j oe
-#PBS -o ./AMET_preprocess.log
-
 ##########################################################
 ##
 ## Creates and/or populates a new AMET-AQ project. Will create
@@ -75,6 +66,7 @@ setenv DELETE_PROJECT 		F
 setenv INC_AERO6_SPECIES	T 
 setenv INC_CUTOFF 		F
 setenv TIME_SHIFT 		0
+setenv HOURS_8HRMAX 		24
 
 ### Set start and end date for analysis in the form YYYY-MM-DD ###
 setenv START_DATE_H     "2016-07-01"	
