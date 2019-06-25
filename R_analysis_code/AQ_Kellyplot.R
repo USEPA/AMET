@@ -37,14 +37,14 @@ num_runs <- 1
 ################################################
 ## Set output names and remove existing files ##
 ################################################
-filename_nmb    <- paste(run_name1,species,pid,"Kelly_Plot_NMB",sep="_")
-filename_nme    <- paste(run_name1,species,pid,"Kelly_Plot_NME",sep="_")
-filename_rmse   <- paste(run_name1,species,pid,"Kelly_Plot_RMSE",sep="_")
-filename_mb     <- paste(run_name1,species,pid,"Kelly_Plot_MB",sep="_")
-filename_me     <- paste(run_name1,species,pid,"Kelly_Plot_ME",sep="_")
-filename_corr   <- paste(run_name1,species,pid,"Kelly_Plot_Corr",sep="_")
+filename_nmb    <- paste(run_name1,species,pid,"Kellyplot_NMB",sep="_")
+filename_nme    <- paste(run_name1,species,pid,"Kellyplot_NME",sep="_")
+filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_RMSE",sep="_")
+filename_mb     <- paste(run_name1,species,pid,"Kellyplot_MB",sep="_")
+filename_me     <- paste(run_name1,species,pid,"Kellyplot_ME",sep="_")
+filename_corr   <- paste(run_name1,species,pid,"Kellyplot_Corr",sep="_")
 filename_txt    <- paste(run_name1,species,pid,"stats_data.csv",sep="_")      # Set output file name
-filename_zip    <- paste(run_name1,species,pid,"Kelly_Plot.zip",sep="_")
+filename_zip    <- paste(run_name1,species,pid,"Kellyplot.zip",sep="_")
 
 ## Create a full path to file
 filename        <- NULL
@@ -84,6 +84,7 @@ region[7] <- " and (s.state='AZ' or s.state='CO' or s.state='NM' or s.state='UT'
 region[8] <- " and (s.state='CA' or s.state='NV')"
 region[9] <- " and (s.state='MT' or s.state='NE' or s.state='ND' or s.state='SD' or s.state='WY')"
 
+region_names <- c("Ohio Valley","Upper Midwest","Northeast","Northwest","South","Southeast","Southwest","West","NRockiesPlains")
 
 ### Define season database queries ###
 season[4] <- " and (d.month = 12 or d.month = 1 or d.month = 2)"
@@ -99,6 +100,9 @@ aqdat_query.df <- query_result[[1]]
 data_exists    <- query_result[[2]]
 units          <- query_result[[3]]
 model_name     <- query_result[[4]] 
+
+if (data_exists == "n") { stop("Stopping because query returned no data. Check for errors in your query setup.") }
+
 ob_col_name <- paste(species,"_ob",sep="")
 mod_col_name <- paste(species,"_mod",sep="")
 aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,month=aqdat_query.df$month,state=aqdat_query.df$state,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
@@ -113,8 +117,18 @@ for (r in 1:length(region_names)) {
    for (s in 1:length(season_names)) {
       aqdat_sub.df <- subset(aqdat.df,aqdat.df$region == region_names[r])
       aqdat_sub.df <- subset(aqdat_sub.df,aqdat_sub.df$season == season_names[s])
+#      if (length(aqdat_sub.df$Network) == 0) { stop("Stopping because query returned no data for at least one climate region and/or season. Check for data completeness.") }
       data_all.df <- data.frame(network=I(aqdat_sub.df$Network),stat_id=I(aqdat_sub.df$Stat_ID),lat=aqdat_sub.df$lat,lon=aqdat_sub.df$lon,ob_val=aqdat_sub.df$Obs_Value,mod_val=aqdat_sub.df$Mod_Value)
       stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))       # Compute stats using DomainStats function for entire domain
+      if (is.null(stats_all.df$Mean_Bias)) { 
+         stats_all.df$Percent_Norm_Mean_Bias <- NA
+         stats_all.df$Percent_Norm_Mean_Err <- NA
+         stats_all.df$Mean_Bias <- NA 
+         stats_all.df$Mean_Err <- NA
+         stats_all.df$RMSE <- NA
+         stats_all.df$Correlation <- NA
+         print(paste("Query returned no data for ",season_names[s]," ",region_names[r],". Replacing with NAs.",sep=""))
+      }
       {
       if (k == 1) {
          sinfo_data.df<-data.frame(NMB=stats_all.df$Percent_Norm_Mean_Bias,NME=stats_all.df$Percent_Norm_Mean_Err,MB=stats_all.df$Mean_Bias,ME=stats_all.df$Mean_Err,RMSE=stats_all.df$RMSE,COR=stats_all.df$Correlation,region=region_names[r],season=season_names[s])
@@ -133,29 +147,61 @@ data_melted.df = as.data.table(data_melted.df)
 data_melted.df$season = factor(data_melted.df$season, levels=c('Fall','Winter','Spring','Summer'),labels=c('Fall','Wtr','Spr','Sum'))
 data_melted.df$region = factor(data_melted.df$region, levels=rev(c("Northeast","Ohio Valley","Upper Midwest","Southeast","South","NRockiesPlains","Southwest","West","Northwest")))
 
+
+if ((!exists("mb_max")) || (!exists("me_min")) || (!exists("me_max")) || (!exists("rmse_min")) || (!exists("rmse_max"))) { print("Some plotting options not set, defaulting to NULL. You can specifiy mb_max, me_min, me_max, rmse_min and rmse_max in the configure file.") }
+if(!exists("nmb_max")) { nmb_max <- NULL }
+if(!exists("nme_max")) { nme_max <- NULL }
+if(!exists("mb_max")) { mb_max <- NULL }
+if(!exists("me_min")) { me_min <- NULL }
+if(!exists("me_max")) { me_max <- NULL }
+if(!exists("rmse_min")) { rmse_min <- NULL }
+if(!exists("rmse_max")) { rmse_max <- NULL }
+
 stats <- c("NMB","NME","MB","ME","RMSE","COR")
+stat_unit <- c("%","%",units,units,units,"")
 for (i in 1:6) {
    stat_in <- stats[i]
    data.tmp <- data_melted.df[data_melted.df$variable == stat_in,]
    if (stat_in == "NMB") {
-      data.tmp <- binval(dt=data.tmp,mn=-100,mx=100,sp=20)
+      nmb.val <- max(abs(data.tmp$value),na.rm=T)
+      nmb.max <- 100
+      int     <- 20
+      if (length(nmb_max) != 0) { nmb.val <- nmb_max }
+#      if (max(abs(data.tmp$value),na.rm=T) < 75) {
+      if (nmb.val < 75) {
+         nmb.max <- 50
+         int     <- 10
+      }
+      data.tmp <- binval(dt=data.tmp,mn=-nmb.max,mx=nmb.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'RdBu'))
       col.rng[ceiling(nlab/2)] <- 'grey70'
       alp <- 1
+
    }
    if (stat_in == "NME") {
-      data.tmp <- binval(dt=data.tmp,mn=0,mx=180,sp=20)
+      nme.val <- max(abs(data.tmp$value),na.rm=T)
+      nme.max <- 180
+      int     <- 20
+      if (length(nme_max) != 0) { nme.val <- nme_max }
+      if (nme.val < 125) {
+         nme.max <- 90
+         int     <- 10
+      }
+      data.tmp <- binval(dt=data.tmp,mn=0,mx=nme.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
       alp <- 1
    }
    if (stat_in == "MB") {
-      mb.max <- max(abs(quantile(data.tmp$value,quantile_max)))
-      pick.case <- as.numeric(cut(mb.max,c(0,0.1,0.15,0.35,0.5,2,3,4,5,8,100000),include.lowest=T))
-      val <- c(0.1,0.2,0.4,0.5,1,2,4,5,6,8,10)
-      int <- c(0.02,0.04,0.08,0.1,0.2,0.4,0.8,1,1.2,1.6,2)
-
+      mb.max <- max(abs(quantile(data.tmp$value,quantile_max,na.rm=T)),abs(quantile(data.tmp$value,quantile_min,na.rm=T)),na.rm=T)
+      if (mb.max >= 100) {
+         mb.max   <- ceiling(mb.max/10)*10
+      }
+      if (length(mb_max) != 0) { mb.max <- mb_max }
+      pick.case <- as.numeric(cut(mb.max,c(0,0.1,0.15,0.35,0.5,2,3,4,5,6,10,20,50,100,250,100000),include.lowest=T))
+      val <- c(0.1,0.2,0.4,0.5,1,2,4,5,6,10,20,50,100,250,1000)
+      int <- c(0.02,0.04,0.08,0.1,0.2,0.4,0.8,1,1.2,2.5,5,10,20,50,200)
       data.tmp <- binval(dt=data.tmp,mn=-val[pick.case],mx=val[pick.case],sp=int[pick.case])
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'RdBu'))
@@ -163,46 +209,62 @@ for (i in 1:6) {
       alp <- 1
    }
    if (stat_in == "ME") {
-      me.max    <- ceiling(max(data.tmp$value))
-      me.min    <- floor(min(data.tmp$value))
+      me.max    <- ceiling(max(data.tmp$value,na.rm=T))
+      me.min    <- floor(min(data.tmp$value,na.rm=T))
+      if (length(me_min) != 0) { me.min <- me_min }
+      if (length(me_max) != 0) { me.max <- me_max }
       me.range  <- me.max-me.min
       if(me.range == 0) {
          me.range <- 1
          me.max   <- me.max+1
       }
-      pick.case <- as.numeric(cut(me.range,c(0,1,2,3,4,5,6,7,8,10,12,14,20,100000),include.lowest=T))
-      int <- c(0.2,0.25,0.5,0.5,0.5,0.75,1,1.5,1.5,1.5,2,3,4)
+      if (me.max >= 100) {
+         me.max   <- ceiling(me.max/10)*10
+         me.min   <- floor(me.min/10)*10
+         me.range <- round(me.range/10)*10
+      }
+      pick.case <- as.numeric(cut(me.range,c(0,1,2,3,4,5,6,7,8,10,12,14,20,30,40,50,100,200,350,499,100000),include.lowest=T))
+      int <- c(0.2,0.25,0.5,0.5,0.75,0.75,1,1.5,1.5,1.5,2,3,4,5,7.5,15,25,40,50)
       data.tmp  <- binval(dt=data.tmp,mn=me.min,mx=me.max,sp=int[pick.case])
       nlab      <- data.tmp[,length(levels(fac))]
       col.rng   <- rev(brewer.pal(nlab,'YlOrBr'))
       alp <- 1
    }
    if (stat_in == "RMSE") {
-      rmse.max  <- ceiling(max(data.tmp$value))
-      rmse.min  <- floor(min(data.tmp$value))
+      rmse.max  <- ceiling(max(data.tmp$value,na.rm=T))
+      rmse.min  <- floor(min(data.tmp$value,na.rm=T))
+      if (length(rmse_min) != 0) { rmse.min <- rmse_min }
+      if (length(rmse_max) != 0) { rmse.max <- rmse_max }
       rmse.range <- rmse.max-rmse.min
       if(rmse.range == 0) {
          rmse.range <- 1
          rmse.max <- rmse.max+1
       }
-      pick.case <- as.numeric(cut(rmse.range,c(0,1,2,3,4,5,6,7,8,10,12,14,20,30,40,50,100000),include.lowest=T))
-      int <- c(0.2,0.25,0.5,0.5,0.5,0.75,1,1.5,1.5,1.5,2,3,4,5,6,7.5,10)
+      if (rmse.max >= 100) {
+         rmse.max <- ceiling(rmse.max/10)*10
+         rmse.min <- floor(rmse.min/10)*10
+         rmse.range <- round(rmse.range/10)*10
+      }
+      pick.case <- as.numeric(cut(rmse.range,c(0,1,2,3,4,5,6,7,8,10,12,14,20,30,40,50,100,200,350,499,100000),include.lowest=T))
+      int <- c(0.2,0.25,0.5,0.5,0.75,0.75,1,1.5,1.5,1.5,2,3,4,5,7.5,15,25,40,50)
       data.tmp <- binval(dt=data.tmp,mn=rmse.min,mx=rmse.max+int[pick.case],sp=int[pick.case])
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
       alp <- 0.9
    }
    if (stat_in == "COR") {
-      data.tmp <- binval(dt=data.tmp,mn=0,mx=1,sp=0.2)
+      data.tmp <- binval(dt=data.tmp,mn=0,mx=0.9,sp=0.1)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlGnBu'))
       alp <- 0.9   
    }
 
+#   pdf(file=paste(filename[i],".pdf",sep=""),width=8,height=8)
+
    plt <- ggplot() +
      geom_tile(data=data.tmp,aes(x=season,y=region,fill=fac),color='black',lwd=0.3,alpha=0.8) +
      facet_wrap(~variable) +
-     scale_fill_manual(values=col.rng,name='Percentile',drop=F) +
+     scale_fill_manual(values=col.rng,name=stat_unit[i],drop=F) +
      scale_x_discrete(name='',expand=c(0,0)) +
      scale_y_discrete(name='',expand=c(0,0)) +
      guides(fill = guide_legend(reverse=T)) +
@@ -215,6 +277,7 @@ for (i in 1:6) {
            plot.title=element_text(size=16))
 
    ggsave(plt,file=paste(filename[i],".pdf",sep=""),dpi=600,width=6,height=3.2)
+#   plt
 
    ### Convert pdf file to png file ###
    #dev.off()

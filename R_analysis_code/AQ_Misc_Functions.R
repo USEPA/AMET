@@ -1307,7 +1307,7 @@ read_sitex <- function(directory,network,run_name,species)
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_dates","ob_hour"))
 {
    run_name     <- gsub("[.]","_",project_id)
-   run_name     <- gsub("[-]","_",project_id)
+   run_name     <- gsub("[-]","_",run_name)
    if (!exists("aggregate_data")) { aggregate_data <- "n" }
    data_order <- orderby[1]
    i <- 2 
@@ -1428,12 +1428,12 @@ library(data.table)
   if(sign(mn) < 0 & sign(mx) > 0) bin   <- bin[-which(bin==0)]
   nbin  <- length(bin) - 1
   reset.mn <- F
-  if(dt[,min(value,na.rm=F)] < mn) {
+  if(dt[,min(value,na.rm=T)] < mn) {
    dt[,value:=ifelse(value<mn,mn+0.0001,value)]
    reset.mn <- T
   }
   reset.mx <- F
-  if(dt[,max(value,na.rm=F)]>mx) {
+  if(dt[,max(value,na.rm=T)]>mx) {
    dt[,value:=ifelse(value>mx,mx,value)]
    reset.mx <- T
   }
@@ -1466,7 +1466,7 @@ if (Met_query == "T") {
 query_dbase <- function(project_id,network,species,criteria="Default",orderby=c("stat_id","ob_date","ob_time"))
 {
    run_name     <- gsub("[.]","_",project_id)
-   run_name     <- gsub("[-]","_",project_id)
+   run_name     <- gsub("[-]","_",run_name)
    data_order <- orderby[1]
    i <- 2
    while (i <= length(orderby)) {

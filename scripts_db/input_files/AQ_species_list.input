@@ -334,19 +334,25 @@ species_AE6_CASTNET_Hourly <- ""
 ###########################################
 
 species_CASTNET_Daily_O3 <- paste("
-## define model species
-   setenv OZONE \"",O3_mod_factor,"*O3,",O3_units,"\"
+  ## define model species
+  setenv OZONE \"",O3_mod_factor,"*O3,",O3_units,"\"
 
-## define obs species
+  ## define obs species
   setenv OBS_SPECIES OZONE 
 
-## indicate whether or not to check QA flag
+  ## indicate whether or not to check QA flag
   setenv QA_FLAG_CHECK Y 
 
-## Indicates whether the Lambert x/y information should be included in the output file
+  ## Indicates whether the Lambert x/y information should be included in the output file
   setenv LAMBXY N 
 
-## Ozone convert factor (ppm to ppb)
+  ## Number of 8hr values to use when computing daily maximum 8hr ozone.
+  ## Allowed values are 24 (use all 8-hr averages with starting hours
+  ## from 0 - 23 hr local time) and 17 (use only the 17 8-hr averages
+  ## with starting hours from 7 - 23 hr local time)
+  setenv HOURS_8HRMAX ",num_avg_hours,"
+
+  ## Ozone convert factor (ppm to ppb)
   setenv OBS_FACTOR \"",O3_obs_factor,"\"       # Multiply by 1000 to convert ppm to ppb
 ",sep = "")
 species_cutoff_CASTNET_Daily_O3 <- ""
@@ -539,6 +545,12 @@ species_AQS_Daily_O3 <- paste("
 
 ## Indicates whether the Lambert x/y information should be included in the output file
   setenv LAMBXY N 
+
+## Number of 8hr values to use when computing daily maximum 8hr ozone.
+## Allowed values are 24 (use all 8-hr averages with starting hours
+## from 0 - 23 hr local time) and 17 (use only the 17 8-hr averages
+## with starting hours from 7 - 23 hr local time)
+  setenv HOURS_8HRMAX ",num_avg_hours,"
 
 ## Ozone observation conversion factor
   setenv OBS_FACTOR \"",O3_obs_factor,"\"	
@@ -927,6 +939,12 @@ species_NAPS_Daily_O3 <- paste("
 
  ## Indicates whether the Lambert x/y information should be included in the output file
  setenv LAMBXY N
+
+ ## Number of 8hr values to use when computing daily maximum 8hr ozone.
+ ## Allowed values are 24 (use all 8-hr averages with starting hours
+ ## from 0 - 23 hr local time) and 17 (use only the 17 8-hr averages
+ ## with starting hours from 7 - 23 hr local time)
+ setenv HOURS_8HRMAX ",num_avg_hours,"
 
  ## Ozone observation conversion factor
  setenv OBS_FACTOR \"",O3_obs_factor,"\"

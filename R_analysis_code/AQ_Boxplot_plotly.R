@@ -41,7 +41,7 @@ filename_txt            <- paste(run_name1,species,pid,"boxplot.csv",sep="_")
 
 ## Create a full path to file
 filename_html            <- paste(figdir,filename_html,sep="/")
-filename_html_bias       <- paste(figdir,filename_bias_html,sep="/")
+filename_bias_html       <- paste(figdir,filename_bias_html,sep="/")
 filename_txt             <- paste(figdir,filename_txt,sep="/")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }

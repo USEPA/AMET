@@ -115,9 +115,11 @@ png_res		<- 300
 img_height<-NULL
 img_width<-NULL
 
-### Aggregate data from multiple POCs
+### Aggregate data from sites with multiple POCs
 aggregate_data<-"n"
 
+### Merge statid and POC into a single site id name ###
+merge_statid_POC <- "y"
 
 #########################
 ### Axis Plot Options ###
@@ -162,6 +164,17 @@ inc_bias  <- 'y'
 inc_rmse  <- 'y'
 inc_corr  <- 'y'
 inc_error <- 'y'
+
+##########################
+### Kelly Plot Options ###
+##########################
+nmb_max<-NULL
+nme_max<-NULL
+mb_max<-NULL
+me_min<-NULL
+me_max<-NULL
+rmse_min<-NULL
+rmse_max<-NULL
 
 ############################
 ### Spatial Plot Options ###
