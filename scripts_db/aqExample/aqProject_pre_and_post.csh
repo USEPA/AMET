@@ -1,187 +1,171 @@
 #!/bin/csh -f
 
-#> Simple Linux Utility for Resource Management System 
-#> (SLURM) - The following specifications are recommended 
-#> for executing the runscript on the atmos cluster at the 
-#> National Computing Center used primarily by EPA.
-#SBATCH --partition=singlepe
-#SBATCH --time 20:00:00
-#SBATCH --job-name=CMAQ_eval
-#SBATCH --gid=mod3eval
-#SBATCH --output=/work/MOD3EVAL/wtt/CMAQ_v53_Dev/data/output_CCTM_v521_mpi_intel17.0_2016_12US1/PostProcess/CMAQ_eval_%j.txt
+##########################################################
+##
+## Creates and/or populates a new AMET-AQ project. Will create
+## the database and the required database tables if they do not
+## exist. As opposed to the aqExample_post_only.csh script, this
+## script will take the raw daily CMAQ output files and create
+## monthly files using the combine program. It can also be used
+## to run the hr2day program to create IOAQP files of daily average 
+## values, including MDA8 ozone. Finally, this script can also be
+## used to invoke the batch scripting capability of AMET-AQ. This
+## requires an additional input file. It is more compreshensive version
+## of the aqExample_post_only.csh script, with all the same 
+## capabilities with additional functionality.
+## 
+##
+## This script can be used to both setup an AMET project
+## and populate the AMET project table. If the database and/or project
+## do not exist, they will be created. If the project has already
+## been created, it will not be altered unless specified by the user.
+## There are also separate flags indicated whether or not to create the
+## site compare scripts, run the site compare scripts, and/or load
+## the site compare data into the database.
+##
+## Three input files required by this script are:
+## - sites_meta.input (required when first setting up the database)
+## - AQ_species_list.input (likely does not need to be altered)
+## - AMET_batch.input (likely will be altered by user)
+##
+## Last modified by K. Wyat Appel: Jun, 2019
+##
+##########################################################
 
-#> The following commands output information from the SLURM
-#> scheduler to the log files for traceability.
-   if ( $SLURM_JOB_ID ) then
-      echo Job ID is $SLURM_JOB_ID
-      echo Host is $SLURM_SUBMIT_HOST
-      echo Nodefile is $SLURM_JOB_NODELIST
-      cat $SLURM_JOB_NODELIST | pr -o5 -4 -t
-      #> Switch to the working directory. By default,
-      #>   SLURM launches processes from your home directory.
-      echo Working directory is $SLURM_SUBMIT_DIR
-      cd $SLURM_SUBMIT_DIR
-   endif
-   echo '>>>>>> start model run at ' `date`config
-
-#> Configure the system environment and set up the module 
-#> capability
-   limit stacksize unlimited
-
-# ==================================================================
-#> Script Sections
-# ==================================================================
-  #> 1. Select which analysis steps you want to execute
-  #> 2. Simulation information, input/output directories
-  #> 3. System configuration, location of observations and code repositories
-  #> 4. Combine Configuration Options   
-  #> 5. Hour to Day Configuration Options
-  #> 6. Site Compare and Site Compare Daily O3 Configuration Options  
-  #> 7. AMET Configuration Options (Ignore if not using AMET)
-  #> 8. Evaluation Plotting Configuration Options  
-
-
-# ==================================================================
+#
+## ==================================================================
 #> 1. Select which analysis steps you want to execute
 # ==================================================================
 
 #> Combine and sitecmp options
- setenv RUN_COMBINE	  T	#> T/F; Run combine on CCTM output?
- setenv RUN_HR2DAY	  F	#> T/F: Run hr2day to create daily metrics (e.g. 24hr average, MDA8). Need to run hr2day if using TOAR network data or if creating model/obs overlay animations.
- setenv WRITE_SITEX	  T     #> T/F; Write scripts for running site compare for each selected network?
- setenv RUN_SITEX	  T     #> T/F; Run site compare scripts for each selected network?
- 
+ setenv RUN_COMBINE       F     #> T/F; Run combine on CCTM output?
+ setenv RUN_HR2DAY        F     #> T/F; Run hr2day program (needed for analyzing TOAR network data)
+ setenv WRITE_SITEX       T     #> T/F; Write scripts for running site compare for each selected network?
+ setenv RUN_SITEX         T     #> T/F; Run site compare scripts for each selected network?
+
 #> AMET options
- setenv CREATE_PROJECT    F	#> T/F; Create AMET project?
- setenv LOAD_SITEX        T	#> T/F; Load site compare output for each selected network into AMET?
- setenv UPDATE_PROJECT	  F	#> T/F; Update the project info for an existing project (all data are retained)
- setenv REMAKE_PROJECT	  F	#> T/F; Remake an existing AMET project. Note that all existing data will be deleted
- setenv DELETE_PROJECT	  F	#> T/F; Delete an existing AMET project. This will delete all data in the existing 
-				#>      AMET table and remove the table from the database
+ setenv CREATE_PROJECT    T     #> T/F; Create AMET project?
+ setenv LOAD_SITEX        T     #> T/F; Load site compare output for each selected network into AMET?
+ setenv UPDATE_PROJECT    F     #> T/F; Update the project info for an existing project (all data are retained)
+ setenv REMAKE_PROJECT    F     #> T/F; Remake an existing AMET project. Note that all existing data will be deleted
+ setenv DELETE_PROJECT    F     #> T/F; Delete an existing AMET project. This will delete all data in the existing
+                                #>      AMET table and remove the table from the database
 
 #> Plotting options
- setenv AMET_DB 	  T	#> T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
-				#>      When set to F, plotting scripts will read the sitecmp .csv files directly
- setenv spatial_plots	  F	#> T/F; Create maps of biase and error from site compare output? 
- setenv stacked_barplots  F	#> T/F; Create stacked bar plots of PM2.5 species from site compare output? 
- setenv time_plots	  F	#> T/F; Create time series plots from site compare output? 
- setenv scatter_plots	  F	#> T/F; Create scatter plots from site compare output? 
- setenv misc_plots	  F	#> T/F; Create bugle plots and soccer goal plots from site compare output? 
+ setenv AMET_DB           T     #> T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
+                                #>      When set to F, plotting scripts will read the sitecmp .csv files directly
+ setenv spatial_plots     T     #> T/F; Create maps of biase and error from site compare output?
+ setenv stacked_barplots  T     #> T/F; Create stacked bar plots of PM2.5 species from site compare output?
+ setenv time_plots        T     #> T/F; Create time series plots from site compare output?
+ setenv scatter_plots     T     #> T/F; Create scatter plots from site compare output?
+ setenv misc_plots        T     #> T/F; Create bugle plots and soccer goal plots from site compare output?
 
-# ==================================================================
-#> 2. Simulation information, input/output directories
-# ==================================================================
 
-#> Start and end dates of simulation to be evaluated.
- setenv START_DATE_H  "2016-05-01"		#> Start day. Should be in format "YYYY-MM-DD".	
- setenv END_DATE_H    "2016-05-31"	#-30"	#> End day. Should be in format "YYYY-MM-DD".
-#> Set general parameters for labeling the simulation
- set VRSN = v521				#> Set the model version
- set MECH = cb6r3_ae7_aq        		#> Mechanism ID (should match file name of species defintion files)
- set APPL = v521_mpi_intel17.0_2016_12US1            #> Application Name (e.g. Code version, compiler, gridname, emissions, etc.)
-
-#> Name and location of daily MET output. Required files = METCRO2D, METCRO3D
-#> This script assumes MET files are dated with the following naming convention: 
-#> ${METCRO2D_NAME}_${YY}${MM}${DD}.nc, ${METCRO3D_NAME}_${YY}${MM}${DD}.nc
- setenv METDIR	/work/MOD3DATA/2016_12US1/met/mcip_v43_wrf_v381_ltng #> Location of MET ouput.
- set METCRO2D_NAME = METCRO2D.12US1.35L		  #> METCRO2D file name (without date and file extension).
- set METCRO3D_NAME = METCRO3D.12US1.35L		  #> METCRO3D file name (without date and file extension).
-	
-#> Name and location of daily CCTM output. Required files = ACONC, APMDIAG, WETDEP1, DRYDEP.	
-#> This script assumes daily CCTM output files are dated with the following naming convention: 
-#> [File Name]_${YYYY}${MM}${DD}.nc where [File Name] typically = [File Type]_[Application ID].
-#> for example: CCTM_ACONC_v52_intel17.0_SE52BENCH_${YYYY}${MM}${DD}.nc
- setenv CCTMOUTDIR  /work/MOD3EVAL/wtt/CMAQ_v53_Dev/data/output_CCTM_v521_mpi_intel17.0_2016_12US1 #> Location of CCTM ouput.
-# setenv CCTMOUTDIR	/asm/MOD3EVAL/CMAQ_v53_Dev/CMAQv521_2016_12US1_Eval_Base/02
-
- set CCTM_ACONC_NAME    = CCTM_ACONC_${APPL} 	#> ACONC file name (without date and file extension).
- set CCTM_APMDIAG_NAME  = CCTM_APMDIAG_${APPL}	#> APMDIAG file name (without date and file extension).
- set CCTM_WETDEP1_NAME  = CCTM_WETDEP1_${APPL}  #> WETDEP1 file name (without date and file extension). 
- set CCTM_DRYDEP_NAME   = CCTM_DRYDEP_${APPL} 	#> DRYDEP file name (without date and file extension).
-                                                
-#> Names and locations of output files created with this script. 
-#> This script assumes monthly combine files containing hourly data are dated with the following naming convention:
-#> ${COMBINE_ACONC_NAME}_${YYYY}${MM}.nc,${COMBINE_DEP_NAME}_${YYYY}${MM}.nc
-#> Monthly hr2day files with daily metrics have the following naming convention:
-#> ${HR2DAY_ACONC_NAME}_${YYYY}${MM}.nc
- setenv POSTDIR	/work/MOD3EVAL/wtt/CMAQ_v53_Dev/data/output_CCTM_v521_mpi_intel17.0_2016_12US1/PostProcess	#> Location to write combine files. (Or location of existing combine files). 
- set COMBINE_ACONC_NAME = COMBINE_ACONC_${APPL}				#> Name of combine ACONC file (without date and file extension).
- set COMBINE_DEP_NAME   = COMBINE_DEP_${APPL}				#> Name of combine DEP file (without date and file extension).
- set HR2DAY_ACONC_NAME  = HR2DAY_LST_ACONC_${APPL}			#> Name of HR2DAY ACONC file (without date and file extension).
-          
-#> Names and locations of output files created with this script.
- setenv EVALDIR	/work/MOD3EVAL/wtt/CMAQ_v53_Dev/data/output_CCTM_v521_mpi_intel17.0_2016_12US1/PostProcess	#> Location where sitecmp files will be saved.
- setenv PLOTDIR	/work/MOD3EVAL/wtt/CMAQ_v53_Dev/data/output_CCTM_v521_mpi_intel17.0_2016_12US1/PostProcess	#> Location where evaluaiton plots will be saved. 
- 
 # ==================================================================================
-#> 3. System configuration, location of observations and code repositories
+#> 2. System configuration, location of observations and code repositories
 # ==================================================================================
 
 #> Configure the system environment
- setenv compiler     intel     			#> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
- setenv compilerVrsn 17.0    			#> Compiler version
-# source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on atmos
-# source /work/MOD3DEV/cmaq_common/R_env.csh  	#> Set up R environment on atmos
+  setenv compiler     intel                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
+  setenv compilerVrsn 17.0.3                     #> Compiler version
+ # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on atmos
+ # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on atmos
 
 #> Set the location of the $CMAQ_HOME project directory used in
-#> the bldit_project.csh script of the CMAQ5.2 git repository. 
-#> This directory contains executables for combine, sitecmp and 
+#> the bldit_project.csh script of the CMAQ5.2 git repository.
+#> This directory contains executables for combine, sitecmp and
 #> sitecmp_daily and the species definition files needed
-#> for combine.  If you are not using a CMAQ5.2 reposiotry you can 
-#> modify the location of the executables and spec_def files later 
+#> for combine.  If you are not using a CMAQ5.2 reposiotry you can
+#> modify the location of the executables and spec_def files later
 #> in the script.
- set CMAQ_HOME = /home/kfoley/projects/cmaq_dev
+ set CMAQ_HOME = /home/kfoley/projects/cmaq52_project
 
 #> Set the location of the observation data (probably do not have to change this).
-# setenv OBS_DATA_DIR  /work/MOD3EVAL/aq_obs/routine	
- setenv OBS_DATA_DIR /work/MOD3EVAL/wtt/obs_data/Release_Obs_Dev
- setenv RELOAD_METADATA  T
+ setenv OBS_DATA_DIR  /work/MOD3EVAL/aq_obs/routine
 
-#> Set the format of the site files needed for sitecmp and sitecmp_dailyo3.  
+#> Set the format of the site files needed for sitecmp and sitecmp_dailyo3.
 #> Options: txt or csv   The .csv files include metadata about the monitoring site (e.g. county, elevation).
  setenv SITE_FILE_FORMAT csv
 
 #> Base directory where AMET code resides (probably do not have to change this).
-# setenv AMETBASE      /work/MOD3EVAL/amet 		
- setenv AMETBASE /home/kappel/AMET_Code/AMET_Public_Dev
+#  setenv AMETBASE      /work/MOD3EVAL/amet
+ setenv AMETBASE	/work/MOD3EVAL/wtt/AMETv14b      
+
+# ==================================================================
+#> 3. Simulation information, input/output directories
+# ==================================================================
+
+#> Start and end dates of simulation to be evaluated.
+ setenv START_DATE_H  "2011-07-01"              #> Start day. Should be in format "YYYY-MM-DD".
+ setenv END_DATE_H    "2011-07-31"              #> End day. Should be in format "YYYY-MM-DD".
+
+#> Set general parameters for labeling the simulation
+ set VRSN = v53                                 #> Set the model version
+ set MECH = cb6r3_ae6_aq                        #> Mechanism ID (should match file name of species defintion files)
+ set APPL = aqExample                           #> Application Name (e.g. Code version, compiler, gridname, emissions, etc.)
+
+#> Name and location of daily MET output. Required files = METCRO2D, METCRO3D
+#> This script assumes MET files are dated with the following naming convention:
+#> ${METCRO2D_NAME}_${YY}${MM}${DD}.nc, ${METCRO3D_NAME}_${YY}${MM}${DD}.nc
+ setenv METDIR  /work/MOD3DEV/cmaq_benchmark/SE52BENCH/multi_day/cctm_input/met/mcip  #> Location of MET ouput.
+ set METCRO2D_NAME = METCRO2D                   #> METCRO2D file name (without date and file extension).
+ set METCRO3D_NAME = METCRO3D                   #> METCRO3D file name (without date and file extension).
+
+#> Name and location of daily CCTM output. Required files = ACONC, APMDIAG, WETDEP1, DRYDEP.
+#> This script assumes daily CCTM output files are dated with the following naming convention:
+#> [File Name]_${YYYY}${MM}${DD}.nc where [File Name] typically = [File Type]_[Application ID].
+#> for example: CCTM_ACONC_v52_intel17.0_SE52BENCH_${YYYY}${MM}${DD}.nc
+ setenv CCTMOUTDIR  /work/MOD3DEV/cmaq_benchmark/SE52BENCH/multi_day/ref_output/cctm    #> Location of CCTM output.
+ set CCTM_ACONC_NAME    = CCTM_ACONC_${APPL}    #> ACONC file name (without date and file extension).
+ set CCTM_APMDIAG_NAME  = CCTM_APMDIAG_${APPL}  #> APMDIAG file name (without date and file extension).
+ set CCTM_WETDEP1_NAME  = CCTM_WETDEP1_${APPL}  #> WETDEP1 file name (without date and file extension).
+ set CCTM_DRYDEP_NAME   = CCTM_DRYDEP_${APPL}   #> DRYDEP file name (without date and file extension).
+
+#> Names and locations of output files created with this script.
+#> This script assumes monthly combine files are dated with the following naming convention:
+#> ${COMBINE_ACONC_NAME}_${YYYY}${MM}.nc,${COMBINE_DEP_NAME}_${YYYY}${MM}.nc
+ setenv POSTDIR   $AMETBASE/output/${APPL}	 #> Location to write combine files. (Or location of existing combine files).
+
+ set COMBINE_ACONC_NAME  = COMBINE_ACONC_${APPL} #> Name of combine ACONC file (without date and file extension).
+ set COMBINE_DEP_NAME    = COMBINE_DEP_${APPL}   #> Name of combine DEP file (without date and file extension).
+ set HR2DAY_ACONC_NAME   = HR2DAY_ACONC_${APPL}  #> Name of hr2day file (without date and file extension).
+
+ setenv EVALDIR $AMETBASE/output/${APPL}/sitex_output #> Location where sitecmp files will be saved (or location of existing sitecmp files).
+
+ setenv PLOTDIR $AMETBASE/output/${APPL}/plots  #> Location where evaluaiton plots will be saved.
+ 
 
 # =====================================================================
 #> 4. Combine Configuration Options
 # =====================================================================
 
 #> Set the full path of combine executable.
-# setenv EXEC_combine ${CMAQ_HOME}/POST/combine/scripts/BLD_combine_${VRSN}_${compiler}${compilerVrsn}/combine_${VRSN}.exe
- setenv EXEC_combine /home/kappel/CMAQ_Code/CMAQ521/POST/combine/scripts/BLD_combine_v521_intel17.0/combine_v521.exe
+ setenv EXEC_combine ${CMAQ_HOME}/POST/combine/scripts/BLD_combine_${VRSN}_${compiler}${compilerVrsn}/combine_${VRSN}.exe
 
 #> Set location of species definition files for concentration and deposition species needed to run combine.
-# setenv SPEC_CONC  ${CMAQ_HOME}/POST/combine/scripts/spec_def_files/SpecDef_${MECH}.txt
-# setenv SPEC_DEP   ${CMAQ_HOME}/POST/combine/scripts/spec_def_files/SpecDef_Dep_${MECH}.txt
-# setenv SPEC_CONC /work/MOD3EVAL/fib/unit_test/CMAQv5.3/aero_sprint/SpecDef_${MECH}.txt
-# setenv SPEC_DEP /work/MOD3EVAL/fib/unit_test/CMAQv5.3/aero_sprint/SpecDef_Dep_${MECH}.txt
- setenv SPEC_CONC /work/MOD3EVAL/wtt/CMAQ_v53_Dev/data/output_CCTM_v521_mpi_intel17.0_2016_12US1/PostProcess/SpecDef_cb6r3_ae6_aq_O3_tracers.txt 
- setenv SPEC_DEP /home/kappel/CMAQ_Code/PROJECTS/CMAQv521/POST/combine/scripts/spec_def_files/SpecDef_Dep_cb6r3_ae6_aq.txt
-
-#> Projection sphere type for combine, hr2day, sitecmp (use type 20 to match WRF/CMAQ).
- setenv IOAPI_ISPH 	20
+ setenv SPEC_CONC  ${CMAQ_HOME}/POST/combine/scripts/spec_def_files/SpecDef_${MECH}.txt
+ setenv SPEC_DEP   ${CMAQ_HOME}/POST/combine/scripts/spec_def_files/SpecDef_Dep_${MECH}.txt
 
 # =====================================================================
 #> 5. Hour to Day Configuration Options
 # =====================================================================
 
 #> Set the full path of hr2day executable.
-# setenv EXEC_hr2day ${CMAQ_HOME}/POST/hr2day/scripts/BLD_hr2day_${VRSN}_${compiler}${compilerVrsn}/hr2day_${VRSN}.exe
-# Use this path until model changes have been merged into CMAQ_Dev repo.
- setenv EXEC_hr2day /work/MOD3EVAL/css/git_builds/CMAQ_v52_CHOGREFE_20180725/POST/hr2day/scripts/BLD_hr2day_v53_intel17.0/hr2day_v53.exe
+ setenv EXEC_hr2day ${CMAQ_HOME}/POST/hr2day/scripts/BLD_hr2day_${VRSN}_${compiler}${compilerVrsn}/hr2day_${VRSN}.exe
 
 #> Set to use local time for evaluation against observational data (default is GMT)
  setenv USELOCAL Y
 
 #> Location of time zone data file, tz.csv (this is a required input file
 #> when using USELOCAL Y to shift from GMT to local time)
- setenv TZFILE /home/kfoley/CMAQ52_repo/POST/bldoverlay/inputs/tz.csv
+ setenv TZFILE ${CMAQ_HOME}/POST/hr2day/inputs/tz.csv
 
 #> Set to use daylight savings time (default is N)
  setenv USEDST N
+
+#> Set time shift value for time shifted files. This was done in past for ACONC files, but is no longer necessary using new CMAQ runtime options.
+#> Default is now 0.
+ setenv TIME_SHIFT 0
 
 #> Partial day calculation (computes value for last day even 
 #> if there are not 24 hours for that day after shift to LST)
@@ -211,11 +195,11 @@
 # =====================================================================
 
 #> Set the full path of sitecmp and sitecmp_daily executables.
-# setenv EXEC_sitecmp 		${CMAQ_HOME}/POST/sitecmp/scripts/BLD_sitecmp_${VRSN}_${compiler}${compilerVrsn}/sitecmp_${VRSN}.exe
-# setenv EXEC_sitecmp_dailyo3 	${CMAQ_HOME}/POST/sitecmp_dailyo3/scripts/BLD_sitecmp_dailyo3_${VRSN}_${compiler}${compilerVrsn}/sitecmp_dailyo3_${VRSN}.exe
-# Use this path until model changes have been merged into CMAQ_Dev repo.
- setenv EXEC_sitecmp 		/work/MOD3EVAL/css/git_builds/CMAQ_v52_CHOGREFE_20180725/POST/sitecmp/scripts/BLD_sitecmp_v53_intel17.0/sitecmp_v53.exe
- setenv EXEC_sitecmp_dailyo3	/work/MOD3EVAL/css/git_builds/CMAQ_v52_CHOGREFE_20180725/POST/sitecmp_dailyo3/scripts/BLD_sitecmp_dailyo3_v53_intel17.0/sitecmp_dailyo3_v53.exe
+ setenv EXEC_sitecmp            ${CMAQ_HOME}/POST/sitecmp/scripts/BLD_sitecmp_${VRSN}_${compiler}${compilerVrsn}/sitecmp_${VRSN}.exe
+ setenv EXEC_sitecmp_dailyo3    ${CMAQ_HOME}/POST/sitecmp_dailyo3/scripts/BLD_sitecmp_dailyo3_${VRSN}_${compiler}${compilerVrsn}/sitecmp_dailyo3_${VRSN}.exe
+
+#> Projection sphere type for sitecmp and combine (use type 20 to match WRF/CMAQ).
+ setenv IOAPI_ISPH      20
 
 #> Include x/y projection values for each site in OUT_TABLE (default N)
  setenv LAMBXY         
@@ -261,7 +245,7 @@
  setenv EMEP_DAILY        F
  setenv EMEP_DAILY_O3	  F
  setenv EMEP_DEP	  F
- setenv FLUXNET           T
+ setenv FLUXNET           F
  setenv MDN               F
  setenv NAPS_HOURLY       T 
  setenv NAPS_DAILY_O3	  T
@@ -280,11 +264,11 @@
 # =====================================================================
 
 #> Project name and details. Project will be created if it does not already exist.
- setenv AMET_DATABASE   amad_CMAQ_v53_Dev	
- setenv AMET_PROJECT    CMAQv521_2016_12US1_Eval_Base
+ setenv AMET_DATABASE   amet 
+ setenv AMET_PROJECT    ${APPL}                #Cannot use ${APPL} for the benchmark runs because of the "." in 17.0 label.
  setenv MODEL_TYPE      "CMAQ"
- setenv RUN_DESCRIPTION "Base CMAQv5.2.1 simulatuion for v5.3b testing. 12US1 2016 simulation with lightning NO, but no WBD or bidi. Post-processing performed by Wyat Appel. Annual 2016."
- setenv USER_NAME       "kappel"
+ setenv RUN_DESCRIPTION "CMAQv5.3 AMET aqExample test case. July 2016."
+ setenv USER_NAME       `whoami`
  setenv EMAIL_ADDR      "appel.wyat@epa.gov"
 
 # =====================================================================
@@ -292,22 +276,22 @@
 # =====================================================================
 
 #> Set the location of the configuration file for the batch plotting.
- setenv AMETRINPUT      /work/MOD3EVAL/cmaq_exp/post_scripts/config_CMAQ_eval_AMET.R
+ setenv AMETRINPUT      $AMETBASE/script_analysis/aqExample/input_files/AMET_batch.input
 
 #> Plot Type, options are "pdf","png","both"
- setenv AMET_PTYPE 	png
+ setenv AMET_PTYPE 	both
 
 #> T/F When set to T (default) evalatuion plots will be organized into monthly summaries.  
 #>     When set to F evalution plots will be based on all available data between START_DATE_H and END_DATE_H.
 #>     Note that the option of setting this flag to F is only available when AMET_DB is set to T.
- setenv EVAL_BY_MONTH 	T
+ setenv EVAL_BY_MONTH 	F
 
 #> Specify a second simulation (already post-processed) to compare to 
 #> using model-to-model evaluation plots. This option currently supported 
 #> in limited fashion. If not using the AMET database, need to specify the
 #> location of the site compare files for the second simulation.
-# setenv AMET_PROJECT2 	"v521_mpi_intel17.0_4CALIF1_20180717"
-# setenv OUTDIR2         ${POSTDIR}/201107
+# setenv AMET_PROJECT2    CMAQv53b1_2016_12US1_M3Dry_Bidi
+# setenv OUTDIR2         ${POSTDIR}/201101
 
 
 
@@ -323,7 +307,7 @@ if (${RUN_COMBINE} == 'T') then
 
 #> Create $POSTDIR if it does not already exist.
   if(! -d ${POSTDIR}) then
-     mkdir ${POSTDIR}
+     mkdir -p ${POSTDIR}
   endif
 
 #> Set the species definition file for concentration species.
@@ -477,15 +461,36 @@ endif #End RUN_HR2DAY
  set amet_pass = "config_file"
 
 #> No need to change this.
- setenv AMET_OBS	$OBS_DATA_DIR
+ setenv AMET_OBS	 $OBS_DATA_DIR
+ setenv SITES_META_LIST  $AMETBASE/scripts_db/input_files/sites_meta.input
+ setenv AQ_SPECIES_LIST  $AMETBASE/scripts_db/input_files/AQ_species_list.input
+ setenv RELOAD_METADATA  F
 
 
 # =====================================================================
-#> 8e. Create AMET project
+#> 8e. Create AMET database (if needed) and project table
 # =====================================================================
+
+ ## setup metadata tables
+ echo "**Setting up AMET database if needed**"
+ R --no-save --slave --args < $AMETBASE/R_db_code/AQ_setup_dbase.R "$amet_login" "$amet_pass"
+ if ( $status != 0 ) then
+    echo "Error setting up AMET database"
+    exit (1)
+ endif
 
  if ((${CREATE_PROJECT} == 'T') || (${UPDATE_PROJECT} == 'T') || (${REMAKE_PROJECT} == 'T') || (${DELETE_PROJECT} == 'T')) then
+   echo "**Checking to see if AQ project table exists, if not create it. Will update existing table if requested.**"
+   #> Create $EVALDIR if it does not exist.
+   if(! -d ${EVALDIR}) then
+     mkdir -p ${EVALDIR}
+   endif
    R --no-save --slave --args < ${AMETBASE}/R_db_code/AQ_create_project.R "$amet_login" "$amet_pass" >&! ${EVALDIR}/create_AMET_project_${AMET_PROJECT}.log
+   if ( $status != 0 ) then
+     echo "Error creating new project OR user decided not to overwrite old project."
+     exit (1)
+   endif
+   echo "Done with project table creation."
  endif
 
 
@@ -500,6 +505,7 @@ endif #End RUN_HR2DAY
  endif 
 
 if ((${RUN_SITEX} == 'T') || (${WRITE_SITEX} == 'T') || (${LOAD_SITEX} == 'T') || (${make_plots} == 'T')) then
+ echo "**Populating new AQ project.  This may take some time...."
 
 #> Run sitecmp one month at a time.
 #> Loop through all months between START_DAY and END_DAY one month at a time.
@@ -533,7 +539,7 @@ if ((${RUN_SITEX} == 'T') || (${WRITE_SITEX} == 'T') || (${LOAD_SITEX} == 'T') |
 
   #> Create $EVALDIR if it does not exist.
    if(! -d ${EVALDIR}) then
-     mkdir ${EVALDIR}
+     mkdir -p ${EVALDIR}
    endif
 
   #> ACONC and DEP combine files for this month and the following month.
@@ -568,7 +574,7 @@ if ((${RUN_SITEX} == 'T') || (${WRITE_SITEX} == 'T') || (${LOAD_SITEX} == 'T') |
   #> Save sitecmp output in folders organized by year and month.
    setenv OUTDIR  ${EVALDIR}/${YYYY}${MM}
     if(! -d ${OUTDIR}) then
-       mkdir ${OUTDIR}
+       mkdir -p ${OUTDIR}
     endif
    cd ${OUTDIR}
    
@@ -582,16 +588,19 @@ if ((${RUN_SITEX} == 'T') || (${WRITE_SITEX} == 'T') || (${LOAD_SITEX} == 'T') |
 
   #> Run R code amet_extract_all.R to write and execute sitecmp and sitecmp_dailyo3 scripts.
    R --no-save --slave --args < $AMETBASE/R_db_code/AQ_matching.R "$amet_login" "$amet_pass" >&! amet_extract_all_${AMET_PROJECT}.log
- 
+   if ( $status != 0 ) then
+       echo "Error populating new project with data"
+       exit (1)
+   endif 
   endif #End $RUN_SITEX OR $WRITE_SITEX or $LOAD_SITEX flags
 
 
   #> Create evaluation plots.
   if (${make_plots} == 'T' && ${EVAL_BY_MONTH} == 'T') then
-   
+    echo "**Creating AMET batch plots.  This may take some time...."  
     #> Create $PLOTDIR if it does not exist.
     if(! -d ${PLOTDIR}) then
-       mkdir ${PLOTDIR}
+       mkdir -p ${PLOTDIR}
      endif
 
     #> Sitecmp output are in folders organized by year and month.
@@ -600,7 +609,7 @@ if ((${RUN_SITEX} == 'T') || (${WRITE_SITEX} == 'T') || (${LOAD_SITEX} == 'T') |
     #> Save batch plotting output in folders organized by year and month.
     setenv AMET_OUT  ${PLOTDIR}/${YYYY}${MM}
     if(! -d ${AMET_OUT}) then
-       mkdir ${AMET_OUT}
+       mkdir -p ${AMET_OUT}
     endif
     cd ${AMET_OUT}
 
@@ -653,11 +662,11 @@ endif #End $RUN_SITEX OR $WRITE_SITEX OR LOAD_SITEX OR $make_plots flag
 # ============================================================================================
 
 if (${make_plots} == 'T' && ${EVAL_BY_MONTH} == 'F' && ${AMET_DB} == 'T') then
-   
+  echo "**Creating AMET batch plots.  This may take some time...."
   #> Save batch plotting output in folders organized by year and month of start date.
   setenv AMET_OUT  ${PLOTDIR}
   if(! -d ${AMET_OUT}) then
-     mkdir ${AMET_OUT}
+     mkdir -p ${AMET_OUT}
   endif
   cd ${AMET_OUT}
   
@@ -682,5 +691,12 @@ if (${make_plots} == 'T' && ${EVAL_BY_MONTH} == 'F' && ${AMET_DB} == 'T') then
   endif
   
 endif #End $make_plots AND $EVAL_ALL AND $AMET_DB flag
+
+if (${make_plots} == 'T' && ${EVAL_BY_MONTH} == 'F' && ${AMET_DB} == 'F') then
+
+  echo 'Please set EVAL_BY_MONTH flag to T when AMET_DB is set to F to make plots. Evaluation by the full time period is only available when AMET_DB is set to T.'
+
+endif
+
 
 exit ()
