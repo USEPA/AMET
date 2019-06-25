@@ -40,6 +40,12 @@ if ((!exists("EXEC_sitex")) || (EXEC_sitex == "") || (EXEC_sitex == "Config_file
 EXEC_sitex_daily <- Sys.getenv('EXEC_sitecmp_dailyo3')
 if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "") || (EXEC_sitex_daily == "Config_file")) { EXEC_sitex_daily <- EXEC_sitex_daily_config }
 
+num_avg_hours <- Sys.getenv('HOURS_8HRMAX')
+if (!exists("num_avg_hours")) {
+   print("Number of 8hr max averaging hours not set. Defaulting to 24. To set the averaging hours, specify HOURS_8HRMAX (setenv HOURS_8HRMAX) as either 17 or 24 in the AMET run script.")
+   num_avg_hours <- 24
+}
+
 args              <- commandArgs(2)
 mysql_login        <- args[1]
 mysql_pass         <- args[2]
