@@ -964,6 +964,8 @@ specified in the aqProject.csh script.<a id="Table_6-3"></a>
 | **AMET\_OBS**              | Top of the AQ observation data directory (defaults to **$AMETBASE/obs/AQ**) |
 | **SITE\_META\_LIST**       | Input file containing the list of AQ site meta data files (default is **$AMETBASE/scripts\_db/input\_files/sites\_meta.input**) |
 | **AQ\_SPECIES\_FILE**    | Full path the AMET_species_list.R file for mapping the CMAQ species to the observed species for each network. By default this is set to **$AMETBASE/scripts\_db/input\_files/AMET\_species\_list.input** |
+| **RELOAD\_SITE\_METADATA** | T/F; Repopulate site metadata table regardless of whether or not it already exists. Use this flag to update the site metadata in the database. |
+| **SITE\_FILE\_FORMAT**     | txt/csv; Indicate whether to use txt (old tab delimited) site files or the comma separated metadata files for the site data when running site compare. Recommend using csv files as the txt files are no longer being updated. |
 | **AMET\_OUT**              | Output directory where post-processed data files will be written. Default is **$AMETBASE/output/$AMET\_PROJECT/sitex_output** |
 | **WRITE\_SITEX**           | T/F; Write the individual site compare scripts for each network.  |
 | **RUN\_SITEX**             | T/F; Execute the site compare scripts for each network. |
@@ -974,6 +976,7 @@ specified in the aqProject.csh script.<a id="Table_6-3"></a>
 | **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
 | **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
 | **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
+| **HOURS\_8HRMAX**          | 17/24; Indicate the number of 8hr averages to use when calculating the maximum 8hr average value in site compare daily. Old method uses 24 values, new method uses 17. |
 | **START\_DATE**            | Start date in YYYYJJJ to begin the processing. By default this is set to 2011182 (July 1, 2011) for the example case. |
 | **END\_DATE**              | End date in YYYYJJJ to begin the processing. By default this is set to 2011213 (August 1, 2011) for the example case. |
 | **CONC\_FILE\_\***         | Path to the CMAQ combined file containing the gas and aerosol species, where * is a number starting at 1. You can specify up to ten CONC files to include, numbered sequentially from 1 to 10. By default this is set to point to the example model data in **$AMETBASE/model_data/AQ/test.12km.conc**|
