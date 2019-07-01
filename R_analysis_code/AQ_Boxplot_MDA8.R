@@ -1,13 +1,16 @@
-################################################################
+header <- "
+########################### MDA8 BOX PLOT ###################################
+### AMET Code: AQ_Boxplot_MDA8.R 
+###
 ### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED HOURLY BOXPLOT DISPLAY.  It
-### draws side-by-side boxplots for the various groups, without median value.
+### draws side-by-side boxplots for the various groups, without median values.
 ### This particular code uses hourly data to create a diurnal average curve 
 ### showing the data trend throughout the course of a 24-hr period.  The
-### code is designed to use AQS ozone data, but can be used with any hourly
-### data (SEARCH, TEOM, etc).  
+### code is specifically designed to use AQS ozone data to compute MDA8 values.
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### Last updated by Wyat Appel: June, 2019
+#############################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")        		# base directory of AMET

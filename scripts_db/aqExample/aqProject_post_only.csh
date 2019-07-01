@@ -73,8 +73,8 @@ setenv START_DATE_H     "2016-07-01"
 setenv END_DATE_H	"2016-07-31"
 
 ### Set path to concentration/dep files (up to 10 files, sequentially numbered) ###
-setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/COMBINE_ACONC_CMAQv521_AMET_201607.nc
-setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/COMBINE_DEP_CMAQv521_AMET_201607.nc
+setenv CONC_FILE_1 	$AMETBASE/model_data/AQ/aqExample/COMBINE_ACONC_aqExample_201607.nc
+setenv DEP_FILE_1	$AMETBASE/model_data/AQ/aqExample/COMBINE_DEP_aqExample_201607.nc
 
 ### Flag (Y/T or N/F) set by user to include data in the analysis ###
 ### Standard North America networks (should all be set to T for complete analysis) ###

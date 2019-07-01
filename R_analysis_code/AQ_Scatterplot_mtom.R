@@ -1,15 +1,16 @@
-################## MODEL TO MODEL SCATTERPLOT ################## 
+header <- "
+####################### MODEL TO MODEL SCATTERPLOT ####################### 
 ### AMET CODE: R_Scatterplot_MtoM.r 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-model scatterplot.  However, the model points
-### correspond to network observation sites, and does not use all the 
-### model grid points (only what is in the database).  Two model runs
-### must be provided.  The script attempts to match all points in one
-### run to all points in the other run.  
+### This script is part of the AMET-AQ system.  This script creates a single
+### model-to-model scatterplot.  However, the model points correspond to network
+### observation sites, and does not use all the model grid points (only what
+### is in the database).  Two model runs must be provided.  The script attempts
+### to match all points in one run with all points in the other run.  
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+##########################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

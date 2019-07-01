@@ -1,16 +1,16 @@
-################################################################
-### AMET CODE: PLOT SPATIAL
+header <- "
+###################################### SPATIAL PLOT ######################################
+### AMET CODE: AQ_Plot_Spatial.R 
 ###
-### This code is part of the AMET-AQ system.  The Plot Spatial code
-### takes a MYSQL database query for a single species from one or more
-### networks and plots the observation value, model value, and 
-### difference between the model and ob for each site for each 
-### corresponding network.  Mutiple values for a site are averaged
-### to a single value for plotting purposes.  The map area plotted
-### is dynamically generated from the input data.   
+### This code is part of the AMET-AQ system.  The Plot Spatial code takes a MYSQL database
+### query for a single species from one or more networks and plots the observation value, 
+### model value, and difference between the model and ob for each site for each corresponding
+### network.  Mutiple values for a site are averaged to a single value for plotting purposes.
+### The map area plotted is dynamically generated from the input data.   
 ###
-### Last modified by Wyat Appel: June, 2017 
-################################################################
+### Last modified by Wyat Appel: June, 2019
+##########################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET

@@ -1,12 +1,15 @@
-################################################################
-### THIS FILE CONTAINS CODE TO CREATE SUMMARY STATISTICS FOR MULTIPLE 
-### SPECIES. This code works with multiple networks and species. The 
-### output from the script is a CSV file containing numberous summary
-### statistics for the requested species. Species that are not 
-### available are ignored.
+header <- "
+################################# STATS #####################################
+### AMET CODE: AQ_Stats.R
 ###
-### Last modified by Wyat Appel: May, 2018
-################################################################
+### This code produces a simple table (csv file) of summary stats. This code works
+### with multiple networks and species. The output from the script is a CSV file
+### containing numberous summary statistics for the requested species. Species that
+### are not available are ignored.
+###
+### Last modified by Wyat Appel, June 2019
+##############################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")		        # base directory of AMET

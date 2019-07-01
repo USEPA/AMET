@@ -1,17 +1,18 @@
-################################################################
-### AMET CODE: INTERACTIVE TIMESERIES PLOT
+header <- "
+############################ INTERACTIVE TIMESERIES PLOT ####################################
+### AMET CODE: AQ_Timeseries_networks_plotly.R 
 ###
-### This script is part of the AMET-AQ system.  It plots a timeseries 
-### plot.  The script can accept multiple sites, as they will be
-### time averaged to create the timeseries plot, and mutiple runs.  
-### The script also plots the bias and RMSE between the obs and model.
-### This particular version of the Timeseries plot uses the R dyngraphs
-### package to create an interactive plot with zoom and mouse-over
-### capabilities. A self-contained html file is created using the 
-### saveWidget command from the R htmlwidgets package.
+### This script is part of the AMET-AQ system.  It plots a timeseries plot.  The script can accept
+### multiple sites, as they will be time averaged to create the timeseries plot, and mutiple runs.  
+### The script also plots the bias and RMSE between the obs and model. This particular version of 
+### the time series plot uses the R plotly package to create an interactive plot with zoom and 
+### mouse-over capabilities. A self-contained html file is created using the saveWidget command 
+### from the R htmlwidgets package and PANDOC. If PANDOC is not available, the selfcontained option
+### should be set to F. Output format is html.
 ###
-### Last updated by Wyat Appel: September 2018
-################################################################
+### Last updated by Wyat Appel: June, 2019
+###############################################################################################
+"
 
 library(plotly)
 library(xts)
@@ -62,7 +63,7 @@ Bias_Mean	<- NULL
 Corr_Mean	<- NULL
 RMSE_Mean	<- NULL
 Dates		<- NULL
-All_Data	<- NULL
+All_Data.df	<- NULL
 Num_Obs		<- NULL
 x_label		<- "Date"
 #######################
