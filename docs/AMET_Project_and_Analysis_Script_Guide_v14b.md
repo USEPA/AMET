@@ -255,10 +255,13 @@ The hr2day Fortran utility takes hourly model data and computes various daily av
  SEARCH_DAILY             
  EMEP_HOURLY             
  EMEP_DAILY               
+ EMEP_DAILY_O3
  FLUXNET                  
  MDN                      
- NAPS_HOURLY             
- NOAA_ESRL_O3             
+ NAPS_HOURLY
+ NAPS_DAILY_O3
+ NOAA_ESRL_O3
+ TOAR
  #> The following flags are used to set ozone factors and units. Defaults should be used if using 
  #> standard species definition files.
  O3_OBS_FACTOR             Ozone factor to apply to obs values (1 by default)
@@ -285,11 +288,14 @@ The following table provides the list of available observations from each networ
 | SEARCH_HOURLY | O3, CO, SO2, NO, NO2, NOY, HNO3, NH3, EC, OC, TC, PM2.5, NH4, SO4, WSPD, RH, SFC_TMP, precip, solar radiation |Data available for 2002 - 2013  |      
 | SEARCH_DAILY  | SO4, NO3, NH4, TNO3, Na, OC, EC, PM2.5, Al, Si, K, Ca, Ti, Mn, Fe| Data available for 2002 - 2013  |             
 | EMEP_HOURLY   | O3, PM2.5, PM10, CO, NO, NO2, NOX, SO2 | Data not currently available from CMAS; Must obtain individually |
-| EMEP_DAILY    | O3, PM2.5, PM10, CO, NO, NO2, NOX, SO2 | Data not currently available from CMAS; Must obtain individually |        
+| EMEP_DAILY    | O3, PM2.5, PM10, CO, NO, NO2, NOX, SO2 | Data not currently available from CMAS; Must obtain individually |
+| EMEP_DAILY_O3 | O3_1hrmax, O3_1hrmax_9cell, O3_1hrmax_time, O3_8rhmax, O3_8hrmax_9cell, O3_8hrmax_time, W126, SUM06 | Data not currently available from CMAS; Must obtain individually |
 | FLUXNET       | USTAR, Soil Heat Flux, Sensible Heat Flux, Latent Heat Flux, Soil H2O Concentration, Soil Temp., Surface Temp., 10-m Wind Speed | Currently limited data available |       
 | MDN           | Mercury wet deposition    | Data available for 2000-2014|   
-| NAPS_HOURLY   | O3, PM2.5, PM10, CO, NO, NO2, NOX, SO2 | Data currently available for only 2011 |       
+| NAPS_HOURLY   | O3, PM2.5, PM10, CO, NO, NO2, NOX, SO2 | Data currently available for only 2011 |
+| NAPS_DAILY_O3 | O3_1hrmax, O3_1hrmax_9cell, O3_1hrmax_time, O3_8rhmax, O3_8hrmax_9cell, O3_8hrmax_time, W126, SUM06 |
 | NOAA_ESRL_O3  | O3 | Data available for 2000 - 2016 |   
+| TOAR          | daily average O3, O3_8rhmax, daytime average O3, nighttime average O3 |
 
 <a id="amet"></a> Section 6: AMET configuration options
 -------------------------------------
