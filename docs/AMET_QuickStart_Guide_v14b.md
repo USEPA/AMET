@@ -149,8 +149,7 @@ Change the setting of AMETBASE in matching_surface.csh and run the script:
 ```
 cd $AMETBASE/scripts_db/aqExample
 ```
-Change the setting of AMETBASE and AMET\_DATABASE in aqProject_post_only.csh and run the script:
-Check and Change the setting of the Start and End Date
+Change the setting of AMETBASE and AMET\_DATABASE in aqProject_post_only.csh and run the script. Update other fields as desired.
 
 ```
 ./aqProject.csh >& log.populate
