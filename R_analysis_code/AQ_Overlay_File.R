@@ -1,15 +1,19 @@
-################################################################
-### THIS FILE CONTAINS CODE TO CREATE AN OBS OVERLAY FILE FOR PAVE.
-### The program requires hourly data (AQS, SEARCH, CASTNet) data in
-### order to create the PAVE overlay file.  The script is given a time
-### period to query the database for, and then creates a data file that
-### can be used the the program bldoverlay.exe to create the overlay
-### file.  
-### The time period of the query should be limited to about a month for
-### AQS network if querying the entire domain due to memory limits.
+header <- "
+############################## OVERLAY FILE #################################
+### AMET Code: AQ_Overlay_File.R
 ###
-### Last updated by Wyat Appel: June, 2017
+### THIS FILE CONTAINS CODE TO CREATE AN OBS OVERLAY FILE FOR PAVE or VERDI. The
+### program  requires hourly data (AQS, SEARCH, CASTNet) data in order to create
+### the overlay file.  The script is given a time period to query the database for,
+### and then creates a data file that can be used the the program bldoverlay.exe 
+### to create the overlay file.  
+###
+### The time period of the query should be limited to about a month for AQS network
+### if querying the entire domain due to memory limits.
+###
+### Last updated by Wyat Appel: June, 2019
 ################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")        		# base directory of AMET

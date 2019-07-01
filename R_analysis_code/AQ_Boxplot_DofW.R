@@ -1,3 +1,4 @@
+header <- "
 ##################### DAY OF WEEK BOX PLOT ######################
 ### AMET CODE: AQ_Boxplot_DofW.R
 ###
@@ -11,6 +12,7 @@
 ### Last updated by Wyat Appel; June, 2017
 ###
 ################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")        		# base directory of AMET

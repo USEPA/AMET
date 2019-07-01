@@ -1,13 +1,15 @@
-###############################################################
-### AMET CODE: TIMESERIES PLOT
+header <- "
+########################### MULTI NETWORK TIME SERIES PLOT ###############################
+### AMET CODE: AQ_Timeseries_multi_networks.R
 ###
-### This script is part of the AMET-AQ system.  It plots a timeseries 
-### plot.  The script can accept multiple sites, as they will be
-### time averaged to create the timeseries plot, and mutiple runs.  
-### The script also plots the bias between the obs and model.
+### This script is part of the AMET-AQ system.  It plots a timeseries for a single species
+### from multiple networks for a single simulation. Data are averaged across time and space 
+### to create single time series for the data. The script also plots the bias, RMSE and correlation.
+### Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### Last updated by Wyat Appel, June 2019
+##########################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE") 	    	        # base directory of AMET
@@ -51,7 +53,7 @@ Obs_Period_Mean	<- NULL
 Mod_Period_Mean	<- NULL
 Bias_Mean	<- NULL
 Dates		<- NULL
-All_Data	<- NULL
+All_Data.df	<- NULL
 Num_Obs		<- NULL
 ymin		<- NULL
 ymax		<- NULL

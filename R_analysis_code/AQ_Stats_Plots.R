@@ -1,16 +1,16 @@
-################################################################
-### AMET CODE: Stats and Plots
+header <- "
+############################## INTERACTIVE STATS PLOTS ##############################
+### AMET CODE: AQ_Stats_Plots.R
 ###
-### This code is part of the AMET-AQ system.  The Stats and Plots code
-### takes a MYSQL database query for a single species from one or more
-### networks and a single simulation and calculates summary statistics
-### for each site and the entire domain by network. Spatial plots are
-### also produced for several select statistics, specifically MB, ME,
-### FB, FE, NMB, NME, RMSE and Correlation. Images can be output as
-### PDF, PNG or both.
+### This code is part of the AMET-AQ system.  The Stats and Plots code takes a MYSQL 
+### database query for a single species from one or more networks and a single simulation
+### and calculates summary statistics for each site and the entire domain by network. 
+### Spatial plots are also produced for several select statistics, specifically MB, ME, FB,
+### FE, NMB, NME, RMSE and Correlation. Images can be output as png, pdf or both.
 ###
-### Last modified by Wyat Appel; March 2019
-################################################################
+### Last modified by Wyat Appel, June 2019
+#####################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")		        # base directory of AMET
@@ -167,7 +167,6 @@ for (j in 1:total_networks) {
             aqdat.df <- Average(aqdat.df)
          }
          sub_title<-paste(sub_title,symbols[k],"=",network,"; ",sep="")
-   
          ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
          data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
          stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))	# Compute stats using DomainStats function for entire domain

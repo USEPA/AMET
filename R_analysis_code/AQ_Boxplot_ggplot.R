@@ -1,12 +1,14 @@
-################################################################
-### AMET CODE: BOX PLOT GGPlot
+header <- "
+########################## GGPLOT BOX PLOT ############################
+### AMET CODE: AQ_Boxplot_ggplot.R
 ###
 ### This script is part of the AMET-AQ system.  It plots a box plot
 ### using ggplot2. Individual observation/model pairs are provided 
 ### through a MYSQL query. The script then plots these values as a box plot.
 ###
 ### Last updated by Wyat Appel: March, 2019
-################################################################
+#######################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -181,11 +183,14 @@ aqdat_out_bias.df$Sim <- factor(aqdat_out_bias.df$Sim, levels=level_names_bias)
 main.title <- title
 bias.title <- title_bias
 
-pdf(file=filename_pdf,width=9,height=9)
+options(bitmapType='cairo')
+
+#pdf(file=filename_pdf,width=9,height=9)
 #sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.position="top",plot.title=element_text(hjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10)) + guides(fill=guide_legend(nrow=2,byrow=TRUE))
 sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10))
-sp
-dev.off()
+#sp
+#dev.off()
+ggsave(filename_pdf,height=9,width=9)
 
 if ((ametptype == "png") || (ametptype == "both")) {
    convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
@@ -198,10 +203,11 @@ if ((ametptype == "png") || (ametptype == "both")) {
 }
 
 
-pdf(file=filename_pdf_bias,width=9,height=9)
+#pdf(file=filename_pdf_bias,width=9,height=9)
 sp<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))
-sp
-dev.off()
+#sp
+#dev.off()
+ggsave(filename_pdf_bias,height=9,width=9)
 
 if ((ametptype == "png") || (ametptype == "both")) {
    convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf_bias," png:",filename_png_bias,sep="")

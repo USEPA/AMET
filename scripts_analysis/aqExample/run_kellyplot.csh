@@ -18,6 +18,7 @@
   # These are the main controlling variables for the R script
   
   ###  AMET base directory, database, project and configure file location
+  setenv AMETBASE       /home/AMETv14
   setenv AMET_DATABASE 	amet
   setenv AMET_PROJECT	aqExample	
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R  

@@ -1,18 +1,20 @@
-################################################################
-### AMET CODE: BUGLE PLOT
+header <- "
+############################ BUGLE PLOT #################################
+### AMET CODE: AQ_Bugleplot.R
 ###
-### This script is part of the AMET-AQ system.  It plots a unique 
-### type of plot referred to as a "bugle" plot.  The idea behind
-### the plot is that model performance should be adjusted as a function
-### of the average concentration of the observed value for that specie. 
-### Therefore, as the average concentration of the specie decreses,
-### the acceptable performance criteria increase.  This code applies
-### this idea to both NMB (or FB) and NME (or FE).  A MYSQL query
-### provides the necessary input data.  The output is two plots, one
-### for the bias and one for the error (in both png and pdf formats).
+### This script is part of the AMET-AQ system.  It plots a unique type of 
+### plot referred to as a "bugle" plot.  The idea behind the plot is that 
+### model performance should be adjusted as a function of the average 
+### concentration of the observed value for that species.Therefore, as the 
+### average concentration of the specie decreses, the acceptable performance 
+### criteria increase.  This code applies this idea to both NMB (or FB) and 
+### NME (or FE).  A MYSQL query provides the necessary input data.  The output
+### is two plots, one for the bias and one for the error (in both png and pdf 
+### formats).
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### Last updated by Wyat Appel: June, 2019
+##########################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")        		# base directory of AMET

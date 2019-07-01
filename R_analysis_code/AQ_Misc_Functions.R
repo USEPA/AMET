@@ -20,6 +20,11 @@
 #-----------------------------------------------------------------------#
 #########################################################################
 
+#####################################################
+### Print executing script header to the terminal ###
+#####################################################
+if(exists("header")) { cat(header) }
+
 ##############################
 ### Get some common R info ###
 ##############################
@@ -1445,8 +1450,9 @@ library(data.table)
    dum2 <- sapply(strsplit(dt[,levels(fac)][nbin-1],split=' ',fixed=T),function(x){x[[3]]})
    dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0('< ',dum1),levels(fac)[2:(nbin-1)],paste0('> ',dum2)))]
   } else if(reset.mn) {
-#   dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0('< ',mn,' to ',sp),levels(fac)[2:(nbin)]))]
-    dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0(mn,' to ',mn+sp),levels(fac)[2:(nbin)]))]
+#    dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0('< ',mn,' to ',sp),levels(fac)[2:(nbin)]))]
+    dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0('< ',mn),levels(fac)[2:(nbin)]))]
+#    dt[,fac:=factor(fac,levels=levels(fac),labels=c(paste0(mn,' to ',mn+sp),levels(fac)[2:(nbin)]))]
   } else if(reset.mx) {
    dum <- sapply(strsplit(dt[,levels(fac)][nbin-1],split=' ',fixed=T),function(x){x[[3]]})
    dt[,fac:=factor(fac,levels=levels(fac),labels=c(levels(fac)[1:(nbin-1)],paste0('> ',dum)))]

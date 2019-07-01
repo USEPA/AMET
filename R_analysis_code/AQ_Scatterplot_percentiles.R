@@ -1,13 +1,14 @@
-################## MODEL SKILL SCATTER PLOT #################### 
-### AMET CODE: R_Scatterplot_skill.R 
+header <- "
+########################## MODEL PERCENTILE SCATTER PLOT #############################
+### AMET CODE: R_Scatterplot_percentile.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a scatter plot for a single network that includes more statistics 
-### than the multiple network scatter plot.  Although limited to a
-### single network, multiple runs may be used.
+### This script is part of the AMET-AQ system.  This script creates a scatter plot for
+### a single species, network and simulation that is color coded by the observation 
+### percentile, split by 5, 25, 50, 75 and 95. Output format is png, pdf or both. 
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+######################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

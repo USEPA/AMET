@@ -1,15 +1,16 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
+header <- "
+####################### MODEL TO OBS DENSITY SCATTERPLOT ######################### 
 ### AMET CODE: R_Scatterplot_density.r 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot. This script will plot a
-### single species from up to three networks on a single plot.  
-### Additionally, summary statistics are also included on the plot.  
-### The script will also allow a second run to plotted on top of the
-### first run. 
+### This script is part of the AMET-AQ system.  This script creates a single model-to-obs
+### scatterplot. This script will plot a single species from up to three networks on a 
+### single plot. Additionally, summary statistics are also included on the plot. The 
+### script will also allow a second run to plotted on top of the first run. Output for
+### is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+##################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
