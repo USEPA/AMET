@@ -112,14 +112,14 @@ cd ../sitecmp_dailyo3; make
 
 AMET uses a centralized R script to set up the AMET environment for loading data into the database and for producing plots.  The AMET configuration script is located in the `configure` directory under the base AMET installation area. The following environment variables in the **amet-config.R** script must be set before using any of the other AMET scripts.
 
-* `amet_base` - base AMET installation directory path
-* `EXEC_sitex_daily_config` - sitecmp_dailyo3 executable directory path
-* `EXEC_sitex_config` - sitecmp executable directory path
+* `amet_base` - base AMET installation directory path (obtained through an environment variable)
 * `mysql_server` - IP Address or name of MySQL server used for AMET
 * `amet_login` - login ID to the AMET MySQL database server
 * `amet_pass`- password for the AMET MySQL database server
 * `maxrec` - the maximum number of records allowed in a single MySQL query
 * `Bldoverlay_exe_config` - bldoverlay executable directory path
+* `EXEC_sitex_daily_config` - sitecmp_dailyo3 executable directory path
+* `EXEC_sitex_config` - sitecmp executable directory path
 
 *Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
 
