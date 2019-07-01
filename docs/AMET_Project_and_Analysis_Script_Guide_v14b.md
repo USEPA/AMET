@@ -213,13 +213,13 @@ PM25_TOT        ,ug/m3     ,ATOTI[0]*PM25AT[2]+ATOTJ[0]*PM25AC[2]+ATOTK[0]*PM25C
 <a id="combine"></a>Section 5: HR2DAY configuration options
 -------------------------------------
 ```
-EXEC_hr2day
-USELOCAL
-TZFILE
-USEDST
-PARTIAL_DAY
-HOURS_8HRMAX
-SPECIES_N
+EXEC_hr2day     Full path of hr2day executable.
+USELOCAL        Set to use local time for evaluation against observational data (default is GMT)
+TZFILE          Location of time zone data file, tz.csv (this is a required input file when using USELOCAL Y to shift from GMT to local time)
+USEDST          Use daylight savings time. Options are Y/N (default is N).
+PARTIAL_DAY     Partial day calculation (computes value for last day even if there are not 24 hours for that day after shift to LST). Options are Y/N.
+HOURS_8HRMAX    Number of 8hr values to use when computing daily maximum 8hr ozone. Options are 17 or 24.
+SPECIES_N       Define species to compute. See HR2DAY documentation for additional options.
 ```
 
 <a id="sitecmp"></a>Section 5: Site compare configuration options
