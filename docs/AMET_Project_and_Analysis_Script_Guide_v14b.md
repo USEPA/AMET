@@ -221,6 +221,9 @@ PARTIAL_DAY     Partial day calculation (computes value for last day even if the
 HOURS_8HRMAX    Number of 8hr values to use when computing daily maximum 8hr ozone. Options are 17 or 24.
 SPECIES_N       Define species to compute. See HR2DAY documentation for additional options.
 ```
+This section sets the location of the hr2day executable, several hr2day options runtime options, and the species definitions to be averaged by hr2day.  If ${CMAQ_HOME}, ${compiler}, and ${compilerVrsn} have been set in section 3 then the path to the hr2day exectuable automatically set and no additional changes are needed in this section.  
+
+The hr2day Fortran utility takes hourly model data and computes various daily average values, output to a single file. The species definitions are used to specify which species should be averaged and how to perform that averaging. For example, hourly O3 can be computed to a maximum daily 8hr average value by specifying the "Operation" to perform on hourly O3 as "8HRMAX". 
 
 <a id="sitecmp"></a>Section 5: Site compare configuration options
 -------------------------------------
