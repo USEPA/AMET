@@ -31,6 +31,7 @@ The setting of environment variables in the run script is divided into 8 differe
 -------------------------------------
 ```
  RUN_COMBINE       Run combine on CCTM output? Choices are T,F.
+ RUN_HR2DAY        Run hr2day program on combine ouput? Choices are T,F.
  WRITE_SITEX       Write scripts for running site compare for each selected network? Choices are T,F.
  RUN_SITEX         Run site compare scripts for each selected network? Choices are T,F.
  CREATE_PROJECT    Create AMET project? Choices are T,F.
@@ -46,12 +47,13 @@ The setting of environment variables in the run script is divided into 8 differe
  scatter_plots     Create scatter plots from site compare output? Choices are T,F.
  misc_plots        Create bugle plots and soccer goal plots from site compare output? Choices are T,F.
 ```
-All 14 environment variables in this section are T/F flags.  Flags can be set to T or F depending on what post-processing files are needed and which steps have already been completed. While the flags can be set in many different permutations, the post-processing must take place in a specific order:
+All 15 environment variables in this section are T/F flags.  Flags can be set to T or F depending on what post-processing files are needed and which steps have already been completed. While the flags can be set in many different permutations, the post-processing must take place in a specific order:
 1. Run the combine utility on CCTM output to create COMBINE_ACONC and COMBINE_DEP files. 
-2. Create "sitex" run scripts for controlling the execution of the sitecmp and sitecmp_dailyo3 utilities.
-3. Run the sitex scripts to create comma separated files with matched model/obs pairs for different observation networks. 
-4. [Optional] Load model/obs pairs into the AMET database.
-5. Create evaluation plots based on matched model/obs data using the batch plotting code in AMET.
+2. [Required if including TOAR network] Run the hr2day utility on the combine output to create daily average values (e.g. daily 8hrmax ozone).
+3. Create "sitex" run scripts for controlling the execution of the sitecmp and sitecmp_dailyo3 utilities.
+4. Run the sitex scripts to create comma separated files with matched model/obs pairs for different observation networks. 
+5. [Optional] Load model/obs pairs into the AMET database.
+6. Create evaluation plots based on matched model/obs data using the batch plotting code in AMET.
 
 A user can choose to do all of the steps at once or run the script multiple times.  For example, the script can be set to only run combine by setting the first flag to T and the remaining flags to F.  The user can then rerun the script at a later time to create the sitecmp files and evaluation plots.  In this case the first flag can be set to F since the combine files already exist.
 
@@ -63,6 +65,10 @@ A user can choose to do all of the steps at once or run the script multiple time
 <a id="sim_info"></a>Section 2: Simulation information, Input/Output directories
 -------------------------------------
 ```
+ CMAQ_HOME              Base directory where compiled CMAQ code resides.
+ AMETBASE               Base directory where AMET code resides.
+ OBS_DATA_DIR           Base directory where AMET observation files reside.
+ SITE_FILE_FORMAT       Format of site compare site files to use. Options are csv or txt. Latest version of site compare uses CSV files.
  START_DATE_H           Start day. Should be in format "YYYY-MM-DD".
  END_DATE_H             End day. Should be in format "YYYY-MM-DD".
  VRSN                   Model version, e.g. v52
@@ -79,6 +85,7 @@ A user can choose to do all of the steps at once or run the script multiple time
  POSTDIR                Location to write combine files. (Or location of existing combine files).
  COMBINE_ACONC_NAME     Name of combine ACONC file (without date and file extension).
  COMBINE_DEP_NAME       Name of combine DEP file (without date and file extension).
+ H$2DAY_ACONC_NAME      Name of the hr2day ACONC file (without date and file extension).
  EVALDIR                Location where sitecmp files will be saved (or location of existing sitecmp files).
  PLOTDIR                Location where evaluation plots will be saved.
 ```
@@ -202,6 +209,18 @@ PM25_TOT        ,ug/m3     ,ATOTI[0]*PM25AT[2]+ATOTJ[0]*PM25AC[2]+ATOTK[0]*PM25C
 2. In section 5 only select networks that have observation data for O3, NOx or PM2.5.
 3. In section 8a set INFILE1 to the CCTM_ACONC file and INFILE2 to the CCMT_APMDIAG file. Comment out lines for INFILE3 and INFILE4.
 4. Since there are no deposition species listed in the species definition file, remove or comment out section 8b which is used to create combine files of deposition species.
+
+<a id="combine"></a>Section 5: HR2DAY configuration options
+-------------------------------------
+```
+EXEC_hr2day
+USELOCAL
+TZFILE
+USEDST
+PARTIAL_DAY
+HOURS_8HRMAX
+SPECIES_N
+```
 
 <a id="sitecmp"></a>Section 5: Site compare configuration options
 -------------------------------------
