@@ -9,10 +9,11 @@ AMET Project Pre- and Post- Analysis Script Guide v14b
 &nbsp;&nbsp;&nbsp;&nbsp;[2.2 Simulation information, Input/Output directories](#sim_info)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[2.3 System configuration, location of observations and code repositories](#config)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[2.4 Combine configuration options](#combine)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.5 Site compare configuration options](#sitecmp)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.6 AMET configuration options](#amet)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.7 Evaluation plotting configuration options](#plots)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.8 Execution of all post-processing steps](#execute)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.5 HR2DAY configuration options](#sitecmp)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.6 Site compare configuration options](#sitecmp)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.7 AMET configuration options](#amet)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.8 Evaluation plotting configuration options](#plots)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.9 Execution of all post-processing steps](#execute)<br>
 
 <a id="Overview"></a>1. Overview
 ===========
