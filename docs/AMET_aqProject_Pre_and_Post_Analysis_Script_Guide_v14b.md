@@ -26,7 +26,7 @@ $AMETBASE/scripts\_db/aqExample/aqProject_pre_and_post.csh
 
 <a id="EnvVar"></a>2. Setting environment variables
 ===========
-The setting of environment variables in the run script is divided into 8 different numbered sections.  Details on the environment variables within each section are provided below. Section 8 is the portion of the script that loops through the simulations days to create the various post-processing outputs. The user will typically only need to make edits to sections 1-7.   
+The setting of environment variables in the run script is divided into 8 different numbered sections.  Details on the environment variables within each section are provided below. Section 8 is the portion of the script that loops through the simulations days to create the various post-processing outputs. The user will typically only need to make edits to sections 1-8.   
 
 <a id="picksteps"></a>Section 1: Select which analysis steps you want to execute
 -------------------------------------
