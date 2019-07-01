@@ -1,12 +1,14 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
+header <- "
+############################ MODEL TO OBS SPECTRAL ANALYSIS ############################
 ### AMET CODE: R_Spectrum.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### creates average and site specific spectrum plots using hourly 
-### data.  This code is based on code provided by Christian Hogrefe.
+### This script is part of the AMET-AQ system.  This script creates creates average and site
+### specific spectrum plots using hourly data.  This code is based on code provided by 
+### Christian Hogrefe.
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+########################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

@@ -1,13 +1,17 @@
-################## MODEL SKILL SCATTER PLOT #################### 
+header <- "
+############################ MODEL SKILL SCATTER PLOT ##############################
 ### AMET CODE: R_Scatterplot_skill.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a unique forecast skill scatter plot.  The scipt is designed to 
-### work specifically with 8-hr max ozone, as all the lines and stats
-### are based on the criteria for 8-hr ozone. 
+### This script is part of the AMET-AQ system.  This script creates a unique forecast
+### skill scatter plot.  The scipt was orinally designed to work specifically with 8-hr
+### max ozone, as all the lines and stats were based on the criteria for 8-hr ozone.
+### However, users can now specifiy the criteria line, and the forecast statistics are
+### calculated based on the user specified criteria. So, it may be used with any species.
+### Output format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+#####################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

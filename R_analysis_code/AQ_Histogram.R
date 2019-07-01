@@ -1,6 +1,15 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED HISTOGRAM PLOT. 
-################################################################
+header <- "
+####################### HISTOGRAM PLOT ##########################
+### AMET CODE: AQ_Histogram.R
+###
+### This script is part of the AMET-AQ system.  This script creates
+### a histogram of model and ob values using the R histogram
+### function. Designed for single simulation, single network and
+### single species.
+###
+### Last Updated by Wyat Appel: June, 2019
+##################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")        		# base directory of AMET

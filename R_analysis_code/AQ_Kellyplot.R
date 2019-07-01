@@ -1,22 +1,22 @@
-################################################################
-### AMET CODE: KELLY PLOT
+header <- "
+######################################## KELLY PLOT ########################################
+### AMET CODE: AQ_Kellyplot.R
 ###
-### This script is part of the AMET-AQ system. It essentially
-### creates a grid plot of model NMB, NME, RMSE, MB, ME and
-### correlation for a single network/species and multiple
-### simulations. The grid is plotted with NOAA climate region on
-### the y-axis and season on the x-axis. Each shaded box in the
-### grid is color coded to the performance range for that particular
-### region/season. This particular version of the code is designed
-### to work for an annual simulation to provide values for each season.
+### This script is part of the AMET-AQ system. It essentially creates a grid plot of model NMB, 
+### NME, RMSE, MB, ME and correlation for a single network/species and multiple simulations. 
+### The grid is plotted with NOAA climate region on the y-axis and season on the x-axis. Each 
+### shaded box in the grid is color coded to the performance range for that particular 
+### region/season. This particular version of the code is designed to work for an annual 
+### simulation to provide values for each season.
 ###
-### Note that this code does not currently work without the database,
-### as database metadata are needed to identify the NOAA climate regions.
+### Note that this code does not currently work without the database, as database metadata are
+### needed to identify the NOAA climate regions.
 ###
 ### Original concept and some code developed by Jim Kelly of EPA.
 ###
-### Last updated by Wyat Appel: May, 2019
-################################################################
+### Last updated by Wyat Appel: June, 2019
+#############################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")        		# base directory of AMET

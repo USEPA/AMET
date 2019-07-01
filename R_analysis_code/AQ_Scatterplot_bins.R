@@ -1,13 +1,15 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
+header <- "
+#################### MODEL TO OBS BINNED SCATTERPLOT ######################
 ### AMET CODE: R_Scatterplot_bins.r 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a binned bias/RMSE plot. This script will create a binned bias/RMSE
-### plot for a single species from a single network but for multiple   
-### model runs. 
+### This script is part of the AMET-AQ system.  This script creates a binned
+### bias/RMSE plot. This script will create a binned bias/RMSE plot for a single
+### species from a single network but for multiple simulations. Output format
+### in png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+###########################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

@@ -1,20 +1,15 @@
-################################################################
-### AMET CODE: BOX PLOT
+header <- "
+############################# PLOTLY BOX PLOT ###################################
+### AMET CODE: AQ_Boxplot_plotly.R
 ###
-### This script is part of the AMET-AQ system.  It plots a box plot
-### without whiskers.  The script is designed to create a box plot
-### with on monthly boxes.  Individual observation/model pairs are
-### provided through a MYSQL query, from which the script computes the
-### 25% and 75% quartiles, as well as the median values for both obs
-### and model values.  The script then plots these values as a box plot.
-### While the script is designed to be used with an entire year of data,
-### it can be used with a shorter time period.  However, no less than
-### three months should be used, since any period of time shorter than
-### that can cause elements of the plot (text) to be misplaced on the 
-### plot area.
+### This script is part of the AMET-AQ system.  It plots a box plot using the R plotly
+### package. The script is designed to create a box plot based on the user specified
+### averaging period (e.g. monthly, seaonal). Observation/model pairs are provided 
+### through a MYSQL query. 
 ###
-### Last updated by Wyat Appel: June, 2017 
-################################################################
+### Last updated by Wyat Appel: June, 2019
+#################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET

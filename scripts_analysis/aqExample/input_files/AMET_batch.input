@@ -7,8 +7,8 @@
 #start_date	<- 20110701
 #end_date	<- 20110714
 
-start_date 	<- gsub('-','',Sys.getenv("START_DATE_H"))
-end_date   	<- gsub('-','',Sys.getenv("END_DATE_H"))
+start_date 	<- gsub('-','',Sys.getenv("AMET_SDATE"))
+end_date   	<- gsub('-','',Sys.getenv("AMET_EDATE"))
 
 date_query <- paste("d.ob_dates between ",start_date," and ",end_date," and d.ob_datee between ",start_date," and ",end_date,sep="")
 
@@ -65,13 +65,14 @@ PAMS_averaging		<- 'n'	# Flag to average PAMS species; options are n (none), d (
 ### Choose which spatial plots to run ###
 stat_plots 	<- 'y'	# AQ_Stats_Plots.R
 spatial_plots 	<- 'y'	# AQ_Plot_Spatial.R
-diff_plots	<- 'y'	# AQ_Plot_Spatial_Diff.R
-mtom_plots	<- 'y'	# AQ_Plot_Spatial_MtoM.R
-ratio_plots	<- 'y'	# AQ_Plot_Spatial_Ratio.R
+diff_plots	<- 'n'	# AQ_Plot_Spatial_Diff.R
+mtom_plots	<- 'n'	# AQ_Plot_Spatial_MtoM.R
+ratio_plots	<- 'n'	# AQ_Plot_Spatial_Ratio.R
 
 ### Choose which bar plots to run ###
-AE5_barplot		<- 'y'	# AQ_Stacked_Barplot.R
+AE5_barplot		<- 'n'	# AQ_Stacked_Barplot.R
 AE6_barplot		<- 'y'	# AQ_Stacked_Barplot_AE6.R
+AE6_barplot_timeseries  <- 'y'  # AQ_Stacked_Barplot_AE6_ts.R
 soil_barplot		<- 'y'	# AQ_Stacked Barplot_soil.R
 soil_multi_barplot	<- 'y'	# AQ_Stacked_Barplot_soil_multi.R
 
@@ -82,9 +83,9 @@ temporal_plot		<- 'y'	# AQ_Temporal_Plots.R
 box_plot		<- 'y'	# AQ_Boxplot.R
 box_plot_hourly		<- 'y'	# AQ_Boxplot_Hourly.R
 box_plot_roselle	<- 'y'	# AQ_Boxplot_Roselle.R
-monthly_stat_plot	<- 'y'	# AQ_Monthly_Stat_Plot.R
+monthly_stat_plot	<- 'n'	# AQ_Monthly_Stat_Plot.R
 kelly_plot              <- 'y'  # AQ_Kellyplot_multisim.R
-kelly_plot_annual       <- 'y'  # AQ_Kellyplot.R
+kelly_plot_annual       <- 'n'  # AQ_Kellyplot.R
 
 ### Choose which scatter plots to run ###
 scatter_plot               <- 'y'	# AQ_Scatterplot.R
@@ -93,7 +94,7 @@ scatter_density_plot       <- 'y'	# AQ_Scatterplot_density.R
 scatter_bins_plot          <- 'y'	# AQ_Scatterplot_bins.R
 scatter_percentiles_plot   <- 'y'	# AQ_Scatterplot_percentiles.R
 scatter_skill_plot         <- 'y'	# AQ_Scatterplot_skill.R
-scatter_mtom_plot	   <- 'y'	# AQ_Scatterplot_mtom.R
+scatter_mtom_plot	   <- 'n'	# AQ_Scatterplot_mtom.R
 scatter_soil_plot	   <- 'y'	# AQ_Scatterplot_soil.R
 
 ### Choose to plot soccer plots ###
@@ -147,9 +148,6 @@ rpo<-"None"
 
 ### Priciple Component Analysis (PCA) Region ###
 pca<-"None"
-
-### Flag to use PCA regions with binned scatter plots (applies to Run_Scatterplot_Bins_Batch.R Script) ###
-pca_flag <- "n"
 
 ### Merge statid and POC into a single site id name ###
 merge_statid_POC <- "y"
@@ -290,8 +288,10 @@ conf_line	<-'n'
 # 16) med_bias, 17) med_error, 18) fb,        19) fe
 stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
 
-### Bin by model value instead of obs value
+### Binned Scatter Plot Options ###
+pca_flag<-"n"
 bin_by_mod<-"n"
+inc_error<-"n"
 
 ### Density Scatter plot options ###
 density_zlim<-NULL

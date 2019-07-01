@@ -1,16 +1,18 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED PLOTS OF
-### NMB, NME, CORRELATION, and FB, FE and RMSE.
-### The script is ideally used with a long time period, specifically
-### a year.  Average monthly domain-wide statistics are calculated 
-### and plotted.  NMB, NME and CORRELATION are plotted together,
-### while MdnB, MndE and RMSE are plotted together.  However, any
-### one of the computed statistics can be plotted with a small
-### change to the script.  The script works with multiple years as
-### well.
+header <- "
+############################# MONTHLY STAT PLOT ################################
+### AMET Code: AQ_Monthly_Stat_Plot.R
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### THIS FILE CONTAINS CODE TO DRAW CUSTOMIZED PLOTS OF NMB, NME, CORRELATION,
+###  and FB, FE and RMSE. The script is ideally used with a long time period, 
+### specifically a year.  Average monthly domain-wide statistics are calculated 
+### and plotted.  NMB, NME and CORRELATION are plotted together, while MdnB, 
+### MndE and RMSE are plotted together.  However, any one of the computed 
+### statistics can be plotted with a small change to the script.  The script 
+### works with multiple years as well.
+###
+### Last updated by Wyat Appel: June, 2019
+#################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET

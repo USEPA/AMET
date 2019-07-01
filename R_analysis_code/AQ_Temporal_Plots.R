@@ -1,12 +1,15 @@
-################## MODEL TO OBS TEMPORAL PLOTS #################### 
+header <- "
+############################ MODEL TO OBS TEMPORAL PLOTS ############################# 
 ### AMET CODE: AQ_Temporal_Plots.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### four different plots, namely a CDF plot, a Q-Q plot, a Taylor
-### diagram, and a periodogram.
+### This script is part of the AMET-AQ system.  This script creates four different plots,
+### namely a CDF plot, a Q-Q plot, a Taylor diagram, and a periodogram. This script is 
+### limited to a single network and species, but will accept multiple simulations. Output
+### format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2017
-###################################################################
+### Last Updated by Wyat Appel: June, 2019
+######################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -95,7 +98,7 @@ network <- network_names[[1]]
          else {
             query_result    <- query_dbase(run_name,network,species)
             aqdat_query.df  <- query_result[[1]]
-            aqdat_query.df  <- query_result[[2]]
+            data_exists     <- query_result[[2]]
             if (data_exists == "y") { units <- query_result[[3]] }
             model_name      <- query_result[[4]]
          }

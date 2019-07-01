@@ -1,17 +1,17 @@
-################################################################
-### AMET CODE: INTERACTIVE TIMESERIES PLOT
+header <- "
+################################# TIME SERIES PLOT #######################################
+### AMET CODE: AQ_Timeseries_dygraph.R
 ###
-### This script is part of the AMET-AQ system.  It plots a timeseries 
-### plot.  The script can accept multiple sites, as they will be
-### time averaged to create the timeseries plot, and mutiple runs.  
-### The script also plots the bias and RMSE between the obs and model.
-### This particular version of the Timeseries plot uses the R dyngraphs
-### package to create an interactive plot with zoom and mouse-over
-### capabilities. A self-contained html file is created using the 
-### saveWidget command from the R htmlwidgets package.
+### This script is part of the AMET-AQ system.  It plots an interactive timeseries plot using
+### the R dygraph package.  The script can accept multiple sites, as they will be time averaged
+### to create the timeseries plot, and mutiple simulatuions. The script also plots the bias, 
+### RMSE and correlation. A self-contained html file is created using the saveWidget command from 
+### the R htmlwidgets package and PANDOC. If PANDOC is not available, the selfcontained option
+### should be set to F. Output format is html.
 ###
-### Last updated by Wyat Appel: September 2018
-################################################################
+### Last updated by Wyat Appel, June 2019
+###########################################################################################
+"
 
 library(dygraphs)
 library(xts)
@@ -62,7 +62,7 @@ Bias_Mean	<- NULL
 CORR		<- NULL
 RMSE		<- NULL
 Dates		<- NULL
-All_Data	<- NULL
+All_Data.df	<- NULL
 Num_Obs		<- NULL
 ymin		<- NULL
 ymax		<- NULL
@@ -327,6 +327,9 @@ if (j > 1) {
 
 if (length(y_axis_max) > 0) { ymax <- y_axis_max }
 if (length(y_axis_min) > 0) { ymin <- y_axis_min }
+
+filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
+filename_html   <- paste(figdir,filename_html,sep="/")
 
 #Use dygraph to make interactive html plot. (https://rstudio.github.io/dygraphs/ has examples of other features to try out.)
 if (j < 2) {

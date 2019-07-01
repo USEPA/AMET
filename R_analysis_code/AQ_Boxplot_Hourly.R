@@ -1,13 +1,15 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED HOURLY BOXPLOT DISPLAY.  It
-### draws side-by-side boxplots for the various groups, without median value.
-### This particular code uses hourly data to create a diurnal average curve 
-### showing the data trend throughout the course of a 24-hr period.  The
-### code is designed to use AQS ozone data, but can be used with any hourly
-### data (SEARCH, TEOM, etc).  
+header <- "
+##################### HOURLY BOX PLOT ##########################
+### AMET CODE: AQ_Boxplot_hourly.R
 ###
-### Last updated by Wyat Appel: June, 2017
+### This script is part of the AMET-AQ system.  It plots a box plot
+### using only hourly data. Individual observation/model pairs are 
+### provided through a MYSQL query. The script then plots these values
+### using the default R boxplot function as a box plot.
+###
+### Last updated by Wyat Appel: June, 2019
 ################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
