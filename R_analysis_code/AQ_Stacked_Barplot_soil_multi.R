@@ -1,14 +1,14 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED "STACKED BAR PLOT".
-### The code is interactive with the AMET_AQ system developed by
-### Wyat Appel.  Data are queried from the MYSQL database for the STN
-### network.  Data are then averaged for Fe, Al, Ti, EC, OC and PM2.5
-### for the model and ob values.  These averages are then plotted on
-### a stacked bar plot, along with the percent of the total PM2.5
-### that each specie comprises.
+header <- "
+############################## AE6 STACKED BAR PLOT ###############################
+### AMET CODE: AQ_Stacked_Barplot_soil_multi.R
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### This code creates a stacked bar plot of soil species for up to two  networks 
+### (i.e. CSN, IMPROVE, AQS Daily). Single simulation. Output format is png, pdf or
+### both.
+###
+### Last updated by Wyat Appel: June, 2019
+###################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE") 		        # base directory of AMET

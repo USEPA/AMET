@@ -20,6 +20,7 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
+  setenv AMETBASE       /home/AMETv14
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R

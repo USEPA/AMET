@@ -1,15 +1,15 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
-### AMET CODE: R_Scatterplot.r 
+header <- "
+################## WRITE RAW QUERY OUTPUT #################### 
+### AMET CODE: AQ_Raw_Data.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot. This script will plot a
-### single species from up to three networks on a single plot.  
-### Additionally, summary statistics are also included on the plot.  
-### The script will also allow a second run to plotted on top of the
-### first run. 
+### This script is part of the AMET-AQ system.  This script simply
+### writes a database query as a comma separated file, suitable for
+### use in spreadsheet programs. Single simulation, single network,
+### single species.
 ###
-### Last Updated by Wyat Appel: June, 2017
+### Last Updated by Wyat Appel: June, 2019
 ################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

@@ -1,13 +1,15 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
+header <- "
+########################### MODEL TO OBS SOIL SCATTERPLOT ############################# 
 ### AMET CODE: R_Scatterplot_soil.r 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot of the percent soil composition by
-### the individual soil species. This script will create a single plot
-### for a single network and model simulation.  
+### This script is part of the AMET-AQ system.  This script creates a single model-to-obs
+### scatterplot of the percent soil composition by the individual soil species. This script
+### will create a single plot for a single network and model simulation. Output format is
+### png, pdf or both.  
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+########################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET

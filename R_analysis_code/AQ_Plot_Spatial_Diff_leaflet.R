@@ -1,18 +1,18 @@
-################################################################
-### AMET CODE: INTERACTIVE PLOT SPATIAL DIFF
+header <- "
+############################### INTERACTIVE PLOT SPATIAL DIFF #################################
+### AMET CODE: AQ_Plot_Spatial_Diff_leaflet.R 
 ###
-### This code is part of the AMET-AQ system.  The Plot Spatial Diff code
-### takes a MYSQL database query for a single species from one or more
-### networks and two simulations and plots the bias and error for each
-### simulation, and the difference in bias and error between each simulation.
-### This particular code utilizes the leaflet package to create an inter-
-### active plot with zoom capability. PANDOC is used to create a self-
-### contained HTML file. Cool colors indicate lower bias/error in simulation 
-### 1 versus simulation 2, while warm colors indicate higher bias/error in 
-### simulation 1 versus simulation 2. 
+### This code is part of the AMET-AQ system.  The Plot Spatial Diff code takes a MYSQL database 
+### query for a single species from one or more networks and two simulations and plots the bias 
+### and error for each simulation, and the difference in bias and error between each simulation.
+### This particular code utilizes the leaflet package to create an inter active plot with zoom 
+### capability. PANDOC is used to create a self-contained HTML file. Cool colors indicate lower 
+### bias/error in simulation 1 versus simulation 2, while warm colors indicate higher bias/error
+### in simulation 1 versus simulation 2. 
 ###
-### Last modified by Wyat Appel, Septempber 2018
-################################################################
+### Last modified by Wyat Appel: June, 2019
+################################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET

@@ -1,17 +1,18 @@
-################################################################
-### AMET CODE: PLOT SPATIAL DIFF
+header <- "
+################################ PLOT SPATIAL DIFF ###############################
+### AMET CODE: AQ_Plot_Spatial_Diff.R 
 ###
-### This code is part of the AMET-AQ system.  The Plot Spatial Diff code
-### takes a MYSQL database query for a single species from one or more
-### networks and two simulations and plots the bias and error for each
-### simulation, and the difference in bias and error between each simulation,
-### and provides a histogram of the distribution of differences in bias and
-### error. Cool colors indicate lower bias/error in simulation 1 versus
-### simulation 2, while warm colors indicate higher bias/error in simulation
+### This code is part of the AMET-AQ system.  The Plot Spatial Diff code takes a MYSQL
+### database query for a single species from one or more networks and two simulations 
+### and plots the bias and error for each simulation, and the difference in bias and 
+### error between each simulation, and provides a histogram of the distribution of 
+### differences in bias and error. Cool colors indicate lower bias/error in simulation
+### 1 versus simulation 2, while warm colors indicate higher bias/error in simulation
 ### 1 versus simulation 2. 
 ###
-### Last modified by Wyat Appel; January 4, 2017
-################################################################
+### Last modified by Wyat Appel: June, 2019
+###################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET

@@ -1,15 +1,17 @@
-################################################################
+header <- "
+############################ ROSELLE BOX PLOT ##############################
+### AMET CODE: AQ_Boxplot_Roselle.R 
+###
 ### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED HOURLY BOXPLOT DISPLAY.  It
 ### draws side-by-side boxplots for the various groups, with median value,
 ### interquartile and 25% and 75% quartile ranges indicated.  It is designed
-### to work with any temporal data (e.g. hourly, daily, or weekly).
-### It may be used with either one or two model simulation, but is
-### designed to only work with a single network at a time.  It is called a
-### Roselle plot because Shawn Roselle suggested that it be added to
-### the AMET system.
+### to work with a single network/species and any temporal data (e.g. hourly, 
+### daily, or weekly), but will plot a single bar for each simulation. 
+### Proided under the boxes are summary statistics for each simulation
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### Last updated by Wyat Appel: June, 2019
+#############################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")        		# base directory of AMET

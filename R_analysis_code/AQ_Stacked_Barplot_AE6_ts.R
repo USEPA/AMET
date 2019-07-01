@@ -1,14 +1,16 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED "STACKED BAR PLOT".
-### The code is interactive with the AMET_AQ system developed by
-### Wyat Appel.  Data are queried from the MYSQL database for the STN
-### network.  Data are then averaged for SO4, NO3, NH4, EC, OC and PM2.5
-### for the model and ob values.  These averages are then plotted on
-### a stacked bar plot, along with the percent of the total PM2.5
-### that each specie comprises.
+header <- "
+############################ AE6 STACKED BAR PLOT TIME SERIES ###########################
+### AMET CODE: AQ_Stacked_Barplot_AE6_ts.R
 ###
-### Last updated by Wyat Appel: June, 2017 
-################################################################
+### This code creates a time series stacked bar plot of PM species from the IMPROVE, CSN,
+### SEARCH or AQS Daily networks using the ggplot R package. Data are averaged across sites
+### for each observation period (e.g. day) for SO4, NO3, NH4, EC, OC soil species, NCOM, 
+### PMother and total PM2.5. These averages are then plotted as a stacked bar plot time series.
+### This script allows for a single network but multiple simulations.
+###
+### Last updated by Wyat Appel: June, 2019
+#########################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -20,6 +22,7 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 #library(ggplot2)
 library(plotly)
 library(htmlwidgets)
+sessionInfo()
 
 network <- network_names[1]
 network_name <- network_label[1]
@@ -34,13 +37,13 @@ num_runs <- 1
 filename_pdf     <- paste(run_name1,pid,"stacked_barplot_AE6_ts.pdf",sep="_")
 filename_png     <- paste(run_name1,pid,"stacked_barplot_AE6_ts.png",sep="_")
 filename_html	 <- paste(run_name1,pid,"stacked_barplot_AE6_ts.html",sep="_")
-#filename_txt	 <- paste(run_name1,pid,"stacked_barplot_AE6_data.csv",sep="_")
+filename_txt	 <- paste(run_name1,pid,"stacked_barplot_AE6_data_ts.csv",sep="_")
 
 ## Create a full path to file
 filename_pdf  <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename
 filename_png  <- paste(figdir,filename_png,sep="/")      # Set PNG filename
 filename_html  <- paste(figdir,filename_html,sep="/")
-#filename_txt  <- paste(figdir,filename_txt,sep="/")      # Set output file name
+filename_txt  <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
 method <- "Mean"
 if (use_median == "y") {
@@ -157,14 +160,13 @@ for (j in 1:length(run_names)) {
    data_ts_melted_obs.df <- melt(data_ts_obs.df,id=c("ob_dates"))
    names(data_ts_melted_obs.df)[2] <- "species"
    data_ts_melted_obs.df$cat <- network
-#   data_ts_melted_obs.df$cat <- paste(" ",network,sep="")
 
    data_ts_mod.df <- data_ts.df[-c(2,4,6,8,9,10,12,14,16,18,20,22,24,26,28,30,32,34,36)]
    names(data_ts_mod.df)[-1] <- gsub("_mod","",names(data_ts_mod.df)[-1])
    data_ts_melted_mod.df <- melt(data_ts_mod.df,id=c("ob_dates"))
    names(data_ts_melted_mod.df)[2] <- "species"
    data_ts_melted_mod.df$cat <- paste("Sim",j,sep="") 
-   if (num_dates > 25) { data_ts_melted_mod.df$cat <- run_names[j] }
+#   if (num_dates > 25) { data_ts_melted_mod.df$cat <- run_names[j] }
 
    num_sites	<- length(unique(aqdat_sub.df$Group.1))
    num_pairs	<- length(aqdat_sub.df$Group.1)   
@@ -189,8 +191,9 @@ for (j in 1:length(run_names)) {
    x_factor <- c(x_factor,paste("Sim",j,sep=""))
 }
 
-if (num_dates <= 25) { title <- paste(title,sim_legend,sep="\n\n\n") }
-if (num_dates > 25) { x_factor <- c(network,run_names) }
+#if (num_dates <= 25) { title <- paste(title,sim_legend,sep="\n\n\n") }
+title <- paste(title,sim_legend,sep="\n\n")
+#if (num_dates > 25) { x_factor <- c(network,run_names) }
 
 data_merged.df$species <- factor(data_merged.df$species, levels=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Si","Ti","Na","Cl","NCOM","OTHR"))
 data_merged.df$cat     <- factor(data_merged.df$cat, levels=x_factor)
@@ -208,20 +211,23 @@ names(dates_names) <- dates
 
 options(bitmapType='cairo')
 
-bp <- plot_ly(data_merged.df, aes(x=cat,y=value)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE)) + facet_grid(~ob_dates,labeller=as_labeller(dates_names)) 
+#bp <- plot_ly(data_merged.df, aes(x=cat,y=value)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE)) + facet_grid(~ob_dates,labeller=as_labeller(dates_names)) 
 bp_temp <- ggplot(data_merged.df, aes(x=cat,y=value)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE)) + facet_grid(~ob_dates,labeller=as_labeller(dates_names))
 pdata <- ggplot_build(bp_temp)$data
 axis.max <-  max(pdata[[1]]$ymax)
-axis.max <- axis.max+(0.05*j)*axis.max
+#axis.max <- axis.max+(0.05*j)*axis.max
 
-bp <- ggplot(data_merged.df, aes(x=cat,y=value,date=ob_dates)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE),width=0.75) + facet_grid(~ob_dates, labeller=as_labeller(dates_names)) + scale_color_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + scale_fill_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + theme(panel.grid.major.x = element_blank(), panel.spacing.x=unit(0.1,"line"), panel.grid.major.y=element_line(size=.1, color="white")) + labs(title=title,x="Network / Simulation", y=paste(method," Concentration (",units,")",sep="")) + scale_y_continuous(expand=c(0,0.1), limits=c(0,axis.max), breaks = pretty(c(0,axis.max), n = 10)) + theme(axis.title.y=element_text(size=15),axis.title.x=element_blank(), plot.title=element_text(size=10, vjust=1, hjust=0.5), axis.text.y=element_text(size=12),axis.text.x=element_text(angle=90,hjust=0.5,vjust=0.5,size=10))
+bp <- ggplot(data_merged.df, aes(x=cat,y=value,date=ob_dates)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE),width=0.75) + facet_grid(~ob_dates, labeller=as_labeller(dates_names)) + scale_color_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + scale_fill_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + theme(strip.text.x = element_text(angle=270), panel.grid.major.x = element_blank(), panel.spacing.x=unit(0.1,"line"), panel.grid.major.y=element_line(size=.1, color="white")) + labs(title=title,x="Network / Simulation", y=paste(method," Concentration (",units,")",sep="")) + scale_y_continuous(expand=c(0,0.1), limits=c(0,axis.max), breaks = pretty(c(0,axis.max), n = 10)) + theme(axis.title.y=element_text(size=15),axis.title.x=element_blank(), plot.title=element_text(size=12, vjust=1, hjust=0.5), axis.text.y=element_text(size=12),axis.text.x=element_text(angle=90,hjust=0.5,vjust=0.5,size=10))
 
-if (num_dates > 25) {
-   bp <- ggplot(data_merged.df, aes(x=cat,y=value,date=ob_dates)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE), width=0.75) + facet_grid(~ob_dates) + scale_color_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + scale_fill_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + theme(strip.text.x=element_blank(), panel.spacing.x = unit(0.1,"lines"), panel.grid.major.x = element_blank(), panel.grid.major.y=element_line(size=.1, color="white")) + labs(title=title,x="Network / Simulation", y=paste(method," Concentration (",units,")",sep="")) + scale_y_continuous(expand=c(0,0.1), limits=c(0,axis.max), breaks = pretty(c(0,axis.max), n = 10)) + theme(axis.title.y=element_text(size=15),axis.title.x=element_blank(), plot.title=element_text(size=10, vjust=1, hjust=0.5), axis.text.y=element_text(size=12),axis.text.x=element_blank(),axis.ticks.x=element_blank())
-}
+ggsave(filename_pdf,width=15,height=9)
+
+axis.max <- axis.max+(0.2*j)*axis.max
+#if (num_dates > 25) {
+   bp <- ggplot(data_merged.df, aes(x=cat,y=value,date=ob_dates)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE), width=0.75) + facet_grid(~ob_dates) + scale_color_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + scale_fill_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + theme(strip.text.x=element_blank(), panel.spacing.x = unit(0.1,"lines"), panel.grid.major.x = element_blank(), panel.grid.major.y=element_line(size=.1, color="white")) + labs(title=title,x="Network / Simulation", y=paste(method," Concentration (",units,")",sep="")) + scale_y_continuous(expand=c(0,0.1), limits=c(0,axis.max), breaks = pretty(c(0,axis.max), n = 10)) + theme(axis.title.y=element_text(size=15),axis.title.x=element_blank(), plot.title=element_text(size=12, vjust=0, hjust=0.5), axis.text.y=element_text(size=12),axis.text.x=element_text(angle=90,hjust=0.5,vjust=0.5,size=10))
+#}
 #bp
 #dev.off()
-ggsave(filename_pdf,width=9,height=9)
+#ggsave(filename_pdf,width=15,height=9)
 
 bp <- ggplotly(bp,tooltip=c("species","value","cat","date")) %>%
  layout(yaxis=list(autorange=TRUE))

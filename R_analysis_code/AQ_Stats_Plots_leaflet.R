@@ -1,18 +1,18 @@
-################################################################
-### AMET CODE: Stats and Plots Interactive
+header <- "
+############################ INTERACTIVE STATS PLOTS #############################
+### AMET CODE: AQ_Stats_Plots_leaflet.R
 ###
-### This code is part of the AMET-AQ system.  The Stats and Plots
-### interactive code takes a MYSQL database query for a single species
-### from one or more networks and a single simulation and calculates
-### summary statistics for each site and the entire domain by network.
-### Interactive spatial plots using the leaflet and htmlwidgets R libraries
-### are also produced for several select statistics, specifically MB, ME,
-### FB, FE, NMB, NME, RMSE and Correlation. Images are output as html files
-### and can be self-contained using PANDOC. If PANDOC is unavailable, the
-### selfcontained options at the end of this code should be set to false.
+### This code takes a MYSQL database query for a single species from one or more 
+### networks and a single simulation and calculates summary statistics for each site
+### and the entire domain by network. Interactive spatial plots using the leaflet and
+### the htmlwidgets R libraries are produced for select statistics, specifically MB, ME,
+### FB, FE, NMB, NME, RMSE and Correlation. Images are output as html files and can be
+### self-contained using PANDOC. If PANDOC is unavailable, the selfcontained options at
+### the end of this code should be set to false.
 ###
 ### Last modified by Wyat Appel; March 2019
-################################################################
+##################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")		        # base directory of AMET
@@ -27,7 +27,6 @@ if(!require(htmlwidgets)){stop("Required Package htmlwidgets was not loaded")}
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
-if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
 
@@ -353,7 +352,8 @@ for (i in 1:8) {
           overlayGroups = c(available_networks),
           options =  layersControlOptions(collapsed = FALSE,position="topleft")
   )
-  saveWidget(my.leaf, file=filename[i],selfcontained=T)
+  saveWidget(my.leaf, file=filename[i],selfcontained=T)	# Use if PANDOC is available
+#  saveWidget(my.leaf, file=filename[i],selfcontained=F) # Use if PANDOC is not available
 }
 
 zip_files <- paste(run_name1,species,pid,"*",sep="_")

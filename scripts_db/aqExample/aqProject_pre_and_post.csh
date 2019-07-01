@@ -163,10 +163,6 @@
 #> Set to use daylight savings time (default is N)
  setenv USEDST N
 
-#> Set time shift value for time shifted files. This was done in past for ACONC files, but is no longer necessary using new CMAQ runtime options.
-#> Default is now 0.
- setenv TIME_SHIFT 0
-
 #> Partial day calculation (computes value for last day even 
 #> if there are not 24 hours for that day after shift to LST)
  setenv PARTIAL_DAY Y
@@ -210,6 +206,10 @@
 #> with starting hours from 7 - 23 hr local time)
  setenv HOURS_8HRMAX 24
 # setenv HOURS_8HRMAX 17
+
+#> Set time shift value for time shifted files. This was done in past for ACONC files, but is no longer necessary using new CMAQ runtime options.
+#> Default is now 0.
+ setenv TIME_SHIFT 0
 		
 #> Species list for matching model species names to names in observation data files. 
  setenv AQ_SPECIES_LIST	${AMETBASE}/scripts_db/input_files/AQ_species_list.input

@@ -1,15 +1,15 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
-### AMET CODE: R_Scatterplot.r 
+header <- "
+####################### MODEL TO OBS SCATTERPLOT #########################
+### AMET CODE: R_Scatterplot_ggplot.r 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot. This script will plot a
-### single species from up to three networks on a single plot.  
-### Additionally, summary statistics are also included on the plot.  
-### The script will also allow a second run to plotted on top of the
-### first run. 
+### This script is part of the AMET-AQ system.  This script creates a single
+### model-to-obs scatterplot using the ggplot package in R. This script will
+### plot a single species from multiple simulations and multiple networks on
+### a single plot. Output format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2018
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+##########################################################################
+"
 
 # get some environmental variables and setup some directories
 library(plotly)
@@ -22,8 +22,6 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")	# R directory
 
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-
-if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 filename_pdf <- paste(run_name1,species,pid,"scatterplot_ggplot.pdf",sep="_")             # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot_ggplot.png",sep="_")
