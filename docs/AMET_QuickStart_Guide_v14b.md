@@ -149,7 +149,7 @@ Change the setting of AMETBASE in matching_surface.csh and run the script:
 ```
 cd $AMETBASE/scripts_db/aqExample
 ```
-Change the setting of AMETBASE in aqProject.csh and run the script:
+Change the setting of AMETBASE and AMET\_DATABASE in aqProject_post_only.csh and run the script:
 Check and Change the setting of the Start and End Date
 
 ```
@@ -179,7 +179,7 @@ Use the following command to navigate to the air quality analysis example projec
 ```
 cd $AMETBASE/scripts_analysis/aqExample
 ```
-Edit the AMETBASE and AMET_DATABASE variables to be consistent with the AMET installation on your system. Save and run the script:
+Edit the AMETBASE and AMET\_DATABASE variables to be consistent with the AMET installation on your system. Save and run the script:
 
 ```
 ./run_scatterplot.csh |& tee scatterplot.log
