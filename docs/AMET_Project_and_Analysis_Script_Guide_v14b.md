@@ -1,4 +1,4 @@
-AMET Project Pre- and Post- Analysis Script Guide v14b
+AMET AQ Project Pre- and Post- Analysis Script Guide v14b
 ========
 
 ## Contents
