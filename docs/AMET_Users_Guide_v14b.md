@@ -891,7 +891,7 @@ only using the aqProject_post_only.csh script found in $AMETBASE/scripts_db/aqEx
 also a more comprehensive script that performs both the pre analysis functions (e.g. running combine) 
 and the post analysis functions (e.g. running site compare and AMET). That script is named 
 aqExample_pre_and_post.csh and can also found in the $AMETBASE/scripts_db/aqExample directory. 
-Instructions for using that script can be found in the separate guide here
+Instructions for using that script can be found in the separate guide here:
 [aqProject Pre and Post Analysis Script Guide](https://github.com/USEPA/AMET/tree/1.4b/docs/AMET_aqProject_Pre_and_Post_Analysis_Script_Guide_v14b.md). 
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
