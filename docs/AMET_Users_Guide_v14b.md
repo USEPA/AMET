@@ -897,7 +897,7 @@ only using the aqProject_post_only.csh script found in $AMETBASE/scripts_db/aqEx
 also a more comprehensive script that performs both the pre analysis functions (e.g. running combine) 
 and the post analysis functions (e.g. running site compare and AMET). That script is named 
 aqExample_pre_and_post.csh and can also found in the $AMETBASE/scripts_db/aqExample directory. 
-Instructions for using that script can be found in the separate guide here:
+Instructions for using that script can be found in a separate guide here:
 [aqProject Pre and Post Analysis Script Guide](https://github.com/USEPA/AMET/tree/1.4b/docs/AMET_aqProject_Pre_and_Post_Analysis_Script_Guide_v14b.md). 
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
@@ -972,7 +972,7 @@ setting is not currenlty used for anything in AMET and is simply stored along wi
 project information. Not required when not using the database.
 
 The Table 6-3 below describes the other options and file locations that need to be
-specified in the aqProject.csh script.<a id="Table_6-3"></a>
+specified in the aqProject_post_only.csh and aqProject_pre_and_post.csh scripts.<a id="Table_6-3"></a>
 
 | **Variable**   | **Description**                                                                                                                                                                                                                                                                                                                                                                  |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -999,6 +999,7 @@ specified in the aqProject.csh script.<a id="Table_6-3"></a>
 | **CASTNET**                | T/F; Flag to include the CASTNET weekly data in the analysis |
 | **CASTNET\_HOURLY**        | T/F; Flag to include the CASTNET hourly data in the analysis |
 | **CASTNET\_DAILY\_O3**     | T/F; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
+| **CASTNET\_DRYDEP**        | T/F; Flag to include the CASTNET dry deposition data in the analysis |
 | **IMPROVE**                | T/F; Flag to include the IMPROVE daily data in the analysis |
 | **NADP**                   | T/F; Flag to include the NADP weekly deposition data in the analysis |
 | **CSN**                    | T/F; Flag to include the CSN daily data in the analysis |
@@ -1008,7 +1009,7 @@ specified in the aqProject.csh script.<a id="Table_6-3"></a>
 | **SEARCH\_HOURLY**         | T/F; Flag to include the SEARCH hourly data in the analysis |
 | **SEARCH\_DAILY**          | T/F; Flag to include the SEARCH daily data in the analysis |
 | **NAPS\_HOURLY**           | T/F; Flag to include the NAPS hourly data in the analysis |
-| **CASTNET\_DRYDEP**        | T/F; Flag to include the CASTNET dry deposition data in the analysis |
+| **NAPS\_DAILY\_O3**        | T/F; Flag to include the NAPS daily ozone (e.g. MDA8 O3) data in the analysis |
 | **AIRMON**                 | T/F; Flag to include the AIRMON data in the analysis |
 | **AMON**                   | T/F; Flag to include the AMON data in the analysis |
 | **MDN**                    | T/F; Flag to include the MDN data in the analysis |
@@ -1022,6 +1023,8 @@ specified in the aqProject.csh script.<a id="Table_6-3"></a>
 | **AGANET**                 | T/F; Flag to include the AGANET data in the analysis |
 | **ADMN**                   | T/F; Flag to include the ADMN data in the analysis |
 | **NAMN**                   | T/F; Flag to include the NAMN data in the analysis |
+| **NOAA\_ESRL\_O3**         | T/F; Flag to include the NOAA ESRL global O3 data in the analysis |
+| **TOAR**                   | T/F; Flag to include the TOAR global data in the analysis |
 | **O3\_OBS\_FACTOR**        | Factor to apply to ozone observations, typically used to convert units. By default this is set to 1. |
 | **O3\_MOD\_FACTOR**        | Factor to apply to ozone model data, typically used to convert units. By default this is set to 1. |
 | **O3\_UNITS**              | ppb/ppm; Ozone units used. By default this is set to ppb.
