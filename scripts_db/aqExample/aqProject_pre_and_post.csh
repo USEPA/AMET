@@ -80,18 +80,18 @@
 #> in the script.
  set CMAQ_HOME = /path/CMAQv53_repo
 
+#> Base directory where AMET code resides
+ setenv AMETBASE	/home/AMETv14b
+
 #> Set the location of the observation data.
 #> Observation data in the format needed for sitecmp are available 
 #> from the CMAS Center Data clearinghouse under the heading "2000-2015 North American Air Quality Observation Data":
 #> https://www.cmascenter.org/download/data.cfm
- setenv OBS_DATA_DIR  /path/aq_obs_directory
+ setenv OBS_DATA_DIR	$AMETBASE/obs/AQ
 
 #> Set the format of the site files needed for sitecmp and sitecmp_dailyo3.
 #> Options: txt or csv   The .csv files include metadata about the monitoring site (e.g. county, elevation).
  setenv SITE_FILE_FORMAT csv
-
-#> Base directory where AMET code resides
- setenv AMETBASE	$cwd
 
 # ==================================================================
 #> 3. Simulation information, input/output directories
