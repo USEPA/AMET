@@ -510,6 +510,13 @@ files are available for download from the CMAS website.
 > 0.8\*OC; ANCOMIJ (NCOM, ug/m3)<br>
 > PM25-SO4-NO3-NH4-OC-EC-[Na]-[Cl]-2.2\*Al-2.49\*Si-1.63\*Ca-2.42\*Fe-1.94\*Ti-0.8\*OC; UNSPEC2IJ (OTHER_REM, ug/m3)<br>
 
+*NOAA ESRL species used with AMET:*
+> O3; O3(ppb)<br>
+
+*TOAR species used with AMET:*
+> O3; O3(ppb)<br>
+
+
 <a id="Database_Setup"></a>
 5. Database Setup
 ==============
