@@ -67,47 +67,55 @@
 
 #> Configure the system environment
   setenv compiler     intel                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
-  setenv compilerVrsn 17.0.3                     #> Compiler version
- # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on atmos
- # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on atmos
+  setenv compilerVrsn 18.0                     #> Compiler version
+ # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on EPA system
+ # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on EPA system
 
 #> Set the location of the $CMAQ_HOME project directory used in
-#> the bldit_project.csh script of the CMAQ5.2 git repository.
+#> the bldit_project.csh script of the CMAQ5.3 git repository.
 #> This directory contains executables for combine, sitecmp and
 #> sitecmp_daily and the species definition files needed
-#> for combine.  If you are not using a CMAQ5.2 reposiotry you can
+#> for combine.  If you are not using a CMAQ5.3 reposiotry you can
 #> modify the location of the executables and spec_def files later
 #> in the script.
- set CMAQ_HOME = /home/kfoley/projects/cmaq52_project
+ set CMAQ_HOME = /path/CMAQv53_repo
 
-#> Set the location of the observation data (probably do not have to change this).
- setenv OBS_DATA_DIR  /work/MOD3EVAL/aq_obs/routine
+#> Base directory where AMET code resides
+ setenv AMETBASE	/home/AMETv14b
+
+#> Set the location of the observation data.
+#> Observation data in the format needed for sitecmp are available 
+#> from the CMAS Center Data clearinghouse under the heading "2000-2015 North American Air Quality Observation Data":
+#> https://www.cmascenter.org/download/data.cfm
+ setenv OBS_DATA_DIR	$AMETBASE/obs/AQ
 
 #> Set the format of the site files needed for sitecmp and sitecmp_dailyo3.
 #> Options: txt or csv   The .csv files include metadata about the monitoring site (e.g. county, elevation).
  setenv SITE_FILE_FORMAT csv
-
-#> Base directory where AMET code resides (probably do not have to change this).
-#  setenv AMETBASE      /work/MOD3EVAL/amet
- setenv AMETBASE	/work/MOD3EVAL/wtt/AMETv14b      
 
 # ==================================================================
 #> 3. Simulation information, input/output directories
 # ==================================================================
 
 #> Start and end dates of simulation to be evaluated.
- setenv START_DATE_H  "2011-07-01"              #> Start day. Should be in format "YYYY-MM-DD".
- setenv END_DATE_H    "2011-07-31"              #> End day. Should be in format "YYYY-MM-DD".
+ setenv START_DATE_H  "2016-07-01"              #> Start day. Should be in format "YYYY-MM-DD".
+ setenv END_DATE_H    "2016-07-31"              #> End day. Should be in format "YYYY-MM-DD".
 
-#> Set general parameters for labeling the simulation
- set VRSN = v53                                 #> Set the model version
- set MECH = cb6r3_ae6_aq                        #> Mechanism ID (should match file name of species defintion files)
- set APPL = aqExample                           #> Application Name (e.g. Code version, compiler, gridname, emissions, etc.)
+#> Set General Parameters for Configuring the Simulation
+ set VRSN      = v53               #> Code Version
+ set PROC      = mpi               #> serial or mpi
+ set MECH      = cb6r3_ae7_aq      #> Mechanism ID
+ set APPL      = SE53BENCH         #> Application Name (e.g. Gridname)
+                                                      
+#> Define RUNID as any combination of parameters above or others. By default,
+#> this information will be collected into this one string, $RUNID, for easy
+#> referencing in output binaries and log files as well as in other scripts.
+ setenv RUNID  ${VRSN}_${compilerString}_${APPL}
 
 #> Name and location of daily MET output. Required files = METCRO2D, METCRO3D
 #> This script assumes MET files are dated with the following naming convention:
 #> ${METCRO2D_NAME}_${YY}${MM}${DD}.nc, ${METCRO3D_NAME}_${YY}${MM}${DD}.nc
- setenv METDIR  /work/MOD3DEV/cmaq_benchmark/SE52BENCH/multi_day/cctm_input/met/mcip  #> Location of MET ouput.
+ setenv METDIR  /path/SE53BENCH/multi_day/cctm_input/met/mcip  #> Location of MET ouput.
  set METCRO2D_NAME = METCRO2D                   #> METCRO2D file name (without date and file extension).
  set METCRO3D_NAME = METCRO3D                   #> METCRO3D file name (without date and file extension).
 
@@ -115,24 +123,24 @@
 #> This script assumes daily CCTM output files are dated with the following naming convention:
 #> [File Name]_${YYYY}${MM}${DD}.nc where [File Name] typically = [File Type]_[Application ID].
 #> for example: CCTM_ACONC_v52_intel17.0_SE52BENCH_${YYYY}${MM}${DD}.nc
- setenv CCTMOUTDIR  /work/MOD3DEV/cmaq_benchmark/SE52BENCH/multi_day/ref_output/cctm    #> Location of CCTM output.
- set CCTM_ACONC_NAME    = CCTM_ACONC_${APPL}    #> ACONC file name (without date and file extension).
- set CCTM_APMDIAG_NAME  = CCTM_APMDIAG_${APPL}  #> APMDIAG file name (without date and file extension).
- set CCTM_WETDEP1_NAME  = CCTM_WETDEP1_${APPL}  #> WETDEP1 file name (without date and file extension).
- set CCTM_DRYDEP_NAME   = CCTM_DRYDEP_${APPL}   #> DRYDEP file name (without date and file extension).
+ setenv CCTMOUTDIR  /path/SE53BENCH/multi_day/ref_output/cctm    #> Location of CCTM output.
+ set CCTM_ACONC_NAME    = CCTM_ACONC_${RUNID}    #> ACONC file name (without date and file extension).
+ set CCTM_APMDIAG_NAME  = CCTM_APMDIAG_${RUNID}  #> APMDIAG file name (without date and file extension).
+ set CCTM_WETDEP1_NAME  = CCTM_WETDEP1_${RUNID}  #> WETDEP1 file name (without date and file extension).
+ set CCTM_DRYDEP_NAME   = CCTM_DRYDEP_${RUNID}   #> DRYDEP file name (without date and file extension).
 
 #> Names and locations of output files created with this script.
 #> This script assumes monthly combine files are dated with the following naming convention:
 #> ${COMBINE_ACONC_NAME}_${YYYY}${MM}.nc,${COMBINE_DEP_NAME}_${YYYY}${MM}.nc
- setenv POSTDIR   $AMETBASE/output/${APPL}	 #> Location to write combine files. (Or location of existing combine files).
+ setenv POSTDIR   $AMETBASE/output/${RUNID}	 #> Location to write combine files. (Or location of existing combine files).
 
- set COMBINE_ACONC_NAME  = COMBINE_ACONC_${APPL} #> Name of combine ACONC file (without date and file extension).
- set COMBINE_DEP_NAME    = COMBINE_DEP_${APPL}   #> Name of combine DEP file (without date and file extension).
- set HR2DAY_ACONC_NAME   = HR2DAY_ACONC_${APPL}  #> Name of hr2day file (without date and file extension).
+ set COMBINE_ACONC_NAME  = COMBINE_ACONC_${RUNID} #> Name of combine ACONC file (without date and file extension).
+ set COMBINE_DEP_NAME    = COMBINE_DEP_${RUNID}   #> Name of combine DEP file (without date and file extension).
+ set HR2DAY_ACONC_NAME   = HR2DAY_ACONC_${RUNID}  #> Name of hr2day file (without date and file extension).
 
- setenv EVALDIR $AMETBASE/output/${APPL}/sitex_output #> Location where sitecmp files will be saved (or location of existing sitecmp files).
+ setenv EVALDIR $AMETBASE/output/${RUNID}/sitex_output #> Location where sitecmp files will be saved (or location of existing sitecmp files).
 
- setenv PLOTDIR $AMETBASE/output/${APPL}/plots  #> Location where evaluaiton plots will be saved.
+ setenv PLOTDIR $AMETBASE/output/${RUNID}/plots  #> Location where evaluaiton plots will be saved.
  
 
 # =====================================================================
@@ -265,11 +273,11 @@
 
 #> Project name and details. Project will be created if it does not already exist.
  setenv AMET_DATABASE   amet 
- setenv AMET_PROJECT    ${APPL}                #Cannot use ${APPL} for the benchmark runs because of the "." in 17.0 label.
+ setenv AMET_PROJECT    ${RUNID}               
  setenv MODEL_TYPE      "CMAQ"
  setenv RUN_DESCRIPTION "CMAQv5.3 AMET aqExample test case. July 2016."
  setenv USER_NAME       `whoami`
- setenv EMAIL_ADDR      "appel.wyat@epa.gov"
+ setenv EMAIL_ADDR      "my.email@user.com"
 
 # =====================================================================
 #> 8. Evaluation Plotting Configuration Options
@@ -290,10 +298,8 @@
 #> using model-to-model evaluation plots. This option currently supported 
 #> in limited fashion. If not using the AMET database, need to specify the
 #> location of the site compare files for the second simulation.
-# setenv AMET_PROJECT2    CMAQv53b1_2016_12US1_M3Dry_Bidi
-# setenv OUTDIR2         ${POSTDIR}/201101
-
-
+# setenv AMET_PROJECT2     
+# setenv OUTDIR2         
 
 #######################################################################
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -338,9 +344,9 @@ if (${RUN_COMBINE} == 'T') then
   #> File [3]: CMAQ APMDIAG file
   #> File [4]: MCIP METCRO2D file
    setenv INFILE1 ${CCTMOUTDIR}/${CCTM_ACONC_NAME}_${YYYY}${MM}${DD}.nc
-   setenv INFILE2 ${METDIR}/${METCRO3D_NAME}.${YY}${MM}${DD}
+   setenv INFILE2 ${METDIR}/${METCRO3D_NAME}_${YY}${MM}${DD}.nc
    setenv INFILE3 ${CCTMOUTDIR}/${CCTM_APMDIAG_NAME}_${YYYY}${MM}${DD}.nc
-   setenv INFILE4 ${METDIR}/${METCRO2D_NAME}.${YY}${MM}${DD}
+   setenv INFILE4 ${METDIR}/${METCRO2D_NAME}_${YY}${MM}${DD}.nc
 
   #> Executable call:
    ${EXEC_combine}
@@ -385,7 +391,7 @@ if (${RUN_COMBINE} == 'T') then
   #> File [4]: {empty}
    setenv INFILE1 ${CCTMOUTDIR}/${CCTM_DRYDEP_NAME}_${YYYY}${MM}${DD}.nc
    setenv INFILE2 ${CCTMOUTDIR}/${CCTM_WETDEP1_NAME}_${YYYY}${MM}${DD}.nc
-   setenv INFILE3 ${METDIR}/${METCRO2D_NAME}.${YY}${MM}${DD}
+   setenv INFILE3 ${METDIR}/${METCRO2D_NAME}_${YY}${MM}${DD}.nc
    setenv INFILE4
 
   #> Executable call:
