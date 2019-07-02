@@ -883,7 +883,15 @@ $AMETBASE/scripts\_db/input_files directory. The model data used in the
 aqExample project (Section 6.3) have already been post-processed.
 For a new project, the CMAQ data will need to be post-processed before they
 are ingested into the AMET database. This post-processing is accomplished
-by using the Fortran program `Combine`.
+by using the Fortran program `Combine`. 
+
+The directions below assume you are running combine separately to create the combine files 
+for AMET with use, and therefore will be running the AMET script designed for post analysis only
+using the aqProject_post_only.csh script found in $AMETBASE/scripts_db/aqExample. There is also 
+a more comprehensive script that performs both the pre analysis functions (e.g. running combine) 
+and the post analysis functions (e.g. running site compare and AMET). This script is named 
+aqExample_pre_and_post.csh and also found in the $AMETBASE/scripts_db/aqExample directory. 
+Instructions for using that script can be found in the separate guide here. 
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
 variable in the database and analysis scripts.*
@@ -897,9 +905,9 @@ To create a new AQ project, follow these basic steps:
 3.  Create a new project directory under $AMETBASE/model\_data/AQ for
     the input model data and copy or link post-processed model data to this directory.
 
-4.  Configure the C-shell script aqProject.csh for the new project.
+4.  Configure the C-shell script aqProject_post_only.csh for the new project.
 
-5.  Run the aqProject.csh script to populate the AMET database.
+5.  Run the aqProject_post_only.csh script to populate the AMET database.
 
 For example, to create a new AQ project called “aqNC2007”, use the following commands:
 
