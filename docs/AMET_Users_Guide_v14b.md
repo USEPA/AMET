@@ -265,10 +265,13 @@ networks including:
 * National Atmospheric Deposition Program (NADP)
 * SouthEastern Aerosol Research and Characterization Study (SEARCH)
 * Chemical Speciation Network (CSN; formerly STN)
+* National Air Pollution Surveillance (NAPS) Program (Canada AQ network)
+* NOAA Earth Systems Research Laboratory (ESRL)
+* Tropospheric Ozone Assessment Report (TOAR)
 
 The observational datasets
 have been preprocessed and reformatted (in some instances from their original
-sources) for access by AMET. The temporal range is network dependent.
+sources) for use with AMET. The temporal range is network dependent.
 The monitoring station locations are provided by a series of .csv files
 under the subdirectory $AMETBASE/obs/AQ/site\_files. A brief synopsis of
 each network, along with the steps taken to create these data for AMET,
@@ -529,14 +532,15 @@ MySQL administrator. Note that this is not necessarily the same as the “ametse
 password that will be created using the scripts discussed below.
 
 Note that the database is required for the meteorological side of AMET. 
-However, as of AMETv1.4, the database is no longer required to process and 
+However, as of AMETv1.4b, the database is no longer a requirement to process and 
 analyze air quality data. An option has been added to read the csv output
 files from site compare directly, bypassing the need to use the database. This has 
 both advantages and disadvantages. The primary advantage is that an AMET user would 
 not be required to install and setup the MySQL database for AMET, eliminating and 
-streamlining the AMET install process somewhat. The primary disadvantages 
-is that all output files must be retained and organized, as they are needed 
-to do any analysis. Also, the use of the database provides the ability to fully 
+streamlining the AMET installation process. The primary disadvantages 
+are that all output files must be retained and organized, as they are needed 
+to do any analysis, and analyses that require the use of site metadata may not
+work without the database. Also, the use of the database provides the ability to fully 
 query and subset the AQ data in the database using the metadata provided. This 
 functionality would be highly limited without the use of the database. It is up 
 to the user to choose whether or not to install and utilize the database. However, 
@@ -757,18 +761,20 @@ Go to the AQ example project directory:
 
 > $ cd $AMETBASE/scripts\_db/aqExample
 
-Here you will see one C-shell script and the combine subdirectory. 
+Here you will see two C-shell scripts and the combine subdirectory. 
 The combine subdirectory is not used for this example; 
 it is discussed later in Section 6.4, “Creating a New AQ Project”.
 
-The C-shell file aqProject.csh is a wrapper script for calling the R
-programs that actually create an AMET AQ project (and database if necessary)
-and populate the AMET database with the project data.
-
-Verify that the variable AMETBASE is set to the correct AMET project.   Run the script by typing
+The C-shell files aqProject_post_only.csh and aqProject_pre_and_post.csh are wrapper
+scripts for calling the R programs that actually create an AMET AQ project 
+(and AMET database if necessary) and populate the AMET database with the project data. 
+For now we will only work with the aqProject_post_only.csh script. More information regarding
+the aqProject_pre_and_post.csh script will be provided in later sections. Start by opening 
+the aqProject_post_only.csh and verify that the variable AMETBASE is set to the correct AMET 
+project.   Run the script by typing
 
 ```
-./aqProject.csh >& log.populate
+./aqProject_post_only.csh >& log.populate
 ```
 
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background. By default, the script is setup to prompt you for the MySQL login/password.
