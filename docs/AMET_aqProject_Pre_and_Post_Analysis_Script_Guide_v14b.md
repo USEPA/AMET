@@ -21,7 +21,7 @@ This run script controls execution of multiple post-processing and evaluation st
 
 Location of run script: 
 ```
-$AMETBASE/scripts\_db/aqExample/aqProject_pre_and_post.csh
+$AMETBASE/scripts_db/aqExample/aqProject_pre_and_post.csh
 ```
 
 <a id="EnvVar"></a>2. Setting environment variables
