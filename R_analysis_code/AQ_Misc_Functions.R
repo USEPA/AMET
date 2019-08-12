@@ -1331,7 +1331,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
    }
    if (zeroprecip == "y") { criteria <- paste(criteria, " and d.precip_ob > 0",sep="") }
    if ((all_valid == "y") && (network == "NADP")) { # valid flags for NADP obs
-      criteria <- paste(criteria, " and (d.valid_code = 't' or d.valid_code = 'd' or d.valid_code = 'w' or d.valid_code = 'wi' or d.valid_code = 'wd')",sep="") 
+      criteria <- paste(criteria, " and (d.valid_code = 't' or d.valid_code = 'd' or d.valid_code = 'w' or d.valid_code = 'wi' or d.valid_code = 'wd' or d.valid_code = 'wa')",sep="") 
    } 
    if ((all_valid == "y") && (network == "AMON")) { # valid flags for AMON obs
       criteria <- paste(criteria, " and (d.valid_code = ' ' or d.valid_code = 'A' or d.valid_code = 'B' or d.valid_code IS NULL)",sep="") 
@@ -1377,7 +1377,7 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
             }
             else {
                if ((all_valid == "y") && ((network == "NADP") || (network == "MDN"))) {
-                  indic.missing <- aqdat_query.df[,ob_col] < 0  # Check for observations that are less than 0
+                  indic.missing <- aqdat_query.df[,ob_col] < 0  # Check for observations that are less than zero 
                   aqdat_query.df[indic.missing,ob_col] <- 0     # Replace those observations with 0 (we assume a valid observation, just not negative). Applies primarily to NTN networks (i.e. NADP, AMON, MDN)
                }
                if ((remove_negatives == 'y') || (remove_negatives == 'Y') || (remove_negatives == 't') || (remove_negatives == 'T')) {

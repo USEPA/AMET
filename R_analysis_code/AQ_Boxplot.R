@@ -316,7 +316,8 @@ legend_type   <- c(0,1,2,3,4)
 label 	      <- paste(species," (",units,")",sep="")
 
 ### User option to remove boxes and only plot median lines ###
-boxplot(split(aqdat.df$Obs_Value, aqdat.df$Split_On), range=0, border=plot_colors[1], whiskcol=whisker_color[1], staplecol=whisker_color[1], col=plot_colors[1], boxwex=bar_width[1], ylim=c(y.axis.min, y.axis.max), xlab="Months", ylab=label, cex.axis=1.0, cex.lab=1.3)
+range <- y.axis.max - y.axis.min
+boxplot(split(aqdat.df$Obs_Value, aqdat.df$Split_On), range=0, border=plot_colors[1], whiskcol=whisker_color[1], staplecol=whisker_color[1], col=plot_colors[1], boxwex=bar_width[1], ylim=c(y.axis.min-(0.05*range), y.axis.max), xlab="Months", ylab=label, cex.axis=1.0, cex.lab=1.3)
 boxplot(split(aqdat.df$Mod_Value,aqdat.df$Split_On), range=0, border=plot_colors[2], whiskcol=whisker_color[2], staplecol=whisker_color[2], col=plot_colors[2], boxwex=bar_width[2], add=T, cex.axis=1.0, cex.lab=1.3)
 if (run2 == "True") {
     boxplot(split(aqdat2.df$Mod_Value,aqdat2.df$Split_On), range=0, border=plot_colors[3], whiskcol=whisker_color[3], staplecol=whisker_color[3], col=plot_colors[3], boxwex=bar_width[3], add=T, cex.axis=1.0, cex.lab=1.3)
@@ -337,9 +338,10 @@ nsamples.table <- obs.stats$n
 num_months <- length(nsamples.table)
 
 ### Put number of samples above each month ###
+range <- y.axis.max - y.axis.min
 {
    if(length(nsamples.table) <= 36) {
-      text(x=1:num_months,y=y.axis.min,labels=nsamples.table,cex=0.75,adj=c(0.5,1),srt=90)
+      text(x=1:num_months,y=y.axis.min-(0.05*range),labels=nsamples.table,cex=0.75,adj=c(0.5,0.5),srt=90)
    }
    else {
       year_mark<-seq(13,num_months,by=12)       # Do not plot number of obs if plotting more than a year
