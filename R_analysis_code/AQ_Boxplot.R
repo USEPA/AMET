@@ -62,6 +62,10 @@ q2.norm_bias2	<- NULL
 q2.norm_bias3 	<- NULL
 q3.norm_bias2   <- NULL
 q3.norm_bias3   <- NULL
+Bias2		<- NULL
+Bias3		<- NULL
+Norm_Bias2	<- NULL
+Norm_Bias3	<- NULL
 
 {
    if (Sys.getenv("AMET_DB") == 'F') {
@@ -196,7 +200,7 @@ q1.norm_bias	<- norm_bias.stats$stats[2,]
 
 bar_colors   <- c("gray65","gray45")
 bar_width    <- c(0.8,0.5)
-
+num.groups   <- length(unique(aqdat.df$Split_On))
 
 if (run2 == "True") {
    ### Find q1, median, q2 for each group of both species ###
@@ -221,6 +225,7 @@ if (run2 == "True") {
    
    bar_colors   <- c("gray65","gray45","gray25")
    bar_width    <- c(0.8,0.5,0.2)
+   num.groups2  <- length(unique(aqdat2.df$Split_On))
 }
 
 if (run3 == "True") {
@@ -246,6 +251,7 @@ if (run3 == "True") {
 
    bar_colors   <- c("gray80","gray60","gray35","gray10")
    bar_width    <- c(0.8,0.6,0.3,0.1)
+   num.groups3  <- length(unique(aqdat3.df$Split_On))
 }
 
 whisker_color <- "transparent"
@@ -263,7 +269,7 @@ line_type <- c(1,2,3,4,5,6)
 ###################
 ### Set up axes ###
 ###################
-num.groups <- length(unique(aqdat.df$Split_On))
+#num.groups <- length(unique(aqdat.df$Split_On))
 #num.groups <- length(unique(aqdat.df$ob_dates))
 
 x.axis.max <- num.groups-1
@@ -360,12 +366,12 @@ points(x.loc, median.spec2, pch=plot_symbols[2], col=plot_colors2[2])					# Add 
 lines(x.loc, median.spec2, lty=line_type[2], col=plot_colors2[2])					# Connect median points with a line
 
 if (run2 == "True") {
-   x.loc <- 1:num.groups
+   x.loc <- 1:num.groups2
    points(x.loc, median.spec2_2, pch=plot_symbols[3], col=plot_colors2[3])                                  # Add points for model median values
    lines(x.loc, median.spec2_2, lty=line_type[3], col=plot_colors2[3])                                   # Connect median points with a line
 }
 if (run3 == "True") {
-   x.loc <- 1:num.groups
+   x.loc <- 1:num.groups3
    points(x.loc, median.spec2_3, pch=plot_symbols[4], col=plot_colors2[4])                                  # Add points for model median values
    lines(x.loc, median.spec2_3, lty=line_type[4], col=plot_colors2[4])                                   # Connect median points with a line
 }
@@ -443,10 +449,12 @@ lines(x.loc, median.bias, col=plot_colors2[1], lty=line_type[1])                
 abline(h=0)
 
 if (run2 == "True") {
+   x.loc <- 1:num.groups2
    points(x.loc, pch=plot_symbols[2], median.bias2, col=plot_colors2[2])                                              # Add points for obs median values
    lines(x.loc, median.bias2, col=plot_colors2[2], lty=line_type[2]) 
 }
 if (run3 == "True") {
+   x.loc <- 1:num.groups3
    points(x.loc, pch=plot_symbols[3], median.bias3, col=plot_colors2[3])                                              # Add points for obs median values
    lines(x.loc, median.bias3, col=plot_colors2[3], lty=line_type[3])
 }
@@ -534,11 +542,13 @@ lines(x.loc, col=plot_colors2[1], lty=line_type[1], median.norm_bias)           
 abline(h=0)
 
 if (run2 == "True") {
+   x.loc <- 1:num.groups2
    points(x.loc, pch=plot_symbols[2], median.norm_bias2, col=plot_colors2[2])                                              # Add points for obs median values
    lines(x.loc, median.norm_bias2, col=plot_colors2[2], lty=line_type[2])
 }
 
 if (run3 == "True") {
+   x.loc <- 1:num.groups3
    points(x.loc, pch=plot_symbols[3], median.norm_bias3, col=plot_colors2[3])                                              # Add points for obs median values
    lines(x.loc, median.norm_bias3, col=plot_colors2[3], lty=line_type[3])
 }

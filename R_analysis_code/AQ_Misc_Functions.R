@@ -1221,17 +1221,25 @@ aggregate_query <- function(data_in.df)
 ############################################
 read_sitex <- function(directory,network,run_name,species)
 {
+   data_exists_flag <- "n"
    if (!exists("aggregate_data")) { aggregate_data <- "n" }
    sitex_file   <- paste(directory,"/",network,"_",run_name,".csv",sep="")
    cat(paste("Reading data from",sitex_file,"\n\n",sep=" "))
    species_ob   <- paste(species[1],"_ob",sep="")
    species_mod  <- paste(species[1],"_mod",sep="")
-   if(file.exists(sitex_file)) {
-      if (file.info(sitex_file)$size == 0) { stop("Stopping because file size is zero. Please check your site compare output file for accuracy.") }
-      data_in.df <- read.csv(sitex_file,skip=5,header=T,as.is=T)
-      if ((network == "AQS_Daily_O3") || (network == "CASTNET_Daily") || (network == "NAPS_Daily_O3") || (network == "EMEP_Daily_O3")) {
-         data_in.df$Shh <- 0
+   if(!file.exists(sitex_file)) { data_exists_flag <- "n" }	# Check to see if sitex file exists
+   else {
+      if (file.info(sitex_file)$size == 0) { data_exists_flag <- "n" }	# Check to see if sitex file exists but is empty
+      else {
+         data_in.df <- read.csv(sitex_file,skip=5,header=T,as.is=T)
+         if ((network == "AQS_Daily_O3") || (network == "CASTNET_Daily") || (network == "NAPS_Daily_O3") || (network == "EMEP_Daily_O3")) {
+            data_in.df$Shh <- 0
+         }
+         if (length(data_in.df$SiteId) == 0) { data_exists_flag <- "n" } # Check to see if sitex file is non-empty but contains no data (i.e. just a header)
+         else { data_exists_flag <- "y" }
       }
+   }
+   if (data_exists_flag == "y") {
       ob_date_start <- paste(data_in.df$SYYYY,sprintf("%02d",data_in.df$SMM),sprintf("%02d",data_in.df$SDD),sep="-")
       ob_date_end   <- paste(data_in.df$EYYYY,sprintf("%02d",data_in.df$EMM),sprintf("%02d",data_in.df$EDD),sep="-")
       all_species   <- c(paste(species[1],"_ob",sep=""), paste(species[1],"_mod",sep=""))
@@ -1247,6 +1255,7 @@ read_sitex <- function(directory,network,run_name,species)
       sitex_data.df <- data.frame(network=network,stat_id=data_in.df$SiteId,lat=data_in.df$Latitude,lon=data_in.df$Longitude,ob_dates=ob_date_start,ob_datee=ob_date_end,ob_hour=sprintf("%02d",data_in.df$Shh),month=sprintf("%02d",data_in.df$SMM),stringsAsFactors=F)
 #      if ((!"State" %in% colnames(datain.df)) {
       sitex_data.df$state <- "NA"
+      sitex_data.df <- sitex_data.df[order(sitex_data.df$ob_dates,sitex_data.df$ob_hour),]
 #      }
       for (j in 1:length(all_species)) {
          {
@@ -1298,10 +1307,12 @@ read_sitex <- function(directory,network,run_name,species)
       }
       return(list(sitex_data=sitex_data.df,units=ob_unit,data_exists=data_exists_flag))
    }
-   else {
-      data_exists_flag <- "n"
-      return(list(sitex_data=NULL,units=NULL,data_exists=data_exists_flag))
-   }
+   if (data_exists_flag == "y") { return(list(sitex_data=sitex_data.df,units=ob_unit,data_exists=data_exists_flag)) }
+   if (data_exists_flag == "n") { return(list(sitex_data=NULL,units=NULL,data_exists=data_exists_flag)) }
+#   else {
+#      data_exists_flag <- "n"
+#      return(list(sitex_data=NULL,units=NULL,data_exists=data_exists_flag))
+#   }
 }
 ############################################
 
