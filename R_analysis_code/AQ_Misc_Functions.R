@@ -1221,6 +1221,7 @@ aggregate_query <- function(data_in.df)
 ############################################
 read_sitex <- function(directory,network,run_name,species)
 {
+   cat(paste("Species to read from sitex file:", species)
    data_exists_flag <- "n"
    if (!exists("aggregate_data")) { aggregate_data <- "n" }
    sitex_file   <- paste(directory,"/",network,"_",run_name,".csv",sep="")
@@ -1255,7 +1256,6 @@ read_sitex <- function(directory,network,run_name,species)
       sitex_data.df <- data.frame(network=network,stat_id=data_in.df$SiteId,lat=data_in.df$Latitude,lon=data_in.df$Longitude,ob_dates=ob_date_start,ob_datee=ob_date_end,ob_hour=sprintf("%02d",data_in.df$Shh),month=sprintf("%02d",data_in.df$SMM),stringsAsFactors=F)
 #      if ((!"State" %in% colnames(datain.df)) {
       sitex_data.df$state <- "NA"
-      sitex_data.df <- sitex_data.df[order(sitex_data.df$ob_dates,sitex_data.df$ob_hour),]
 #      }
       for (j in 1:length(all_species)) {
          {
@@ -1269,8 +1269,8 @@ read_sitex <- function(directory,network,run_name,species)
       data_exists_flag <- "y"
       num_specs        <- length(species)-1
       for (k in 0:num_specs) {
-         ob_col  <- 9  + (2*k)
-         mod_col <- 10 + (2*k)
+         ob_col  <- 10  + (2*k)
+         mod_col <- 11 + (2*k)
          {
             if (length(sitex_data.df$stat_id > 0)) {
                count <- sum(is.na(sitex_data.df[,ob_col]))
@@ -1305,9 +1305,12 @@ read_sitex <- function(directory,network,run_name,species)
          }
          sitex_data.df$stat_id <- paste(sitex_data.df$stat_id,sitex_data.df$POCode,sep='')
       }
+#      return(list(sitex_data=sitex_data.df,units=ob_unit,data_exists=data_exists_flag))
+   }
+   if (data_exists_flag == "y") {
+      sitex_data.df <- sitex_data.df[order(sitex_data.df$ob_dates,sitex_data.df$ob_hour),]
       return(list(sitex_data=sitex_data.df,units=ob_unit,data_exists=data_exists_flag))
    }
-   if (data_exists_flag == "y") { return(list(sitex_data=sitex_data.df,units=ob_unit,data_exists=data_exists_flag)) }
    if (data_exists_flag == "n") { return(list(sitex_data=NULL,units=NULL,data_exists=data_exists_flag)) }
 #   else {
 #      data_exists_flag <- "n"
