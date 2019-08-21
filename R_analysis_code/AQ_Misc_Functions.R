@@ -1221,7 +1221,7 @@ aggregate_query <- function(data_in.df)
 ############################################
 read_sitex <- function(directory,network,run_name,species)
 {
-   cat(paste("Species to read from sitex file:", species)
+   cat(paste("Species to read from sitex file:", species))
    data_exists_flag <- "n"
    if (!exists("aggregate_data")) { aggregate_data <- "n" }
    sitex_file   <- paste(directory,"/",network,"_",run_name,".csv",sep="")
