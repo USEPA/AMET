@@ -198,10 +198,18 @@ To compile these programs, edit the makefile file that is located in each tool *
 
 ```
 > cd $AMETBASE/tools_src
+cd combine/src
+edit the combine Makefile
+> Make
 > cd bldoverlay/src
-> make
-cd ../sitecmp; make
-cd ../sitecmp_dailyo3; make
+edit the bldoverlay Makefile
+> Make
+> cd ../sitecmp/scr
+edit the sitecmp Makefile
+> Make
+> cd ../sitecmp_dailyo3/scr
+edit the sitecmp_dailyo3 Makefile
+> Make
 ```
 
 <a id=Install4></a>
