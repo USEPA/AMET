@@ -95,17 +95,22 @@ In the AMET **src** directory there are three Fortran programs for pairing model
 * **sitecmp** - pairs hourly and daily observation and model data for many of the networks compatible with AMET
 * **sitecmp_dailyo3** - calculates daily maximum 1-hour and 8-hour ozone pairs for analysis with AMET
 
-To compile these programs, edit the **config.amet** file that is located in the **src** directory.  Point this script to the location of the local I/O API (IOAPI_DR) and netCDF (NETCDF_DIR) installation directories.  Use the following command to apply the settings in the config.amet script before running the bldit script for each program to build the Tier 3 programs. The example below is for compiling with intel compiler. If compiling with gcc or Portland Group compiler, replace 'intel' with either 'gcc' or 'pgi' respectively.
+To compile these programs, edit the Makefile file that is located in the **src** directory.  Point the Makefile to the location of the local I/O API and netCDF installation directories (by default these are set to LIB, but you will need to update the LIB directory or specifiy the IOAPI and NETCDF individually).  Use the following commands to build each Tier 3 program. 
 
 ```
 > cd $AMETBASE/tools_src
-> source config.amet
-> cd bldoverlay/scripts
-> ./bldit_bldoverlay.csh intel
-> cd ../sitecmp/scripts
-> ./bldit_sitecmp.csh intel
-> cd ../sitecmp_dailyo3/scripts
-> ./bldit_sitecmp_dailyo3.csh intel
+cd combine/src
+edit the combine Makefile
+> Make
+> cd bldoverlay/src
+edit the bldoverlay Makefile
+> Make
+> cd ../sitecmp/scr
+edit the sitecmp Makefile
+> Make
+> cd ../sitecmp_dailyo3/scr
+edit the sitecmp_dailyo3 Makefile
+> Make
 ```
 
 *Note: AMETBASE is the root AMET installation directory on your system*
