@@ -17,14 +17,14 @@ CMAS: Community Modeling and Analysis System
 www.cmascenter.org
 The US EPA has funded the Institute for the Environment to establish a Community Modeling and Analysis System (CMAS). The CMAS is an approach to the development, application, and analysis of environmental models that leverages the community's complementary talents and resources in order to set new standards for quality in science and in the reliability of the application of the models.
 2.	Click the Software pulldown menu on the horizontal menu bar and choose AMET.
-3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4beta, platform, and compiler for your machine and click submit.
+3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4, platform, and compiler for your machine and click submit.
 4.	Click "Download Datasets" to download MetExample Meterology datasets from WRF and MPAS.
 
 ## 3.  Download AMET-AQ CMAQ Test Case Data
 
 1.	Download Meterology test model output data by navigating to https://www.cmascenter.org/ and logging into the site using the "Log In" shortcut on the top horizontal menu.
 2.	Click the Software pulldown menu on the horizontal menu bar and choose AMET.
-3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4beta, platform, and compiler for your machine and click submit.
+3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4, platform, and compiler for your machine and click submit.
 4.	Click "Download Datasets" to download AQExample datasets from CMAQ.
 
 ## 4. Check/Install Related Software
