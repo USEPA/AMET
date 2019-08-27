@@ -53,7 +53,7 @@
 -------------------------------------
 The Atmospheric Model Evaluation Tool (AMET) (Appel et al., 2011) is a suite of software designed to facilitate the analysis and evaluation of predictions from meteorological and air quality models. AMET matches the model output for particular locations to the corresponding observed values from one or more networks of monitors. These pairings of values (model and observation) are then used to statistically and graphically analyze the model’s performance.
 
-More specifically, AMET is currently designed to analyze outputs from the [Weather Research and Forecasting (WRF) model](http://www.wrf-model.org), and the [Community Multiscale Air Quality (CMAQ) model](http://www.epa.gov/cmaq), as well as [Model for Prediction Across Scales (MPAS)](https://mpas-dev.github.io) - a new global model developed by NCAR. Output from other regional and global air quality models, such as the [Comprehensive Air Quality Model with Extensions (CAMx)](http://www.camx.com), can also be formatted for analysis with AMET.
+More specifically, AMET is currently designed to analyze outputs from the [Weather Research and Forecasting (WRF) model](http://www.wrf-model.org), and the [Community Multiscale Air Quality (CMAQ) model](http://www.epa.gov/cmaq), as well as the [Model for Prediction Across Scales (MPAS)](https://mpas-dev.github.io) - a new global model developed by NCAR. Output from other regional and global air quality models, such as the [Comprehensive Air Quality Model with Extensions (CAMx)](http://www.camx.com), can also be formatted for analysis with AMET.
 
 The basic structure of AMET consists of two *fields* and two *processes*.
 
