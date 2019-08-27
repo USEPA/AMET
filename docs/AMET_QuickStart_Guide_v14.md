@@ -1,14 +1,14 @@
-# Atmospheric Model Evaluation Tool (AMET) v1.4 beta  
+# Atmospheric Model Evaluation Tool (AMET) v1.4  
 ## Quick Start Guide
 -----
-This guide provides a quick start to getting AMET version 1.4 beta installed and running on a Linux system.
-Additional details of the steps outlined here are available in the AMET [Installation Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Install_Guide_v14b.md) and [User's Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Users_Guide_v14b.md).
+This guide provides a quick start to getting AMET version 1.4 installed and running on a Linux system.
+Additional details of the steps outlined here are available in the AMET [Installation Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Install_Guide_v14.md) and [User's Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Users_Guide_v14.md).
 
 ## 1.  Install AMET source code and scripts using Git
 
 To clone the AMET installation directory to a Linux server, use the following command:
 
-``git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b``
+``git clone -b 1.4 https://github.com/USEPA/AMET.git AMET_v14``
 
 ## 2.  Download AMET-MET Meteorology Test Case Data
 
