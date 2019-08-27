@@ -67,7 +67,7 @@ To download a zip archive of the software, click the "Clone or Download" button 
 
 To clone the AMET installation directory to a Linux server, use the following command:
 
-``git clone -b 1.4 https://github.com/USEPA/AMET.git AMET_v14``
+``git clone -b master https://github.com/USEPA/AMET.git AMET_v14``
 
 Note that this command assumes that git is installed on the Linux system.
 
