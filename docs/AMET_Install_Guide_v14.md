@@ -1,4 +1,4 @@
-# Atmospheric Model Evaluation Tool (AMET) v1.4 beta  
+# Atmospheric Model Evaluation Tool (AMET) v1.4  
 ## Installation Guide
 -----
 **Contents**
@@ -67,7 +67,7 @@ To download a zip archive of the software, click the "Clone or Download" button 
 
 To clone the AMET installation directory to a Linux server, use the following command:
 
-``git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13``
+``git clone -b 1.4 https://github.com/USEPA/AMET.git AMET_v14``
 
 Note that this command assumes that git is installed on the Linux system.
 
@@ -76,13 +76,13 @@ Note that this command assumes that git is installed on the Linux system.
 * Go to http://www.cmascenter.org and log in using your existing CMAS account. If you do not already have an account, you will need to create one.
 * Navigate to the CMAS Software Clearinghouse by selected Download -> Software from the drop-down menu at the top of the CMAS Center home page.
 * Use the Select Software to Download box, select AMET, and click on the “**Submit”** button.
-* Choose “AMET 1.3” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
+* Choose “AMET 1.4” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
 * The following items are available for download:
- * a link to the AMET 1.3 Installation Guide (this document)
- * a link to the AMET 1.3 User’s Guide
- * a link to the AMET 1.3 Quick Start Guide
- * a tarball of CMAQ model test data and air quality observations (**AMETv13_aqExample.tar.gz**)
- * a tarball of WRF model test data and meteorology observations (**AMETv13_metExample.tar.gz**)
+ * a link to the AMET 1.4 Installation Guide (this document)
+ * a link to the AMET 1.4 User’s Guide
+ * a link to the AMET 1.4 Quick Start Guide
+ * a tarball of CMAQ model test data and air quality observations (**AMETv14_aqExample.tar.gz**)
+ * a tarball of WRF model test data and meteorology observations (**AMETv14_metExample.tar.gz**)
 
 
 <a id=Install3></a>
