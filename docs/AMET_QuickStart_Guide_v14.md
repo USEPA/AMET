@@ -8,7 +8,7 @@ Additional details of the steps outlined here are available in the AMET [Install
 
 To clone the AMET installation directory to a Linux server, use the following command:
 
-``git clone -b 1.4 https://github.com/USEPA/AMET.git AMET_v14``
+``git clone -b master https://github.com/USEPA/AMET.git AMET_v14``
 
 ## 2.  Download AMET-MET Meteorology Test Case Data
 
