@@ -1,17 +1,18 @@
-################################################################
-### AMET CODE: PLOT SPATIAL DIFF
+header <- "
+################################ PLOT SPATIAL DIFF ###############################
+### AMET CODE: AQ_Plot_Spatial_Diff.R 
 ###
-### This code is part of the AMET-AQ system.  The Plot Spatial Diff code
-### takes a MYSQL database query for a single species from one or more
-### networks and two simulations and plots the bias and error for each
-### simulation, and the difference in bias and error between each simulation,
-### and provides a histogram of the distribution of differences in bias and
-### error. Cool colors indicate lower bias/error in simulation 1 versus
-### simulation 2, while warm colors indicate higher bias/error in simulation
+### This code is part of the AMET-AQ system.  The Plot Spatial Diff code takes a MYSQL
+### database query for a single species from one or more networks and two simulations 
+### and plots the bias and error for each simulation, and the difference in bias and 
+### error between each simulation, and provides a histogram of the distribution of 
+### differences in bias and error. Cool colors indicate lower bias/error in simulation
+### 1 versus simulation 2, while warm colors indicate higher bias/error in simulation
 ### 1 versus simulation 2. 
 ###
-### Last modified by Wyat Appel; January 4, 2017
-################################################################
+### Last modified by Wyat Appel: June, 2019
+###################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -24,10 +25,12 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
+if(!exists("quantile_min")) { quantile_min <- 0.001 }
+if(!exists("quantile_max")) { quantile_max <- 0.950 }
+
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
-units <- db_Query(units_qs,mysql)													# Query the database for units name
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")	# Create MYSQL query from units table
 ################################################
 
 ### Set file names and titles ###
@@ -100,6 +103,7 @@ spch2 <- apply(matrix(plot.symbols),1,pick.symbol2.fun)
 spch<-plot.symbols
 ########################################
 
+remove_negatives <- 'n'      # Set remove negatives to false. Negatives are needed in the coverage calculation and will be removed automatically by Average
 total_networks <- length(network_names)
 for (j in 1:total_networks) {							# Loop through for each network
    sites          	<- NULL							# Set sites vector to NULL
@@ -113,126 +117,134 @@ for (j in 1:total_networks) {							# Loop through for each network
    error_diff    	<- NULL
    network_number 	<- j							# Set network number to loop value
    network        	<- network_names[[j]]					# Determine network name from loop value
-   sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")	# Set subtitle based on network matched with the symbol name used for that network
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
-   print(length(query_table_info.df$COLUMN_NAME))
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs1       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,d.precip_ob,d.precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")	# Secord part of MYSQL query for run name 1
-         aqdat_query.df<-db_Query(qs1,mysql)
-         aqdat_query.df$POCode <- 1
-      }
-      else {
-         qs1       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,d.precip_ob,d.precip_mod,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")	# Secord part of MYSQL query for run name 1
-         aqdat_query.df<-db_Query(qs1,mysql)
-      }
-   }
-   check_POCode2       <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info2.df <- db_Query(check_POCode2,mysql)
-   {
-      if (length(query_table_info2.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs2       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,precip_ob,precip_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")	# Secord part of MYSQL query for run name 1
-         aqdat_query2.df<-db_Query(qs2,mysql)
-         aqdat_query2.df$POCode <- 1
-      }
-      else {
-         qs2       <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,DATE_FORMAT(d.ob_dates,'%Y%m%d'),DATE_FORMAT(d.ob_datee,'%Y%m%d'),d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,precip_ob,precip_mod,d.POCode from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates",sep="")                                           # Secord part of MYSQL query for run name 1
-         aqdat_query2.df<-db_Query(qs2,mysql)
-      }
-   }
-   aqdat_query.df$stat_id  <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
-   aqdat_query2.df$stat_id <- paste(aqdat_query2.df$stat_id,aqdat_query2.df$POCode,sep='')      # Create unique site using site ID and PO Code
-   aqdat1.df 		   <- aqdat_query.df
-   aqdat2.df 		   <- aqdat_query2.df
-
-   aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-   aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-
-   aqdat1.df$ob_datee <- aqdat1.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-   aqdat2.df$ob_datee <- aqdat2.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
-
-   ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
-   aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_datee,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
-   aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_datee,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
-   if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
-      match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
-      aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=I(aqdat1.df$stat_id), lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Mod_Value_1=aqdat1.df[,10], Mod_Value_2=aqdat2.df[match.ind,10], Ob_Value_1=aqdat1.df[,9], Ob_Value_2=aqdat2.df[match.ind,9], month=aqdat1.df$month, precip_ob=aqdat1.df$precip_ob, precip_mod=aqdat1.df$precip_mod)      # eliminate points that are not common between the two runs
-
-   }
-   else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
-      aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=I(aqdat2.df$stat_id), lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Mod_Value_1=aqdat1.df[match.ind,10], Mod_Value_2=aqdat2.df[,10], Ob_Value_1=aqdat1.df[match.ind,9], Ob_Value_2=aqdat2.df[,9], month=aqdat2.df$month, precip_ob=aqdat2.df$precip_ob, precip_mod=aqdat2.df$precip_mod)      # eliminate points that are not common between the two runs
-   }
-
-   remove(aqdat1.df,aqdat2.df)
-
-   ### Remove NAs ###
-   indic.na <- is.na(aqdat.df$Mod_Value_1)
-   aqdat.df <- aqdat.df[!indic.na,]
-   indic.na <- is.na(aqdat.df$Mod_Value_2)
-   aqdat.df <- aqdat.df[!indic.na,]
-   ##################
-
-   #######################
-
-   split_sites_all  <- split(aqdat.df, aqdat.df$stat_id)				# Split all data by site
-   for (i in 1:length(split_sites_all)) {                     				# Run averaging for each site for each month
-      sub_all.df  <- split_sites_all[[i]]						# Store current site i in sub_all.df dataframe
-      num_total_obs <- length(sub_all.df[,9])					# Count the total number of obs available for the site
-      num_good_obs <- 0								# Set number of good obs to 0
-      for (k in 1:length(sub_all.df[,9])) { 						# Count the number of non-missing obs (good obs)
-         if (sub_all.df[k,9] >= -90) {							# If ob value is >= 0, count as good
-            num_good_obs <- num_good_obs+1						# Increment good ob count by one
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info        <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         data_exists       <- sitex_info$data_exists
+         if (data_exists == 'y') {
+            aqdat_query.df <- sitex_info$sitex_data
+            aqdat_query.df <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
+            units          <- as.character(sitex_info$units[[1]])
+         }
+         sitex_info2        <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         data_exists2       <- sitex_info2$data_exists
+         if (data_exists2 == 'y') {
+            aqdat_query2.df <- sitex_info2$sitex_data
+            aqdat_query2.df <- aqdat_query2.df[with(aqdat_query2.df,order(network,stat_id)),]
          }
       }
-      coverage <- (num_good_obs/num_total_obs)*100					# Compute coverage value for good_obs/total_obs
-      if (coverage >= coverage_limit) {  						# determine if the number of non-missing obs is >= to the coverage limit
-         indic.nonzero <- sub_all.df[,6] >= -90						# Identify good obs in dataframe
-         sub_good.df <- sub_all.df[indic.nonzero,]					# Update dataframe to only include good obs (remove missing obs)
-         indic.nonzero <- sub_good.df[,7] >= -90
-         sub_good.df <- sub_good.df[indic.nonzero,]
-         indic.nonzero <- sub_good.df[,8] >= -90
-         sub_good.df <- sub_good.df[indic.nonzero,] 
-         sites        <- c(sites, unique(sub_good.df$stat_id))					# Add current site to site list	
-         lats         <- c(lats, unique(sub_good.df$lat))					# Add current lat to lat list
-         lons         <- c(lons, unique(sub_good.df$lon))					# Add current lon to lon list
-         mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  		# Compute the site mean bias for simulation 1
-         mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  		# Compute the site mean bias for simulation 2
-         mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  					# Store site bias for simulation 1 in an array
-         mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  					# Store site bias for simulation 2 in an array
-         bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))			# Compute difference in site mean bias between two simulations
-         mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))		# Compute the site mean error for simulation 1
-         mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))		# Compute the site mean error for simulation 2
-         mod_error_1_all    <- c(mod_error_1_all, mod_error_1)					# Store site mean error for simulation 1 in an array
-         mod_error_2_all    <- c(mod_error_2_all, mod_error_2)					# Store site mean error for simulation 2 in an array
-         error_diff     <- c(error_diff, (mod_error_1-mod_error_2))				# Compute difference in site mean error between two simulations
+      else {
+         query_result     <- query_dbase(run_name1,network,species)
+         aqdat_query.df   <- query_result[[1]]
+         data_exists      <- query_result[[2]]
+         query_result2    <- query_dbase(run_name2,network,species)
+         aqdat_query2.df  <- query_result2[[1]]
+         data_exists2     <- query_result2[[2]]
+         if (data_exists == 'y') {
+            units	  <- query_result[[3]]
+         }
       }
    }
+   aqdat1.df <- aqdat_query.df
+   aqdat2.df <- aqdat_query2.df
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
+   {
+      if ((data_exists == "n") || (data_exists2 == "n")) {
+         All_Data 	<- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
+         total_networks <- (total_networks-1)
+         sub_title	<- paste(sub_title,network,"=No Data; ",sep="")
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
 
-   sites_avg.df <- data.frame(Network=network,Site_ID=I(sites),lat=lats,lon=lons,Bias_1=mod_bias_1_all,Bias_2=mod_bias_2_all,Bias_Diff=bias_diff,Error_1=mod_error_1_all,Error_2=mod_error_2_all,Error_Diff=error_diff)	# Create properly formatted dataframe for use with PlotSpatial function
-   sinfo_bias_1_data[[j]]<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_1)
-   sinfo_bias_2_data[[j]]<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_2)
-   sinfo_bias_diff_data[[j]]<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_Diff)
-   sinfo_error_1_data[[j]]<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_1)
-   sinfo_error_2_data[[j]]<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_2)
-   sinfo_error_diff_data[[j]]<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_Diff)
+      }
 
-   all_sites		<- c(all_sites,sites_avg.df$Site_ID)
-   all_lats		<- c(all_lats,sites_avg.df$lat)
-   all_lons		<- c(all_lons,sites_avg.df$lon)
-   all_bias		<- c(all_bias,sites_avg.df$Bias_1)
-   all_bias2            <- c(all_bias2,sites_avg.df$Bias_2)
-   all_bias_diff	<- c(all_bias_diff,sites_avg.df$Bias_Diff)
-   all_error		<- c(all_error,sites_avg.df$Error_1)
-   all_error2           <- c(all_error2,sites_avg.df$Error_2)
-   all_error_diff	<- c(all_error_diff,sites_avg.df$Error_Diff)
+      ### If there are data, continue ###
+      else {
+         
+#         aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat1.df$ob_datee <- aqdat1.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+#         aqdat2.df$ob_datee <- aqdat2.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
+
+         ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
+         aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_datee,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
+         aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_datee,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
+         if (length(aqdat1.df$statdate) <= length(aqdat2.df$statdate)) {                              # If more obs in run 1 than run 2
+            match.ind<-match(aqdat1.df$statdate,aqdat2.df$statdate)                                   # Match the unique column (statdate) between the two runs
+            aqdat.df<-data.frame(network=aqdat1.df$network, stat_id=I(aqdat1.df$stat_id), lat=aqdat1.df$lat, lon=aqdat1.df$lon, ob_dates=aqdat1.df$ob_dates, Mod_Value_1=aqdat1.df[[mod_col_name]], Mod_Value_2=aqdat2.df[match.ind,mod_col_name], Ob_Value_1=aqdat1.df[[ob_col_name]], Ob_Value_2=aqdat2.df[match.ind,ob_col_name], month=aqdat1.df$month)      # eliminate points that are not common between the two runs
+         }
+         else { match.ind<-match(aqdat2.df$statdate,aqdat1.df$statdate)                               # If more obs in run 2 than run 1
+            aqdat.df<-data.frame(network=aqdat2.df$network, stat_id=I(aqdat2.df$stat_id), lat=aqdat2.df$lat, lon=aqdat2.df$lon, ob_dates=aqdat2.df$ob_dates, Mod_Value_1=aqdat1.df[match.ind,mod_col_name], Mod_Value_2=aqdat2.df[[mod_col_name]], Ob_Value_1=aqdat1.df[match.ind,ob_col_name], Ob_Value_2=aqdat2.df[[ob_col_name]], month=aqdat2.df$month)      # eliminate points that are not common between the two runs
+         }
+         remove(aqdat1.df,aqdat2.df)
+
+         ### Remove NAs from paired dataset ###
+         indic.na <- !is.na(aqdat.df$Mod_Value_1)
+         aqdat.df <- aqdat.df[indic.na,]
+         indic.na <- !is.na(aqdat.df$Mod_Value_2)
+         aqdat.df <- aqdat.df[indic.na,]
+         indic.na <- !is.na(aqdat.df$Ob_Value_1)
+         aqdat.df <- aqdat.df[indic.na,]
+         ######################################
+
+         split_sites_all  <- split(aqdat.df, aqdat.df$stat_id)	# Split all data by site
+         for (i in 1:length(split_sites_all)) {	# Run averaging for each site for each month
+            sub_all.df  <- split_sites_all[[i]]	# Store current site i in sub_all.df dataframe
+            num_total_obs <- length(sub_all.df$Ob_Value_1)	# Count the total number of obs available for the site
+            num_good_obs <- 0				# Set number of good obs to 0
+            for (k in 1:length(sub_all.df$Ob_Value_1)) { 	# Count the number of non-missing obs (good obs)
+               if (sub_all.df[k,8] >= -90) {		# If ob value is >= 0, count as good
+                  num_good_obs <- num_good_obs+1	# Increment good ob count by one
+               }
+            }
+            coverage <- (num_good_obs/num_total_obs)*100	# Compute coverage value for good_obs/total_obs
+            if (coverage >= coverage_limit) {  			# determine if the number of non-missing obs is >= to the coverage limit
+               indic.nonzero <- sub_all.df$Mod_Value_1 >= -90		# Identify good obs in dataframe
+               sub_good.df <- sub_all.df[indic.nonzero,]	# Update dataframe to only include good obs (remove missing obs)
+               indic.nonzero <- sub_good.df$Mod_Value_2 >= -90
+               sub_good.df <- sub_good.df[indic.nonzero,]
+               indic.nonzero <- sub_good.df$Ob_Value_1 >= -90
+               sub_good.df <- sub_good.df[indic.nonzero,] 
+               sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
+               lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
+               lons         <- c(lons, unique(sub_good.df$lon))				# Add current lon to lon list
+               mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  	# Compute the site mean bias for simulation 1
+               mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  	# Compute the site mean bias for simulation 2
+               mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  			# Store site bias for simulation 1 in an array
+               mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  			# Store site bias for simulation 2 in an array
+               bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))	# Compute diff in site mean bias between two simulations
+               mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
+               mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
+               mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
+               mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
+               error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
+            }
+         }
+
+         sites_avg.df 			<- data.frame(Network=network,Site_ID=I(sites),lat=lats,lon=lons,Bias_1=mod_bias_1_all,Bias_2=mod_bias_2_all,Bias_Diff=bias_diff,Error_1=mod_error_1_all,Error_2=mod_error_2_all,Error_Diff=error_diff)	# Create properly formatted dataframe for use with PlotSpatial function
+         sinfo_bias_1_data[[j]]		<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_1)
+         sinfo_bias_2_data[[j]]		<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_2)
+         sinfo_bias_diff_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_Diff)
+         sinfo_error_1_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_1)
+         sinfo_error_2_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_2)
+         sinfo_error_diff_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_Diff)
+
+         all_sites		<- c(all_sites,sites_avg.df$Site_ID)
+         all_lats		<- c(all_lats,sites_avg.df$lat)
+         all_lons		<- c(all_lons,sites_avg.df$lon)
+         all_bias		<- c(all_bias,sites_avg.df$Bias_1)
+         all_bias2            <- c(all_bias2,sites_avg.df$Bias_2)
+         all_bias_diff	<- c(all_bias_diff,sites_avg.df$Bias_Diff)
+         all_error		<- c(all_error,sites_avg.df$Error_1)
+         all_error2           <- c(all_error2,sites_avg.df$Error_2)
+         all_error_diff	<- c(all_error_diff,sites_avg.df$Error_Diff)
    
-
-   All_Data <- data.frame(Site=all_sites,Lat=all_lats,Lon=all_lons,Bias1=all_bias,Bias2=all_bias2,Bias_Diff=all_bias_diff,Error1=all_error,Error2=all_error2,Error_Diff=all_error_diff)
-   write.table(c(paste("Run1 = ",run_name1,sep=""),paste("Run2 = ",run_name2,sep="")),file=filename_csv,append=F,col.names=F,row.names=F,sep=",")
-   write.table(All_Data,file=filename_csv,append=T,row.names=F,sep=",")     # Write header for raw data file
-
+         All_Data <- data.frame(Site=all_sites,Lat=all_lats,Lon=all_lons,Bias1=all_bias,Bias2=all_bias2,Bias_Diff=all_bias_diff,Error1=all_error,Error2=all_error2,Error_Diff=all_error_diff)
+         sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the symbol name used for that network
+      }
+      write.table(c(paste("Run1 = ",run_name1,sep=""),paste("Run2 = ",run_name2,sep="")),file=filename_csv,append=F,col.names=F,row.names=F,sep=",")
+      write.table(All_Data,file=filename_csv,append=T,row.names=F,sep=",")     # Write header for raw data file
+   }
 }
 #########################
 ## plot format options ##
@@ -272,8 +284,8 @@ length_levs_bias <- length(levs_bias)
 intervals	 <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      bias_max <- quantile(all_bias,.95)
-      bias_min <- quantile(all_bias,0.05)
+      bias_max <- quantile(all_bias,quantile_max)
+      bias_min <- quantile(all_bias,quantile_min)
       while ((length_levs_bias == 0) || (length_levs_bias > 15)) {	# Loop to cap number of intervals
          levs_bias <- pretty(c(bias_min,bias_max),intervals,min.n=5)
          length_levs_bias <- length(levs_bias)
@@ -323,7 +335,7 @@ colors_error  <- NULL
 intervals <- num_ints
 {
    if ((length(abs_range_min) == 0) || (length(abs_range_max) == 0)) {
-      levs <- pretty(c(0,all_error),intervals,min.n=5)
+      levs <- pretty(c(0,quantile(all_error,quantile_max)),intervals,min.n=5)
    }
    else {
       levs <- pretty(c(abs_range_min,abs_range_max),intervals,min.n=5)
@@ -350,7 +362,7 @@ colors_diff_bias <- NULL
 intervals <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      diff_max <- max(abs(all_bias_diff))
+      diff_max <- max(quantile(abs(all_bias_diff),quantile_max))
       levs_diff <- pretty(c(-diff_max,diff_max),intervals,min.n=5)
       diff_range <- range(levs_diff)
       power <- abs(levs_diff[1]) - abs(levs_diff[2])
@@ -394,7 +406,7 @@ colors_diff_error <- NULL
 intervals <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      diff_max <- max(abs(all_error_diff))
+      diff_max <- max(quantile(abs(all_error_diff)),quantile_max)
       levs_diff <- pretty(c(-diff_max,diff_max),intervals,min.n=5)
       diff_range <- range(levs_diff)
       power <- abs(levs_diff[1]) - abs(levs_diff[2])
@@ -431,7 +443,7 @@ colors_diff_error                               <- c(low_range,"grey50",high_ran
 leg_colors_diff_error                           <- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
-for (k in 1:j) {
+for (k in 1:total_networks) {
 
    sinfo_bias_1[[k]]<-list(lat=sinfo_bias_1_data[[k]]$lat,lon=sinfo_bias_1_data[[k]]$lon,plotval=sinfo_bias_1_data[[k]]$plotval,levs=levs_bias,levcols=colors_bias,levs_legend=levs_legend_bias,cols_legend=leg_colors_bias,convFac=.01)			# Create list to be used with PlotSpatial function
    sinfo_bias_2[[k]]<-list(lat=sinfo_bias_2_data[[k]]$lat,lon=sinfo_bias_2_data[[k]]$lon,plotval=sinfo_bias_2_data[[k]]$plotval,levs=levs_bias,levcols=colors_bias,levs_legend=levs_legend_bias,cols_legend=leg_colors_bias,convFac=.01)			# Create model list to be used with PlotSpatial fuction
@@ -469,46 +481,46 @@ for (k in 1:j) {
 ###############################
 
 ### Plot Run 1 Bias ###
-unique_labels <- "y"												# Do not use unique labels
+unique_labels <- "y"	# Do not use unique labels
 levLab  <- leg_labels_bias
 if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <-"png" 
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_1,figure=filename_bias_1,varlab=title_bias_1,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for obs values
 }
 if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"												# Set plot format as pdf
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "pdf"	# Set plot format as pdf
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_1,figure=filename_bias_1,varlab=title_bias_1,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for ob values
 }
 #########################
 
 ### Plot Run 2 Bias ###
 if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"												# Set plot format as png
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "png"								# Set plot format as png
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_2,figure=filename_bias_2,varlab=title_bias_2,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for model values
 }
 if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"												# Set plot format as pdf
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "pdf"								# Set plot format as pdf
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_2,figure=filename_bias_2,varlab=title_bias_2,bounds=bounds,plotopts=plotopts,plot_units=units)   	# Call PlotSpatial function for model values
 }
 ###########################
 
 ### Plot Bias Difference ###
-plotfmt <- "png" 												# Set plot format as png
-unique_labels <- "y"												# Flag within Misc_Functions.R to use predefined labels
-#levLab <- levels_label_diff_bias						# Set lables to be ones defined above by levels_label_diff
+plotfmt <- "png" 			# Set plot format as png
+unique_labels <- "y"			# Flag within Misc_Functions.R to use predefined labels
+#levLab <- levels_label_diff_bias	# Set lables to be ones defined above by levels_label_diff
 levLab <- leg_labels_diff_bias
 if ((ametptype == "png") || (ametptype == "both")) {
    plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 					# Set plot options list to use with PlotSpatial function
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_diff,figure=filename_bias_diff,varlab=title_bias_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
 if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf" 												# Set plot format as pdf
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+   plotfmt <- "pdf" 								# Set plot format as pdf
+   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)	# Set plot options list to use with PlotSpatial function
    plotSpatial(sinfo_bias_diff,figure=filename_bias_diff,varlab=title_bias_diff,bounds=bounds,plotopts=plotopts,plot_units=units)	# Call PlotSpatial function for difference values
 }
 #########################################

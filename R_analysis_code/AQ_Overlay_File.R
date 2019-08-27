@@ -1,15 +1,19 @@
-################################################################
-### THIS FILE CONTAINS CODE TO CREATE AN OBS OVERLAY FILE FOR PAVE.
-### The program requires hourly data (AQS, SEARCH, CASTNet) data in
-### order to create the PAVE overlay file.  The script is given a time
-### period to query the database for, and then creates a data file that
-### can be used the the program bldoverlay.exe to create the overlay
-### file.  
-### The time period of the query should be limited to about a month for
-### AQS network if querying the entire domain due to memory limits.
+header <- "
+############################## OVERLAY FILE #################################
+### AMET Code: AQ_Overlay_File.R
 ###
-### Last updated by Wyat Appel: June, 2017
+### THIS FILE CONTAINS CODE TO CREATE AN OBS OVERLAY FILE FOR PAVE or VERDI. The
+### program  requires hourly data (AQS, SEARCH, CASTNet) data in order to create
+### the overlay file.  The script is given a time period to query the database for,
+### and then creates a data file that can be used the the program bldoverlay.exe 
+### to create the overlay file.  
+###
+### The time period of the query should be limited to about a month for AQS network
+### if querying the entire domain due to memory limits.
+###
+### Last updated by Wyat Appel: June, 2019
 ################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")        		# base directory of AMET
@@ -47,33 +51,21 @@ filename_overlay	<- paste(figdir,filename_overlay,sep="/")
 }
 
 j <- 1							# only use first network (not coded for multiple networks)
-network		<-network_names[[j]]				# set network 
+network		<- network_names[[j]]				# set network 
 run_name	<- run_name1		# Set run_name to run_name1 since only using one simulation
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
-{
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-      qs <- paste("SELECT d.network,d.stat_id,s.num_stat_id,d.lat,d.lon,d.ob_dates,DATE_FORMAT(d.ob_dates,'%Y%j'),d.ob_hour,d.",species,"_ob,d.",species,"_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
-      aqdat.df$POCode <- 1
-   }
-   else {
-      qs <- paste("SELECT d.network,d.stat_id,s.num_stat_id,d.lat,d.lon,d.ob_dates,DATE_FORMAT(d.ob_dates,'%Y%j'),d.ob_hour,d.",species,"_ob,d.",species,"_mod, d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY ob_dates,ob_hour",sep="")
-      aqdat.df<-db_Query(qs,mysql)
-   }
-}
-aqdat.df$stat_id <- paste(aqdat.df$stat_id,aqdat.df$POCode,sep='')      # Create unique site using site ID and PO Code
+query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour")
+aqdat.df	<- query_result[[1]]
 
 year_day <- aqdat.df$"DATE_FORMAT(d.ob_dates,'%Y%j')"
 
+ob_col_name <- paste(species,"_ob",sep="")
 {
    if (network == "CASTNet_hourly") {
-      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$lon,aqdat.df$lat,aqdat.df[,9],sep=",")	# set output to be written 
+      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$lon,aqdat.df$lat,aqdat.df[[ob_col_name]],sep=",")	# set output to be written 
       write.table(output, file=filename_out, append=F ,sep="",col.names=F,row.names=F,quote=F)		# write data to be used by bldoverlay.exe
    }
    else {
-      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$num_stat_id,aqdat.df$lon,aqdat.df$lat,aqdat.df[,9],sep=",")    # set output to be written 
+      output <- paste(year_day,aqdat.df$ob_hour,aqdat.df$num_stat_id,aqdat.df$lon,aqdat.df$lat,aqdat.df[[ob_col_name]],sep=",")    # set output to be written 
       write.table(output, file=filename_out, append=F ,sep="",col.names=F,row.names=F,quote=F)             # write data to be used by bldoverlay.exe
    }
 }

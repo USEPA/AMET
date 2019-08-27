@@ -1,15 +1,15 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
-### AMET CODE: R_Scatterplot.r 
+header <- "
+################## WRITE RAW QUERY OUTPUT #################### 
+### AMET CODE: AQ_Raw_Data.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot. This script will plot a
-### single species from up to three networks on a single plot.  
-### Additionally, summary statistics are also included on the plot.  
-### The script will also allow a second run to plotted on top of the
-### first run. 
+### This script is part of the AMET-AQ system.  This script simply
+### writes a database query as a comma separated file, suitable for
+### use in spreadsheet programs. Single simulation, single network,
+### single species.
 ###
-### Last Updated by Wyat Appel: June, 2017
+### Last Updated by Wyat Appel: June, 2019
 ################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -21,24 +21,19 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 filename_txt <- paste(run_name1,pid,"rawdata.csv",sep="_")     # Set output file name
 filename_txt <- paste(figdir,filename_txt,sep="/")     # Set output file name
 
-### Retrieve units and model labels from database table ###
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 network <- network_names[1]
 ################################################
 network <- network_names[1]
 run_name <- run_name1
-criteria <- paste(" WHERE d.ob_dates is not NULL and d.network='",network,"' ",query,sep="")             # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
 {
-if (length(query_table_info.df$COLUMN_NAME) == 0) {    # Check to see if POCode column exists or not
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.i,d.j,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
-      aqdat_query.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name[j],species)
+      aqdat_query.df   <- sitex_info$sitex_data
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.POCode,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")        # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
+      query_result     <- query_dbase(run_name1,network,species)
+      aqdat_query.df   <- query_result[[1]]
    }
 }
 

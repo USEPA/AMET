@@ -1,16 +1,16 @@
-################################################################
-### AMET CODE: PLOT SPATIAL
+header <- "
+###################################### SPATIAL PLOT ######################################
+### AMET CODE: AQ_Plot_Spatial.R 
 ###
-### This code is part of the AMET-AQ system.  The Plot Spatial code
-### takes a MYSQL database query for a single species from one or more
-### networks and plots the observation value, model value, and 
-### difference between the model and ob for each site for each 
-### corresponding network.  Mutiple values for a site are averaged
-### to a single value for plotting purposes.  The map area plotted
-### is dynamically generated from the input data.   
+### This code is part of the AMET-AQ system.  The Plot Spatial code takes a MYSQL database
+### query for a single species from one or more networks and plots the observation value, 
+### model value, and difference between the model and ob for each site for each corresponding
+### network.  Mutiple values for a site are averaged to a single value for plotting purposes.
+### The map area plotted is dynamically generated from the input data.   
 ###
-### Last modified by Wyat Appel: June, 2017 
-################################################################
+### Last modified by Wyat Appel: June, 2019
+##########################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -23,10 +23,12 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
+if(!exists("quantile_min")) { quantile_min <- 0.001 }
+if(!exists("quantile_max")) { quantile_max <- 0.950 }
+
 ### Retrieve units label from database table ###
-network 	<- network_names[1] # When using mutiple networks, units from network 1 will be used
-units_qs	 <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="") # Create MYSQL query from units table
-units 		<- db_Query(units_qs,mysql) # Query the database for units name
+network		<- network_names[1] # When using mutiple networks, units from network 1 will be used
+#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="") # Create MYSQL query from units table
 ################################################
 
 ### Set file names and titles ###
@@ -82,65 +84,80 @@ spch2 <- apply(matrix(plot.symbols),1,pick.symbol2.fun)
 spch<-plot.symbols
 ########################################
 
+remove_negatives <- 'n'      # Set remove negatives to false. Negatives are needed in the coverage calculation and will be removed automatically by Average
 total_networks <- length(network_names)
+k <- 1
 for (j in 1:total_networks) {							# Loop through for each network
    Mod_Obs_Diff   <- NULL							# Set model/ob difference to NULL
    network        <- network_names[[j]]						# Determine network name from loop value
-   sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")	# Set subtitle based on network matched with the symbol name used for that network
    #########################
    ## Query the database ###
    #########################
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, d.precip_ob, d.precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-         aqdat_query.df<-db_Query(qs,mysql)
-         aqdat_query.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df   <- sitex_info$sitex_data
+            aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(network,stat_id)),]
+            units            <- as.character(sitex_info$units[[1]])
+         }
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod,d.precip_ob, d.precip_mod, d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-         aqdat_query.df<-db_Query(qs,mysql)
+         query_result   <- query_dbase(run_name1,network,species)
+         aqdat_query.df <- query_result[[1]]
+         data_exists    <- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
-   aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
    #######################
 
-   ####################################
-   ## Compute Averages for Each Site ##
-   ####################################
-   averaging <- "a"
-   aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[,9],5),Mod_Value=round(aqdat_query.df[,10],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month,precip_ob=aqdat_query.df$precip_ob,precip_mod=aqdat_query.df$precip_mod)
-   if (remove_negatives == "y") {
-      indic.nonzero	<- aqdat_in.df$Mod_Value >= 0	# determine which obs are missing (less than 0); 
-      aqdat_in.df	<- aqdat_in.df[indic.nonzero,]	# remove missing model values from dataframe (happens rarely)  
+#   count <- sum(is.na(aqdat_query.df[,9]))
+#   len   <- length(aqdat_query.df[,9])
+
+#   if (count != len) {	# Continue if query returned non-missing data
+
+   { 
+      if (data_exists == "n") {
+         total_networks <- (total_networks-1)
+         sub_title<-paste(sub_title,network_label[j],"=No Data; ",sep="")      # Set subtitle based on network matched with the appropriate symbol
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
+      }
+      else {
+         ####################################
+         ## Compute Averages for Each Site ##
+         ####################################
+         averaging <- "a"
+         ob_col_name <- paste(species,"_ob",sep="")
+         mod_col_name <- paste(species,"_mod",sep="")
+         aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
+         aqdat.df <- Average(aqdat_in.df)
+         Mod_Obs_Diff <- aqdat.df$Mod_Value-aqdat.df$Obs_Value
+         Mod_Obs_Rat  <- aqdat.df$Mod_Value/aqdat.df$Obs_Value
+         aqdat.df$Mod_Obs_Diff <- Mod_Obs_Diff
+         aqdat.df$Mod_Obs_Rat  <- Mod_Obs_Rat
+         ####################################
+
+         ##################################################
+         ## Store values for each network in array lists ##
+         ##################################################
+         sinfo_obs_data[[k]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Obs_Value)
+         sinfo_mod_data[[k]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Mod_Value)
+         sinfo_diff_data[[k]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Mod_Obs_Diff)
+         sinfo_rat_data[[k]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Mod_Obs_Rat)
+
+
+         all_lats <- c(all_lats,aqdat.df$lat)
+         all_lons <- c(all_lons,aqdat.df$lon)
+         all_obs  <- c(all_obs,aqdat.df$Obs_Value)
+         all_mod  <- c(all_mod,aqdat.df$Mod_Value)
+         all_diff <- c(all_diff,aqdat.df$Mod_Obs_Diff)
+         all_rat  <- c(all_rat,aqdat.df$Mod_Obs_Rat)
+         ##################################################
+         sub_title<-paste(sub_title,symbols[k],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the appropriate symbol
+         k <- k+1
+      }
    }
-   
-   aqdat.df <- Average(aqdat_in.df)
-
-   Mod_Obs_Diff <- aqdat.df$Mod_Value-aqdat.df$Obs_Value
-   Mod_Obs_Rat  <- aqdat.df$Mod_Value/aqdat.df$Obs_Value
-   aqdat.df$Mod_Obs_Diff <- Mod_Obs_Diff
-   aqdat.df$Mod_Obs_Rat  <- Mod_Obs_Rat
-   ####################################
-
-   ##################################################
-   ## Store values for each network in array lists ##
-   ##################################################
-   sinfo_obs_data[[j]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Obs_Value)
-   sinfo_mod_data[[j]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Mod_Value)
-   sinfo_diff_data[[j]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Mod_Obs_Diff)
-   sinfo_rat_data[[j]]<-list(lat=aqdat.df$lat,lon=aqdat.df$lon,plotval=aqdat.df$Mod_Obs_Rat)
-
-   all_lats <- c(all_lats,aqdat.df$lat)
-   all_lons <- c(all_lons,aqdat.df$lon)
-   all_obs  <- c(all_obs,aqdat.df$Obs_Value)
-   all_mod  <- c(all_mod,aqdat.df$Mod_Value)
-   all_diff <- c(all_diff,aqdat.df$Mod_Obs_Diff)
-   all_rat  <- c(all_rat,aqdat.df$Mod_Obs_Rat)
-   ##################################################
-   
 }
 #########################
 ## plot format options ##
@@ -162,12 +179,13 @@ if (length(unique(aqdat_in.df$Stat_ID)) > 10000) {
 ####################################################################
 levs <- NULL
 if (length(num_ints) == 0) {
-   num_ints <- 10
+   num_ints <- 20
 }
 intervals <- num_ints
 {
    if ((length(abs_range_min) == 0) || (length(abs_range_max) == 0)) {
-      levs <- pretty(c(0,all_obs,all_mod),intervals,min.n=5)
+      all_data <- c(all_obs,all_mod)
+      levs <- pretty(c(0,quantile(all_data,quantile_max)),intervals,min.n=5)
    }
    else {
       levs <- pretty(c(abs_range_min,abs_range_max),intervals,min.n=5)
@@ -194,7 +212,7 @@ leg_colors		<- colors
 levs_low <- seq(0,0.9,by=.1)	# Fix the scale from 0 to 1
 cols_low <- cool_colors(10)	# Fix the colors from 0 to 1
 if (length(perc_error_max) == 0) {	# Check to see if user defined max value
-   perc_error_max <- quantile(abs(aqdat.df$Mod_Obs_Rat),0.95,na.rm=T)
+   perc_error_max <- quantile(abs(aqdat.df$Mod_Obs_Rat),quantile_max,na.rm=T)
 }
 high_range <- c(1,all_rat)      # Set hot color range from 1 to whatever
 intervals <- num_ints
@@ -231,7 +249,7 @@ leg_labels_rat			  <- levs_legend_rat
 intervals <- num_ints
 {
    if ((length(diff_range_min) == 0) || (length(diff_range_max) == 0)) {
-      diff_max <- max(abs(all_diff))
+      diff_max <- max(quantile(abs(all_diff),quantile_max))
       levs_diff <- pretty(c(-diff_max,diff_max),intervals,min.n=5)
       diff_range <- range(levs_diff)
       power <- abs(levs_diff[1]) - abs(levs_diff[2])
@@ -270,7 +288,7 @@ levcols_diff 				<- c(low_range,"grey50",high_range)
 leg_colors_diff				<- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
-for (k in 1:j) {
+for (k in 1:total_networks) {
 
    sinfo_obs[[k]]<-list(lat=sinfo_obs_data[[k]]$lat,lon=sinfo_obs_data[[k]]$lon,plotval=sinfo_obs_data[[k]]$plotval,levs=levs,levcols=colors,levs_legend=levs_legend,cols_legend=leg_colors,convFac=.01)			# Create list to be used with PlotSpatial function
    sinfo_mod[[k]]<-list(lat=sinfo_mod_data[[k]]$lat,lon=sinfo_mod_data[[k]]$lon,plotval=sinfo_mod_data[[k]]$plotval,levs=levs,levcols=colors,levs_legend=levs_legend,cols_legend=leg_colors,convFac=.01)			# Create model list to be used with PlotSpatial fuction

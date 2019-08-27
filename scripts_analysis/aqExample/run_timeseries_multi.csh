@@ -11,37 +11,44 @@
 # Single simulation only.
 #
 # Initial version:  Wyat Appel - Dec, 2012
-# Revised version:  Wyat Appel - Jun, 2017
+#
+# Revised version:  Wyat Appel - Sep, 2018
 # -----------------------------------------------------------------------
 
   
   #--------------------------------------------------------------------------
   # These are the main controlling variables for the R script
   
-   #  Top of AMET directory
-  setenv AMETBASE       ~/AMET
+  ###  Top of AMET directory
+  setenv AMETBASE       /home/AMETv14
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
- 
-  #  Directory where figures and text output will be directed
+  
+  ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
+  setenv AMET_DB  T
+
+  ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
+  #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
+
+  ###  Directory where figures and text output will be directed
   setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_multi_networks
   
-  #  Start and End Dates of plot (YYYYMMDD) - must match available dates in db 
-  setenv AMET_SDATE "20110701"             
-  setenv AMET_EDATE "20110731"             
+  ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
+  setenv AMET_SDATE "2016-07-01"
+  setenv AMET_EDATE "2016-07-31"
 
-  # Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
-  # The PID is particularly important if using the AMET web interface and is determined there through
-  # a random number generator.
+  ### Process ID. This can be set to anything. It will be added to the file output name. Default is 1.
+  ### The PID is particularly important if using the AMET web interface and is determined there through
+  ### a random number generator.
   setenv AMET_PID 1
 
-  #  Custom title (if not set will autogenerate title based on variables 
-  #  and plot type)
-#  setenv AMET_TITLE ""
+  ###  Custom title (if not set will autogenerate title based on variables 
+  ###  and plot type)
+  #  setenv AMET_TITLE ""
 
-  #  Plot Type, options are "pdf" or "png"
-  setenv AMET_PTYPE png
+  ###  Plot Type, options are "pdf", "png", or "both"
+  setenv AMET_PTYPE both
 
   # Additional query to subset the data.
   # Averages over all monitors that meet this additional criteria
@@ -121,7 +128,7 @@
 ##--------------------------------------------------------------------------##
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/timeseries_multi_networks.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scripts.input  
   setenv AMET_NET_INPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
   
   # Check for plot and text output directory, create if not present
@@ -137,7 +144,7 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_SITE_timeseries.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_timeseries.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

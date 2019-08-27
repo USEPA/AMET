@@ -1,16 +1,18 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED PLOTS OF
-### NMB, NME, CORRELATION, and FB, FE and RMSE.
-### The script is ideally used with a long time period, specifically
-### a year.  Average monthly domain-wide statistics are calculated 
-### and plotted.  NMB, NME and CORRELATION are plotted together,
-### while MdnB, MndE and RMSE are plotted together.  However, any
-### one of the computed statistics can be plotted with a small
-### change to the script.  The script works with multiple years as
-### well.
+header <- "
+############################# MONTHLY STAT PLOT ################################
+### AMET Code: AQ_Monthly_Stat_Plot.R
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### THIS FILE CONTAINS CODE TO DRAW CUSTOMIZED PLOTS OF NMB, NME, CORRELATION,
+###  and FB, FE and RMSE. The script is ideally used with a long time period, 
+### specifically a year.  Average monthly domain-wide statistics are calculated 
+### and plotted.  NMB, NME and CORRELATION are plotted together, while MdnB, 
+### MndE and RMSE are plotted together.  However, any one of the computed 
+### statistics can be plotted with a small change to the script.  The script 
+### works with multiple years as well.
+###
+### Last updated by Wyat Appel: June, 2019
+#################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -23,14 +25,14 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ### Retrieve units label from database table ###
 ################################################
 network		<- network_names[1]
-units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units 		<- db_Query(units_qs,mysql)
-model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name 	<- db_Query(model_name_qs,mysql)
-model_name 	<- model_name[[1]]
-if (length(units) == 0) {
- units <- ""
-}
+#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units 		<- db_Query(units_qs,mysql)
+#model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name 	<- db_Query(model_name_qs,mysql)
+#model_name 	<- model_name[[1]]
+#if (length(units) == 0) {
+# units <- ""
+#}
 ################################################
 
 ################################################
@@ -92,8 +94,12 @@ network_name<-network_label[[1]]
 #######################################
 ### Compute total number of  months ###
 #######################################
-start_month     <- month_start
-end_month       <- month_end
+#start_month     <- month_start
+#end_month       <- month_end
+if(!exists("year_start")) { year_start <- substr(start_date,1,4) }
+if(!exists("year_end")) { year_end <- substr(end_date,1,4) }
+start_month     <- as.integer(substr(start_date,5,6))
+end_month       <- as.integer(substr(end_date,5,6))
 num_years       <- (year_end-year_start)+1
 years           <- seq(year_start,year_end,by=1)
 months          <- NULL
@@ -127,7 +133,7 @@ for (y in 1:num_years) {
       ###########################################
       ####        Set Initial Values         ####
       ###########################################
-      data_all.df				<- NULL
+#      data_all.df				<- NULL
       stats_all.df				<- NULL
       stats_all.df$NUM_OBS			<- NA 
       stats_all.df$Percent_Norm_Mean_Bias	<- NA
@@ -141,32 +147,21 @@ for (y in 1:num_years) {
       stats_all.df$Median_Error			<- NA
       stats_all.df$RMSE				<- NA
       ###########################################
-      query			<- paste(query_in," and month = ",m,sep="")
-      criteria 			<- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")	# Set part of the MYSQL query
-      check_POCode		<- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-      query_table_info.df	<-db_Query(check_POCode,mysql)
-      {
-         if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-            aqdat_query.df<-db_Query(qs,mysql)
-            aqdat_query.df$POCode <- 1
-         }
-         else {
-            qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, d.POCode, precip_ob from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")   # Set rest of the MYSQL criteria
-            aqdat_query.df<-db_Query(qs,mysql)
-         }
-      }
-      aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep="")
+      query	      <- paste(query_in," and month = ",m,sep="")
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
+      model_name      <- query_result[[4]]
+      if (data_exists == "n") { stop("Stopping because data_exists is false. Likely no data found for query.") }
       ###################################################################################################################
       ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
       ###################################################################################################################
+      ob_col_name <- paste(species,"_ob",sep="")
+      mod_col_name <- paste(species,"_mod",sep="")
       if (length(aqdat_query.df$stat_id) > 0) {
-         data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,9],mod_val=aqdat_query.df[,10],precip_val=aqdat_query.df$precip_ob)
-         stats_all.df 	<- try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
-         indic.nonzero 	<- data_all.df$ob_val > 0
-         data_stats.df 	<- data_all.df[indic.nonzero,]
-         indic.nonzero 	<- data_stats.df$mod_val > 0
-         data_stats.df 	<- data_stats.df[indic.nonzero,]
+         data_stats.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[[ob_col_name]],mod_val=aqdat_query.df[[mod_col_name]])
+         stats_all.df 	<- try(DomainStats(data_stats.df))      # Compute stats using DomainStats function for entire domain
          mod_obs_diff 	<- data_stats.df$mod_val-data_stats.df$ob_val
       }
       monthly_OBS		<- c(monthly_OBS,stats_all.df$NUM_OBS)
@@ -264,9 +259,9 @@ title(main=main.title,cex=1.5)
 ######
 
 ### Finish up ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename1_pdf," png:",filename1_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename1_pdf," png:",filename1_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -326,9 +321,9 @@ title(main=main.title,cex=1.5)
 #######################################################
 
 ### Finish Up ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename2_pdf," png:",filename2_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename2_pdf," png:",filename2_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -386,9 +381,9 @@ title(main=main.title,cex=1.5)
 ######
 
 ### Finish Up ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename3_pdf," png:",filename3_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename3_pdf," png:",filename3_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

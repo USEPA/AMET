@@ -3,20 +3,17 @@
 #                                                                       #
 #                AMET (Atmospheric Model Evaluation Tool)               #
 #                                                                       #
-#                    Example Met-AQ coupled analysis                    #
-#                           MET_AQ_coupled.R                            #
-#                                                                       #
-#                                                                       #
-#         Version: 	1.1                                             #
-#         Date:		Sep 18, 2007                                    #
-#         Contributors:	Robert Gilliam                                  #
+#                   Example Met-AQ coupled analysis 	                  #
+#                       MET_AQ_coupled.R                                #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
+#########################################################################
 #
 # Modified to work with combined MET/AQ mode, Alexis Zubrow (IE UNC) Oct, 2007
+# Version 1.1, Sep 18, 2007, Robert Gilliam
 #
-# Version 1.2, May 6, 2013, Rob Gilliam
+# Version 1.2, May 6, 2013, Robert Gilliam
 # - Cleaned code
 #########################################################################
 #:::::::::::::::::::::::::::::::::::::::::::::

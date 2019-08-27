@@ -1,20 +1,17 @@
-################################################################
-### AMET CODE: BOX PLOT
+header <- "
+################################### BOX PLOT #######################################
+### AMET CODE: AQ_Boxplot.R
 ###
-### This script is part of the AMET-AQ system.  It plots a box plot
-### without whiskers.  The script is designed to create a box plot
-### with on monthly boxes.  Individual observation/model pairs are
-### provided through a MYSQL query, from which the script computes the
-### 25% and 75% quartiles, as well as the median values for both obs
-### and model values.  The script then plots these values as a box plot.
-### While the script is designed to be used with an entire year of data,
-### it can be used with a shorter time period.  However, no less than
-### three months should be used, since any period of time shorter than
-### that can cause elements of the plot (text) to be misplaced on the 
-### plot area.
+### This script is part of the AMET-AQ system.  It plots a box plot without whiskers.
+###  The script is designed to create a box plot with monthly boxes.  Individual 
+### observation/model pairs are provided through a MYSQL query, from which the script 
+### computes the 25% and 75% quartiles, as well as the median values for both obs
+### and model values.  The script then plots these values as a box plot. Suggest using
+### the new ggplot or plotly AMET box plots for better box plot graphics. 
 ###
-### Last updated by Wyat Appel: June, 2017 
-################################################################
+### Last updated by Wyat Appel: June, 2019
+#####################################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -25,17 +22,13 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1] 
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql) 
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- unlist(db_Query(model_name_qs,mysql))
-model_name <- model_name[[1]]
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units <- db_Query(units_qs,mysql) 
 run2 <- "False"
 run3 <- "False"
 ################################################
 
 ### Set file names and titles ###
-label <- paste(species," (",units,")",sep="")
 network<-network_names[[1]]
 filename_all_pdf	<- paste(run_name1,species,pid,"boxplot_all.pdf",sep="_")
 filename_all_png	<- paste(run_name1,species,pid,"boxplot_all.png",sep="_")
@@ -57,23 +50,43 @@ filename_bias_pdf        <- paste(figdir,filename_bias_pdf,sep="/")
 filename_bias_png        <- paste(figdir,filename_bias_png,sep="/")
 filename_norm_bias_pdf   <- paste(figdir,filename_norm_bias_pdf,sep="/")
 filename_norm_bias_png   <- paste(figdir,filename_norm_bias_png,sep="/")
-
 #################################
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"'",query,sep="")			# Set first part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
+
+q1.bias2 	<- NULL
+q1.bias3 	<- NULL
+q3.bias2 	<- NULL
+q3.bias3 	<- NULL
+q1.norm_bias2   <- NULL
+q1.norm_bias3   <- NULL
+q2.norm_bias2	<- NULL
+q2.norm_bias3 	<- NULL
+q3.norm_bias2   <- NULL
+q3.norm_bias3   <- NULL
+Bias2		<- NULL
+Bias3		<- NULL
+Norm_Bias2	<- NULL
+Norm_Bias3	<- NULL
+
 {
-   if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
-      aqdat_query.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") {
+         aqdat_query.df   <- (sitex_info$sitex_data)
+         aqdat_query.df   <- aqdat_query.df[with(aqdat_query.df,order(stat_id,ob_dates,ob_hour)),]
+         units            <- as.character(sitex_info$units[[1]])
+      }
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod,POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-      aqdat_query.df<-db_Query(qs,mysql)
+#      units	      <- db_Query(units_qs,mysql)
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
    }
 }
-aqdat_query.df$stat_id <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
+if (data_exists == "n") { stop("Stopping because data_exists flag is false. Likely no data found for query.") }
+
 years   <- substr(aqdat_query.df$ob_dates,1,4)
 months  <- substr(aqdat_query.df$ob_dates,6,7)
 yearmonth <- paste(years,months,sep="_")
@@ -82,20 +95,17 @@ aqdat_query.df$YearMonth <- yearmonth
 
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    run2 <- "True"
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name2,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs2 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-         aqdat_query2.df<-db_Query(qs,mysql)
-         aqdat_query2.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name2,species)
+         aqdat_query2.df   <- sitex_info$sitex_data
+         aqdat_query2.df   <- aqdat_query2.df[with(aqdat_query2.df,order(stat_id,ob_dates,ob_hour)),]
       }
       else {
-         qs2 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name2," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")            # Set the rest of the MYSQL query
-         aqdat_query2.df<-db_Query(qs2,mysql)
+         query_result2    <- query_dbase(run_name2,network,species)
+         aqdat_query2.df  <- query_result2[[1]]
       }
    }
-   aqdat_query2.df$stat_id <- paste(aqdat_query2.df$stat_id,aqdat_query2.df$POCode,sep='')      # Create unique site using site ID and PO Code
    years2   <- substr(aqdat_query2.df$ob_dates,1,4)
    months2  <- substr(aqdat_query2.df$ob_dates,6,7)
    yearmonth2 <- paste(years2,months2,sep="_")
@@ -105,71 +115,44 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
 
 if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
    run3 <- "True" 
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name3,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME) == 0) {        # Check to see if POCode column exists or not
-         qs3 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name3," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")      # Set the rest of the MYSQL query
-         aqdat_query3.df<-db_Query(qs,mysql)
-         aqdat_query3.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info        <- read_sitex(Sys.getenv("OUTDIR2"),network,run_name3,species)
+         aqdat_query3.df   <- sitex_info$sitex_data
+         aqdat_query3.df   <- aqdat_query3.df[with(aqdat_query3.df,order(stat_id,ob_dates,ob_hour)),]
       }
       else {
-         qs3 <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name3," as d, site_metadata as s",criteria," ORDER BY stat_id,ob_dates,ob_hour",sep="")            # Set the rest of the MYSQL query
-         aqdat_query3.df<-db_Query(qs3,mysql)
+         query_result3    <- query_dbase(run_name3,network,species)
+         aqdat_query3.df  <- query_result3[[1]]
       }
    }
-   aqdat_query3.df$stat_id <- paste(aqdat_query3.df$stat_id,aqdat_query3.df$POCode,sep='')      # Create unique site using site ID and PO Code
    years3   <- substr(aqdat_query3.df$ob_dates,1,4)
    months3  <- substr(aqdat_query3.df$ob_dates,6,7)
    yearmonth3 <- paste(years3,months3,sep="_")
    aqdat_query3.df$Year <- years3
    aqdat_query3.df$YearMonth <- yearmonth3
 }
-
 total_days <- as.numeric(max(as.Date(aqdat_query.df$ob_datee))-min(as.Date(aqdat_query.df$ob_dates)))	# Calculate the total length, in days, of the period being plotted
 x.axis.min <- min(aqdat_query.df$month)	# Find the first month available from the query
-
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 {
 if ((total_days <= 31) && (averaging == "n")) {	# If only plotting one month, plot all times instead of averaging to a single month
-   indic.nonzero <- aqdat_query.df[,9] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,]
-   indic.nonzero <- aqdat_query.df[,10] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,]
-   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Month=aqdat_query.df$month,Split_On=aqdat_query.df$ob_dates)
+   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Month=aqdat_query.df$month,Split_On=aqdat_query.df$ob_dates)
 if (run2 == "True") {
-      indic.nonzero <- aqdat_query2.df[,9] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query2.df[,10] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
-      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[,9],Mod_Value=aqdat_query2.df[,10],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$ob_dates)
+      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[[ob_col_name]],Mod_Value=aqdat_query2.df[[mod_col_name]],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$ob_dates)
    }
    if (run3 == "True") {
-      indic.nonzero <- aqdat_query3.df[,9] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query3.df[,10] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
-      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[,9],Mod_Value=aqdat_query3.df[,10],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$ob_dates)
+      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[[ob_col_name]],Mod_Value=aqdat_query3.df[[mod_col_name]],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$ob_dates)
    }
 }
 else {
-   indic.nonzero <- aqdat_query.df[,9] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,] 
-   indic.nonzero <- aqdat_query.df[,10] >= 0
-   aqdat_query.df   <- aqdat_query.df[indic.nonzero,]
-   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[,9],Mod_Value=aqdat_query.df[,10],Month=aqdat_query.df$month,Split_On=aqdat_query.df$YearMonth)
+   aqdat.df <- data.frame(network=aqdat_query.df$network,stat_id=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_dates=aqdat_query.df$ob_dates,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],Month=aqdat_query.df$month,Split_On=aqdat_query.df$YearMonth)
    if (run2 == "True") {
-      indic.nonzero <- aqdat_query2.df[,9] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query2.df[,10] >= 0
-      aqdat_query2.df   <- aqdat_query2.df[indic.nonzero,]
-      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[,9],Mod_Value=aqdat_query2.df[,10],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$YearMonth)
+      aqdat2.df <- data.frame(network=aqdat_query2.df$network,stat_id=aqdat_query2.df$stat_id,lat=aqdat_query2.df$lat,lon=aqdat_query2.df$lon,ob_dates=aqdat_query2.df$ob_dates,Obs_Value=aqdat_query2.df[[ob_col_name]],Mod_Value=aqdat_query2.df[[mod_col_name]],Month=aqdat_query2.df$month,Split_On=aqdat_query2.df$YearMonth)
    }
    if (run3 == "True") {
-      indic.nonzero <- aqdat_query3.df[,9] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
-      indic.nonzero <- aqdat_query3.df[,10] >= 0
-      aqdat_query3.df   <- aqdat_query3.df[indic.nonzero,]
-      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[,9],Mod_Value=aqdat_query3.df[,10],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$YearMonth)
+      aqdat3.df <- data.frame(network=aqdat_query3.df$network,stat_id=aqdat_query3.df$stat_id,lat=aqdat_query3.df$lat,lon=aqdat_query3.df$lon,ob_dates=aqdat_query3.df$ob_dates,Obs_Value=aqdat_query3.df[[ob_col_name]],Mod_Value=aqdat_query3.df[[mod_col_name]],Month=aqdat_query3.df$month,Split_On=aqdat_query3.df$YearMonth)
    }
 }
 }
@@ -217,7 +200,7 @@ q1.norm_bias	<- norm_bias.stats$stats[2,]
 
 bar_colors   <- c("gray65","gray45")
 bar_width    <- c(0.8,0.5)
-
+num.groups   <- length(unique(aqdat.df$Split_On))
 
 if (run2 == "True") {
    ### Find q1, median, q2 for each group of both species ###
@@ -242,6 +225,7 @@ if (run2 == "True") {
    
    bar_colors   <- c("gray65","gray45","gray25")
    bar_width    <- c(0.8,0.5,0.2)
+   num.groups2  <- length(unique(aqdat2.df$Split_On))
 }
 
 if (run3 == "True") {
@@ -267,6 +251,7 @@ if (run3 == "True") {
 
    bar_colors   <- c("gray80","gray60","gray35","gray10")
    bar_width    <- c(0.8,0.6,0.3,0.1)
+   num.groups3  <- length(unique(aqdat3.df$Split_On))
 }
 
 whisker_color <- "transparent"
@@ -284,7 +269,7 @@ line_type <- c(1,2,3,4,5,6)
 ###################
 ### Set up axes ###
 ###################
-num.groups <- length(unique(aqdat.df$Split_On))
+#num.groups <- length(unique(aqdat.df$Split_On))
 #num.groups <- length(unique(aqdat.df$ob_dates))
 
 x.axis.max <- num.groups-1
@@ -301,19 +286,19 @@ y.axis.max <- c(sum((y.axis.max.value * 0.25),y.axis.max.value))		# Set y-axis m
 if (length(y_axis_max) > 0) { 					# Set user defined y axis limit
    y.axis.max <- y_axis_max						# Set y-axis max based on user input
 }
-bias.y.axis.min <- min(q1.bias)
-bias.y.axis.max.value <- max(q3.bias)
+bias.y.axis.min <- min(q1.bias,q1.bias2,q1.bias3)
+bias.y.axis.max.value <- max(q3.bias,q3.bias2,q3.bias3)
 if (inc_whiskers == 'y') {
-   bias.y.axis.min <- min(Bias)                              # Set y-axis minimum values
-   bias.y.axis.max.value <- max(Bias)                        # Determine y-axis maximum value
+   bias.y.axis.min <- min(Bias,Bias2,Bias3)                              # Set y-axis minimum values
+   bias.y.axis.max.value <- max(Bias,Bias2,Bias3)                        # Determine y-axis maximum value
 }
 bias.y.axis.max <- bias.y.axis.max.value+((bias.y.axis.max.value-bias.y.axis.min)*0.25)
 
-norm_bias.y.axis.min <- min(q1.norm_bias)
-norm_bias.y.axis.max.value <- max(q3.norm_bias)
+norm_bias.y.axis.min <- min(q1.norm_bias,q1.norm_bias2,q1.norm_bias3)
+norm_bias.y.axis.max.value <- max(q3.norm_bias,q3.norm_bias2,q3.norm_bias3)
 if (inc_whiskers == 'y') {
-   norm_bias.y.axis.min <- min(Norm_Bias)                              # Set y-axis minimum values
-   norm_bias.y.axis.max.value <- max(Norm_Bias)                        # Determine y-axis maximum value
+   norm_bias.y.axis.min <- min(Norm_Bias,Norm_Bias2,Norm_Bias3)                              # Set y-axis minimum values
+   norm_bias.y.axis.max.value <- max(Norm_Bias,Norm_Bias2,Norm_Bias3)                        # Determine y-axis maximum value
 }
 norm_bias.y.axis.max <- norm_bias.y.axis.max.value+((norm_bias.y.axis.max.value-norm_bias.y.axis.min)*0.25)
 
@@ -334,22 +319,24 @@ legend_names  <- c(network_label[1], run_name1)
 legend_fill   <- c(plot_colors[1],plot_colors[2])
 legend_colors <- c(plot_colors2[1],plot_colors2[2])
 legend_type   <- c(0,1,2,3,4)
+label 	      <- paste(species," (",units,")",sep="")
 
 ### User option to remove boxes and only plot median lines ###
-boxplot(split(aqdat.df$Obs_Value, aqdat.df$Split_On), range=0, border=plot_colors[1], whiskcol=whisker_color[1], staplecol=whisker_color[1], col=plot_colors[1], boxwex=bar_width[1], ylim=c(y.axis.min, y.axis.max), xlab="Months", ylab=label, cex.axis=1.0, cex.lab=1.3)
+range <- y.axis.max - y.axis.min
+boxplot(split(aqdat.df$Obs_Value, aqdat.df$Split_On), range=0, border=plot_colors[1], whiskcol=whisker_color[1], staplecol=whisker_color[1], col=plot_colors[1], boxwex=bar_width[1], ylim=c(y.axis.min-(0.05*range), y.axis.max), xlab="Months", ylab=label, cex.axis=1.0, cex.lab=1.3)
 boxplot(split(aqdat.df$Mod_Value,aqdat.df$Split_On), range=0, border=plot_colors[2], whiskcol=whisker_color[2], staplecol=whisker_color[2], col=plot_colors[2], boxwex=bar_width[2], add=T, cex.axis=1.0, cex.lab=1.3)
 if (run2 == "True") {
     boxplot(split(aqdat2.df$Mod_Value,aqdat2.df$Split_On), range=0, border=plot_colors[3], whiskcol=whisker_color[3], staplecol=whisker_color[3], col=plot_colors[3], boxwex=bar_width[3], add=T, cex.axis=1.0, cex.lab=1.3)
    legend_names <- c(legend_names, run_name2)
 }
 if (run3 == "True") {
-    boxplot(split(aqdat3.df$Mod_Value,aqdat3.df$Split_On), range=0, border=plot_colors[4], col=plot_colors[4], staplecol=whisker_color[4], boxwex=bar_width[4], add=T, cex.axis=1.0, cex.lab=1.3)
-   legend_names <- c(legend_names, run_name2)
+    boxplot(split(aqdat3.df$Mod_Value,aqdat3.df$Split_On), range=0, border=plot_colors[4], whiskcol=whisker_color[4], staplecol=whisker_color[4], col=plot_colors[4], boxwex=bar_width[4], add=T, cex.axis=1.0, cex.lab=1.3)
+   legend_names <- c(legend_names, run_name3)
 }
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.9)
 
 ### Count number of samples per month ###
 nsamples.table <- obs.stats$n
@@ -357,9 +344,10 @@ nsamples.table <- obs.stats$n
 num_months <- length(nsamples.table)
 
 ### Put number of samples above each month ###
+range <- y.axis.max - y.axis.min
 {
    if(length(nsamples.table) <= 36) {
-      text(x=1:num_months,y=y.axis.min,labels=nsamples.table,cex=0.75,adj=c(0.5,1),srt=90)
+      text(x=1:num_months,y=y.axis.min-(0.05*range),labels=nsamples.table,cex=0.75,adj=c(0.5,0.5),srt=90)
    }
    else {
       year_mark<-seq(13,num_months,by=12)       # Do not plot number of obs if plotting more than a year
@@ -378,25 +366,25 @@ points(x.loc, median.spec2, pch=plot_symbols[2], col=plot_colors2[2])					# Add 
 lines(x.loc, median.spec2, lty=line_type[2], col=plot_colors2[2])					# Connect median points with a line
 
 if (run2 == "True") {
-   x.loc <- 1:num.groups
+   x.loc <- 1:num.groups2
    points(x.loc, median.spec2_2, pch=plot_symbols[3], col=plot_colors2[3])                                  # Add points for model median values
    lines(x.loc, median.spec2_2, lty=line_type[3], col=plot_colors2[3])                                   # Connect median points with a line
 }
 if (run3 == "True") {
-   x.loc <- 1:num.groups
+   x.loc <- 1:num.groups3
    points(x.loc, median.spec2_3, pch=plot_symbols[4], col=plot_colors2[4])                                  # Add points for model median values
    lines(x.loc, median.spec2_3, lty=line_type[4], col=plot_colors2[4])                                   # Connect median points with a line
 }
 
 
 ### Put legend on the plot ###
-legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_type, col=plot_colors2, merge=F, cex=1)
+legend("topleft", legend_names, fill=plot_colors, pch=plot_symbols, lty=line_type, col=plot_colors2, merge=F, cex=1, bty="n")
 ##############################
 
 ### Put text stating coverage limit used ###
-if (averaging == "m") {
-   text(topright,paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
-}
+#if (averaging == "m") {
+#   text("topright",paste("Coverage Limit = ",coverage_limit,"%",sep=""),cex=0.75,adj=c(0,.5))
+#}
 if (run_info_text == "y") {
    if (rpo != "None") {
       text(x.axis.max,y.axis.max*.93,paste("RPO = ",rpo,sep=""),adj=c(0.5,.5),cex=.9)
@@ -414,9 +402,9 @@ if (run_info_text == "y") {
 ############################################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_all_pdf," png:",filename_all_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_all_pdf," png:",filename_all_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -451,7 +439,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.9)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###
@@ -461,10 +449,12 @@ lines(x.loc, median.bias, col=plot_colors2[1], lty=line_type[1])                
 abline(h=0)
 
 if (run2 == "True") {
+   x.loc <- 1:num.groups2
    points(x.loc, pch=plot_symbols[2], median.bias2, col=plot_colors2[2])                                              # Add points for obs median values
    lines(x.loc, median.bias2, col=plot_colors2[2], lty=line_type[2]) 
 }
 if (run3 == "True") {
+   x.loc <- 1:num.groups3
    points(x.loc, pch=plot_symbols[3], median.bias3, col=plot_colors2[3])                                              # Add points for obs median values
    lines(x.loc, median.bias3, col=plot_colors2[3], lty=line_type[3])
 }
@@ -513,9 +503,9 @@ num_months <- length(nsamples.table)
 ##############################################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_bias_pdf," png:",filename_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_bias_pdf," png:",filename_bias_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -542,7 +532,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title)
+title(main=title, cex.main=0.9)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###
@@ -552,11 +542,13 @@ lines(x.loc, col=plot_colors2[1], lty=line_type[1], median.norm_bias)           
 abline(h=0)
 
 if (run2 == "True") {
+   x.loc <- 1:num.groups2
    points(x.loc, pch=plot_symbols[2], median.norm_bias2, col=plot_colors2[2])                                              # Add points for obs median values
    lines(x.loc, median.norm_bias2, col=plot_colors2[2], lty=line_type[2])
 }
 
 if (run3 == "True") {
+   x.loc <- 1:num.groups3
    points(x.loc, pch=plot_symbols[3], median.norm_bias3, col=plot_colors2[3])                                              # Add points for obs median values
    lines(x.loc, median.norm_bias3, col=plot_colors2[3], lty=line_type[3])
 }
@@ -603,9 +595,9 @@ num_months <- length(nsamples.table)
 ##############################################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_norm_bias_pdf," png:",filename_norm_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_norm_bias_pdf," png:",filename_norm_bias_png,sep="")
    system(convert_command)
    
    if (ametptype == "png") {

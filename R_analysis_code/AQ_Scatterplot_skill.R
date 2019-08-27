@@ -1,13 +1,17 @@
-################## MODEL SKILL SCATTER PLOT #################### 
+header <- "
+############################ MODEL SKILL SCATTER PLOT ##############################
 ### AMET CODE: R_Scatterplot_skill.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a unique forecast skill scatter plot.  The scipt is designed to 
-### work specifically with 8-hr max ozone, as all the lines and stats
-### are based on the criteria for 8-hr ozone. 
+### This script is part of the AMET-AQ system.  This script creates a unique forecast
+### skill scatter plot.  The scipt was orinally designed to work specifically with 8-hr
+### max ozone, as all the lines and stats were based on the criteria for 8-hr ozone.
+### However, users can now specifiy the criteria line, and the forecast statistics are
+### calculated based on the user specified criteria. So, it may be used with any species.
+### Output format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+#####################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -52,36 +56,42 @@ false_alarm   <- 0
 
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
 run_name <- run_name1
-
 network <- network_names[[1]]						# Set network
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")		# Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
+
+#############################################
+### Read sitex file or query the database ###
+#############################################
 {
-   if (length(query_table_info.df$COLUMN_NAME)==0) {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set the rest of the MYSQL query
-      aqdat.df        <- db_Query(qs,mysql)
-      aqdat.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name,species)
+      aqdat_query.df   <- sitex_info$sitex_data
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
+      model_name       <- "Model"
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod, d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")        # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
+      query_result    <- query_dbase(run_name,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
+      model_name      <- query_result[[4]]
    }
 }
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
+#############################################
 
 #########################################################
 #### Calculate statistics for each requested network ####
 #########################################################
 
 ## Calculate stats using all pairs, regardless of averaging
-data_all.df <- data.frame(network=I(aqdat.df$network),stat_id=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df[,9],mod_val=aqdat.df[,10],precip_val=aqdat.df$precip_ob)
+data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[[ob_col_name]],mod_val=aqdat_query.df[[mod_col_name]])
 stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
 corr        <- NULL
 rmse        <- NULL
@@ -110,20 +120,8 @@ rmse_unsys  <- round(stats.df$RMSE_unsystematic,2)
 index_agr   <- round(stats.df$Index_of_Agree,2)
 #########################################################
  
-### if plotting all obs, remove missing obs and zero precip obs if requested ###
-#######################
-if (remove_negatives == "y") {
-   indic.nonzero <- aqdat.df[,9] >= 0							# determine which obs are missing (less than 0); 
-   aqdat.df <- aqdat.df[indic.nonzero,]							# remove missing obs from dataframe
-}
-if ((network ==  "NADP_dep") || (network == "NADP_conc") && (zeroprecip == 'n')) {	# determine if using NADP data and removing 0 precip obs
-   if (zeroprecip == 'n') {
-      indic.noprecip <- aqdat.df$precip_ob > 0						# determine where precipitation obs are 0
-      aqdat.df <- aqdat.df[indic.noprecip,]						# remove 0 precip pairs from dataframe
-   }
-}
 ######################
-aqdat.df <- data.frame(Network=aqdat.df$network,Stat_ID=aqdat.df$stat_id,lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=round(aqdat.df[,9],5),Mod_Value=round(aqdat.df[,10],5),Month=aqdat.df$month)	# Create dataframe of network values to be used to create a list
+aqdat.df <- data.frame(Network=aqdat_query.df$network,Stat_ID=aqdat_query.df$stat_id,lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Month=aqdat_query.df$month)	# Create dataframe of network values to be used to create a list
 sinfo<-list(plotval_obs=aqdat.df$Obs_Value,plotval_mod=aqdat.df$Mod_Value)        # create of list of plot values and corresponding statistics
 for (i in 1:length(sinfo$plotval_obs)) {
    if (sinfo$plotval_obs[i] >= max_limit) {
@@ -331,13 +329,13 @@ if (conf_line=="y") {
 #####################################################
 
 ### Put legend on the plot ###
-legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1.2, bty="n")
+legend("topleft", legend_names, pch=legend_chars,col=legend_cols, merge=F, cex=1, bty="n")
 ##############################
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

@@ -1,18 +1,20 @@
-################################################################
-### AMET CODE: BUGLE PLOT
+header <- "
+############################ BUGLE PLOT #################################
+### AMET CODE: AQ_Bugleplot.R
 ###
-### This script is part of the AMET-AQ system.  It plots a unique 
-### type of plot referred to as a "bugle" plot.  The idea behind
-### the plot is that model performance should be adjusted as a function
-### of the average concentration of the observed value for that specie. 
-### Therefore, as the average concentration of the specie decreses,
-### the acceptable performance criteria increase.  This code applies
-### this idea to both NMB (or FB) and NME (or FE).  A MYSQL query
-### provides the necessary input data.  The output is two plots, one
-### for the bias and one for the error (in both png and pdf formats).
+### This script is part of the AMET-AQ system.  It plots a unique type of 
+### plot referred to as a "bugle" plot.  The idea behind the plot is that 
+### model performance should be adjusted as a function of the average 
+### concentration of the observed value for that species.Therefore, as the 
+### average concentration of the specie decreses, the acceptable performance 
+### criteria increase.  This code applies this idea to both NMB (or FB) and 
+### NME (or FE).  A MYSQL query provides the necessary input data.  The output
+### is two plots, one for the bias and one for the error (in both png and pdf 
+### formats).
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### Last updated by Wyat Appel: June, 2019
+##########################################################################
+"
 
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")        		# base directory of AMET
@@ -22,9 +24,8 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ### Retrieve units label from database table ###
-network <- network_names[1] 
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql) 
+network  <- network_names[1] 
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
 ################################################
 
 ### Set file names and titles ###
@@ -60,21 +61,22 @@ for (j in 1:length(network_names)) {
    drop_names <- NULL
    species_names <- NULL
    network<-network_names[[j]]
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {   # Check to see if individual project tables exist
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-            aqdat.df <- db_Query(qs,mysql)               # Query the database 
-            aqdat.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         data_exists         <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df   <- sitex_info$sitex_data
+            units            <- as.character(sitex_info$units[[1]])
          }
+      }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set the rest of the database query
-         aqdat.df <- db_Query(qs,mysql)               # Query the database
+         query_result    <- query_dbase(run_name1,network,species)
+         aqdat_query.df  <- query_result[[1]]
+         data_exists     <- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
       }
    }
-   cat(qs)
    if (soccerplot_opt == 1) { 			# If using NMB/NME, set appropriate axis labels
       ylabel1 <- "Normalized Mean Bias (%)"
       ylabel2 <- "Normalized Mean Error (%)"
@@ -83,9 +85,15 @@ for (j in 1:length(network_names)) {
       ylabel1 <- "Fractional Bias (%)"
       ylabel2 <- "Fractional Error (%)"
    }
+   if (data_exists == "n") {
+      total_networks <- (total_networks-1)
+      if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
+   }
 
    ### Create properly formatted dataframe and then call DomainStats and SitesStats to create statistics ###
-   data_all.df <- data.frame(network=I(aqdat.df$network),stat_id=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df[,9],mod_val=aqdat.df[,10],precip_val=aqdat.df$precip_ob)
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
+   data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[[ob_col_name]],mod_val=aqdat_query.df[[mod_col_name]])
    stats_all.df <- DomainStats(data_all.df)
    #########################################################################################################
 
@@ -136,9 +144,9 @@ legend("topright", legend_names, pch=leg_chars, lty=leg_types,col=leg_cols, merg
 ##############################
 
 ### Create png format file from pdf file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_error_pdf," png:",filename_error_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_error_pdf," png:",filename_error_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
@@ -197,9 +205,9 @@ legend("topright", legend_names, pch=leg_chars, lty=leg_types,col=leg_cols, merg
 ##############################
 
 ### Create png format file from pdf file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_bias_pdf," png:",filename_bias_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_bias_pdf," png:",filename_bias_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

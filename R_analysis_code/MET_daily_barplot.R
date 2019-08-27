@@ -6,11 +6,6 @@
 #                    Daily Statistics Bar Plots                         #
 #                      MET_daily_barplot.R                              #
 #                                                                       #
-#                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
-#         Contributors:	Robert Gilliam                                  #
-#                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
@@ -20,20 +15,25 @@
 #  Daily model evaluation metrics are calculated and plotted via simple #
 #  bar plot for RMSE, bias and correlation.                             #
 #                                                                       #
-# Version 1.2, May 8, 2013, Rob Gilliam                                 #
-# Updates: -Added logic to skip days where no data exists to aviod fail #
+# Version 1.2, May 8, 2013, Robert Gilliam                              #
+#          -Added logic to skip days where no data exists to aviod fail #
 #          -Print of day to screen as loop through daily computations   #
 #          -Changed "Mean Bias" to "Bias" in plot label                 #
 #          -Cleaned code                                                #
 #                                                                       #            
-# Version 1.3, May 15, 2017, Rob Gilliam                                #
-#  Updates: - Removed hard coded amet-config.R config option that       #
+# Version 1.3, May 15, 2017, Robert Gilliam                             #
+#           - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
 #             Now users define that file location in csh wrapper scripts#
 #             via setenv MYSQL_CONFIG variable.                         #
 #           - Changed directory names to reflect new directory structure#
 #             of AMET. Also reformatted some parts of the code          #
 #             for better readability.                                   #
+#                                                                       #            
+# Version 1.4, Sep 30, 2018, Robert Gilliam                             #
+#           - two digit hour taken from ob_date, not ob_time to be      #
+#             consistant with new MySQL time structure. No impact       #
+#             since hour of day is not used in daily barplots.          #
 #########################################################################
 #:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
@@ -83,7 +83,7 @@
 #####################################################################
  varsName <-c("Temperature (2m)","Specific Humidity (2m)","Wind Speed (10m)","Wind Direction (deg.)")
  varid    <-c("T","Q","WS","WD")
- varxstr  <-paste("SELECT DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_time),d.stat_id,s.ob_network,
+ varxstr  <-paste("SELECT DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_date),d.stat_id,s.ob_network,
                    d.T_mod,d.T_ob, d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob")
  query    <-paste(varxstr," FROM ",project,"_surface d, stations s WHERE  s.stat_id=d.stat_id ",querystr,sep="")
  writeLines(paste("query: ",query))
@@ -286,7 +286,7 @@
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  mp    <- barplot(corData[,1],beside=T,main=paste(varsName[1],"Daily Correlation"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
 
 
  pname <-paste(figdir,"/",project,".",runid,".T.daily_barplot_bias.",plotopts$plotfmt,sep="")
@@ -294,7 +294,7 @@
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  mp    <- barplot(biasData[,1],beside=T,main=paste(varsName[1],"Daily Bias"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
 
 
  pname <-paste(figdir,"/",project,".",runid,".T.daily_barplot_RMSE.",plotopts$plotfmt,sep="")
@@ -302,7 +302,7 @@
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  mp    <- barplot(RMSEData[,1],beside=T,main=paste(varsName[1],"Daily RMSE Error"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
  #################################
 
 
@@ -315,21 +315,21 @@
    if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
    barplot(corData[,2],beside=T,main=paste(varsName[2],"Daily Correlation"),mar=c(7,4,4,2))
    axis(1,labels=dates,at=mp,las=2)
-   dev.off()
+   phandle<-dev.off()
 
    pname<-paste(figdir,"/",project,".",runid,".Q.daily_barplot_bias.",plotopts$plotfmt,sep="")
    if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
    if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
    barplot(biasData[,2],beside=T,main=paste(varsName[2],"Daily Bias"),mar=c(7,4,4,2))
    axis(1,labels=dates,at=mp,las=2)
-   dev.off()
+   phandle<-dev.off()
 
    pname<-paste(figdir,"/",project,".",runid,".Q.daily_barplot_RMSE.",plotopts$plotfmt,sep="")
    if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
    if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
    barplot(RMSEData[,2],beside=T,main=paste(varsName[2],"Daily RMSE Error"),mar=c(7,4,4,2))
    axis(1,labels=dates,at=mp,las=2)
-   dev.off()
+   phandle<-dev.off()
  }
  #################################
 
@@ -340,21 +340,21 @@
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(corData[,3],beside=T,main=paste(varsName[3],"Daily Correlation"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
 
  pname<-paste(figdir,"/",project,".",runid,".WS.daily_barplot_bias.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(biasData[,3],beside=T,main=paste(varsName[3],"Daily Bias"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
 
  pname<-paste(figdir,"/",project,".",runid,".WS.daily_barplot_RMSE.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(RMSEData[,3],beside=T,main=paste(varsName[3],"Daily RMSE Error"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
  #################################
 
  #################################
@@ -364,20 +364,20 @@
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(corData[,4],beside=T,main=paste(varsName[4],"Daily Correlation"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
 
  pname<-paste(figdir,"/",project,".",runid,".WD.daily_barplot_bias.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(biasData[,4],beside=T,main=paste(varsName[4],"Daily Bias"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
 
  pname<-paste(figdir,"/",project,".",runid,".WD.daily_barplot_RMSE.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(RMSEData[,4],beside=T,main=paste(varsName[4],"Daily RMSE Error"),mar=c(7,4,4,2))	
  axis(1,labels=dates,at=mp,las=2)
- dev.off()
+ phandle<-dev.off()
  #################################
 quit(save='no')

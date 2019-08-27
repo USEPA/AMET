@@ -6,21 +6,11 @@
 #                    Timeseries of T, Q, WS, WD                         #
 #                        MET_timeseries.R                               #
 #                                                                       #
-#                                                                       #
-#         Version: 	1.3                                             #
-#         Date:		May 15, 2017                                    #
-#         Contributors:	Robert Gilliam                                  #
-#                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
-#                                                                       #
-#	Version: 	1.2                                             #
-#	Date:		Oct, 2007                                       #
-#	Contributors:	Alexis Zubrow (IE UNC)                          #
-#                                                                       #
 #-----------------------------------------------------------------------#
-# Version 1.2, May 8, 2013, Rob Gilliam                                 #
+# Version 1.2, May 8, 2013, Robert Gilliam                              #
 #   Updates: - Pulled  some user configurable settings from             #
 #              MET_timeseries.R and placed in timeseries.input          #
 #            - Catch in place for sites that may not have T, Q and Wind #
@@ -29,7 +19,7 @@
 #            - In case of multiple sites, text file for each plot       #
 #            - Extensive code clean and reformatting                    #
 #                                                                       #
-#  Version 1.3, May 15, 2017, Rob Gilliam                               # 
+#  Version 1.3, May 15, 2017, Robert Gilliam                            # 
 #  Updates: - Removed hard coded amet-config.R config option that       #
 #             defined MySQL server, database and password (unsecure).   #
 #             Now users define that file location in csh wrapper scripts#
@@ -37,6 +27,11 @@
 #           - Removed some deprecated variables and cleaned/formatted   #
 #             script for better readability. Also changed dir names     #
 #             to reflect the update (i.e., R_analysis_code instead of R)#      
+#                                                                       #
+#  Version 1.4, Sep 30, 2018, Robert Gilliam                            # 
+#  Updates: - updated ob_date query spec to include hour start and end. #
+#             e.g., ob_date BETWEEN '2016-11-01 00:00:00' and           #
+#                           '2016-11-31 23:00:00'                       #
 #-----------------------------------------------------------------------#
 #                                                                       #
 #########################################################################
@@ -50,10 +45,10 @@
 ##############################################################################################
 
 ## get some environmental variables and setup some directories
- ametbase         <-Sys.getenv("AMETBASE")
- ametR            <-paste(ametbase,"/R_analysis_code",sep="")
+ ametbase         <- Sys.getenv("AMETBASE")
  ametRinput       <- Sys.getenv("AMETRINPUT")
- mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
+ mysqlloginconfig <- Sys.getenv("MYSQL_CONFIG")
+ ametR            <- paste(ametbase,"/R_analysis_code",sep="")
 
  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
  # and not specified via AMET_OUT, then set figdir to the current directory
@@ -120,26 +115,34 @@ for (sn in 1:length(statid)){
 #   STEP 1) Query the database for the station's met data
 #######################################################################################################################################
 #	Create Queries from date and query specs provided by user
-  query1<-paste("SELECT  DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_time),stat_id,fcast_hr,T_mod,T_ob, 
-                 Q_mod,WVMR_ob, U_mod,U_ob, V_mod,V_ob FROM ",table1,"  WHERE  ",statstr[sn],
-                 "  and ob_date BETWEEN ",dates$y,dform(dates$m),dform(dates$d)," and ",datee$y,
-                 dform(datee$m),dform(datee$d)," ",extra," ORDER BY ob_date,ob_time",sep="")
+  query1<-paste("SELECT  DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_date),stat_id,fcast_hr,T_mod,T_ob, 
+                 Q_mod,WVMR_ob, U_mod,U_ob, V_mod,V_ob, HOUR(ob_time) FROM ",table1,"  WHERE  ",statstr[sn],
+                 "  and ob_date BETWEEN '",dates$y,"-",dform(dates$m),"-",dform(dates$d)," 00:00:00' and '",datee$y,
+                 "-",dform(datee$m),"-",dform(datee$d)," 23:00:00' ",extra," ORDER BY ob_date,ob_time",sep="")
                  
-  query2<-paste("SELECT  DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_time),stat_id,fcast_hr,T_mod,T_ob,
-                 Q_mod,WVMR_ob, U_mod,U_ob, V_mod,V_ob FROM ",table2,"  WHERE  ",statstr[sn],
-                 "  and ob_date BETWEEN ",dates$y,dform(dates$m),dform(dates$d)," and ",datee$y,
-                 dform(datee$m),dform(datee$d)," ",extra," ORDER BY ob_date,ob_time",sep="")
+  query2<-paste("SELECT  DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_date),stat_id,fcast_hr,T_mod,T_ob,
+                 Q_mod,WVMR_ob, U_mod,U_ob, V_mod,V_ob, HOUR(ob_time) FROM ",table2,"  WHERE  ",statstr[sn],
+                 "  and ob_date BETWEEN '",dates$y,"-",dform(dates$m),"-",dform(dates$d)," 00:00:00' and '",datee$y,
+                 "-",dform(datee$m),"-",dform(datee$d)," 23:00:00' ",extra," ORDER BY ob_date,ob_time",sep="")
 
-# Query Database and put into data frame, then massage data
+  # Query Database and put into data frame, then massage data
   data1<-ametQuery(query1,mysql1)
 
+  writeLines(paste(query1))
+  # Hour of Day fix for MySQL database ob_time format changes. 
+  # Looks at HOUR(ob_date) and HOUR(ob_time) and choose the one
+  # that is not all zeros.
+  if( sum(data1[,2],na.rm=T) == 0){
+    data1[,2] <- data1[,13]
+  }
+
   # If no data is in the database for the station then skip to next station or end program
- if ( dim(data1)[1] == 0) {
-		writeLines(paste('',
-		           '**********************************************************************************',
-		           'NO DATA WAS FOUND FOR THIS SITE: Will skip to next site or terminate              ',
-		           '**********************************************************************************',sep="\n"))
-    next;
+ if ( dim(data1)[1] == 0 ) {
+      writeLines(paste('',
+                       '**********************************************************************************',
+                       'NO DATA WAS FOUND FOR THIS SITE: Will skip to next site or terminate              ',
+                       '**********************************************************************************',sep="\n"))
+    next
   }
 
   #######################################################################################################################################
@@ -154,10 +157,16 @@ for (sn in 1:length(statid)){
   if (comp){
      data2    <-ametQuery(query2,mysql2)
      if(dim(data2)[1] == 0){
-       writeLines(paste("Project ID 2 did not have any data. Either change dates
-                         to period where both projects have data or remove AMET_PROJECT2
-                         from the run_timeseries.csh script and just plot AMET_PROJECT"))
-       quit(save="no")                  
+       writeLines(paste("Project ID 2 did not have any data. Either change dates",
+                        "to period where both projects have data or remove AMET_PROJECT2",
+                        "project id from the run_timeseries.csh script and just plot AMET_PROJECT1"))
+       next                 
+     }
+     # Hour of Day fix for MySQL database ob_time format changes. 
+     # Looks at HOUR(ob_date) and HOUR(ob_time) and choose the one
+     # that is not all zeros.
+     if( sum(data2[,2],na.rm=T) == 0){
+       data2[,2] <- data2[,13]
      }
      tseries2 <-massageTseries(data2,loc=locs,iftseries=TRUE)
   }

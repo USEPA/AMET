@@ -1,13 +1,15 @@
-################## MODEL TO OBS SCATTERPLOT #################### 
+header <- "
+########################### MODEL TO OBS SOIL SCATTERPLOT ############################# 
 ### AMET CODE: R_Scatterplot_soil.r 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a single model-to-obs scatterplot of the percent soil composition by
-### the individual soil species. This script will create a single plot
-### for a single network and model simulation.  
+### This script is part of the AMET-AQ system.  This script creates a single model-to-obs
+### scatterplot of the percent soil composition by the individual soil species. This script
+### will create a single plot for a single network and model simulation. Output format is
+### png, pdf or both.  
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+########################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -48,50 +50,32 @@ point_char   <- NULL
 point_color  <- NULL
 
 ### Retrieve units and model labels from database table ###
-units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
-model_name <- model_name[[1]]
-units_convert <- 1
-if (units == "ppm") {
-   units_convert <- 1000
-   units <- "ppb"
-}
+#units_qs <- paste("SELECT Fe from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
 
-run_count <- 1
-num_runs <- 1									# Set number of runs to 1
-if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
-   num_runs <- 2								# If so, set number of runs to 2
-}
-run_name <- run_name1
-
-criteria <- paste(" WHERE d.Fe_ob is not NULL and d.network='",network,"' ",query,sep="")             # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
+#############################################
+### Read sitex file or query the database ###
+#############################################
+species <- c("Fe","Al","Si","Ti","Ca","Mg","K","Mn")
 {
-   if (length(query_table_info.df$COLUMN_NAME)==0) {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.Fe_ob,d.Fe_mod,d.Al_ob,d.Al_mod,d.Si_ob,d.Si_mod,d.Ti_ob,d.Ti_mod,d.Ca_ob,d.Ca_mod,d.Mg_ob,d.Mg_mod,d.K_ob,d.K_mod,d.Mn_ob,d.Mn_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
+   if (Sys.getenv("AMET_DB") == 'F') {
+      sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+      aqdat_query.df   <- sitex_info$sitex_data
+      data_exists      <- sitex_info$data_exists
+      if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
+      model_name       <- "Model"
    }
-   else {      
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.Fe_ob,d.Fe_mod,d.Al_ob,d.Al_mod,d.Si_ob,d.Si_mod,d.Ti_ob,d.Ti_mod,d.Ca_ob,d.Ca_mod,d.Mg_ob,d.Mg_mod,d.K_ob,d.K_mod,d.Mn_ob,d.Mn_mod,d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
+   else {
+      query_result    <- query_dbase(run_name1,network,species)
+      aqdat_query.df  <- query_result[[1]]
+      data_exists     <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
+      model_name      <- query_result[[4]]
    }
 }
 
-################################################################################
-### if plotting all obs, remove missing obs and zero precip obs if requested ###
-################################################################################
-if (remove_negatives == "y") {
-   indic.nonzero <- aqdat.df[,9] >= 0                                                  # determine which obs are missing (less than 0); 
-   aqdat.df <- aqdat.df[indic.nonzero,]                                                        # remove missing obs from dataframe
-   indic.nonzero <- aqdat.df[,10] >= 0
-   aqdat.df <- aqdat.df[indic.nonzero,]
-}
-#################################################################################
-
+aqdat.df 	      <- aqdat_query.df
 aqdat.df$Soil_Tot_ob  <- aqdat.df$Fe_ob+aqdat.df$Al_ob+aqdat.df$Si_ob+aqdat.df$Ti_ob+aqdat.df$Ca_ob+aqdat.df$Mg_ob+aqdat.df$Mg_ob+aqdat.df$K_ob+aqdat.df$Mn_ob
 aqdat.df$Soil_Tot_mod <- aqdat.df$Fe_mod+aqdat.df$Al_mod+aqdat.df$Si_mod+aqdat.df$Ti_mod+aqdat.df$Ca_mod+aqdat.df$Mg_mod+aqdat.df$Mg_mod+aqdat.df$K_mod+aqdat.df$Mn_mod
 aqdat.df$Fe_perc_ob   <- (aqdat.df$Fe_ob/aqdat.df$Soil_Tot_ob)*100
@@ -136,7 +120,7 @@ write.table(run_name1,file=filename_txt,append=F,col.names=F,row.names=F,sep=","
 write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
 write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
 write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
 ###############################
 
 ###############################################
@@ -153,7 +137,7 @@ if (run_info_text == "y") {
    text(85,30,"Averaged by Site", cex=1)						# add run name text
 }
  ### Put title at top of boxplot ###
-title(main=title,cex.main=1.1)
+title(main=title,cex.main=1)
 ###################################
 
 ### Plot points and stats for each network ###
@@ -201,9 +185,9 @@ legend("topleft", c("Fe","Al","Ti","Si","Ca","Mg","K","Mn"), pch=1,col=plot_colo
 ##############################
 
 ### Convert pdf file to png file ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

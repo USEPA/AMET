@@ -1,18 +1,18 @@
-##################### SOCCER GOAL PLOT #########################
+header <- "
+################################ SOCCER GOAL PLOT ##################################
 ### AMET CODE: R_Soccerplot.R
 ###
-### This script is part of the AMET-AQ system.  It plots a unique
-### type of plot referred to as a "soccer goal" plot. The idea behind
-### the soccer goal plot is that criteria and goal lines are plotted
-### in such a way as to form a "soccer goal" on the plot area.  Two
-### statistics are then plotted, Bias (NMB, FB, NMdnB) on the x-axis and
-### error (NME, FE, NMdnE) on the y-axis.  The better the performance of the
-### model, the closer the plotted points will fall within the "goal"
-### lines.  This type of plot is used by EPA and RPOs as part of their
-### assessment of model performance.
+### This script is part of the AMET-AQ system.  It plots a unique type of plot referred
+### to as a "soccer goal" plot. The idea behind the soccer goal plot is that criteria 
+### and goal lines are plotted in such a way as to form a "soccer goal" on the plot area.
+### Two statistics are then plotted, Bias (NMB, FB, NMdnB) on the x-axis and error 
+### (NME, FE, NMdnE) on the y-axis.  The better the performance of the model, the closer
+### the plotted points will fall within the "goal" lines.  This type of plot is used by EPA
+### and other planning organizations as part of their assessment of model performance.
 ###
-### Last updated by Wyat Appel: June, 2017
-################################################################
+### Last updated by Wyat Appel: June, 2019
+######################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -37,20 +37,9 @@ filename_pdf <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename
 filename_png <- paste(figdir,filename_png,sep="/")      # Set PNG filenam
 filename_txt <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
-### Retrieve units label from database table ###
-network <- network_names[1]
-#################################################
-
 ### Set initial NULL vectors ###
 plot_vals <- NULL
 ################################
-species_query <- paste("d.",species[1],"_ob, d.",species[1],"_mod",sep="")
-if (length(species) > 1) {
-   for (i in 2:length(species)) {
-      species_query <- paste(species_query,",d.",species[i],"_ob, d.",species[i],"_mod",sep="")
-   }
-}
-
 for (j in 1:length(network_names)) {	# Loop through each network
    mean_obs      <- NULL
    mean_mod      <- NULL
@@ -63,12 +52,30 @@ for (j in 1:length(network_names)) {	# Loop through each network
    drop_names    <- NULL
    network       <- network_names[[j]]						# Set network name based on loop value
    criteria <- paste(" where d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
-   qs	<- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,",species_query,",d.precip_ob from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")    # Set the rest of the MYSQL query 
-   aqdat_all.df      <- db_Query(qs,mysql)						# Query the database for a specific species
+   
+   #############################################
+   ### Read sitex file or query the database ###
+   #############################################
+   {
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         aqdat_query.df   <- sitex_info$sitex_data
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
+      }
+      else {
+         query_result    <- query_dbase(run_name1,network,species)
+         aqdat_query.df  <- query_result[[1]]
+         data_exists	 <- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
+         model_name      <- query_result[[4]]
+      }
+   }
+   #############################################
 
-   l <- 9
+   l <- 10 
    for (i in 1:length(species)) { 								# For each species, calculate several statistics
-     data_all.df <- data.frame(network=I(aqdat_all.df$network),stat_id=I(aqdat_all.df$stat_id),lat=aqdat_all.df$lat,lon=aqdat_all.df$lon,ob_val=aqdat_all.df[,l],mod_val=aqdat_all.df[,(l+1)],precip_val=aqdat_all.df$precip_ob)	# Create properly formatted dataframe to use with DomainStats function
+     data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,l],mod_val=aqdat_query.df[,(l+1)])	# Create properly formatted dataframe to use with DomainStats function
       good_count <- sum(!is.na(data_all.df$ob_val))		# Count the number of non-missing values
       if (good_count > 0) {					# If there are non-missing values, continue
          stats_all.df <- DomainStats(data_all.df)		# Call DomainStats function to compute stats for the entire domain
@@ -169,9 +176,9 @@ legend(-90,125, legend_names, pch=legend_chars, col="black", merge=F, cex=1.3, b
 ##############################
 
 ### Convert pdf format file to png format ###
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

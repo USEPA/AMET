@@ -1,13 +1,14 @@
-################## MODEL SKILL SCATTER PLOT #################### 
-### AMET CODE: R_Scatterplot_skill.R 
+header <- "
+########################## MODEL PERCENTILE SCATTER PLOT #############################
+### AMET CODE: R_Scatterplot_percentile.R 
 ###
-### This script is part of the AMET-AQ system.  This script creates
-### a scatter plot for a single network that includes more statistics 
-### than the multiple network scatter plot.  Although limited to a
-### single network, multiple runs may be used.
+### This script is part of the AMET-AQ system.  This script creates a scatter plot for
+### a single species, network and simulation that is color coded by the observation 
+### percentile, split by 5, 25, 50, 75 and 95. Output format is png, pdf or both. 
 ###
-### Last Updated by Wyat Appel: June, 2017
-################################################################
+### Last Updated by Wyat Appel: June, 2019
+######################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
@@ -35,7 +36,6 @@ filename_txt <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
 #################################
 
-run_name	<- NULL
 axis.max	<- NULL
 num_obs		<- NULL
 sinfo		<- NULL
@@ -63,53 +63,46 @@ percentile_95_mod	<- NULL
 
 ### Retrieve units and model labels from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
-model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-model_name <- db_Query(model_name_qs,mysql)
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
-
-run_name[1] <- run_name1
-criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")           # Set part of the MYSQL query
-check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-query_table_info.df <-db_Query(check_POCode,mysql)
 {
-   if (length(query_table_info.df$COLUMN_NAME)==0) {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set the rest of the MYSQL query
-      aqdat.df        <- db_Query(qs,mysql)
-      aqdat.df$POCode <- 1
+   if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info      <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df  <- sitex_info$sitex_data
+            units           <- as.character(sitex_info$units[[1]])
+            model_name	 <- "Model"
+         }
    }
    else {
-      qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob, precip_mod,d.POCode from ",run_name," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")        # Set the rest of the MYSQL query
-      aqdat.df<-db_Query(qs,mysql)
+      query_result	<- query_dbase(run_name1,network,species)
+      aqdat_query.df	<- query_result[[1]]
+      data_exists    <- query_result[[2]]
+      if (data_exists == "y") { units <- query_result[[3]] }
+      model_name 	<- query_result[[4]]
    }
 }
-
-####################### 
-if (remove_negatives == "y") {
-   indic.nonzero <- aqdat.df[,9] >= 0                                                  # determine which obs are missing (less than 0); 
-   aqdat.df <- aqdat.df[indic.nonzero,]                                                        # remove missing obs from dataframe
-   indic.nonzero <- aqdat.df[,10] >= 0
-   aqdat.df <- aqdat.df[indic.nonzero,]
-}
-######################
-
+if (data_exists == "n") { stop("Stopping because data_exists is false. Likely no data found for query.") }
+ob_col_name <- paste(species,"_ob",sep="")
+mod_col_name <- paste(species,"_mod",sep="")
 ################################################
 ### Calculate percentiles based on each site ###
 ################################################
-temp <- split(aqdat.df,aqdat.df$stat_id)
+temp <- split(aqdat_query.df,aqdat_query.df$stat_id)
 for (i in 1:length(temp)) { 
    sub.df <- temp[[i]]
-   percentile_5_ob <- c(percentile_5_ob, quantile(sub.df[,9],.05))
-   percentile_5_mod <- c(percentile_5_mod, quantile(sub.df[,10],.05))
-   percentile_25_ob <- c(percentile_25_ob, quantile(sub.df[,9],.25))
-   percentile_25_mod <- c(percentile_25_mod, quantile(sub.df[,10],.25))
-   percentile_50_ob <- c(percentile_50_ob, quantile(sub.df[,9],.50))
-   percentile_50_mod <- c(percentile_50_mod, quantile(sub.df[,10],.50))
-   percentile_75_ob <- c(percentile_75_ob, quantile(sub.df[,9],.75))
-   percentile_75_mod <- c(percentile_75_mod, quantile(sub.df[,10],.75))
-   percentile_95_ob <- c(percentile_95_ob, quantile(sub.df[,9],.95))
-   percentile_95_mod <- c(percentile_95_mod, quantile(sub.df[,10],.95))
+   percentile_5_ob <- c(percentile_5_ob, quantile(sub.df[[ob_col_name]],.05))
+   percentile_5_mod <- c(percentile_5_mod, quantile(sub.df[[mod_col_name]],.05))
+   percentile_25_ob <- c(percentile_25_ob, quantile(sub.df[[ob_col_name]],.25))
+   percentile_25_mod <- c(percentile_25_mod, quantile(sub.df[[mod_col_name]],.25))
+   percentile_50_ob <- c(percentile_50_ob, quantile(sub.df[[ob_col_name]],.50))
+   percentile_50_mod <- c(percentile_50_mod, quantile(sub.df[[mod_col_name]],.50))
+   percentile_75_ob <- c(percentile_75_ob, quantile(sub.df[[ob_col_name]],.75))
+   percentile_75_mod <- c(percentile_75_mod, quantile(sub.df[[mod_col_name]],.75))
+   percentile_95_ob <- c(percentile_95_ob, quantile(sub.df[[ob_col_name]],.95))
+   percentile_95_mod <- c(percentile_95_mod, quantile(sub.df[[mod_col_name]],.95))
 }
 #################################################
 
@@ -213,9 +206,9 @@ legend("topleft", legend_names, pch=legend_char,col=legend_cols, merge=F, cex=1.
 ####################################
 ### Convert pdf file to png file ###
 ####################################
+dev.off()
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density 150x150 ",filename_pdf," png:",filename_png,sep="")
-   dev.off()
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {

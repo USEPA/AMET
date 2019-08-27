@@ -11,10 +11,14 @@
 ##################################
 ### Main Database Query String ###
 ##################################
-start_date <- Sys.getenv("AMET_SDATE")  # yyyymmdd
-end_date   <- Sys.getenv("AMET_EDATE")  # yyyymmdd
-start_hour <- 00        # hh
-end_hour   <- 23        # hh
+start_date      <- gsub('-','',Sys.getenv("AMET_SDATE"))
+end_date        <- gsub('-','',Sys.getenv("AMET_EDATE"))
+
+#####################################
+### Set hour sub query if desired ###
+#####################################
+start_hour 	<- 00        # hh
+end_hour   	<- 23        # hh
 
 #add_query <- "and d.lon between -125 and -60 "
 #add_query <-  "and (s.state='CT' or s.state='DE' or s.state='DC' or s.state='ME' or s.state='MD' or s.state='MA' or s.state='NH' or s.state='NJ' or s.state='NY' or s.state='PA' or s.state='RI' or s.state='VT') "
@@ -47,7 +51,8 @@ run_name6	<- ""
 #######################
 ### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM25,EC,OC,TC,O3,SO2,CO,NO,SO4_dep,SO4_conc,NO3_dep,NO3_conc,NH4_dep,NH4_conc,precip,NOy ###
 
-species<-Sys.getenv("AMET_AQSPECIES")
+#species<-Sys.getenv("AMET_AQSPECIES")
+species<-unlist(strsplit(Sys.getenv("AMET_AQSPECIES"),","))
 
 ######################
 ###  Title Options ###
@@ -68,18 +73,12 @@ figdir <- Sys.getenv("AMET_OUT")
 
 ### Monitoring Sites to Include ###
 site	<- 'All'
-
 ### States to Include ###
 state	<- 'All'
-
 ### Regional Planning Organizations to Include ###
 rpo	<- 'None'
-
 ### Priciple Component Analysis (PCA) Region ###
 pca	<- 'None'
-
-### Flag to use PCA regions with binned scatter plots (applies to Run_Scatterplot_Bins_Batch.R Script) ###
-pca_flag <- "n"
 
 ######################################
 
@@ -87,39 +86,47 @@ pca_flag <- "n"
 ### Various Option Flags ###
 ############################
 
-### Time average flag (n=none; hour=h; day=d; month=m; season=s; all=a; year/month=ym)
+### Time average flag (n=none; hour=h; day=d; month=m; season=s; annual=a; entire period=e; year/month=ym)
 averaging<-"n"
-
 ### Flag to Include or Remove Zero Precipitation Observations ###
 zeroprecip	<- 'n'
-
 ### Data Completeness ###
-coverage_limit	<- 50
-valid_only	<- 'n'
-
+coverage_limit<-25
+all_valid<-"y"
+all_valid_amon<-"y"
 ### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
 soccerplot_opt	<- 1
-
 ### Flag for PAVE Overlay; 1=hourly, 2=daily ###
 overlay_opt	<- 1
-
 ### Flag to include run info text on plots ###
 run_info_text	<- 'y'
-
 ### Remove Negatives Flag ###
 remove_negatives	<- 'y'
 remove_mean 		<- 'n'
 color_ranges 		<- 'n'
-
 ### Numerical Limit for Data Completeness as minimum number of required observations (used when calulating site statistics or averages)###
 num_obs_limit	<- 1
-
 ### Flag to use average values for computing statistics; default is no (""); set to "y" to use average stats ###
 use_avg_stats	<- 'n'
+### Default resolution of the png files in dpi. 300 is considered medium quality
+png_res		<- 300 
+
+### Plotly Image File Dimentions ###
+img_height<-NULL
+img_width<-NULL
+
+### Aggregate data from sites with multiple POCs
+aggregate_data<-"n"
+
+### Merge statid and POC into a single site id name ###
+merge_statid_POC <- "y"
 
 #########################
 ### Axis Plot Options ###
 #########################
+
+### Specify angle of x-axis text on ggplot boxplot
+x_label_angle <- 0
 
 ### x and y axes limits ###
 axis_max_limit	<- NULL
@@ -141,15 +148,10 @@ plot_symbols    <- c(16,17,15,18,11,8,4)
 ################################
 ### Time Series Plot Options ###
 ################################
-use_var_mean 	<- 'n'
-
-### Include points ###
-inc_points 	<- 'y'
-
-### Includ a legend ###
-inc_legend	<- 'y' 
-
-### Specify a minimum number of obs required per day ###
+use_var_mean 		<- 'n'
+inc_points 		<- 'y'
+line_width		<- 1
+inc_legend		<- 'y' 
 obs_per_day_limit	<- 0
 
 ### Specify which type of value to plot (mean, median or sum) ###
@@ -157,9 +159,22 @@ avg_func	<- 'mean'
 #avg_func	<- 'median'
 #avg_func	<- 'sum'
 
-### Specify a multiplier for the line width (default is 1) ###
-line_width	<- '1'
+### Include bias,rmse on plotly timeseries plot ###
+inc_bias  <- 'y'
+inc_rmse  <- 'y'
+inc_corr  <- 'y'
+inc_error <- 'y'
 
+##########################
+### Kelly Plot Options ###
+##########################
+nmb_max<-NULL
+nme_max<-NULL
+mb_max<-NULL
+me_min<-NULL
+me_max<-NULL
+rmse_min<-NULL
+rmse_max<-NULL
 
 ############################
 ### Spatial Plot Options ###
@@ -177,27 +192,28 @@ diff_range_max	<- NULL
 greyscale	<- "n"
 inc_counties	<- "y"
 symbsizfac	<- 1
-map_leg_size	<-.65
-
+map_leg_size	<- 0.65
+hist_max	<- NULL
+quantile_min	<- 0.001
+quantile_max	<- 0.999
 
 #######################
 ### Boxplot Options ###
 #######################
+
 ### Include whiskers on box plots ###
 inc_whiskers	<- 'n'
-
 ### Include boxplot quartile ranges ###
 inc_ranges	<- 'y'
-
 ### Include median points on box plots ###
 inc_median_points	<- 'y'
-
 ### Include median points on box plots ###
 inc_median_lines	<- 'y'
 
 ############################
 ### Scatter Plot Options ###
 ############################
+
 ### Flags for Confidence Lines to Plot on Scatterplots ###
 conf_line	<-'n'
 
@@ -208,6 +224,22 @@ conf_line	<-'n'
 # 16) med_bias, 17) med_error, 18) fb,        19) fe
 stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
 
+###################################
+### Binned Scatter Plot Options ###
+###################################
+pca_flag	<- "n"
+bin_by_mod	<- "n"
+
+####################################
+### Density Scatter Plot Options ###
+####################################
+density_zlim<-NULL
+num_dens_bins<-NULL
+
+##################################
+### Skill Scatter Plot Options ###
+##################################
+max_limit <- 70
 
 ##################################
 ### Stacked Bar Charts Options ###

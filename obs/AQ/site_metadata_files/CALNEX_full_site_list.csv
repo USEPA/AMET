@@ -1,0 +1,3 @@
+"stat_id","num_stat_id","stat_name","network","state","city","start_date","end_date","lat","lon","elevation","county","NLCD2011.ImperviousSurface","NLCD2011.ImperviousSurface.Location.Setting","NLCD2006.ImperviousSurface","NLCD2006.ImperviousSurface.Location.Setting","NLCD2001.ImperviousSurface","NLCD2001.ImperviousSurface.Location.Setting"
+"LAG1",1,NA,"calnex",NA,NA,NA,NA,34.140582,-118.122455,NA,NA,15.1267213821411,"DEVELOPED_OPEN_SPACE",15.1267213821411,"DEVELOPED_OPEN_SPACE",14.5647382736206,"DEVELOPED_OPEN_SPACE"
+"SJV1",2,NA,"calnex",NA,NA,NA,NA,35.34632,-118.965433,NA,NA,3.8907253742218,"DEVELOPED_OPEN_SPACE",2.21028470993042,"DEVELOPED_OPEN_SPACE",2.12947654724121,"DEVELOPED_OPEN_SPACE"

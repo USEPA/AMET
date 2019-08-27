@@ -1,14 +1,16 @@
-################################################################
-### THIS FILE CONTAINS CODE TO DRAW A CUSTOMIZED BOXPLOT DISPLAY.  It
-### draws side-by-side boxplots for the various groups, without median
-### lines or whiskers.  This means that to see the boxplot, we have to
-### give it a colored background.  We also draw points at the medians
-### of the boxplots, and connect these with lines.
-### NOTE: The user should make sure the data is sorted by group before
-### using this code.
+header <- "
+############################## INTERACTIVE STATS PLOTS ##############################
+### AMET CODE: AQ_Stats_Plots.R
 ###
-### Last modified by Wyat Appel: June, 2017
-################################################################
+### This code is part of the AMET-AQ system.  The Stats and Plots code takes a MYSQL 
+### database query for a single species from one or more networks and a single simulation
+### and calculates summary statistics for each site and the entire domain by network. 
+### Spatial plots are also produced for several select statistics, specifically MB, ME, FB,
+### FE, NMB, NME, RMSE and Correlation. Images can be output as png, pdf or both.
+###
+### Last modified by Wyat Appel, June 2019
+#####################################################################################
+"
 
 # get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")		        # base directory of AMET
@@ -21,10 +23,13 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
+if(!exists("quantile_min")) { quantile_min <- 0.001 }
+if(!exists("quantile_max")) { quantile_max <- 0.950 }
+
 ################################################
 ## Set output names and remove existing files ##
 ################################################
-filename_all 	<- paste(run_name1,species,pid,"stats.csv",sep="_")
+filename_stats 	<- paste(run_name1,species,pid,"stats.csv",sep="_")
 filename_sites 	<- paste(run_name1,species,pid,"sites_stats.csv",sep="_")
 filename_nmb	<- paste(run_name1,species,pid,"stats_plot_NMB",sep="_")
 filename_nme	<- paste(run_name1,species,pid,"stats_plot_NME",sep="_")
@@ -35,9 +40,10 @@ filename_mb	<- paste(run_name1,species,pid,"stats_plot_MB",sep="_")
 filename_me	<- paste(run_name1,species,pid,"stats_plot_ME",sep="_")
 filename_corr	<- paste(run_name1,species,pid,"stats_plot_Corr",sep="_")
 filename_txt 	<- paste(run_name1,species,pid,"stats_data.csv",sep="_")      # Set output file name
+filename_zip    <- paste(run_name1,species,pid,"stats_plots.zip",sep="_")
 
 ## Create a full path to file
-filename_all 	<- paste(figdir,filename_all,sep="/")
+filename_stats 	<- paste(figdir,filename_stats,sep="/")
 filename_sites 	<- paste(figdir,filename_sites,sep="/")
 filename_nmb	<- paste(figdir,filename_nmb,sep="/")
 filename_nme	<- paste(figdir,filename_nme,sep="/")
@@ -48,30 +54,15 @@ filename_mb	<- paste(figdir,filename_mb,sep="/")
 filename_me	<- paste(figdir,filename_me,sep="/")
 filename_corr	<- paste(figdir,filename_corr,sep="/")
 filename_txt 	<- paste(figdir,filename_txt,sep="/")
-
+filename_zip    <- paste(figdir,filename_zip,sep="/")
+filename_all    <- c(filename_nmb,filename_fb,filename_nme,filename_fe,filename_rmse,filename_mb,filename_me,filename_corr)
 #################################################
-
 ###########################
 ### Retrieve units label from database table ###
 network <- network_names[1]
-units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-units <- db_Query(units_qs,mysql)
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
 ################################################
-
-#########################
-## plot text options   ##
-#########################
-if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-title_nmb	<- paste(species, " NMB (%) for run ",run_name1," for ", dates,sep="")
-title_fb	<- paste(species, " FB (%) for run ",run_name1," for ", dates,sep="")
-title_nme	<- paste(species, " NME (%) for run ",run_name1," for ", dates,sep="")
-title_fe	<- paste(species, " FE (%) for run ",run_name1," for ", dates,sep="")
-title_rmse	<- paste(species, " RMSE for run ",run_name1," for ", dates,sep="")
-title_mb	<- paste(species, " MB (",units,") for run",run_name1," for ",dates,sep="")
-title_me	<- paste(species, " ME (",units,") for run",run_name1," for ",dates,sep="")
-title_corr	<- paste(species, " Correlation for run ",run_name1," for ", dates,sep="")
-#########################
-
 
 if (length(num_ints) == 0) {
    num_ints <- 20 
@@ -116,107 +107,114 @@ spch<-plot.symbols
 
 n <- 1
 total_networks <- length(network_names)
+remove_negatives <- 'n'      # Set remove negatives to false. Negatives are needed in the coverage calculation and will be removed automatically by Average
+k <- 1
 for (j in 1:total_networks) {
-   total_obs <- NULL
-   network_number<-j							# Set network number (used as a flag later in the code)
-   network<-network_names[[j]]						# Set network name
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="")                # Set part of the MYSQL query
-   check_POCode        <- paste("select * from information_schema.COLUMNS where TABLE_NAME = '",run_name1,"' and COLUMN_NAME = 'POCode';",sep="")
-   query_table_info.df <-db_Query(check_POCode,mysql)
+   total_obs 		<- NULL
+   network_number	<- j							# Set network number (used as a flag later in the code)
+   network		<- network_names[j]						# Set network name
+   #############################################
+   ### Read sitex file or query the database ###
+   #############################################
    {
-      if (length(query_table_info.df$COLUMN_NAME)==0) {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")	# Set rest of the MYSQL criteria
-         aqdat_query.df        <- db_Query(qs,mysql)
-         aqdat_query.df$POCode <- 1
+      if (Sys.getenv("AMET_DB") == 'F') {
+         sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
+         data_exists      <- sitex_info$data_exists
+         if (data_exists == "y") {
+            aqdat_query.df   <- sitex_info$sitex_data
+            units            <- as.character(sitex_info$units[[1]])
+         }
       }
       else {
-         qs <- paste("SELECT d.network,d.stat_id,d.lat,d.lon,d.ob_dates,d.ob_datee,d.ob_hour,d.month,d.",species,"_ob,d.",species,"_mod, precip_ob,d.POCode from ",run_name1," as d, site_metadata as s",criteria," ORDER BY network,stat_id",sep="")      # Set rest of the MYSQL criteria
-         aqdat_query.df <- db_Query(qs,mysql)
+         query_result   <- query_dbase(run_name1,network,species)
+         aqdat_query.df <- query_result[[1]]
+         data_exists	<- query_result[[2]]
+         if (data_exists == "y") { units <- query_result[[3]] }
+         model_name     <- query_result[[4]]
       }
    }
-   aqdat_query.df$stat_id  <- paste(aqdat_query.df$stat_id,aqdat_query.df$POCode,sep='')      # Create unique site using site ID and PO Code
-   aqdat.df <- aqdat_query.df
-
+   ob_col_name <- paste(species,"_ob",sep="")
+   mod_col_name <- paste(species,"_mod",sep="")
+   #############################################
    if (j == 1) {
       write.table(run_name1,file=filename_txt,append=F,row.names=F,sep=",")                       # Write header for raw data file
       write.table(network,file=filename_txt,append=T,row.names=F,sep=",")
-      write.table(aqdat.df,file=filename_txt,append=T,row.names=F,sep=",")
+      write.table(aqdat_query.df,file=filename_txt,append=T,row.names=F,sep=",")
    }
    if (j > 1) {
       write.table("",file=filename_txt,append=T,row.names=F,sep=",")
       write.table(network,file=filename_txt,append=T,row.names=F,sep=",")                       # Write header for raw data file
-      write.table(aqdat.df,file=filename_txt,append=T,row.names=F,sep=",")
+      write.table(aqdat_query.df,file=filename_txt,append=T,row.names=F,sep=",")
    } 
-
    #######################
-
+   #################################################################
    ### Check to see if there is any data from the database query ###
-   count <- sum(is.na(aqdat.df[,9]))
-   len   <- length(aqdat.df[,9])
-
-   if (count == len) {
-      stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
-      sites_stats.df <- "No site stats available.  Perhaps you choose a species for a network that does not observe that species."
-      total_networks <- (total_networks-1)
-   }
-   ##################################################################
-
-   ### If there is data, continue ###
-   else {
-      if (use_avg_stats == "y") {
-         aqdat.df <- Average(aqdat.df)
-         aqdat.df <- data.frame(Network=I(aqdat.df$Network),Stat_ID=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=aqdat.df$Obs_Value,Mod_Value=aqdat.df$Mod_Value,precip_ob=aqdat.df$precip_ob)
+   #################################################################
+   {
+      if (data_exists == "n") {
+         stats_all.df <- "No stats available.  Perhaps you choose a species for a network that does not observe that species."
+         sites_stats.df <- "No site stats available.  Perhaps you choose a species for a network that does not observe that species."
+         total_networks <- (total_networks-1)
+         sub_title<-paste(sub_title,network,"=No Data; ",sep="")
+         if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }    
       }
+      ##################################################################
+
+      ### If there are data, continue ###
       else {
-         aqdat.df <- data.frame(Network=I(aqdat.df$network),Stat_ID=I(aqdat.df$stat_id),lat=aqdat.df$lat,lon=aqdat.df$lon,Obs_Value=aqdat.df[,9],Mod_Value=aqdat.df[,10],precip_ob=aqdat.df$precip_ob)
+         aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
+         if (use_avg_stats == "y") {
+            aqdat.df <- Average(aqdat.df)
+         }
+         sub_title<-paste(sub_title,symbols[k],"=",network,"; ",sep="")
+         ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
+         data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
+         stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))	# Compute stats using DomainStats function for entire domain
+         ##################################
+
+         ### Write output to comma delimited file ###
+         header <- c(paste("Run Name = ",run_name1,sep=""),paste("Evaluation Dates = ",dates,sep=""),paste("Species = ",species,sep=""),paste("State = ",state,sep=""),paste("Site Name = ",site,sep=""))
+
+         ### Compute site stats using SitesStats function ###
+         sites_stats.df <- try(SitesStats(data_all.df))
+
+         sinfo_data[[k]]<-list(lat=sites_stats.df$lat,lon=sites_stats.df$lon,NMB=sites_stats.df$NMB,NME=sites_stats.df$NME,MB=sites_stats.df$MB,ME=sites_stats.df$ME,FB=sites_stats.df$FB,FE=sites_stats.df$FE,RMSE=sites_stats.df$RMSE,COR=sites_stats.df$COR)
+         k <- k+1
+
+         all_nmb	<- c(all_nmb,sites_stats.df$NMB)
+         all_nme	<- c(all_nme,sites_stats.df$NME)
+         all_mb		<- c(all_mb,sites_stats.df$MB)
+         all_me		<- c(all_me,sites_stats.df$ME)
+         all_fb		<- c(all_fb,sites_stats.df$FB)
+         all_fe		<- c(all_fe,sites_stats.df$FE)
+         all_rmse	<- c(all_rmse,sites_stats.df$RMSE)
+         all_corr	<- c(all_corr,sites_stats.df$COR)
+         all_lat   	<- c(all_lat,sites_stats.df$lat)
+         all_lon   	<- c(all_lon,sites_stats.df$lon)
       }
-      sub_title<-paste(sub_title,symbols[j],"=",network,"; ",sep="")
-   
-      ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
-      data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value,precip_val=aqdat.df$precip_ob)
-      stats_all.df <-try(DomainStats(data_all.df))	# Compute stats using DomainStats function for entire domain
-      ##################################
-
-      ### Write output to comma delimited file ###
-      header <- c(paste("Run Name = ",run_name1,sep=""),paste("Evaluation Dates = ",dates,sep=""),paste("Species = ",species,sep=""),paste("State = ",state,sep=""),paste("Site Name = ",site,sep=""))
-
-      ### Compute site stats using SitesStats function ###
-      sites_stats.df <- try(SitesStats(data_all.df))
-
-      sinfo_data[[j]]<-list(lat=sites_stats.df$lat,lon=sites_stats.df$lon,NMB=sites_stats.df$NMB,NME=sites_stats.df$NME,MB=sites_stats.df$MB,ME=sites_stats.df$ME,FB=sites_stats.df$FB,FE=sites_stats.df$FE,RMSE=sites_stats.df$RMSE,COR=sites_stats.df$COR)
-
-      all_nmb	<- c(all_nmb,sites_stats.df$NMB)
-      all_nme	<- c(all_nme,sites_stats.df$NME)
-      all_mb	<- c(all_mb,sites_stats.df$MB)
-      all_me	<- c(all_me,sites_stats.df$ME)
-      all_fb	<- c(all_fb,sites_stats.df$FB)
-      all_fe	<- c(all_fe,sites_stats.df$FE)
-      all_rmse	<- c(all_rmse,sites_stats.df$RMSE)
-      all_corr	<- c(all_corr,sites_stats.df$COR)
-      all_lat   <- c(all_lat,sites_stats.df$lat)
-      all_lon   <- c(all_lon,sites_stats.df$lon)
    }
-
    ##########################################
    ## Write output to comma delimited file ##
    ##########################################
    header <- c(paste("Run Name = ",run_name1,sep=""),paste("Evaluation Dates = ",dates,sep=""),paste("Species = ",species,sep=""),paste("RPO = ",rpo,sep=""),paste("State = ",state,sep=""),paste("Site Name = ",site,sep=""))     # Set header information
 
    if (network_number==1) {                                                                                        # Determine if this is the first network
-      write.table(header, file=filename_all, append=F, sep="," ,col.names=F, row.names=F)                   # Create domain stats file if first network
+      write.table(header, file=filename_stats, append=F, sep="," ,col.names=F, row.names=F)                   # Create domain stats file if first network
       write.table(header, file=filename_sites, append=F, sep="," ,col.names=F, row.names=F)                 # Create site stats file if first network
    }
-   write.table("",file=filename_all,append=T,sep=",",col.names=F,row.names=F)                                    # Add blank line between networks (domain stats)
+   write.table("",file=filename_stats,append=T,sep=",",col.names=F,row.names=F)                                    # Add blank line between networks (domain stats)
    write.table("",file=filename_sites,append=T,sep=",",col.names=F,row.names=F)                                  # Add blank line between networks (sites stats)
 
-   write.table(network, file=filename_all, append=T ,sep=",",col.names=F,row.names=F)                            # Write network name (domain stats)
+   write.table(network, file=filename_stats, append=T ,sep=",",col.names=F,row.names=F)                            # Write network name (domain stats)
    write.table(network, file=filename_sites, append=T ,sep=",",col.names=F,row.names=F)                          # Write network name (sites stats)
 
-   write.table(stats_all.df, file=filename_all, append=T, sep=",",col.names=T,row.names=F)           # Write domain stats
+   write.table(stats_all.df, file=filename_stats, append=T, sep=",",col.names=T,row.names=F)           # Write domain stats
    write.table(sites_stats.df, file=filename_sites, append=T, sep=",",col.names=T,row.names=F)                   # Write sites stats
 
    ###########################################
 }	# End network data query loop
+
+
 
 ##########################################################################
 ### Code to create color palette that will be used throughout the code ###
@@ -239,7 +237,7 @@ if (greyscale == "y") {
 ### Create NMB Scales ###
 #########################
 if ((length(perc_range_min) == 0) || (length(perc_range_max) == 0)) {
-   perc_range_max <- quantile(abs(all_nmb),.95,na.rm=T)
+   perc_range_max <- quantile(abs(all_nmb),quantile_max,na.rm=T)
    perc_range_min <- -perc_range_max
 }
 bias_range <- c(perc_range_min,perc_range_max)   
@@ -275,7 +273,7 @@ leg_colors_nmb			<- c(low_range,"grey50","grey50",high_range)
 ### Create NME Scales ###
 #########################
 if (length(perc_error_max) == 0) {
-   perc_error_max <- quantile(abs(all_nme),0.95,na.rm=T)
+   perc_error_max <- quantile(abs(all_nme),quantile_max,na.rm=T)
 }
 error_range <- c(0,perc_error_max)
 intervals <- num_ints
@@ -303,7 +301,7 @@ leg_colors_nme			<- levcols_nme
 ### Create MB Scales ###
 ########################
 if ((length(abs_range_min) == 0) || (length(abs_range_max) == 0)) {
-   abs_range_max <- quantile(abs(all_mb),.95,na.rm=T)
+   abs_range_max <- quantile(abs(all_mb),quantile_max,na.rm=T)
    abs_range_min <- -abs_range_max
 }
 mb_range <- c(abs_range_min,abs_range_max)
@@ -339,7 +337,7 @@ leg_colors_mb                    <- c(low_range,"grey50","grey50",high_range)
 ### Create ME Scales ###
 ########################
 if (length(abs_error_max) == 0) {
-   abs_error_max <- quantile(abs(all_me),0.95,na.rm=T)
+   abs_error_max <- quantile(abs(all_me),quantile_max,na.rm=T)
 }
 me_range <- c(0,abs_error_max)
 intervals <- num_ints
@@ -367,7 +365,7 @@ leg_colors_me                    <- levcols_me
 ### Create RMSE Scale ###
 #########################
 if (length(rmse_range_max) == 0) {
-   rmse_range_max <- quantile(all_rmse,.95,na.rm=T)
+   rmse_range_max <- quantile(all_rmse,quantile_max,na.rm=T)
 }
 intervals <- num_ints
 max_levs <- 23
@@ -413,12 +411,12 @@ lon_max<-max(all_lon)
 bounds<-c(min(lat_min,bounds[1]),max(lat_max,bounds[2]),min(lon_min,bounds[3]),max(lon_max,bounds[4]))		# Set lat/lon bounds
 plotsize<-1.50													# Set plot size
 symb<-15														# Set symbol to use
-symbsiz<-0.9                                                                         # Set symbol size
-if (length(unique(aqdat.df$stat_id)) > 500) {
-   symbsiz <- 0.6
+symbsiz<-1                                                                         # Set symbol size
+if (length(unique(aqdat.df$Stat_ID)) > 500) {
+   symbsiz <- 0.7
 }
-if (length(unique(aqdat.df$stat_id)) > 10000) {
-   symbsiz <- 0.3
+if (length(unique(aqdat.df$Stat_ID)) > 10000) {
+   symbsiz <- 0.4
 }
 ##################################### 
       
@@ -436,97 +434,39 @@ for (n in 1:total_networks) {
    sinfo_corr[[n]]<-list(lat=sinfo_data[[n]]$lat,lon=sinfo_data[[n]]$lon,plotval=sinfo_data[[n]]$COR,levs=levs_corr,levcols=levcols_corr,levs_legend=levs_corr,cols_legend=levcols_corr,convFac=.01)
 #n <- n+1
 }
+sinfo_all <- c("sinfo_nmb","sinfo_fb","sinfo_nme","sinfo_fe","sinfo_rmse","sinfo_mb","sinfo_me","sinfo_corr")
+labels_all <- c("leg_labels_nmb","leg_labels_nmb","leg_labels_nme","leg_labels_nme","leg_labels_rmse","leg_labels_mb","leg_labels_me","levs_corr")
 ######################################################################################################
 
-##############################################
-## Create PNG and PDF plots for NMB and NME ##
-##############################################
+#########################
+## plot text options   ##
+#########################
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
+stat_names	<- c("NMB (%)","FB (%)", "NME (%)", " FE (%)", paste(" RMSE (",units,")",sep=""), paste(" MB (",units,")",sep=""), paste(" ME (",units,")",sep=""), "Correlation")
+units_all	<- c("%","%","%","%",units,units,units,"none")
+#########################
 
-### Create Normalized Mean Bias (NMB) plots ###
+##############################
+## Create PNG and PDF plots ##
+##############################
 unique_labels <- "y"												# Set use of unique labels as true
-levLab <- leg_labels_nmb												# Set labels to use on the plot
-if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
-   plotSpatial(sinfo_nmb,figure=filename_nmb,varlab=title_nmb,bounds=bounds,plotopts=plotopts,plot_units="%")	# Create plot (map) for nmb in png format
-   plotSpatial(sinfo_fb,figure=filename_fb,varlab=title_fb,bounds=bounds,plotopts=plotopts,plot_units="%")		# Create plot (map) for fb in png format
-}
-if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-   plotSpatial(sinfo_nmb,figure=filename_nmb,varlab=title_nmb,bounds=bounds,plotopts=plotopts,plot_units="%")	# Create plot (map) for nmb in pdf format
-   plotSpatial(sinfo_fb,figure=filename_fb,varlab=title_fb,bounds=bounds,plotopts=plotopts,plot_units="%")		# Create plot (map) for fb in pdf format
-}
-###############################################
-
-### Create Normalized Mean Error (NME) plots ###
-levLab <- leg_labels_nme
-if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-   plotSpatial(sinfo_nme,figure=filename_nme,varlab=title_nme,bounds=bounds,plotopts=plotopts,plot_units="%")
-   plotSpatial(sinfo_fe,figure=filename_fe,varlab=title_fe,bounds=bounds,plotopts=plotopts,plot_units="%")
-}
-if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-   plotSpatial(sinfo_nme,figure=filename_nme,varlab=title_nme,bounds=bounds,plotopts=plotopts,plot_units="%")   
-   plotSpatial(sinfo_fe,figure=filename_fe,varlab=title_fe,bounds=bounds,plotopts=plotopts,plot_units="%")
-}
-################################################
-
-### Create Mean Bias plot ###
-levLab <- leg_labels_mb                                                                                         # Set labels to use on the plot
-if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-   plotSpatial(sinfo_mb,figure=filename_mb,varlab=title_mb,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
-}
-if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <-"pdf"                                                                                                 # Set plot format as png
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-   plotSpatial(sinfo_mb,figure=filename_mb,varlab=title_mb,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
-}
-#################################################
-
-### Create Mean Error plot ###
-levLab <- leg_labels_me                                                                                         # Set labels to use on the plot
-if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-   plotSpatial(sinfo_me,figure=filename_me,varlab=title_me,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
-}
-if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <-"pdf"                                                                                                 # Set plot format as png
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)                                     # Set plot options list to use with PlotSpatial function
-   plotSpatial(sinfo_me,figure=filename_me,varlab=title_me,bounds=bounds,plotopts=plotopts,plot_units=units)        # Create plot (map) for nmb in png format
-}
-#################################################
-
-### Create Root Mean Square Error (RMSE) plots ###
-levLab <- leg_labels_rmse
-if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 
-   plotSpatial(sinfo_rmse,figure=filename_rmse,varlab=title_rmse,bounds=bounds,plotopts=plotopts,plot_units=units)
-}
-if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf" 
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz) 
-   plotSpatial(sinfo_rmse,figure=filename_rmse,varlab=title_rmse,bounds=bounds,plotopts=plotopts,plot_units=units)
+for (i in 1:8) {
+   levLab <- get(labels_all[i])
+   plot_title <- paste(species,stat_names[i],"for run",run_name1,"for", dates,sep=" ")
+   if (custom_title != "") { plot_title <- custom_title }
+   if ((ametptype == "png") || (ametptype == "both")) {
+      plotfmt <- "png"
+      plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)					# Set plot options list to use with PlotSpatial function
+      plotSpatial(get(sinfo_all[i]),figure=filename_all[i],varlab=plot_title,bounds=bounds,plotopts=plotopts,plot_units=units_all[i])	# Create plot (map) for nmb in png format
+   }
+   if ((ametptype == "pdf") || (ametptype == "both")) {
+      plotfmt <- "pdf"
+      plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
+      plotSpatial(get(sinfo_all[i]),figure=filename_all[i],varlab=plot_title,bounds=bounds,plotopts=plotopts,plot_units=units_all[i])	# Create plot (map) for nmb in pdf format
+   }
 }
 ###############################################
 
-### Create Correlation (Corr) plots ###
-levLab <- levs_corr
-if ((ametptype == "png") || (ametptype == "both")) {
-   plotfmt <- "png"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-   plotSpatial(sinfo_corr,figure=filename_corr,varlab=title_corr,bounds=bounds,plotopts=plotopts,plot_units="None")
-}
-if ((ametptype == "pdf") || (ametptype == "both")) {
-   plotfmt <- "pdf"
-   plotopts<-list(plotfmt=plotfmt,plotsize=plotsize,symb=symb,symbsiz=symbsiz)
-   plotSpatial(sinfo_corr,figure=filename_corr,varlab=title_corr,bounds=bounds,plotopts=plotopts,plot_units="None")
-}
-########################################
+zip_files <- paste(run_name1,species,pid,"*",sep="_")
+zip_command<-paste("zip",filename_zip,zip_files,sep=" ")
+system(zip_command)
