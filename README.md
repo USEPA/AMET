@@ -7,12 +7,29 @@ Atmospheric Model Evaluation Tool (AMET) website: (https://www.epa.gov/cmaq/atmo
 
 The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to facilitate the analysis and evaluation of predictions from meteorological and air quality models. AMET matches the model output for particular locations to the corresponding observed values from one or more networks of monitors. These pairings of values (model and observation) are then used to statistically and graphically analyze the model’s performance.
 
+## AMETv1.4
+New features in AMET version 1.4 include:
+* Streamlined database query function for AMET-AQ
+* Improved error handling for missing data
+* Simplified process for adding new AQ networks/species
+* New interactive HTML R plots using the leaflet and dyGraphs R packages
+* Added support for global TOAR and NOAA ESRL networks
+* Ability to process and analyze AQ data without the MySQL present
+* Improved batch scripting for AQ analysis
+* New WRF/MPAS upper-air rawinsonde analysis
+* New WRF/MPAS surface shortwave radiation analysis
+* New WRF/MPAS PRISM rainfall analysis
+* New 2-m moisture time series comparison with RH
+* Fixed MADIS download when file is not on FTP server
+* Site metadata improved to include state and elevation
+* Improve speed of database population
+
 ## Getting the AMET Repository
 This AMET Git archive is organized with each official public release stored as a branch on the main USEPA/AMET repository.
 To clone code from the AMET Git archive, specify the branch (i.e. version number) and issue the following command from within
 a working directory on your server:
 ```
-git clone -b 1.3 https://github.com/USEPA/AMET.git AMET_v13
+git clone -b 1.4 https://github.com/USEPA/AMET.git AMET_v14
 ```
 
 The release versions of CMAQ that are currently available on Git Hub include:
