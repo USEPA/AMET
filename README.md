@@ -14,7 +14,7 @@ New features in AMET version 1.4 include:
 * Simplified process for adding new AQ networks/species
 * New interactive HTML R plots using the leaflet and dyGraphs R packages
 * Added support for global TOAR and NOAA ESRL networks
-* Ability to process and analyze AQ data without the MySQL present
+* Ability to process and analyze AQ data without the database present
 * Improved batch scripting for AQ analysis
 * New WRF/MPAS upper-air rawinsonde analysis
 * New WRF/MPAS surface shortwave radiation analysis
