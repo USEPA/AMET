@@ -3,11 +3,11 @@ header <- "
 ### AMET CODE: R_Soccerplot.R
 ###
 ### This script is part of the AMET-AQ system.  It plots a unique type of plot referred
-### to as a "soccer goal" plot. The idea behind the soccer goal plot is that criteria 
-### and goal lines are plotted in such a way as to form a "soccer goal" on the plot area.
+### to as a soccer goal plot. The idea behind the soccer goal plot is that criteria 
+### and goal lines are plotted in such a way as to form a soccer goal on the plot area.
 ### Two statistics are then plotted, Bias (NMB, FB, NMdnB) on the x-axis and error 
 ### (NME, FE, NMdnE) on the y-axis.  The better the performance of the model, the closer
-### the plotted points will fall within the "goal" lines.  This type of plot is used by EPA
+### the plotted points will fall within the goal lines.  This type of plot is used by EPA
 ### and other planning organizations as part of their assessment of model performance.
 ###
 ### Last updated by Wyat Appel: June, 2019
