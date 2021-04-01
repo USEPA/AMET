@@ -38,7 +38,7 @@
 #########################################################################
 
 #########################################################################
-#:::::::::::::::::::::::::::::::::::::::::::::
+#::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
   if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
   if(!require(maps))  {stop("Required Package maps was not loaded")}
