@@ -1,22 +1,4 @@
 #! /bin/csh 
-
-#SBATCH -J AMET_Testing
-#SBATCH --export=NONE
-#SBATCH -p singlepe
-#SBATCH -t 01:00:00
-#SBATCH -n 1
-
-#############################################################
-# System config setttings ** No need to change **
-limit stacksize unlimited
-limit memorylocked unlimited
-limit vmemoryuse unlimited
-limit coredumpsize unlimited
-cat $0
-date
-uname -a
-#############################################################
-
 #############################################################
 # Main run config setttings: date start/end, WRF exe, RunID,
 #                            relevant dirs
