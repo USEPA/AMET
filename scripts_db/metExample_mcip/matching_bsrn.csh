@@ -22,22 +22,27 @@ setenv MADISBASE $AMETBASE/obs/MET
 # that store all model-observation pairs of data for access by analysis scripts.
 # NEW PROJECTS are automatically created in the database if not existing.
 # RUN_DESCRIPTION: Short description of the model run to keep track its details.
-setenv AMET_PROJECT    metExample_wrf 
-setenv RUN_DESCRIPTION "WRF release test dataset."
+setenv AMET_PROJECT    metExample_mcip 
+setenv RUN_DESCRIPTION "MCIP test dataset."
 
 # Is this a model forecast where intial date/time and forecast hour should be tracked?
 setenv FORECAST F
 
-# Meteorological model output file location and control. The files that can be listed with
-# location below. A wildcard (*) is added in the script to get list of outputs.
-setenv METOUTPUT $AMETBASE/model_data/MET/$AMET_PROJECT/wrfout_subset
+# Meteorological model output file location and control.
+# MCIP output requires slightly different controls as mutiple files for each
+# batch (e.g., daily MCIP) of MCIP are needed. GRIDCRO2D and METCRO2D needed for surface.
+# Users can point METOUTPUT to METCRO2D files and script will match all instances in the
+# defined MCIP directory just like WRF output. But one GRIDCRO2D file needs to be in the 
+# same directory. AMET will look for a GRIDCRO2D file name GRIDCRO2D for grid information only,
+# no time information, so a single file is used for all METCRO2D files.
+ setenv METOUTPUT $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO2D
 
-# Radiation dataset to match with MPAS or WRF
+# Radiation dataset to match with MPAS, WRF or MCIP
 # Options:bsrn or text for non-BSRN obs input
 # Note: user must have these files downloaded MADISBASE/bsrn directory.
 setenv RADIATION_DSET bsrn 
 
-# Interpolation Method for WRF Model: 1 - Nearest Neighbor, 2 - Bi-Linear
+# Interpolation Method for WRF/MCIP Model: 1 - Nearest Neighbor, 2 - Bi-Linear
 # For MPAS, a built in barycentric interpolation is the only option, so this setting
 # does not apply.
 setenv INTERP_METHOD 2
