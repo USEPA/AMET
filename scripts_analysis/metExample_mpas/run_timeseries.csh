@@ -24,7 +24,7 @@
   # comparison of runs that may reside in different databases
   setenv AMET_DATABASE1  user_database
   setenv AMET_DATABASE2  user_database
-  setenv MYSQL_SERVER   mysql.server.gov 
+  setenv MYSQL_SERVER    mysql.server.gov
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. Project2 should be left blank for single project.
