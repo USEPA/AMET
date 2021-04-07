@@ -28,7 +28,7 @@
   setenv MYSQL_SERVER   mysql.server.gov 
 
   # AMET project id or simulation id
-  setenv AMET_PROJECT metExample_wrf
+  setenv AMET_PROJECT metExample_mcip
   
   # Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/spatial_surface

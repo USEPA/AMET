@@ -1,12 +1,12 @@
 #!/bin/csh -f
 # -----------------------------------------------------------------------
-# Timeseries plots of T, Q, WS and WD
+# Timeseries plot for moisture: T, Q, RH and PS
 # -----------------------------------------------------------------------
 # Purpose:
 # This is an example c-shell script to run the R-script that generates
-# timeseries plot of model and observed temperature, wind and moisture 
-# over user specified period. Obs site is labels by ID and model by project
-# ID. User can specify two model runs as a means to compare sensitivities.
+# timeseries plot of model and observed temperature, moisture, relative humidity 
+# and sfc pressure over user specified period. Obs site is labels by ID and model 
+# by project ID. User can specify two model runs as a means to compare sensitivities.
 # User can also group all sites and do a site average obs-model plot.
 # -----------------------------------------------------------------------
 ####################################################################################
@@ -19,33 +19,32 @@
   # mysqlpasswrd <- yourpassword
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
-  # MySQL database server connection and AMET databases. AMET_DATABASE1 is for 
-  # AMET_PROJECT1 below and the same for DATABASE2 and PROJECT2. This allows
-  # comparison of runs that may reside in different databases
+  # MySQL database server connection and AMET database
   setenv AMET_DATABASE1  user_database
   setenv AMET_DATABASE2  user_database
-  setenv MYSQL_SERVER    mysql.server.gov
+  setenv MYSQL_SERVER   mysql.server.gov
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
-  #  runs with obs including statistics. Project2 should be left blank for single project.
-  setenv AMET_PROJECT1 metExample_wrf
-  setenv AMET_PROJECT2 metExample_mpas
+  #  runs with obs including statistics. If left unset, it's ignored.
+  setenv AMET_PROJECT1 metExample_mcip
+  setenv AMET_PROJECT2 metExample_wrf
   
   #  Directory where figures and text output will be directed
-  setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT1/timeseries
+  setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT1/timeseries_rh
   
-  #  Observation site for timeseries. If mulitple sites are specificed like example below
-  #  all sites are either averaged into a timeseries (AMET_GROUPSITES TRUE) or a
-  #  timeseries plot for each site is generated (AMET_GROUPSITES FALSE)
+  #  Observation site for timeseries. If mulitple sites are specificed like example two below
+  #  Sites and corresponding model values are either averaged into a timeseries if 
+  # AMET_GROUPSITES=TRUE or a timeseries plot for each site is generated in a loop over sites
   set SITES=(KILM KORL KRDU KDCA KLAX)
   
+
   # these be grouped or averaged or should a separate timeseries be
   # generated for each site (TRUE - averaged; FALSE - separate)?
   setenv AMET_GROUPSITES FALSE 
 
-  #  Date range of timeseries where year (YY), month (MM), day (DD) are 
-  #  the start and end values with one space between. Use two digit MM and DD.
-  #  Below is the example for July 1-31, 2016
+  #  Date range of timeseries where year (YY), month (MM), day (DD) are the 
+  #  start and end values with one space between. Use two digit MM and DD.
+  #  Below is the example for July 1-Aug 1, 2011
   setenv AMET_YY "2016 2016"             
   setenv AMET_MM "07 08"             
   setenv AMET_DD "01 01"             
@@ -65,7 +64,7 @@
   ######################################################################
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries_rh.input  
   
   # NOTE: Do not modify; this statement is necessary if an array of sites is specified.
   setenv AMET_SITEID "$SITES[*]"
@@ -75,16 +74,16 @@
   mkdir -p $AMET_OUT
 
   # R-script execution command
-  R --no-save --slave < $AMETBASE/R_analysis_code/MET_timeseries.R 
+  R --no-save --slave < $AMETBASE/R_analysis_code/MET_timeseries_rh.R 
 
   if( $AMET_GROUPSITES == "TRUE") then
     set PLOT_ID="GROUP_AVG"
   else
-    set PLOT_ID=$SITES[1]
+      set PLOT_ID=$SITES[1]
   endif
 
   if( $#SITES == 1) then
-    set PLOT_ID=$SITES[1]
+      set PLOT_ID=$SITES[1]
   endif
 
   ######################################################################
@@ -109,7 +108,7 @@
   set de2=`echo $AMET_DD | awk '{split($0,a,""); print a[5]}'`
   set datestart = $ys1$ys2$ys3$ys4$ms1$ms2$ds1$ds2
   set dateend   = $ye1$ye2$ye3$ye4$me1$me2$de1$de2
-  set outfile   = $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.$datestart\-$dateend
+  set outfile   = $AMET_OUT/$AMET_PROJECT1.RH.$PLOT_ID.$datestart\-$dateend
   ######################################################################
 
   if(-e $outfile.$AMET_PTYPE) then

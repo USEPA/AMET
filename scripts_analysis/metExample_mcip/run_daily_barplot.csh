@@ -23,7 +23,7 @@
   setenv MYSQL_SERVER   mysql.server.gov
   
   #  AMET project id or simulation id
-  setenv AMET_PROJECT metExample_mpas
+  setenv AMET_PROJECT metExample_mcip
   
   #  Directory where figures and text output will be directed. This spec
   #  sets up a subdirectory in the main project output directory specifically

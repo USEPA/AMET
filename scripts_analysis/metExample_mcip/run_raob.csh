@@ -11,6 +11,7 @@
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
 
+
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
   # These are the only required for meteorological analysis. AQ requires more.
@@ -23,7 +24,7 @@
   setenv MYSQL_SERVER   mysql.server.gov
 
   #  AMET project id or simulation id
-  setenv AMET_PROJECT metExample_mpas 
+  setenv AMET_PROJECT metExample_mcip 
   
   #  Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/raob
@@ -83,8 +84,8 @@
   # lat-lon plot bounds. Note that all sites in a domain
   # will be considered when stats are calculated, but the
   # spatial plots will only cover the area below.
-  setenv AMET_BOUNDS_LAT "-85 85"
-  setenv AMET_BOUNDS_LON "-180 180"
+  setenv AMET_BOUNDS_LAT "23 55"
+  setenv AMET_BOUNDS_LON "-135 -60"
 
   # Do you want a CVS files with Spatial and Daily Statistics?
   setenv AMET_TEXTSTATS T

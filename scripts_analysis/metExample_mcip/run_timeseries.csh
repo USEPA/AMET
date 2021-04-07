@@ -28,8 +28,8 @@
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. Project2 should be left blank for single project.
-  setenv AMET_PROJECT1 metExample_wrf
-  setenv AMET_PROJECT2 metExample_mpas
+  setenv AMET_PROJECT1 metExample_mcip
+  setenv AMET_PROJECT2 metExample_wrf
   
   #  Directory where figures and text output will be directed
   setenv AMET_OUT   $AMETBASE/output/$AMET_PROJECT1/timeseries
