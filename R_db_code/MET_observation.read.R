@@ -13,6 +13,11 @@
 #    - Added functions to parse BSRN radiation observations and average.
 #    - Added functions rawindonde (raob) observation file read.
 #    - Added functions wind profile (profiler) observation file read.
+#  V1.5, 2021Apr20, Robert Gilliam:
+#       - Added function to check if file is empty. 
+#       - Fixed error messages when obs file download fails. Download.file function creates empty local file 
+#         when remote file is missing. Then attempts to unzip. Fix checks size of file and deletes the empties.
+#       - Code clean and format. Found numerous functions that did not have proper informational headings.
 #
 #######################################################################################################
 #######################################################################################################
@@ -24,8 +29,6 @@
 #                            observation list is returned. See function for list details.
 #
 #     madis_raob         --> Rawindsonde data reader for MADIS NetCDF files
-#
-#     madis_profiler     --> Wind profiler data reader for MADIS NetCDF files
 #
 #     text_surface       --> Text observation option instead of MADIS surface NetCDF file. See function
 #                            for input text file details. The same standard AMET surface obs list is
@@ -39,6 +42,10 @@
 #     bsrn_get_avg       --> Temporal averaging routine of 1 min BSRN radiation given user time average window spec.
 #
 #     check_for_bsrn_read--> Simple function that checks if the current model time is in BSRN obs data.
+#
+#     adjust_levels      --> Matrix operation that allows all wind direction obs to be adjusted to grid proj
+#
+#     file.empty         --> Function much like R func file.exists but returns T if file size is zero.
 #
 #######################################################################################################
 #######################################################################################################
@@ -86,15 +93,20 @@
     remote_file <- paste(madis_server,"/",datetime$yc,"/",datetime$mc,"/",datetime$dc,
                          madispath,gzname,sep="")
     writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
-    try(download.file(remote_file,gzname,"wget"))
-    system(paste("gunzip",gzname))
-    system(paste("mv",nogzname,madis_file))
+    try(download.file(remote_file,gzname,"wget"), silent=T)
+    if(!file.empty(gzname)) {
+      system(paste("gunzip",gzname))
+      system(paste("mv",nogzname,madis_file))
+      system(paste("rm -f ",gzname))
+    }
+    if(file.empty(gzname)) {
+      system(paste("rm -f ",gzname))
+    }
   }  
 
   if(!file.exists(madis_file)) { 
     writeLines(paste("MADIS FILE *NOT* Found: ",madis_file," for time:",datetime$modeldate,datetime$modeltime))
     writeLines("Skipping to next time")
-    system(paste("rm",gzname))
     return(NA)
   }
   writeLines(paste("Opening MADIS",madis_dset," for time:",datetime$modeldate,datetime$modeltime))
@@ -212,6 +224,10 @@
     su10   <-(-1)*swspd*sin(swdir*pi/180)
     sv10   <-(-1)*swspd*cos(swdir*pi/180) 
     
+    # Last QC check on winds **Found weird high winds at some sites**
+    su10 <-ifelse(abs(su10) > 100,NA, su10)
+    sv10 <-ifelse(abs(sv10) > 100,NA, sv10)
+
     # Rough QC of station pressure
 
   nc_close(f2) # Close MADIS obs file
@@ -266,17 +282,20 @@
     remote_file <- paste(madis_server,"/",datetime$yc,"/",datetime$mc,"/",datetime$dc,
                          madispath,gzname,sep="")
     writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
-    try(download.file(remote_file,gzname,"wget",quiet = T))
-    if(file.exists(gzname)) {
+    try(download.file(remote_file,gzname,"wget",quiet = T), silent=T)
+    if(!file.empty(gzname)) {
       system(paste("gunzip",gzname))
       system(paste("mv",nogzname,madis_file))
+      system(paste("rm -f ",gzname))
+    }
+    if(file.empty(gzname)) {
+      system(paste("rm -f ",gzname))
     }
   }  
 
   if(!file.exists(madis_file)) { 
     writeLines(paste("MADIS FILE *NOT* Found: ",madis_file," for time:",datetime$modeldate,datetime$modeltime))
     writeLines("Skipping to next time")
-    system(paste("rm",gzname))
     site<-list(ns=0)
     return(meta=list(meta=site))
   }
@@ -508,13 +527,28 @@
 ##########################################################################################################
 #####--------------------------   START OF FUNCTION: BSRN_OBSERVATIONS        ------------------------####
 #
+# Main function that controls the model-obs matching of BSRN radiation data. This the wrapper of sorts
+# Two other functions support this including one to parse BSRN obs file and another to do time window
+# averaging of the high temporal obs data.
+#
 # Input:
+#       madisbase   -- base directory of MADIS obs data for AMET
+#       datetime    -- date and time
+#      model_lat    -- model latitude array
+#      model_lon    -- model longitude array
+#      ametdbase    -- AMET database
+#      sitecommand  -- MySQL batch query command file for site meta update
+#      bsrn_server  -- BSRN data server
+#      bsrn_login   -- User BSRN data login
+#      bsrn_pass    -- password
 #
 # Output: 
-#
+#      site <- list(meta=site,ob_times=site_date, sfc_met=site_data)
+#      main return list <- list(meta=site,ob_times=site_date, sfc_met=site_data)
 
  bsrn_observations <-function(madisbase, datetime, model_lat, model_lon, ametdbase, sitecommand,  
-                              bsrn_server, bsrn_login, bsrn_pass, autoftp=F, updateSiteTable=F) {
+                              bsrn_server, bsrn_login, bsrn_pass, autoftp=F, updateSiteTable=F,
+                              tmpquery_file="tmp.site.query") {
 
   ndays.month     <- 31
   mins.in.a.month <- 60*24*ndays.month
@@ -550,8 +584,8 @@
   ##########################################################
   # Update Site information in the AMET stations table
   if(updateSiteTable) {
-    system("rm -f tmp.site.query") 
-    sfile<-file("tmp.site.query","a")
+    system(paste("rm -f ",tmpquery_file)) 
+    sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysql$dbase,";"),con=sfile) 
     for(s in 1:ns) {  
         query <-paste("REPLACE into stations (stat_id, ob_network, common_name, country, lat, lon, elev)
@@ -561,6 +595,7 @@
     }            
     close(sfile)
     system(sitecommand)
+    system(paste("rm -f ",tmpquery_file)) 
   }
   ##########################################################
   
@@ -574,11 +609,11 @@
     if( (slat[s] < latr[1] | slat[s] > latr[2]) | 
 #        (slon360[s] < lonr360[1] | slon360[s] > lonr360[2]) ) {
         (slon[s] < lonr[1] | slon[s] > lonr[2]) ) {
-       writeLines(paste("LAT OUT OF BOUNDS",stat_id[s],slat[s],latr[1],latr[2])) 
+       writeLines(paste("BSRN Site *NOT IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],latr[1],latr[2])) 
        next 
     }
     else {
-       writeLines(paste("IN BOUNDS",stat_id[s],slat[s],slon[s]))
+       writeLines(paste("BSRN Site *IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],slon[s]))
        ns_in_domain <- ns_in_domain + 1 
        site_ind[ns_in_domain]<-s       
     }
@@ -604,20 +639,25 @@
       writeLines(paste("Getting remote file and moving to the BSRN archive:",remote_file,bsrnobsfile))
 
       try(download.file(remote_file,gzname,"wget",extra=paste("--user",bsrn_login,
-                        "--password",bsrn_pass,"--max-redirect=0")))
+                        "--password",bsrn_pass,"--max-redirect=0")), silent=T)
 
       if(site_avail[s] != 0 ){
         writeLines(paste("File was not availiable for these dates:",remote_file))
       }
       else {
-        system(paste("gunzip",gzname))
-        system(paste("mv",nogzname,bsrnobsfile))
-        system(paste("rm -f ",gzname))
+        if(!file.empty(gzname)) {
+          system(paste("gunzip",gzname))
+          system(paste("mv",nogzname,bsrnobsfile))
+          system(paste("rm -f ",gzname))
+        }
+        if(file.empty(gzname)) {
+          system(paste("rm -f ",gzname))
+        }
       }    
     }
     if(!file.exists(bsrnobsfile)) { 
       site_avail[s]<-0
-      writeLines(paste("BSRN Site FILE *NOT* found: ",bsrnobsfile))
+      writeLines(paste("BSRN Site FILE *NOT* found remotely or locally: ",bsrnobsfile))
       writeLines("Will skip and set obs data for this site to missing.")
       next
     }
@@ -654,9 +694,12 @@
 #####--------------------------   START OF FUNCTION: BSRN_PARSE               ------------------------####
 #
 # Input:
+#      bsrnobsfile    -- name and location of BSRN obs file to parse
 #
 # Output: 
-#
+#   daytime  <-list(day=day,hour=hour.of.day)
+#   sfc_met  <-list(swr_global=swr_global)  
+#   list(daytime=daytime,sfc_met=sfc_met)
 
  bsrn_parse <-function(bsrnobsfile) {
 
@@ -733,17 +776,25 @@
 ##########################################################################################################
 #####--------------------------   START OF FUNCTION: BSRN_GET_AVG             ------------------------####
 #
+# This function does the final window averaging of the BSRN obs data for each obs site in the metadata
+#
 # Input:
+#      datetime     -- date and time
+#      obs_meta     -- model latitude array
+#      obs_time     -- model longitude array
+#      sfc_met      -- AMET database
+#      sitecommand  -- MySQL batch query command file for site meta update
+#      window       -- Time avg window size
 #
 # Output: 
-#
+#      swr_avg      -- array of avg SW radiation of BSRN SW radiation. swr_avg[number_of_sites]
 
  bsrn_get_avg <-function(datetime, obs_meta, obs_time, sfc_met, window=4) {
 
   # Commented out for debugging
-  obs_meta<-obs$meta
-  obs_time<-obs$ob_time
-  sfc_met<-obs$sfc_met
+  obs_meta <-obs$meta
+  obs_time <-obs$ob_time
+  sfc_met  <-obs$sfc_met
 
   model_month_date <-as.numeric(datetime$dc) + as.numeric(datetime$hc)/24 +
                      as.numeric(datetime$minc)/(24*60) + as.numeric(datetime$minc)/(24*60*60)
@@ -758,24 +809,26 @@
     month_sum    <- sum(!is.na(month_date))
     month_nt     <-length(month_date)
     if(month_sum_na == month_nt) {
-     writeLines(paste("No data for site. Skipping:",obs_meta$site[s],bad_sites+1))
-     bad_sites<- bad_sites+1
+     #writeLines(paste("No data for site. Skipping:",obs_meta$site[s],bad_sites+1))
+     writeLines(paste("No data for site. Skipping:",obs_meta$site[s]))
+     bad_sites   <- bad_sites+1
      next;
     }
     else {
      writeLines(paste("Obs are valid. Will grab the data for correct time.",
-                       obs_meta$site[s],datetime$modeldate, datetime$modeltime,good_sites+1))
+                       obs_meta$site[s],datetime$modeldate, datetime$modeltime))
+     #                  obs_meta$site[s],datetime$modeldate, datetime$modeltime,good_sites+1))
      ind.center  <-which.min(abs(month_date - model_month_date))
      start       <-ind.center-window
      end         <-ind.center+window
      if(length(start) == 0 )  { next }
      if(end >= month_nt-window ) {
-       start       <-month_nt-(window*2)
-       end         <-month_nt
+       start     <-month_nt-(window*2)
+       end       <-month_nt
      }
      if(start <= 1 ) {
-       start       <- 1
-       end         <- window*2
+       start     <- 1
+       end       <- window*2
      }
      all.na.check<- sum(is.na(sfc_met[ start:end,1,s]))
      if(all.na.check == (end-start+1)){
@@ -795,9 +848,12 @@
 ##########################################################################################################
 #####------------------          START OF FUNCTION: ADJUST_LEVELS             ------------------------####
 #
-# Input:
+# This function allows calculation over an array and used to adjust wind dir obs to magnetic north
+# for the MADIS RAOB dataset
 #
-# Output: 
+# Input: Array of values
+#
+# Output: Adjusted values
 #
 
  adjust_levels <-function(in.array) in.array * scale.fac 
@@ -808,9 +864,14 @@
 ##########################################################################################################
 #####------------------    START OF FUNCTION: CHECK_FOR_BSRN_FILE             ------------------------####
 #
+#  Simple function to check each timestep if there is a change in months during model output reads since
+#  BSRN is a monthly file.
+#
 # Input:
+#      datetime           -- Current date and time list.
 #
 # Output: 
+#      read_new_bsrn_file -- a logical to inform on when a new BSRN file read is needed.
 #
 
  check_for_bsrn_read <-function(datetime) {
@@ -828,22 +889,24 @@
 ##########################################################################################################
 
 ##########################################################################################################
+#####------------------          START OF FUNCTION: FILE.EMPTY                ------------------------####
+#
+#  Simple check of file size. THis is used by AMET to make sure MADIS obs files are not empty
+#  which causes warning and error messages.
+#
+# Input:
+#      filename           -- File to check
+#
+# Output: 
+#      Logical T/F depending on file size
+#
+  file.empty <- function(filename) {
 
-    ###################################################################
-    # MADIS Cacluation for Mixing ratio Not used, but preserved here in case of need later
-    # SUB CALL --- > OB= M_WMR(PTMP(I)/100.,OBTMP(I,1)-273.15)/1000.
-    #T     <-sdewp
-    #P     <-spres*10
-    #EPS   <-0.62197
-    #ES0   <-6.1078
-    #X     <- 0.02*(T-12.5+7500./P)
-    #WFW   <- 1.+ 4.5E-06*P + 1.4E-03*X*X
-    #T     <- T-273.15
-    #POL   <- 0.99999683          + T*(-0.90826951E-02 +  T*(0.78736169E-04   + T*(-0.61117958E-06 +
-    #         T*(0.43884187E-08   + T*(-0.29883885E-10 +  T*(0.21874425E-12   + T*(-0.17892321E-14 +
-    #         T*(0.11112018E-16   + T*(-0.30994571E-19)))))))))
-    #ESW   <- ES0/POL**8
-    #FMESW <- WFW * ESW
-    #R     <- EPS*FMESW/(P-FMESW)
-    ###################################################################
+    value <- file.info(filename)$size == 0
+    if( is.na(value) ) {   value <- T }
+    
+    return(value)
 
+ }
+#####-------------------         END OF FUNCTION FILE.EMPTY             ------------------------------####
+##########################################################################################################
