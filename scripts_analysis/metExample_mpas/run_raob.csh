@@ -7,6 +7,8 @@
 # raob statistical plots of model performance for a specified day, period,
 # site or group of sites. See raob.input file for extra settings including
 # sample size thresholds and plotting options. Analysis includes T, RH, WS and WD.
+# WNDVEC in AMET1.5+ that provided wind vector error
+#
 # -----------------------------------------------------------------------
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
