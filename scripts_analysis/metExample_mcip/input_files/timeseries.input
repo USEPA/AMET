@@ -18,6 +18,11 @@
 # Version 1.3, May 6, 2013, Robert Gilliam
 #  - better formatting of script
 #  - added requirement that password is passed via argument input.
+#
+# Version 1.5, Jun 3, 2021, Robert Gilliam
+#  - added qcerror that allows users to filter mod-obs pairs where
+#    differences are above some value.
+#
 #########################################################################
 #---------------------------------------------------##
 #       Configurable DATE Definitions
@@ -51,25 +56,32 @@
 #       Plot/Output Format
 #########################################################################
  plotfmt  <-Sys.getenv("AMET_PTYPE")
- symb     <-15
- symbsiz  <-2
+ symb     <-15                                            # Plot symbol (15-square,19-circle)
+ symbsiz  <-2                                             # Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
  plotsize <-1
- scex     <-0.65
+ scex     <-0.65                                          # Statistics Text size
+ maxrec   <-10000
 
 #########################################################################
 # GROSS	QC/QA limits for T (K), WS (m/s), and Q (g/kg): Min, Max
 #########################################################################
  qcT   <-c(240,315)
  qcQ   <-c(0,30)
- qcWS  <-c(0.5,25)
+ qcWS  <-c(1.5,25)
  qclims<-list(qcT=qcT,qcQ=qcQ,qcWS=qcWS)                                                                   
+
+########################################################################
+# QC limits on max difference between Model and Obs as another filter
+# value assignment is T, WS, Q, RH  -- SI units
+# ######################################################################
+ qcerror <- c(15,20,10,50)
 
  # This is the maximum allowable number of data points
  # allowed to be extracted from database. Used as check
  # against unruly extraction such as via web interface.
  # 10 million is about the number of data extracted for
  # 2/3rds of a year.
- maxrec   <- 10E6	
+ maxrec   <- 10E4	
 
 #########################################################################
 #-----                  END OF INPUT FILE       ------------------------#

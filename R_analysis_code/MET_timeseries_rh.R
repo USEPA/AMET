@@ -15,8 +15,12 @@
 #     Modified for T, Q, RH and PS (surface pressure).                  #
 #     Surface pressure was added to the model-obs surface met matching  #
 #     since it is needed for RH calcs (saturated mixing ratio).         #
+#                                                                       #
+#  Version 1.5, Jun 3, 2021, Robert Gilliam                             #
+#    - Bug fix where text file had model1 Q in model2 column            #
 #-----------------------------------------------------------------------#
 #########################################################################
+  options(warn=-1)
 #########################################################################
 #	Load required modules
   if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
@@ -306,7 +310,7 @@ for (sn in 1:length(statid)){
   if(textout) {
      #writeLines(paste("R text file output:",textfile[sn]))
      write.table(
-     data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],q[,2],
+     data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],q[,3],
                 rh[,1],rh[,2],rh[,3],ps[,1],ps[,2],ps[,3]),textfile[sn],sep=",", 
                 col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)",
                             "Q Mod (g/kg)","Q Obs (g/kg)","Q Mod2 (g/kg)",

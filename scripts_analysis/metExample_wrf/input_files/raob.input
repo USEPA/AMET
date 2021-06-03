@@ -28,7 +28,11 @@
  # Sample size threshold for minimum layers needed for native profile plot
  profilen.thresh<- 5
 
- # Configurable range for difference plot range (Native Curtain plots)
+ # QC limits on max difference between Model and Obs as another filter
+ # value assignment is ordered T, WS, Q, RH  -- SI units
+ qcerror <- c(15,20,10,50)
+
+ # Configurable range for difference *PLOT* range (Native Curtain plots)
  # Note diff.t 5 is -5 to +5 diff range.
  use.user.range <- TRUE
  diff.t         <- 5
@@ -171,6 +175,16 @@
  criteria.umc <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.um, " AND ",statqc,sep="")
  criteria.vmc <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.vm, " AND ",statqc,sep="")
 
+ criteria.tms <-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.tm, " AND ",statq,sep="")
+ criteria.rhms<-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.rhm," AND ",statq,sep="")
+ criteria.ums <-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.um, " AND ",statq,sep="")
+ criteria.vms <-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.vm, " AND ",statq,sep="")
+
+ criteria.tmc <-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.tm, " AND ",statqc,sep="")
+ criteria.rhmc<-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.rhm," AND ",statqc,sep="")
+ criteria.umc <-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.um, " AND ",statqc,sep="")
+ criteria.vmc <-paste(table.link," AND d.ob_date ",my.drange," AND HOUR(d.ob_date)=0 AND ",varcri.vm, " AND ",statqc,sep="")
+
  #---------------------------------------------------##
  ############################################################
 
@@ -229,9 +243,9 @@
  # may cause untested/unwanted behviour.
 
  metricID    <-c("RMSE","MAE","BIAS","CORR")
- varName     <-c("Temperature","Relative Humidity","Wind Speed","Wind Direction")
- varID       <-c("TEMP","RH","WS","WD")
- varUnits    <-c("K","%","m/s","Deg")
+ varName     <-c("Temperature","Relative Humidity","Wind Speed","Wind Direction","Wind Vector")
+ varID       <-c("TEMP","RH","WS","WD","WNDVEC")
+ varUnits    <-c("K","%","m/s","Deg","m/s")
  #-----------------------------------------------------------------------------------------##
  ##  Color Scale for Variable Biases. This is a static color scale, but if the current 
  ##  scale is not desired, it can be changed below.
@@ -309,6 +323,11 @@
  lev.array[1:length(levsWDb),4,3]   <- levsWDb
  lev.array[1:length(levsWDc),4,4]   <- levsWDc
 
+ lev.array[1:length(levsWSe),5,1]   <- levsWSe
+ lev.array[1:length(levsWSe),5,2]   <- levsWSe
+ lev.array[1:length(levsWSb),5,3]   <- levsWSb
+ lev.array[1:length(levsWSc),5,4]   <- levsWSc
+
  col.array[1:length(colTe),1,1]     <- colTe
  col.array[1:length(colTe),1,2]     <- colTe
  col.array[1:length(colTb),1,3]     <- colTb
@@ -319,15 +338,20 @@
  col.array[1:length(colRHb),2,3]    <- colRHb
  col.array[1:length(colRHc),2,4]    <- colRHc
 
- col.array[1:length(colWSe),4,1]    <- colWSe
- col.array[1:length(colWSe),4,2]    <- colWSe
- col.array[1:length(colWSb),4,3]    <- colWSb
- col.array[1:length(colWSc),4,4]    <- colWSc
+ col.array[1:length(colWSe),3,1]    <- colWSe
+ col.array[1:length(colWSe),3,2]    <- colWSe
+ col.array[1:length(colWSb),3,3]    <- colWSb
+ col.array[1:length(colWSc),3,4]    <- colWSc
 
- col.array[1:length(colWDe),3,1]    <- colWDe
- col.array[1:length(colWDe),3,2]    <- colWDe
- col.array[1:length(colWDb),3,3]    <- colWDb
- col.array[1:length(colWDc),3,4]    <- colWDc
+ col.array[1:length(colWDe),4,1]    <- colWDe
+ col.array[1:length(colWDe),4,2]    <- colWDe
+ col.array[1:length(colWDb),4,3]    <- colWDb
+ col.array[1:length(colWDc),4,4]    <- colWDc
+
+ col.array[1:length(colWSe),5,1]    <- colWSe
+ col.array[1:length(colWSe),5,2]    <- colWSe
+ col.array[1:length(colWSb),5,3]    <- colWSb
+ col.array[1:length(colWSc),5,4]    <- colWSc
 
 #-----------------------------------------------------------------------------------------##
 ##  Plot Lables 
