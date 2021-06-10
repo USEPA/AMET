@@ -17,6 +17,7 @@
 #       - Added function to check if file is empty. 
 #       - Fixed error messages when obs file download fails. Download.file function creates empty local file 
 #         when remote file is missing. Then attempts to unzip. Fix checks size of file and deletes the empties.
+#       - added functions to WGET, read and average SURFRAD observations if BSRN data is not availiable
 #       - Code clean and format. Found numerous functions that did not have proper informational headings.
 #
 #######################################################################################################
@@ -37,11 +38,16 @@
 #     bsrn_observations  --> Main BSRN radiation observation read function. This calls the parse function below
 #                            to arrange a data field with monthly radiation, time and by site IDs.
 #
-#     bsrn_parse         --> Parser of BSRN text file format.
+#     bsrn_parse         --> Parser of BSRN obs text file format.
 #
-#     bsrn_get_avg       --> Temporal averaging routine of 1 min BSRN radiation given user time average window spec.
+#   surfrad_observations --> Main SURFRAD radiation observation read function. This calls the surfrad parse function
+#                            to arrange a data field with daily radiation, time and by site IDs.
 #
-#     check_for_bsrn_read--> Simple function that checks if the current model time is in BSRN obs data.
+#     surfrad_parse      --> Parser of SURFRAD obs text file format.
+#
+#     get_rad_avg        --> Temporal averaging routine of BSRN or SURFRAD radiation given user time average window spec.
+#
+#     check_for_rad_read --> Checks if the current model time requires a read of new BSRN or SURFRAD obs file 
 #
 #     adjust_levels      --> Matrix operation that allows all wind direction obs to be adjusted to grid proj
 #
@@ -529,7 +535,7 @@
 #
 # Main function that controls the model-obs matching of BSRN radiation data. This the wrapper of sorts
 # Two other functions support this including one to parse BSRN obs file and another to do time window
-# averaging of the high temporal obs data.
+# averaging of the high temporal radiation obs data.
 #
 # Input:
 #       madisbase   -- base directory of MADIS obs data for AMET
@@ -543,7 +549,9 @@
 #      bsrn_pass    -- password
 #
 # Output: 
-#      site <- list(meta=site,ob_times=site_date, sfc_met=site_data)
+#      site   <-list(ns=ns_in_domain, nsr=ns_in_domain, site=stat_id_domain, 
+#                    sites_unique=stat_id_domain, slat=slat_in_domain, slon=slon_in_domain, 
+#                    report_type=sname_in_domain, site_locname=network_in_domain)
 #      main return list <- list(meta=site,ob_times=site_date, sfc_met=site_data)
 
  bsrn_observations <-function(madisbase, datetime, model_lat, model_lon, ametdbase, sitecommand,  
@@ -677,9 +685,6 @@
 
   }  # END LOOP THROUGH SITES
   ###########################################################################################################
-  system("date")
-
-
   site   <-list(ns=ns_in_domain, nsr=ns_in_domain, site=stat_id_domain, 
                 sites_unique=stat_id_domain, slat=slat_in_domain, slon=slon_in_domain, 
                 report_type=sname_in_domain, site_locname=network_in_domain)
@@ -770,13 +775,224 @@
   return(list(daytime=daytime,sfc_met=sfc_met))
 
  }
-#####--------------------------	  END OF FUNCTION BSRN_OBSERVATIONS     ------------------------------####
+#####--------------------------	       END OF FUNCTION BSRN_PARSE       ------------------------------####
 ##########################################################################################################
 
 ##########################################################################################################
-#####--------------------------   START OF FUNCTION: BSRN_GET_AVG             ------------------------####
+#####-----------------------      START OF FUNCTION: SURFRAD_OBSERVATIONS     ------------------------####
 #
-# This function does the final window averaging of the BSRN obs data for each obs site in the metadata
+# Main function that controls the model-obs matching of SURFRAD radiation data. This the wrapper of sorts
+# Two other functions support this including one to parse SURFRAD obs file and another to do time window
+# averaging of the high temporal obs data.
+#
+# Input:
+#       madisbase   -- base directory of MADIS obs data for AMET
+#       datetime    -- date and time
+#      model_lat    -- model latitude array
+#      model_lon    -- model longitude array
+#      ametdbase    -- AMET database
+#      sitecommand  -- MySQL batch query command file for site meta update
+#      srad_server  -- SURFRAD data server
+#      srad_login   -- User SURFRAD data login
+#      srad_pass    -- password
+#
+# Output: 
+#      site             <-list(ns=ns_in_domain, nsr=ns_in_domain, site=stat_id_domain, 
+#                              sites_unique=stat_id_domain, slat=slat_in_domain, slon=slon_in_domain, 
+#                              report_type=sname_in_domain, site_locname=network_in_domain)
+#      main return list <- list(meta=site,ob_times=site_date, sfc_met=site_data)
+
+ surfrad_observations <-function(madisbase, datetime, model_lat, model_lon, ametdbase, sitecommand,  
+                                 srad_server, srad_login, srad_pass, autoftp=F, updateSiteTable=F,
+                                 tmpquery_file="tmp.site.query") {
+####
+# For development purposes
+#model_lat<-model$projection$lat
+#model_lon<-model$projection$lon
+#autoftp<-T
+#updateSiteTable<-T
+#tmpquery_file=query_file2
+#srad_server<-bsrn_server
+#srad_login<-bsrn_login
+#srad_pass<-bsrn_pass
+
+####
+  rows.in.a.file <- 60*24
+
+  sradsitefile    <-paste(madisbase,"/bsrn/surfrad_sites.csv",sep="")
+  latr            <-range(model_lat)
+  lonr            <-range(model_lon)
+  lonr360          <-ifelse(lonr < 0, lonr + 360,lonr)
+  if(range(lonr)[2]-range(lonr)[1] > 359) {
+    lonr360<-c(-180,180)
+  }
+
+  day.get <- datetime$dc
+  tmp     <- unlist(strsplit(datetime$yc,split=""))
+  yy      <- paste(tmp[3],tmp[4],sep="")
+  datefile<- paste(datetime$mc,yy,sep="")
+  
+  # Read SURFRAD stations metadata file for site information
+  writeLines(paste("Opening SURFRAD site metadata file",sradsitefile," and updating stations table."))
+  srad.site.data<-read.delim(sradsitefile,sep=",",header=T)
+  ns            <- dim(srad.site.data)[1]
+  common_name   <-as.character(srad.site.data[,1])
+  stat_id       <-tolower(as.character(srad.site.data[,2]))
+  country       <-as.character(srad.site.data[,3])
+  slat          <-as.numeric(srad.site.data[,4])
+  slon          <-as.numeric(srad.site.data[,5])
+  selev         <-as.numeric(srad.site.data[,6])
+  slon360       <-ifelse(slon < 0, slon + 360,slon)
+  ob_network    <-array("SRAD",c(ns))
+  site_avail    <-array(8,c(ns))
+
+  ##########################################################
+  # Update Site information in the AMET stations table
+  if(updateSiteTable) {
+    system(paste("rm -f ",tmpquery_file)) 
+    sfile<-file(tmpquery_file,"a")
+    writeLines(paste("use",mysql$dbase,";"),con=sfile) 
+    for(s in 1:ns) {  
+        query <-paste("REPLACE into stations (stat_id, ob_network, common_name, country, lat, lon, elev)
+                       VALUES ('",stat_id[s],"','",ob_network[s],"','",common_name[s],"','",country[s],"',",
+                       slat[s],",",slon[s],",",selev[s],");",sep="")
+        writeLines(paste(query),con=sfile)             
+    }            
+    close(sfile)
+    system(sitecommand)
+    system(paste("rm -f ",tmpquery_file)) 
+  }
+  ##########################################################
+  
+  # Cycle through sites to determine if in domain and create 
+  ns_in_domain   <- 0
+  site_ind       <- array(NA,c(ns))
+  stat_id_domain <- array(NA,c(ns))
+  stat_ll_domain <- array(NA,c(ns,2))
+  for(s in 1:ns) {  
+    
+    if( (slat[s] < latr[1] | slat[s] > latr[2]) | 
+        (slon[s] < lonr[1] | slon[s] > lonr[2]) ) {
+       writeLines(paste("SURFRAD Site *NOT IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],latr[1],latr[2])) 
+       next 
+    }
+    else {
+       writeLines(paste("SURFRAD Site *IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],slon[s]))
+       ns_in_domain <- ns_in_domain + 1 
+       site_ind[ns_in_domain]<-s       
+    }
+  }
+  stat_id_domain   <-stat_id[site_ind[1:ns_in_domain]]
+  slat_in_domain   <-slat[site_ind[1:ns_in_domain]]
+  slon_in_domain   <-slon[site_ind[1:ns_in_domain]]
+  sname_in_domain  <-common_name[site_ind[1:ns_in_domain]]
+  network_in_domain<-ob_network[site_ind[1:ns_in_domain]]
+
+  site_avail       <-array(0,c(ns_in_domain))
+  site_data        <-array(NA,c(rows.in.a.file,5,ns_in_domain))
+  site_date        <-array(NA,c(rows.in.a.file,2,ns_in_domain))
+
+  jday<- sprintf("%03.f",mdy.date(as.numeric(datetime$mc),as.numeric(datetime$dc),as.numeric(datetime$yc)) -
+                         mdy.date(1,1,as.numeric(datetime$yc))+1)
+  # Download SURFRAD obs file for each site in domain and setup srad obs data array
+  for(s in 1:ns_in_domain) {  
+    sradobsfile <-paste(madisbase,"/bsrn/",stat_id_domain[s],yy,jday,".dat",sep="")
+    if( (autoftp & !file.exists(sradobsfile)) || file.empty(sradobsfile) ) { 
+      nogzname     <-paste(stat_id_domain[s],yy,jday,".dat",sep="")
+      remote_file  <- paste(srad_server,"/",stat_id_domain[s],"/",datetime$yc,"/",stat_id_domain[s],yy,jday,".dat",sep="")
+      writeLines(paste("Getting remote file and moving to the SURFRAD/BSRN archive:",remote_file,sradobsfile))
+
+      try(download.file(remote_file,sradobsfile,"wget",extra=paste("--user",srad_login,
+                        "--password",srad_pass,"--max-redirect=0")), silent=T)
+    }
+    if(!file.exists(sradobsfile) || file.empty(sradobsfile)) { 
+      site_avail[s]<-0
+      writeLines(paste("SURFRAD Site FILE *NOT* found remotely or locally: ",sradobsfile))
+      writeLines("Will skip and set obs data for this site to missing.")
+      next
+    }
+
+    if(file.exists(sradobsfile)) { 
+      writeLines(paste("SURFRAD monthly Site FILE is in the archive: ",sradobsfile))
+      writeLines(paste("PARSING SURFRAD data.... "))
+      obs <-surfrad_parse(sradobsfile)
+      if(is.list(obs)){
+        site_avail[s]           <-1
+        tmpl                    <-length(obs$daytime$day)
+        site_date[1:tmpl,1,s]   <-obs$daytime$day    
+        site_date[1:tmpl,2,s]   <-obs$daytime$hour    
+        site_data[1:tmpl,1,s]   <-obs$sfc_met$swr_global   
+      }     
+    }
+  }  # END LOOP THROUGH SITES
+  ########################################################################################################
+  site   <-list(ns=ns_in_domain, nsr=ns_in_domain, site=stat_id_domain, 
+                sites_unique=stat_id_domain, slat=slat_in_domain, slon=slon_in_domain, 
+                report_type=sname_in_domain, site_locname=network_in_domain)
+
+  return(list(meta=site,ob_times=site_date, sfc_met=site_data))
+
+ }
+#####------------------------	  END OF FUNCTION SURFRAD_OBSERVATIONS     ---------------------------####
+##########################################################################################################
+
+##########################################################################################################
+#####--------------------------   START OF FUNCTION: SURFRAD_PARSE               ---------------------####
+#
+# Input:
+#   sradobsfile    -- name and location of SURFRAD obs file to parse
+#
+# Output: 
+#   daytime  <-list(day=day,hour=hour.of.day)
+#   sfc_met  <-list(swr_global=swr_global)  
+#   list(daytime=daytime,sfc_met=sfc_met)
+
+ surfrad_parse <-function(sradobsfile) {
+
+  # Daily SURFRAD data file read.
+  srad.data <-read.delim(sradobsfile,header=F,blank.lines.skip = FALSE, skip=2, sep='')
+  nl        <-dim(srad.data)[1]
+
+  # PARSE date information from file
+  day          <-srad.data[,4]
+  hr           <-srad.data[,5]
+  min          <-srad.data[,6]
+  min.of.day   <- hr*60 + min
+
+  # Radiation data
+  swr_global   <-srad.data[,9]
+  swr_direct   <-srad.data[,11]
+  swr_diffuse  <-srad.data[,12]
+  lwr_down     <-srad.data[,13]
+
+  # Met data. Note T in Celcius so converted to Kelvin
+  temp         <-srad.data[,39]+273.14
+  relhum       <-srad.data[,41]
+
+  swr_global  <-ifelse(swr_global == -999, NA, swr_global)
+  swr_direct  <-ifelse(swr_direct == -999, NA, swr_direct)
+  swr_diffuse <-ifelse(swr_diffuse == -999, NA, swr_diffuse)
+  lwr_down    <-ifelse(lwr_down == -999, NA, lwr_down)
+  temp        <-ifelse(temp == -999, NA, temp)
+  relhum      <-ifelse(relhum == -999, NA, relhum)
+  hour.of.day <-min.of.day/60
+
+  daytime  <-list(day=day,hour=hour.of.day)
+
+# Full list of met for future.  
+#  sfc_met  <-list(swr_global=swr_global, swr_direct=swr_direct, swr_diffuse=swr_diffuse, 
+#                  lwr_down=lwr_down, temp=temp, relhum=relhum)  
+  sfc_met  <-list(swr_global=swr_global)  
+  return(list(daytime=daytime,sfc_met=sfc_met))
+
+ }
+#####----------------------------    END OF FUNCTION SURFRAD_PARSE     -------------------------------####
+##########################################################################################################
+
+##########################################################################################################
+#####--------------------------    START OF FUNCTION: GET_RAD_AVG             ------------------------####
+#
+# This function does the final window averaging of the BSRN/SURFRAD obs data for each obs site 
 #
 # Input:
 #      datetime     -- date and time
@@ -787,14 +1003,9 @@
 #      window       -- Time avg window size
 #
 # Output: 
-#      swr_avg      -- array of avg SW radiation of BSRN SW radiation. swr_avg[number_of_sites]
+#      swr_avg      -- array of avg SW radiation of SW radiation. swr_avg[number_of_sites]
 
- bsrn_get_avg <-function(datetime, obs_meta, obs_time, sfc_met, window=4) {
-
-  # Commented out for debugging
-  obs_meta <-obs$meta
-  obs_time <-obs$ob_time
-  sfc_met  <-obs$sfc_met
+ get_rad_avg <-function(datetime, obs_meta, obs_time, sfc_met, window=4) {
 
   model_month_date <-as.numeric(datetime$dc) + as.numeric(datetime$hc)/24 +
                      as.numeric(datetime$minc)/(24*60) + as.numeric(datetime$minc)/(24*60*60)
@@ -809,7 +1020,6 @@
     month_sum    <- sum(!is.na(month_date))
     month_nt     <-length(month_date)
     if(month_sum_na == month_nt) {
-     #writeLines(paste("No data for site. Skipping:",obs_meta$site[s],bad_sites+1))
      writeLines(paste("No data for site. Skipping:",obs_meta$site[s]))
      bad_sites   <- bad_sites+1
      next;
@@ -817,7 +1027,6 @@
     else {
      writeLines(paste("Obs are valid. Will grab the data for correct time.",
                        obs_meta$site[s],datetime$modeldate, datetime$modeltime))
-     #                  obs_meta$site[s],datetime$modeldate, datetime$modeltime,good_sites+1))
      ind.center  <-which.min(abs(month_date - model_month_date))
      start       <-ind.center-window
      end         <-ind.center+window
@@ -842,7 +1051,7 @@
   return(swr_avg)
 
  }
-#####--------------------------	  END OF FUNCTION BSRN_GET_AVG          ------------------------------####
+#####--------------------------	     END OF FUNCTION GET_RAD_AVG        ------------------------------####
 ##########################################################################################################
 
 ##########################################################################################################
@@ -874,11 +1083,17 @@
 #      read_new_bsrn_file -- a logical to inform on when a new BSRN file read is needed.
 #
 
- check_for_bsrn_read <-function(datetime) {
+ check_for_rad_read <-function(datetime, rad_dset="bsrn") {
 
   read_new_bsrn_file <- FALSE
-  
-  if( as.numeric(datetime$dc) == 1 & as.numeric(datetime$hc) == 0 ) {
+
+  # Underlying assumtion that BSRN files are monthly  
+  if( as.numeric(datetime$dc) == 1 & as.numeric(datetime$hc) == 0 & rad_dset=="bsrn") {
+    read_new_bsrn_file <- TRUE
+  }
+
+  # Underlying assumption that SurfRad is daily
+  if( as.numeric(datetime$hc) == 0 & rad_dset=="srad") {
     read_new_bsrn_file <- TRUE
   }
 

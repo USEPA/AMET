@@ -390,6 +390,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
   }
   close(sfile)
   system(command)
+  system(paste("rm -f ",query_file1))
   # End of loop over observations sites
   ##########################################################################
   writeLines("**********************************************************************************************")
