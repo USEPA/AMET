@@ -2,7 +2,7 @@
 #                 INPUT FILE for Main R Scripts                         #
 #-----------------------------------------------------------------------#
 #                                                                       #
-#                   Input to MET_plot_srad.R                            #
+#                   Input to MET_plot_radiation.R                       #
 #                     Developed by US EPA                               #
 #                                                                       #
 #-----------------------------------------------------------------------#
@@ -28,6 +28,10 @@
  histogram <- as.logical(Sys.getenv("SRAD_HISTOGRAM"))     
 
  # Extra user query options
+ # Forecast model spec example below. Comment out empty extra<-""
+ # line to enable extra query spec in full query of data.
+ # default is to use the first value for a date/time.
+ extra     <- "AND d.fcast_hr BETWEEN 0 and 23"
  extra     <- ""
 
  # Intervals over the sunlight hours to average statistics. This works
