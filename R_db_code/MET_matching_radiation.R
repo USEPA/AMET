@@ -132,9 +132,6 @@
      dthr     <- 0
   }
 
-  # Initialize radiation file read to T
-  read_new_rad_file <- TRUE
-
   # Site mapping to model grid arrays for MPAS or WRF. Note CIND and CWGT are MPAS index
   # arrays and interp weighting values. WRFIND is the eqivalent for WRF. Values [site,1:3,1:2]
   # are indicies of the four grid point surrounding the obs site. [site,1,1:2] is the first and
@@ -151,6 +148,9 @@
 ##########################################################################
 # Begin loop over Model Output files
 for(f in 1:nf) {
+
+  # Initialize radiation file read to T
+  read_new_rad_file <- TRUE
 
   # Model output file names from list spec and met model check.
   parts<-unlist(strsplit(files[f], " "))
@@ -254,8 +254,9 @@ for(t in skipind:nt){
   # needs to be ingested. BSRN = first of month, 
   # SRAD= first hour of the day read_new_rad_file
   if(total_loop_count > 1 ) {
-    read_new_rad_file <-check_for_rad_read(datetime, rad_dset)
+    read_new_rad_file <-check_for_rad_read(datetime, t, skipind, rad_dset)
   }
+
   # Extract obs from BSRN or SURFRAD obs files along with site metadata
   # return variable contains two lists: site and sfc_met
   # site:    ns, nsr, site, site_unique, slat ,slon, site_locname, report_type, 
@@ -319,7 +320,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     mysqltimestr<-paste(datetime$yc,"-",datetime$mc,"-",datetime$dc," ",datetime$modeltime,sep="") 
     if(verbose) {
       writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                       "Model time:",datetime$modeltime))
+                       "Model time:",datetime$modeltime," Forecast hr:",fcast_hr))
     }
 
     # Set missing or bad obs values to MySQL NULL

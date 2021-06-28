@@ -1083,21 +1083,26 @@
 #      read_new_bsrn_file -- a logical to inform on when a new BSRN file read is needed.
 #
 
- check_for_rad_read <-function(datetime, rad_dset="bsrn") {
+ check_for_rad_read <-function(datetime, t, skipind, rad_dset="srad") {
 
-  read_new_bsrn_file <- FALSE
+  read_new_rad_file <- FALSE
 
   # Underlying assumtion that BSRN files are monthly  
   if( as.numeric(datetime$dc) == 1 & as.numeric(datetime$hc) == 0 & rad_dset=="bsrn") {
-    read_new_bsrn_file <- TRUE
+    read_new_rad_file <- TRUE
   }
 
   # Underlying assumption that SurfRad is daily
   if( as.numeric(datetime$hc) == 0 & rad_dset=="srad") {
-    read_new_bsrn_file <- TRUE
+    read_new_rad_file <- TRUE
   }
 
-  return(read_new_bsrn_file)
+  # Underlying assumption that SurfRad is daily
+  if( skipind == t & rad_dset=="srad") {
+    read_new_rad_file <- TRUE
+  }
+
+  return(read_new_rad_file)
 
  }
 #####-------------------  END OF FUNCTION CHECK_FOR_BSRN_FILE           ------------------------------####

@@ -37,7 +37,8 @@
 # Version 1.5, May 30, 2021, Robert Gilliam                             #
 #               - Added consideration of new SURFRAD matching with      #
 #                 ob_network = SRAD || BSRN in query string             #
-#               - Added text output option for spatial, diurnal and TS  #              
+#               - Added text output option for spatial, diurnal and TS  # 
+#               - Added considerations for forecast model eval          #             
 #                                                                       #
 #########################################################################
   options(warn=-1)
@@ -84,11 +85,11 @@
  query1 <- paste("SELECT  DATE_FORMAT(d.ob_date,'%Y%m%d'),HOUR(d.ob_date), d.stat_id,s.lat, s.lon,",
                  "d.SRAD_mod, d.SRAD_ob FROM ",project1,"_surface d, stations s  WHERE d.stat_id=s.stat_id ", 
                  "AND (s.ob_network='SRAD' || s.ob_network='BSRN') AND d.SRAD_ob > 0 AND d.ob_date BETWEEN ",
-                 d1," AND ",d2, extra, sep="")
+                 d1," AND ",d2," ",extra," ORDER by d.ob_date", sep="")
  query2 <- paste("SELECT  DATE_FORMAT(d.ob_date,'%Y%m%d'),HOUR(d.ob_date), d.stat_id,s.lat, s.lon,",
                  "d.SRAD_mod, d.SRAD_ob FROM ",project2,"_surface d, stations s  WHERE d.stat_id=s.stat_id ", 
                  "AND (s.ob_network='SRAD' || s.ob_network='BSRN') AND d.SRAD_ob > 0 AND d.ob_date BETWEEN ",
-                 d1," AND ",d2, extra, sep="")
+                 d1," AND ",d2," ",extra," ORDER by d.ob_date", sep="")
 
  writeLines(paste(query1))
  data1  <-ametQuery(query1,mysql1)
@@ -535,12 +536,23 @@ if(timeseries) {
    date.vec  <-seq(min(iso.date),max(iso.date),by="hour")
    ts.length <-length(date.vec)
    ts.values <-array(0,c(ts.length,2))
+   warn.flag <-0
    for(tt in 1:ts.length){
      mask2   <- iso.date == date.vec[tt]
      nsample <-sum(ifelse(mask2,1,0),na.rm=T)
      if(nsample == 1) {
        ts.values[tt,1]<-obs[mask2]
        ts.values[tt,2]<-mod[mask2]
+     }  
+     if(nsample > 1) {
+       if(warn.flag == 0) {
+         writeLines(paste("*** WARNING WARNING *** Multiple paired data for",date.vec[tt]," AND likely other times."))
+         writeLines(paste("May be a model forecast. Using first value only in TS."))
+         writeLines(paste("User can refine query with extra forecast hour spec (input_files/plot_srad.input)"))
+         warn.flag <- warn.flag+1
+       }
+       ts.values[tt,1]<-obs[mask2][1]
+       ts.values[tt,2]<-mod[mask2][1]
      }  
    }
 	  
