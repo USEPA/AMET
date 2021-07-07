@@ -165,13 +165,13 @@ for(f in 1:nf) {
   nc_close(f1)
   if(mpas.chk != 0) {
    metmodel<-"mpas"
-   writeLines(paste("Matching MPAS output file with surface observations:",file))
+   writeLines(paste("Matching MPAS output file with raob sounding observations:",file))
   } else if(wrf.chk != 0) {
    metmodel<-"wrf"
-   writeLines(paste("Matching WRF output file with surface observations:",file))
+   writeLines(paste("Matching WRF output file with raob sounding observations:",file))
   } else if(mcip.chk != 0) {
    metmodel<-"mcip"
-   writeLines(paste("Matching MCIP METCRO3D/METDOT3D file with surface observations:",file))
+   writeLines(paste("Matching MCIP METCRO3D/METDOT3D file with raob sounding observations:",file))
   } else { 
    writeLines("The model output is not standard WRF or MPAS output. Double check. 
                Terminating model-observation matching.")
