@@ -32,7 +32,18 @@
 #        and raob obs overlaid with same color scale symbols. Also      #
 #        the difference between obs and model is a secondary plot.      #
 #                                                                       #         
+# Version 1.5, Apr 30, 2021, Robert Gilliam                             #
+#         - Wind vector error added for better wind error analysis      #
+#         - Gross QC limits on Mod-Obs difference allowed in stats      # 
+#           calculations. Defined in raob.input. Default use if         #
+#           old raob.input.                                             #
+#         - Wind vector error calculated for spatial and timeseries     #
+#           plots. (need to make backward compatible if old             #
+#           raob.input is used)                                         #
+#         - Other streamline updates.                                   #
+#                                                                       #         
 #########################################################################
+  options(warn=-1)
 #########################################################################
 #	Load required modules
   if(!require(maps))   {stop("Required Package maps was not loaded")}
@@ -68,8 +79,18 @@
  mysql      <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
                    passwd=amet_pass,maxrec=maxrec)
  #################################
- textfile   <-paste("raob_stats.",project,".txt",sep="")
- textfile   <-paste(figdir,textfile,sep="/")
+ textfile   <-paste(figdir,"/raob_stats.",project,".txt",sep="")
+
+  # User QC settings representing the largest difference allowed between mod and obs.
+  # if these are not defined because of old timeseries.input, set default values and notify
+  if(!exists("qcerror") )   {
+    writeLines("** Importance Notice **")
+    writeLines("User QC limits (qcerror) in AMETv1.5+ not defined in raob.input because it is old.")
+    writeLines("Default to 15, 20, 10, 50 for T, WS, Q and RH. User can alter if they update raob.input")
+    writeLines("e.g., qcerror <- c(15,20,10,50)")
+    writeLines(" ****************************************** ")
+    qcerror <- c(15,20,10,50)
+  }
 
  ##########################################################################################
  #### MANDATORY PRESSURE LEVEL ANALYSIS ######
@@ -81,14 +102,16 @@
   writeLines("  *****   SPATIAL STATISTICS FOR MODEL-RAOB DATA   *****")
 
   # Temperature statsq array is: [sites,metric,variable] 
-  # metric is    RMSE, MAE, BIAS, CORR
-  # variable is  T, RH, WS, WD
+  # metric is    RMSE, MAE, BIAS, CORR, COUNT
+  # variable is  T, RH, WS, WD, WNDVEC
+
+  # TEMP
   query  <-paste("SELECT",my.varget.spatial,"FROM",criteria.tm,extrall," ORDER BY stat_id")
   writeLines(paste(query))
   dataq  <-ametQuery(query,mysql)
   sitesq <- unique(dataq[,1])
   nsq    <- length(sitesq)
-  statsq <-array(NA,c(nsq,4,5))
+  statsq <-array(NA,c(nsq,5,5))
   slatlon<-array(NA,c(nsq,2))
   for(s in 1:nsq){
      a           <- which(dataq[,1] == sitesq[s])
@@ -118,35 +141,38 @@
   dataqv <-ametQuery(query,mysql)
   for(s in 1:nsq){
      writeLines(paste("Site ID:",sitesq[s]," site ",s,"of",nsq,"  Lat-Lon  ",slatlon[s,1],slatlon[s,2]))
-     a           <- which(dataqu[,1] == sitesq[s])
-     b           <- which(dataqv[,1] == sitesq[s])
+     a            <- which(dataqu[,1] == sitesq[s])
+     b            <- which(dataqv[,1] == sitesq[s])
      if(length(a) <  spatial.thresh) { next }
-     obsu        <-dataqu[a,10]
-     modu        <-dataqu[a,12]
-     obsv        <-dataqv[b,10]
-     modv        <-dataqv[b,12]
+     obsu         <-dataqu[a,10]
+     modu         <-dataqu[a,12]
+     obsv         <-dataqv[b,10]
+     modv         <-dataqv[b,12]
      if(length(obsu) != length(modu)) { 
        writeLines(paste("Site had data inconsitancies, will skip"))  
        next 
      }
-     obsws       <-sqrt(obsu^2 + obsv^2)
-     modws       <-sqrt(modu^2 + modv^2)
-     obsws       <-ifelse(obsws < 0, NA, obsws)
-     obsws       <-ifelse(obsws > 250, NA, obsws)
-     modws       <-ifelse( is.na(obsws), NA, modws)
-     statsq[s,3,]<-simple.stats(obsws,modws)
+     obsws        <-sqrt(obsu^2 + obsv^2)
+     modws        <-sqrt(modu^2 + modv^2)
+     obsws        <-ifelse(obsws < 0, NA, obsws)
+     obsws        <-ifelse(obsws > 250, NA, obsws)
+     modws        <-ifelse( is.na(obsws), NA, modws)
+     statsq[s,3,] <-simple.stats(obsws,modws)
 
-     obswd       <- 180+(360/(2*pi))*atan2(obsu,obsv)
-     modwd       <- 180+(360/(2*pi))*atan2(modu,modv)
-     diffwd      <- obswd- modwd  
-     diffwd      <-ifelse(diffwd > 180 , diffwd-360, diffwd)
-     diffwd      <-ifelse(diffwd< -180 , diffwd+360, diffwd)
-     obswd0      <-runif(length(diffwd),min=0,max=0.001)
-     modwd0      <-diffwd
-     statsq[s,4,]<-simple.stats(obswd0,modwd0)
+     obswd        <- 180+(360/(2*pi))*atan2(obsu,obsv)
+     modwd        <- 180+(360/(2*pi))*atan2(modu,modv)
+     diffwd       <- obswd- modwd  
+     diffwd       <-ifelse(diffwd > 180 , diffwd-360, diffwd)
+     diffwd       <-ifelse(diffwd< -180 , diffwd+360, diffwd)
+     obswd0       <-runif(length(diffwd),min=0,max=0.001)
+     modwd0       <-diffwd
+     statsq[s,4,] <-simple.stats(obswd0,modwd0)
+     
+     # Added in v1.5. Russ Bullock average wind vector error
+     statsq[s,5,2]<- mean(sqrt( (modu-obsu)^2 + (modv-obsv)^2  ))
+
   }
-  plotSpatialRaob(statsq, slatlon, sitesq, lev.array, col.array, plotopts, plotlab)
-
+  tmp<- plotSpatialRaob(statsq, slatlon, sitesq, lev.array, col.array, plotopts, plotlab)
   ############################################################################
   # New in Version 1.3: Text file with set SITES=(....) string to use in
   # site specific profile statistics and curtain plots. All sites in lat-lon box.
@@ -162,7 +188,7 @@
 
  }
  ##########################################################################################
-
+#break
  ##########################################################################################
  # Timeseries of Domain STATISTICS for all sites for specified pressure layer range,
  # given time range and lat-lon bounds. Done for T, RH, WS and WD
@@ -171,9 +197,10 @@
   writeLines("  *****   TIMESERIES STATS FOR MODEL-RAOB DATA   *****")
 
   # Temperature statsq array is: [day,metric,variable] 
-  # metric is    RMSE, MAE, BIAS, CORR
+  # metric is    RMSE, MAE, BIAS, CORR, COUNT
   # variable is  T, RH, WS, WD
   query  <-paste("SELECT",my.varget.spatial,"FROM",criteria.tm,extrall," ORDER BY stat_id")
+  writeLines(paste(query))
   dataqt <-ametQuery(query,mysql)
   query  <-paste("SELECT",my.varget.spatial,"FROM",criteria.rhm,extrall," ORDER BY stat_id")
   dataqrh<-ametQuery(query,mysql)
@@ -181,7 +208,6 @@
   dataqu <-ametQuery(query,mysql)
   query  <-paste("SELECT",my.varget.spatial,"FROM",criteria.vm,extrall," ORDER BY stat_id,ob_date,plevel")
   dataqv <-ametQuery(query,mysql)
-  writeLines(paste(query))
 
   iso.datet  <-  ISOdatetime(year=dataqt[,4], month=dataqt[,5],day=dataqt[,6],
                              hour=dataqt[,7], min=0, sec=0, tz="GMT")
@@ -196,14 +222,17 @@
   date.vecm <- seq(minmax[1],minmax[2],by=(60*60*12))
 
   nt        <- length(date.vecm)
-  statsq <-array(NA,c(nt,4,5))
+  statsq <-array(NA,c(nt,5,5))
 
+  writeLines(paste("QC applied on mod-obs difference allowed (see raob.input qcerror)"))
+  writeLines(paste("Max diff allowed T/WS/RH ...",qcerror[1],qcerror[2],qcerror[4]))
   # Temperature stats loop over days
   for(tt in 1:nt){
      a            <- which(date.vecm[tt] == iso.datet)
      if(length(a) < spatial.thresh) { next }
      obs          <-dataqt[a,10]
      mod          <-dataqt[a,12]
+     obs          <-ifelse( abs(mod-obs) > qcerror[1], NA, obs)
      statsq[tt,1,]<-simple.stats(obs,mod)
   }
   # Rel. Humd. stats loop over days
@@ -212,37 +241,44 @@
      if(length(a) < spatial.thresh) { next }
      obs          <-dataqrh[a,10]
      mod          <-dataqrh[a,12]
+     obs          <-ifelse( abs(mod-obs) > qcerror[4], NA, obs)
      statsq[tt,2,]<-simple.stats(obs,mod)
   }
 
 
   # WS and WD stat loop over days
   for(tt in 1:nt){
-     a            <- which(date.vecm[tt] == iso.dateu)
-     b            <- which(date.vecm[tt] == iso.datev)
+     a             <- which(date.vecm[tt] == iso.dateu)
+     b             <- which(date.vecm[tt] == iso.datev)
      if(length(a) <  spatial.thresh) { next }
      if(length(a) != length(b)) { next }
-     obsu        <-dataqu[a,10]
-     modu        <-dataqu[a,12]
-     obsv        <-dataqv[b,10]
-     modv        <-dataqv[b,12]
-     obsws       <-sqrt(obsu^2 + obsv^2)
-     modws       <-sqrt(modu^2 + modv^2)
-     obsws       <-ifelse(obsws < 0, NA, obsws)
-     obsws       <-ifelse(obsws > 250, NA, obsws)
-     modws       <-ifelse( is.na(obsws), NA, modws)
+     obsu          <-dataqu[a,10]
+     modu          <-dataqu[a,12]
+     obsv          <-dataqv[b,10]
+     modv          <-dataqv[b,12]
+     obsws         <-sqrt(obsu^2 + obsv^2)
+     modws         <-sqrt(modu^2 + modv^2)
+     obsws         <-ifelse(obsws < 0, NA, obsws)
+     obsws         <-ifelse(obsws > 250, NA, obsws)
+     modws         <-ifelse( is.na(obsws), NA, modws)
+     obsws         <-ifelse( abs(modws-obsws) > qcerror[2], NA, obsws)
      statsq[tt,3,]<-simple.stats(obsws,modws)
 
-     obswd       <- 180+(360/(2*pi))*atan2(obsu,obsv)
-     modwd       <- 180+(360/(2*pi))*atan2(modu,modv)
-     diffwd      <- obswd- modwd  
-     diffwd      <-ifelse(diffwd > 180 , diffwd-360, diffwd)
-     diffwd      <-ifelse(diffwd< -180 , diffwd+360, diffwd)
-     obswd0      <-runif(length(diffwd),min=0,max=0.001)
-     modwd0      <-diffwd
-     statsq[tt,4,]<-simple.stats(obswd0,modwd0)
+     obswd         <- 180+(360/(2*pi))*atan2(obsu,obsv)
+     modwd         <- 180+(360/(2*pi))*atan2(modu,modv)
+     diffwd        <- obswd- modwd  
+     diffwd        <-ifelse(diffwd > 180 , diffwd-360, diffwd)
+     diffwd        <-ifelse(diffwd< -180 , diffwd+360, diffwd)
+     obswd0        <-runif(length(diffwd),min=0,max=0.001)
+     modwd0        <-diffwd
+     statsq[tt,4,] <-simple.stats(obswd0,modwd0)
+     # Added in v1.5. Russ Bullock average wind vector error 
+     statsq[tt,5,2]<-mean(sqrt( (modu-obsu)^2 + (modv-obsv)^2  ))
   }
-  plotTseriesRaobM(statsq, date.vecm, plotopts, plotlab, textstats)
+  ## Need a AMET bug fix. When AMET_PLAYER for spatial stats is low, spatial.thresh
+  ## is not met and all values are NA. Fix: statement when all time series stats are NA
+  ## that user runs timeseries alone with deeper PLAYER or lower the spatial.thresh
+  tmp<- plotTseriesRaobM(statsq, date.vecm, plotopts, plotlab, textstats)
 
  }
  ##########################################################################################
@@ -401,8 +437,8 @@
     }
    
     writeLines(paste("Plotting T, RH, WS and WD statistics profiles for site:",statid[s]))
-    plotProfRaobM(statsq.new, diffsq.new, levels.new, statid[s], plotopts, plotlab)
-    plotDistRaobM(obsmodrh.new, levels.new, statid[s], plotopts, plotlab)
+    tmp<- plotProfRaobM(statsq.new, diffsq.new, levels.new, statid[s], plotopts, plotlab)
+    tmp<- plotDistRaobM(obsmodrh.new, levels.new, statid[s], plotopts, plotlab)
     
    }
  }
@@ -568,11 +604,11 @@
 
    minmax    <- range(iso.datet,iso.daterh,iso.datews,na.rm=T)
    date.vec  <-seq(minmax[1],minmax[2],by=(60*60*12))
-   plotProfTimeM(obsmodt.new, levels.new, iso.datet, date.vec,statidc[s], 
+   tmp<- plotProfTimeM(obsmodt.new, levels.new, iso.datet, date.vec,statidc[s], 
                  1, plotopts, plotlab, nt.thresh=5) 
-   plotProfTimeM(obsmodrh.new, levels.new, iso.daterh, date.vec,statidc[s],
+   tmp<- plotProfTimeM(obsmodrh.new, levels.new, iso.daterh, date.vec,statidc[s],
                  2, plotopts, plotlab, nt.thresh=5) 
-   plotProfTimeM(obsmodws.new, levels.new, iso.datews, date.vec,statidc[s],
+   tmp<- plotProfTimeM(obsmodws.new, levels.new, iso.datews, date.vec,statidc[s],
                  3, plotopts, plotlab, nt.thresh=5) 
 
 
@@ -615,7 +651,7 @@
       next
     }
     writeLines(paste("Plotting T and RH native level profiles for site:",statidc[s]))
-    plotProfRaobN(raob, model, plotopts, plotlab)
+    tmp<- plotProfRaobN(raob, model, plotopts, plotlab)
   }
 
  }
@@ -667,7 +703,7 @@
     #query     <-paste("SELECT",my.varget.main,"FROM",raob.table,"WHERE",criteria.umn2[s]," ORDER BY ob_date, plevel")
     #datat     <-ametQuery(query[1],mysql)
 
-    plotProfTimeN(raob, model, plotopts, plotlab, user.custom.plot.settings, profilen.thresh)
+    tmp<- plotProfTimeN(raob, model, plotopts, plotlab, user.custom.plot.settings, profilen.thresh)
 
   }
 

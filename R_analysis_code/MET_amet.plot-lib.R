@@ -23,6 +23,13 @@
 #  - Added functions for new T, Q, RH and PS timeseries
 #  - Added a number of RAOB-Model plotting functions
 #
+# Version 1.5, Apr 16, 2021, Robert Gilliam
+#  - Wind vector error added for better wind error analysis
+#  - Gross QC limits on Mod-Obs difference allowed in stats calculations. 
+#    Defined in raob.input. Default use if old raob.input.
+#  - Wind vector error calculated for spatial and timeseries plots.
+#  - Other streamline updates. 
+#
 #-----------------------------------------------------------------------##################
 ##########################################################################################
 ##########################################################################################
@@ -43,7 +50,7 @@
 #       plotSpatialRaob  --> Plots RAOB spatial statistics from mandatory pressure level
 #                            data for specified lat-lon bounds. T, RH, WS, WD. 
 #
-#       plotTseriesRaobM   --> Plots daily RAOB statistics from mandatory pressure level
+#       plotTseriesRaobM --> Plots daily RAOB statistics from mandatory pressure level
 #                            data for specified lat-lon bounds. T, RH, WS, WD. 
 # 
 #       plotProfRaobM    --> Plots RAOB-Model profiles on Mandantory pressure levels.
@@ -1145,17 +1152,23 @@
   latn    <-bounds[2]
 
   legoffset<- (1/50)*(lone-lonw)
+  
+  #lonw    <- -160 
+  #lone    <- -140
+  #lats    <-58
+  #latn    <-68
+  #writeLines(paste(sinfo$lon))
+  #writeLines(paste(lonw,lone,lats,latn))
 
 # Plot Map and values
   m<-map('usa',plot=FALSE)
   #map(map.db, xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1)
-  map("world", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1)
+  map("worldHires", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1)
   if(lonw > -150 & lone < 0 & lats > 0 & latn > 25) {
     map("state", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1, add=T)
   }
   points(sinfo$lon,sinfo$lat,pch=spch, cex=scex, col=pcols)
   box()
-  
 # Draw legend
   levLab<-sinfo$levs[1:(length(sinfo$levs)-1)]*sinfo$convFac
   #legend(lone-legoffset,lats+2*legoffset,levLab,col=sinfo$levcols,pch=spch,xjust=1,yjust=0, pt.cex=0.75, cex=0.75)
@@ -1235,12 +1248,23 @@
  plotSpatialRaob <-function(statsq, slatlon, sitesq, lev.array, 
                             col.array, plotopts, plotlab) {
  ################################################################
- nv<- dim(statsq)[2]
- nm<- 4
+ nv<- length(varID)
+ nm<- length(metricID)
  ns<- dim(statsq)[1]
+
+ if( dim(statsq)[2] > nv ) {
+   writeLines("** Importance Notice **")
+   writeLines("raob.input is old and does not consider wind vector error")
+   writeLines("WNDVEC mean error plot skipped until raob.input is update to AMETv1.5+")
+ }
 
  for(v in 1:nv) {
   for(m in 1:nm) {
+
+   #  WNDVEC v=5 only has mean error  m=1, added in v1.5
+   if(v == 5 & m != 2) {
+     next
+   }
 
    num.missing <- sum(is.na(statsq[,v,m]))
    if(num.missing > 0.25*ns) {
@@ -1252,7 +1276,7 @@
    figure  <- paste(plotopts$figdir,"/","raob.spatial.",metricID[m],".",varID[v],".",plotlab$datelab,".", 
                     plotlab$figurelablev,".",plotopts$project,".",plotopts$plotfmt,sep="")
 
-   if (plotopts$plotfmt == "pdf"){
+      if (plotopts$plotfmt == "pdf"){
      pdf(file= figure, width = 11, height = 8.5)
    }
    if (plotopts$plotfmt == "png"){
@@ -1332,6 +1356,13 @@
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
                col.names=c(" siteID, siteLat "," siteLon "," WD RMSE "," WD MAE "," WD BIAS "),
                row.names=sitesq)
+   textfile   <- paste(plotopts$figdir,"/","raob.spatial.WNDVEC.",plotlab$datelab,".", 
+                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+   writeLines(paste("Writing spatial statistics csv text file for WNDVEC:",textfile))
+   sitetxtout <-data.frame(slatlon,format(statsq[,5,2], digits = 3))
+   write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
+               col.names=c(" siteID, siteLat "," siteLon "," WNDVEV MAE "),
+               row.names=sitesq)
  }
 
   
@@ -1356,10 +1387,16 @@
  plotTseriesRaobM <-function(statsq, date.vecm,
                            plotopts, plotlab, textstats=F) {
  ################################################################
- nv<- dim(statsq)[2]
- nm<- 4
+ nv<- length(varID)
+ nm<- length(metricID)
+ ns<- dim(statsq)[1]
+
+ if( dim(statsq)[2] > nv ) {
+   writeLines("** Importance Notice **")
+   writeLines("raob.input is old and does not consider wind vector error")
+   writeLines("WNDVEC mean error plot skipped until raob.input is update to AMETv1.5+")
+ }
  nt<- length(date.vecm)
- v<-1
  for(v in 1:nv) {
 
    figure  <- paste(plotopts$figdir,"/","raob.daily.",varID[v],".",plotlab$datelab,".", 
@@ -1375,15 +1412,40 @@
             height = (541*plotopts$plotsize)/100, res=100,pointsize=10*plotopts$plotsize)
    }
    writeLines(paste("*************************************************"))
-   writeLines(paste("Plotting RAOB Timeseries Statistis ",plotlab$varName[v]))
+   writeLines(paste("Plotting RAOB Timeseries Statistics ",plotlab$varName[v]))
    writeLines(paste(figure))
+   if(textstats){
+    writeLines(paste("Writing daily statistics csv text file:",textfile))
+    write.table(format(statsq[,v,1:4], digits = 3),file=textfile,append=F, quote=F, sep=",",
+                col.names=c("     DATE/TIME,        RMSE","    MAE","     BIAS","    CORR"),
+                row.names=date.vecm)
+   }
 
    par(mfrow=c(4,1))
    par(bg="white")
    par(fg="black")
    par(mai=c(0.25,0.5,0.25,0.25))
    par(mgp=c(1.40,0.2,0))
-# source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
+
+   if(v == 5) {
+     # If mean wind vector error plot as MAE and skip other panels
+     m <-2
+     tmpvarlab1<-paste(metricID[m]," (",plotlab$varUnits[v],")", sep="")
+     tmpvarlab2<-paste("Daily ",plotlab$varName[v]," ",metricID[m]," (",plotlab$varUnits[v],")", sep="")
+     plotvar   <-statsq[,v,m]
+     par(new=F)
+     plot(date.vecm,plotvar,xlab="",axes=FALSE,ylab=tmpvarlab1,
+          xlim=range(date.vecm),pch=4,cex=0.75,col="black",
+          vfont=c("serif","bold"),label=TRUE,type="l",lwd=2)
+     par(tck=1)
+     axis(1,col="black",lty=3,at=date.vecm[seq(1,nt)],
+          labels=date.vecm[seq(1,nt)], col.ticks="gray")
+     axis(2,col="black",lty=3, col.ticks="gray")
+     title(tmpvarlab2)
+     box()
+     dev.off()
+     break
+   }
 
    # RMSE Panel (1 of 4)
    m <-1
@@ -1400,6 +1462,7 @@
    axis(2,col="black",lty=3, col.ticks="gray")
    title(tmpvarlab2)
    box()
+   
    # MAE Panel (2 of 4)
    m <-2
    tmpvarlab1<-paste(metricID[m]," (",plotlab$varUnits[v],")", sep="")
@@ -1430,6 +1493,10 @@
    title(tmpvarlab2)
    box()
    # Correlation Panel (4 of 4)
+   if(v == 4) {
+     # If wind direction skip correlation panel and end plot
+     dev.off()
+   }
    if(v != 4) {
     m <-4
     tmpvarlab1<-paste(metricID[m], sep="")
@@ -1445,20 +1512,12 @@
     axis(2,col="black",lty=3, col.ticks="gray")
     title(tmpvarlab2)
     box()
-   }
-   dev.off()
-
-   if(textstats){
-    writeLines(paste("Writing daily statistics csv text file:",textfile))
-    write.table(format(statsq[,v,1:4], digits = 3),file=textfile,append=F, quote=F, sep=",",
-                col.names=c("     DATE/TIME,        RMSE","    MAE","     BIAS","    CORR"),
-                row.names=date.vecm)
+    dev.off()
    }
 
  }   # End loop over variables
 
-# textfile <-
-  return()
+ return()
 
  }
 ###############################################################
@@ -1554,6 +1613,7 @@
   par(mgp=c(2,0.7,0))
   xlims    <- ceiling(range(statsq.new[,v,1],na.rm=T))
   xlims[1] <- 0
+  #xlims[2] <- 25
   par(tck=0.05)
   plot(statsq.new[,v,1],levels.new,xlim=xlims,ylim=rev(proflim), axes=T,
        ylab="Pressure (mb)", xlab=paste("RMSE (",plotlab$varUnits[v],")",sep=""),

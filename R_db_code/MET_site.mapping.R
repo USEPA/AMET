@@ -11,6 +11,15 @@
 #  V1.3, 2017Apr18, Robert Gilliam: Initial Development
 #  V1.4, 2018Sep30, Robert Gilliam: Site mapping functions for mpas and wrf were updated to insert
 #                                   site elevation and state in the database stations table.
+#  V1.5, 2019Oct30, Robert Gilliam: 
+#       - Added calls i,j grid index for domains on other WRF map projections:
+#         polar stereog, mercator and regular lat-lon. 
+#  V1.5, 2020Jan15, Robert Gilliam: 
+#       - Made changes to mpas_site_map for limited-area MPAS grids where sites can be outside
+#         of the model domain. Prior it was assumed global so no checks on site-to-model indexing.
+#  V1.5, 2020Feb26, Robert Gilliam: 
+#       - Added random number to site query filename for multiple runs in the same directory
+#       - Old MADIS datasets have site(s) with NA for lat-lon coordinates. Check and skip those now. 
 #
 #######################################################################################################
 #######################################################################################################
@@ -68,12 +77,13 @@
                           slat, slon, elev, report_type, site_locname,
                           lat, lon, latv, lonv, cells_on_vertex,
                           cind, cwgt, mysqldbase, sitecommand, 
-                          sitemax=15000, updateSiteTable=F) {
+                          sitemax=15000, updateSiteTable=F,
+                          tmpquery_file="tmp.site.query") {
 
   # If update site table open temporary site query file
   if(updateSiteTable) {
-    system("rm -f tmp.site.query") 
-    sfile<-file("tmp.site.query","a")
+    system(paste("rm -f ",tmpquery_file)) 
+    sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
   }
   
@@ -81,15 +91,23 @@
   # WRF i,j grid indices (only works for Lambert or PolarStereo projections
   writeLines("Mapping MADIS obs sites to MPAS grid") 
   nsr <- length(sites_unique) 
+  nsites_outside_domain<-0 
   for(s in 1:nsr) {
     if(sites_unique[s] %in% sitelist){ next }
-    sitenum<-sitenum+1
-    try(if(sitenum>sitemax) stop("Error: sitenum > sitemax"))
-    sitelist[sitenum]<-sites_unique[s]
     inds <-which(sites_unique[s] == site)[1]
+    if(is.na(slat[inds]) || is.na(slon[inds])) { next }
     dist <-sqrt( (latv - slat[inds])^2 + (cos(latv*pi/180)*(lonv - slon[inds]))^2)
     vmap <-which(dist==min(dist,na.rm=T), arr.ind = TRUE)
 
+    #if( min(cind[sitenum,]) <= 0 || max(cind[sitenum,]) > length(latv) ) { 
+    if( min(cells_on_vertex[,vmap]) <= 0 || max(cells_on_vertex[,vmap]) > length(latv) ) { 
+      nsites_outside_domain<-nsites_outside_domain+1
+      writeLines(paste(nsites_outside_domain,"Sites ****",sites_unique[s],"**** excluded because out of MPAS domain"))
+      next 
+    }
+    sitenum<-sitenum+1
+    try(if(sitenum>sitemax) stop("Error: sitenum > sitemax"))
+    sitelist[sitenum]<-sites_unique[s]
   # Using the closest MPAS vertex to each MADIS station, store the cell indices for that vertex
     cind[sitenum,1]<-cells_on_vertex[1,vmap]
     cind[sitenum,2]<-cells_on_vertex[2,vmap]
@@ -127,9 +145,11 @@
     close(sfile)
     system(sitecommand)
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
-    system("rm -f tmp.site.query")
+    system(paste("rm -f ",tmpquery_file))
   }
 
+  writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 
+  writeLines(paste("Num sites excluded because outside of MPAS domain:",nsites_outside_domain))
   writeLines(paste("Finished: Mapping observation sites to MPAS grid. Number of sites mapped:",sitenum))
 
   supdate<-list(sitelist=sitelist, sitenum=sitenum, cind=cind, cwgt=cwgt)
@@ -167,12 +187,13 @@
  wrf_site_map <-function(site, sites_unique, sitelist, sitenum, slat, slon,
                          elev, report_type, site_locname, proj, wrfind, 
                          interp, mysqldbase, sitecommand, sitemax=15000, 
-                         updateSiteTable=F, buffer=5) {
-  
+                         updateSiteTable=F, buffer=5,
+                         tmpquery_file="tmp.site.query") {
+
   # If update site table open temporary site query file
   if(updateSiteTable) {
-    system("rm -f tmp.site.query") 
-    sfile<-file("tmp.site.query","a")
+    system(paste("rm -f ",tmpquery_file)) 
+    sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
   }
 
@@ -186,12 +207,25 @@
   for(s in 1:nsr) {
     if(sites_unique[s] %in% sitelist){ next }
     inds             <-which(sites_unique[s] == site)[1]    
-
     # Simple QA on site lat lon values. Some mesonet files have bad site locations.
+    if(is.na(slat[inds]) || is.na(slon[inds])) { next }
     if(abs(slat[inds]) > 90 || abs(slon[inds]) > 360) { next }
 
-    grdind           <-lamb_latlon_to_ij(proj$lat1, proj$lon1, 1, 1, proj$truelat1, proj$truelat2, 
-                               proj$standlon, proj$dx, slat[inds], slon[inds], radius= 6370000.0)
+    if(proj$mproj == 1) {
+      grdind  <-lamb_latlon_to_ij(proj$lat1, proj$lon1, 1, 1, proj$truelat1, proj$truelat2, proj$standlon,
+                                  proj$dx, slat[inds], slon[inds], radius= 6370000.0)
+    }
+    if(proj$mproj == 2) {
+      grdind  <-polars_latlon_to_ij(proj$lat1, proj$lon1, proj$dx, proj$truelat1, proj$standlon,  
+                                    slat[inds], slon[inds], radius= 6370000.0)
+    }
+    if(proj$mproj == 3) {
+      grdind  <-mercat_latlon_to_ij(proj$lat1, proj$lon1, proj$lat, proj$lon, proj$dx, 
+                                    proj$truelat1, slat[inds], slon[inds], radius= 6370000.0)
+    }
+    if(proj$mproj == 4) {
+      grdind  <-latlon_latlon_to_ij(proj$lat, proj$lon, slat[inds], slon[inds])
+    }
 
     if(grdind$i < buffer || grdind$i > (proj$nx-buffer) || grdind$j < buffer || grdind$j > (proj$ny-buffer) ) { 
       nsites_outside_domain<-nsites_outside_domain+1
@@ -275,7 +309,7 @@
     close(sfile)
     system(sitecommand)
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
-    #system("rm -f tmp.site.query")
+    system(paste("rm -f ",tmpquery_file))
   }
   
   writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 

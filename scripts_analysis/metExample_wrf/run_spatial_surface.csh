@@ -16,8 +16,6 @@
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
 
-  #  Top of AMET directory
-
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
   # These are the only required for meteorological analysis. AQ requires more.
@@ -27,12 +25,12 @@
 
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   localhost
+  setenv MYSQL_SERVER   mysql.server.gov 
 
-  #  AMET project id or simulation id
-   setenv AMET_PROJECT metExample_wrf
+  # AMET project id or simulation id
+  setenv AMET_PROJECT metExample_wrf
   
-  #  Directory where figures and text output will be directed
+  # Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/spatial_surface
   
   # Do you want a CVS files with spatial statistics?

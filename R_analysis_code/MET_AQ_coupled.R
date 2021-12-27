@@ -88,7 +88,7 @@
        met_data	<-ametQuery(met_query,met_mysql)
        met_sites<-ametQuery(met_site_query,met_mysql)       
 
-    writeLines(paste(“Number of dimisions of aq_sites”, dim(aq_sites)[1], dim(aq_sites)[2]))
+    writeLines(paste(â€œNumber of dimisions of aq_sitesâ€, dim(aq_sites)[1], dim(aq_sites)[2]))
 
     n.sites <- length(aq_sites[,1])
     
@@ -278,3 +278,5 @@
     title("Diurnal AQ and MET BIAS",line=2, cex.sub=0.50)                                                  
     box()
     dev.off()
+##### END
+

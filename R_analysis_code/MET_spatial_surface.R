@@ -54,6 +54,7 @@
 #             end date and query was changed to less than end date.
 #                  
 #-----------------------------------------------------------------------#####################################
+  options(warn=-1)
 #############################################################################################################
 #	Load required modules
   if(!require(maps))   {stop("Required Package maps was not loaded")}
@@ -141,6 +142,7 @@ while(datex <= datee) {
   }
   else {
     writeLines(paste(query))
+    writeLines(paste(qstat))
     sstats<-try(stationStatsSfc(query,qstat,mysql,wsmin=0.5,thresh=thresh,t.test=t.test.flag),silent=FALSE)
   } 	
   if(wantsave ){

@@ -7,6 +7,8 @@
 # raob statistical plots of model performance for a specified day, period,
 # site or group of sites. See raob.input file for extra settings including
 # sample size thresholds and plotting options. Analysis includes T, RH, WS and WD.
+# WNDVEC in AMET1.5+ that provided wind vector error
+#
 # -----------------------------------------------------------------------
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
@@ -20,7 +22,7 @@
 
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   mysql.server.gov 
+  setenv MYSQL_SERVER   mysql.server.gov
 
   #  AMET project id or simulation id
   setenv AMET_PROJECT metExample_mpas 
@@ -80,8 +82,9 @@
   # curtain plots when RAOB_CURTAINN and/or setenv RAOB_PROFILEN is true
   setenv AMET_PLIM "1000 600"             
 
-  # Lat-lon plot bounds for spatial analysis. 
-  # This is also used for bounds of spatial plots.
+  # lat-lon plot bounds. Note that all sites in a domain
+  # will be considered when stats are calculated, but the
+  # spatial plots will only cover the area below.
   setenv AMET_BOUNDS_LAT "-85 85"
   setenv AMET_BOUNDS_LON "-180 180"
 
