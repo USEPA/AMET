@@ -1,5 +1,5 @@
 # Atmospheric Model Evaluation Tool (AMET)
-## Version 1.4 User’s Guide
+## Version 1.4 User Guide
 
 -------
 
