@@ -6,10 +6,10 @@
 #                database table, and populate the       #
 #                metadata table with the site info      #
 #                                                       # 
-#       Last Update: 06/07/2017 by Wyat Appel           #
+#       LAST UPDATE: 01/2022 by K. Wyat Appel           #
 #--------------------------------------------------------
 
-suppressMessages(require(RMySQL))                                              # Use MYSQL R package
+suppressMessages(require(RMySQL))  # Use MYSQL R package
 
 amet_base <- Sys.getenv('AMETBASE')
 if (!exists("amet_base")) {
@@ -52,14 +52,14 @@ if (class(create_database_log)=="try-error") {
 cat("done. \n")
 con   <- dbConnect(MySQL(),user=mysql_login,password=mysql_pass,dbname=dbase,host=mysql_server)
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+###########################################################################################
 # Create new project log, units and site metadata tables if running AMET for the first time
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+###########################################################################################
 
 MYSQL_tables    <- dbListTables(con)
 cat("\nCreating required AQ tables if they don't already exist: \n")
 aq_new_1  <- "create table project_units (proj_code varchar(100), network varchar(25))"
-aq_new_1b <- "alter table project_units add UNIQUE(proj_code, network)"
+aq_new_1b <- "alter table project_units add unique (proj_code,network)"
 aq_new_2  <- "create table aq_project_log (proj_code varchar(100) UNIQUE KEY, model varchar(20), user_id varchar(40), passwd varchar(25), email varchar(100), description text, proj_date timestamp, proj_time time, min_date datetime, max_date datetime)"
 aq_new_3  <- "create table site_metadata (stat_id varchar(25) UNIQUE KEY, num_stat_id int(10), stat_name varchar(100), network varchar(15), co_network varchar(200), state varchar(4), city varchar(50), start_date varchar(20), end_date varchar(20), lat double, lon double, elevation int(10), landuse varchar(50), loc_setting varchar(50), county varchar(100), country varchar(100), near_road varchar(10), timezone varchar(20), GMT_Offset double, NLCD2011_Imperv_Surf_Frac double,NLCD2011_Imperv_Surf_Loc_Setting varchar(100),NLCD2006_Imperv_Surf_Frac double, NLCD2006_Imperv_Surf_Loc_Setting varchar(100), NLCD2001_Imperv_Surf_Frac double, NLCD2001_Imperv_Surf_Loc_Setting varchar(100))"
 
@@ -124,5 +124,5 @@ reload_meta <- Sys.getenv('RELOAD_METADATA')
       }
    }
 }
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+####################################################################################################
 

@@ -5,13 +5,12 @@
 #       PURPOSE: Sets up a database and an amet         #
 #                user for both MET and AQ               #
 #                                                       #
-#       Author:  K. Wyat Appel, USEPA                   # 
-#       Last updated by Wyat Appel: April, 2017		#
+#       AUTHOR:  K. Wyat Appel, USEPA                   # 
+#       LAST UPDATE: 01/2022 by K. Wyat Appel		#
 #--------------------------------------------------------
 
 ## Before anything else, get the AMETBASE variable and source
 ## the file containing MYSQL login and location information
-## Note: need perl_lib before add other packages
 amet_base <- Sys.getenv('AMETBASE') 
 if (!exists("amet_base")) {
    stop("Must set AMETBASE environmental variable")
@@ -35,13 +34,11 @@ amet_pass		<- args[4]
 
 # Connect to MySQL database and Set AMET Passwords ametsecure (for read and write ability to database)
 con             <- dbConnect(MySQL(),user=mysql_root_login,password=mysql_root_pass,dbname="mysql",host=mysql_server)
-#con             <- dbConnect(MySQL(),user=mysql_root_login,password=mysql_root_pass,host=mysql_server)
 if (!exists("con")) {
    stop("Your MySQL server was not found or login or passwords incorrect, please check to see if server is running or passwords are correct.")
 }
 ## Add the ametsecure user w/ full privileges, assumes MYSQL v4.0 or greater
 cat(paste("\nCreating or modifying user ",amet_login,"...",sep=""))
-#q <- paste("REPLACE INTO mysql.user (Host,User,Password,Select_priv,Insert_priv,Update_priv,Delete_priv,Create_priv,Drop_priv,Grant_priv,Alter_priv) VALUES('%','",amet_login,"',PASSWORD('",amet_pass,"'), 'Y','Y','Y','Y','Y','Y','Y','Y')",sep="")
 q1 <- paste("CREATE USER '",amet_login,"' IDENTIFIED BY '",amet_pass,"'",sep="")
 q2 <- paste("GRANT ALL PRIVILEGES ON * . * TO '",amet_login,"'",sep="")
 create_user_log <- try(dbSendQuery(con,q1),silent=T)
