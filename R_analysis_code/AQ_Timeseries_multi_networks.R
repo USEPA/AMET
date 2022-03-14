@@ -7,7 +7,7 @@ header <- "
 ### to create single time series for the data. The script also plots the bias, RMSE and correlation.
 ### Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel, June 2019
+### Last updated by Wyat Appel: Dec 2019
 ##########################################################################################
 "
 
@@ -98,18 +98,11 @@ for (j in 1:total_networks) {	# For each simulation being plotted
    Date_Hour_Factor     <- factor(Date_Hour,levels=unique(Date_Hour))                   # Create unique levels so tapply maintains correct time order 
    aqdat.df$Date_Hour   <- Date_Hour                                                    # Add Date_Hour field to dataframe
 
-   centre <- function(x, type) {
-      switch(type,
-         mean = mean(x,na.rm=T),
-         median = median(x,na.rm=T),
-         sum = sum(x,na.rm=T))
-   }
-
    ### Calculate Obs and Model Means ###
    Obs_Period_Mean[[j]]	<- mean(aqdat.df$Obs_Value)
    Mod_Period_Mean[[j]]	<- mean(aqdat.df$Mod_Value)
-   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,centre,type=avg_func)
-   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,centre,type=avg_func)
+   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,FUN=avg_func)
+   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,FUN=avg_func)
    if (use_var_mean == "y") {
       Obs_Mean[[j]]	<- Obs_Mean[[j]] - Obs_Period_Mean[[j]]
       Mod_Mean[[j]]	<- Mod_Mean[[j]] - Mod_Period_Mean[[j]]
@@ -117,14 +110,14 @@ for (j in 1:total_networks) {	# For each simulation being plotted
    Bias_Mean[[j]]	<- Mod_Mean[[j]]-Obs_Mean[[j]]
    Dates[[j]]		<- as.POSIXct(unique(aqdat.df$Date_Hour))
    if (averaging == "d") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Dates[[j]]           <- as.POSIXct(unique(aqdat.df$Start_Date))
    }
    if (averaging == "h") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Dates[[j]]           <- unique(aqdat.df$Hour)
       x_label		   <- "Hour (LST)"

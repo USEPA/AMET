@@ -27,7 +27,6 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-
 ### Retrieve units label from database table ###
 network <- network_names[1]
 #units_qs <- paste("SELECT ",species[1]," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
@@ -48,9 +47,9 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 }
 sub.title	<- ""
 
-filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
+filename_html   <- paste(run_name1,"multispec",pid,"timeseries.html",sep="_")              # Set output file name
 filename_html   <- paste(figdir,filename_html,sep="/")
-filename_txt	<- paste(run_name1,species,pid,"timeseries.csv",sep="_")
+filename_txt	<- paste(run_name1,"multispec",pid,"timeseries.csv",sep="_")
 filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
 #######################
@@ -93,10 +92,11 @@ x_label		<- "Date"
 
 labels <- c(network,run_names)
 num_runs <- length(run_names)
-
-for (j in 1:length(network_names)) {	# For each simulation being plotted
+species_in <- species
+for (j in 1:length(species_in)) {	# For each simulation being plotted
    run_name <- run_names[1]
-   network <- network_names[j]
+   network <- network_names[1]
+   species <- species_in[j]
    #############################################
    ### Read sitex file or query the database ###
    #############################################
@@ -239,11 +239,11 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
 
    {
       if (j == 1) {
-         col_name1               <- paste(run_names[1],"_Obs_Average",sep="")
-         col_name2               <- paste(run_names[1],"_Model_Average",sep="")
-         col_name3               <- paste(run_names[1],"_Bias_Average",sep="")
-         col_name4               <- paste(run_names[1],"_RMSE_Average",sep="")
-         col_name5               <- paste(run_names[1],"_Corr_Average",sep="")
+         col_name1               <- paste(species_in[1],"_Obs_Average",sep="")
+         col_name2               <- paste(species_in[1],"_Model_Average",sep="")
+         col_name3               <- paste(species_in[1],"_Bias_Average",sep="")
+         col_name4               <- paste(species_in[1],"_RMSE_Average",sep="")
+         col_name5               <- paste(species_in[1],"_Corr_Average",sep="")
          All_Data.df             <- data.frame(Date=Dates[[j]])
          All_Data.df[,col_name1] <- signif((Obs_Mean[[j]]),6)
          All_Data.df[,col_name2] <- signif((Mod_Mean[[j]]),6)
@@ -252,11 +252,11 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
          All_Data.df[,col_name5] <- signif((Corr_Mean[[j]]),3)
       }
       else {
-         col_name1 <- paste(run_names[j],"_Obs_Average",sep="")
-         col_name2 <- paste(run_names[j],"_Model_Average",sep="")
-         col_name3 <- paste(run_names[j],"_Bias_Average",sep="")
-         col_name4 <- paste(run_names[j],"_RMSE_Average",sep="")
-         col_name5 <- paste(run_names[j],"_Corr_Average",sep="")
+         col_name1 <- paste(species_in[j],"_Obs_Average",sep="")
+         col_name2 <- paste(species_in[j],"_Model_Average",sep="")
+         col_name3 <- paste(species_in[j],"_Bias_Average",sep="")
+         col_name4 <- paste(species_in[j],"_RMSE_Average",sep="")
+         col_name5 <- paste(species_in[j],"_Corr_Average",sep="")
          temp.df <- data.frame(Date=Dates[[j]])
          temp.df[,col_name1] <- signif((Obs_Mean[[j]]),6)
          temp.df[,col_name2] <- signif((Mod_Mean[[j]]),6)
@@ -282,7 +282,7 @@ write.table(All_Data.df,file=filename_txt,append=F,row.names=F,sep=",")      # W
 data.df <- data.frame(Dates=Dates[[1]],Obs=Obs_Mean[[1]])
 
 xaxis <- list(title= x_label, automargin = TRUE,titlefont=list(size=30))
-yaxis <- list(title=paste(species," (",units,")"),automargin=TRUE,titlefont=list(size=30))
+yaxis <- list(title=paste("(",units,")"),automargin=TRUE,titlefont=list(size=30))
 
 #p <- plot_ly(data.df, x=~Dates, y=~Obs, type="scatter", mode='lines', name=network[1], text=~paste("Name: ",network[1],"<br>Date: ",Dates,"<br>Obs value: ",round(Obs,3))) %>%
 p <- plot_ly(type="scatter", mode='lines+markers', height=img_height, width=img_width) %>%
@@ -293,22 +293,22 @@ colors <- brewer.pal(12,"Set1")
 colors[6] <- "#CCCC00"
 obs_colors <- c('#0A0A0A','#696969','#9B9B9B','#CDCDCD')
 
-for (j in 1:length(network_names)) {
-   p <- add_trace(p, x=Dates[[j]], y=Obs_Mean[[j]], type="scatter", name=paste("Obs (",network_names[j],")"),mode='lines+markers', line = list(color=obs_colors[j]), marker=list(symbol='circle',color=obs_colors[j],size=10), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Obs value: ",round(Obs_Mean[[j]],3))) %>%
-      layout(annotations = list(x=Dates[[j]],y=Obs_Mean[[j]],text=network_names[j],xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
-   p <- add_trace(p, x=Dates[[j]], y=Mod_Mean[[j]], type="scatter", name=paste(run_names[1]," (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='circle',color=colors[j],size=10), text=paste("Name: ",run_names[1]," (",network_names[j],")","<br>Date: ",Dates[[j]],"<br>Model value: ",round(Mod_Mean[[j]],3))) %>%
-      layout(annotations = list(x=Dates[[j]],y=Mod_Mean[[j]],text=paste(run_names[1]," (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
+for (j in 1:length(species_in)) {
+   p <- add_trace(p, x=Dates[[j]], y=Obs_Mean[[j]], type="scatter", name=paste("Obs (",species_in[j],")"),mode='lines+markers', line = list(color=obs_colors[j]), marker=list(symbol='circle',color=obs_colors[j],size=10), text=paste("Name: ",network,"<br>Date: ",Dates[[j]],"<br>Obs value: ",round(Obs_Mean[[j]],3))) %>%
+      layout(annotations = list(x=Dates[[j]],y=Obs_Mean[[j]],text=network,xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
+   p <- add_trace(p, x=Dates[[j]], y=Mod_Mean[[j]], type="scatter", name=paste(run_names[1]," (",species_in[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='circle',color=colors[j],size=10), text=paste("Name: ",run_names[1]," (",network,")","<br>Date: ",Dates[[j]],"<br>Model value: ",round(Mod_Mean[[j]],3))) %>%
+      layout(annotations = list(x=Dates[[j]],y=Mod_Mean[[j]],text=paste(run_names[1]," (",network,")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    if (inc_bias == 'y') {
-      p <- add_trace(p, x=Dates[[j]], y=Bias_Mean[[j]], type="scatter", name=paste("Bias (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='square-open', color=colors[j],size=10), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Bias: ",round(Bias_Mean[[j]],3))) %>%
-      layout(annotations = list(x=Dates[[j]],y=Bias_Mean[[j]],text=paste("Bias (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
+      p <- add_trace(p, x=Dates[[j]], y=Bias_Mean[[j]], type="scatter", name=paste("Bias (",species_in[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='square-open', color=colors[j],size=10), text=paste("Name: ",network,"<br>Date: ",Dates[[j]],"<br>Bias: ",round(Bias_Mean[[j]],3))) %>%
+      layout(annotations = list(x=Dates[[j]],y=Bias_Mean[[j]],text=paste("Bias (",species_in[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    }
    if (inc_rmse == 'y') {
-      p <- add_trace(p, x=Dates[[j]], y=RMSE_Mean[[j]], type="scatter", name=paste("RMSE (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='diamond-open',color=colors[j],size=11), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>RMSE value: ",round(RMSE_Mean[[j]],3))) %>%
-      layout(annotations = list(x=Dates[[j]],y=RMSE_Mean[[j]],text=paste("RMSE (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
+      p <- add_trace(p, x=Dates[[j]], y=RMSE_Mean[[j]], type="scatter", name=paste("RMSE (",species_in[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='diamond-open',color=colors[j],size=11), text=paste("Name: ",network,"<br>Date: ",Dates[[j]],"<br>RMSE value: ",round(RMSE_Mean[[j]],3))) %>%
+      layout(annotations = list(x=Dates[[j]],y=RMSE_Mean[[j]],text=paste("RMSE (",species_in[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    }
    if (inc_corr == 'y') {
-      p <- add_trace(p, x=Dates[[j]], y=Corr_Mean[[j]], type="scatter", name=paste("Correlation (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='hexagram-open',color=colors[j],size=11), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Correlation value: ",round(Corr_Mean[[j]],3))) %>%
-      layout(annotations = list(x=Dates[[j]],y=Corr_Mean[[j]],text=paste("Correlation (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
+      p <- add_trace(p, x=Dates[[j]], y=Corr_Mean[[j]], type="scatter", name=paste("Correlation (",species_in[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='hexagram-open',color=colors[j],size=11), text=paste("Name: ",network,"<br>Date: ",Dates[[j]],"<br>Correlation value: ",round(Corr_Mean[[j]],3))) %>%
+      layout(annotations = list(x=Dates[[j]],y=Corr_Mean[[j]],text=paste("Correlation (",species_in[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    }
 }
 

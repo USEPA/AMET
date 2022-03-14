@@ -7,7 +7,7 @@ header <- "
 ### a single time series for the data. The script also plots the bias, RMSE and correlation.
 ### Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel, June 2019
+### Last updated by Wyat Appel: Mar 2021
 ###########################################################################################
 "
 
@@ -81,6 +81,7 @@ criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",netw
       aqdat_query.df  <- query_result[[1]]
       query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"),criteria=criteria)
       aqdat_query2.df <- query_result2[[1]]
+      data_exists     <- query_result[[2]]
       if (data_exists == "y") { units <- query_result[[3]] }
       model_name      <- query_result[[4]]
    }
@@ -129,18 +130,11 @@ Date_Hour 		<- paste(aqdat.df$Start_Date," ",aqdat.df$Hour,":00:00",sep="")	# Cr
 Date_Hour_Factor	<- factor(Date_Hour,levels=unique(Date_Hour))  			# Create unique levels so tapply maintains correct time order 
 aqdat.df$Date_Hour 	<- Date_Hour							# Add Date_Hour field to dataframe
 
-centre <- function(x, type) {
-   switch(type,
-      mean = mean(x,na.rm=T),
-      median = median(x,na.rm=T),
-      sum = sum(x,na.rm=T))
-}
-
 ### Calculate Obs and Model Means ###
 Mod_Period_Mean1	<- mean(aqdat.df$Mod_Value1)
 Mod_Period_Mean2	<- mean(aqdat.df$Mod_Value2)
-Mod_Mean1		<- tapply(aqdat.df$Mod_Value1,Date_Hour_Factor,centre,type=avg_func)
-Mod_Mean2		<- tapply(aqdat.df$Mod_Value2,Date_Hour_Factor,centre,type=avg_func)
+Mod_Mean1		<- tapply(aqdat.df$Mod_Value1,Date_Hour_Factor,FUN=avg_func)
+Mod_Mean2		<- tapply(aqdat.df$Mod_Value2,Date_Hour_Factor,FUN=avg_func)
 
 if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
    Mod_Period_Mean1 <- median(aqdat.df$Mod_Value1)
@@ -158,28 +152,28 @@ if (averaging == "ym") {
    yearmonth            <- paste(years,months,sep="-")
    aqdat.df$Year	<- years
    aqdat.df$YearMonth	<- yearmonth
-   Mod_Mean1		<- tapply(aqdat.df$Mod_Value1,aqdat.df$YearMonth,centre,type=avg_func)
-   Mod_Mean2		<- tapply(aqdat.df$Mod_Value2,aqdat.df$YearMonth,centre,type=avg_func)
+   Mod_Mean1		<- tapply(aqdat.df$Mod_Value1,aqdat.df$YearMonth,FUN=avg_func)
+   Mod_Mean2		<- tapply(aqdat.df$Mod_Value2,aqdat.df$YearMonth,FUN=avg_func)
    Bias_Mean            <- Mod_Mean1[[j]]-Mod_Mean2
    Dates                <- as.POSIXct(paste(unique(aqdat.df$YearMonth),"-01",sep=""))
    x_label              <- "Month"
 }
 if (averaging == "m") {
-   Mod_Mean1       <- tapply(aqdat.df$Mod_Value1,aqdat.df$Month,centre,type=avg_func)
-   Mod_Mean2       <- tapply(aqdat.df$Mod_Value2,aqdat.df$Month,centre,type=avg_func)
+   Mod_Mean1       <- tapply(aqdat.df$Mod_Value1,aqdat.df$Month,FUN=avg_func)
+   Mod_Mean2       <- tapply(aqdat.df$Mod_Value2,aqdat.df$Month,FUN=avg_func)
    Bias_Mean       <- Mod_Mean1-Mod_Mean2
    Dates           <- unique(aqdat.df$Month)
    x_label         <- "Month"
 }
 if (averaging == "d") {
-   Mod_Mean1       <- tapply(aqdat.df$Mod_Value1,aqdat.df$Start_Date,centre,type=avg_func)
-   Mod_Mean2       <- tapply(aqdat.df$Mod_Value2,aqdat.df$Start_Date,centre,type=avg_func)
+   Mod_Mean1       <- tapply(aqdat.df$Mod_Value1,aqdat.df$Start_Date,FUN=avg_func)
+   Mod_Mean2       <- tapply(aqdat.df$Mod_Value2,aqdat.df$Start_Date,FUN=avg_func)
    Bias_Mean       <- Mod_Mean1-Mod_Mean2
    Dates           <- as.POSIXct(unique(aqdat.df$Start_Date))
 }
 if (averaging == "h") {
-   Mod_Mean1       <- tapply(aqdat.df$Mod_Value1,aqdat.df$Hour,centre,type=avg_func)
-   Mod_Mean2       <- tapply(aqdat.df$Mod_Value2,aqdat.df$Hour,centre,type=avg_func)
+   Mod_Mean1       <- tapply(aqdat.df$Mod_Value1,aqdat.df$Hour,FUN=avg_func)
+   Mod_Mean2       <- tapply(aqdat.df$Mod_Value2,aqdat.df$Hour,FUN=avg_func)
    Bias_Mean       <- Mod_Mean1-Mod_Mean2
    Dates           <- unique(aqdat.df$Hour)
    x_label         <- "Hour (LST)"

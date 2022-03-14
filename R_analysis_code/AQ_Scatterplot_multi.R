@@ -7,7 +7,7 @@ header <- "
 ### simulations on a single plot. Additionally, summary statistics are also included on the
 ### plot. The script will also allow a second run to plotted on top of the first run. 
 ###
-### Last Updated by Wyat Appel: June, 2019
+### Last Updated by Wyat Appel: Mar 2021
 ##################################################################################
 "
 
@@ -21,10 +21,7 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ### Set file names and titles ###
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") { title <- paste(run_name1," ",species," for ",dates,sep="") }
-   else { title <- custom_title }
-}
+title <- get_title(run_names,species,network_names,dates,custom_title)
 
 filename_pdf <- paste(run_name1,species,pid,"scatterplot.pdf",sep="_")             # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot.png",sep="_")             # Set PNG filename
@@ -48,12 +45,7 @@ legend_chars <- NULL
 point_char   <- NULL
 point_color  <- NULL
 
-### Retrieve units and model labels from database table ###
 network <- network_names[1]
-#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-#model_name <- db_Query(model_name_qs,mysql)
-################################################
 
 run_names <- NULL
 run_names <- run_name1

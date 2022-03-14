@@ -7,7 +7,7 @@ header <- "
 ### Requires a full year and CONUS data to work properly, as plots are created for each season 
 ### and region. Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Apr 2020
 #############################################################################################
 "
 
@@ -44,7 +44,7 @@ if (use_median == "y") {
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
-   if (custom_title == "") { title <- paste(network_name," Stacked Barplot (",method,") for ",run_name1," for ",dates,sep="") }
+   if (custom_title == "") { title <- paste(network_name," Stacked Barplot for ",run_name1," for ",dates,sep="") }
    else { title <- custom_title }
 }
 ################################################
@@ -325,12 +325,12 @@ for (n in 1:5) {	# PCA Loop
 ########## MAKE STACKED BARPLOT: ALL SITES ##########
       {
          if (num_runs == 1) {
-            barplot(data_matrix, beside=FALSE, ylab="Concentration (ug/m3)",width=0.12,ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=1.7,cex.axis=.8,cex.names=.8,cex.lab=.8, xlim=c(0,1))
+            barplot(data_matrix, beside=FALSE, ylab=paste(method," Concentration (ug/m3)",sep=""),width=0.12,ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=1.7,cex.axis=.8,cex.names=.8,cex.lab=.8, xlim=c(0,1))
             mtext(network,side=1,at=(.26),adj=0.5,cex=.6)
             mtext(model_name,side=1,at=(.58),adj=0.5,cex=.6)
          }
          else {
-            barplot(data_matrix, beside=FALSE, ylab="Concentration (ug/m3)",names.arg=c(network,"S1","S2"),width=0.3,xlim=c(0,2),ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=.8,cex.axis=1.0,cex.names=0.9,cex.lab=0.9)
+            barplot(data_matrix, beside=FALSE, ylab=paste(method," Concentration (ug/m3)",sep=""),names.arg=c(network,"S1","S2"),width=0.3,xlim=c(0,2),ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=.8,cex.axis=1.0,cex.names=0.9,cex.lab=0.9)
          }
       }
 ##########################################################################

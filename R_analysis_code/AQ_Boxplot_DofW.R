@@ -9,7 +9,7 @@ header <- "
 ### 25% and 75% quartiles, as well as the median values for both obs
 ### and model values.  The script then plots these values as a box plot.
 ###
-### Last updated by Wyat Appel; June, 2017
+### Last updated by Wyat Appel; Nov 2020
 ###
 ################################################################
 "
@@ -34,10 +34,7 @@ filename_png <- paste(figdir,filename_png,sep="/")
 filename_csv <- paste(figdir,filename_csv,sep="/")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") { title <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ") }
-   else { title <- custom_title }
-}
+title <- get_title(run_names,species,network_names,dates,custom_title)
 #################################
 
 #################################
@@ -52,7 +49,6 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
       }
    }
    else {
-#      units          <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
       data_exists     <- query_result[[2]]

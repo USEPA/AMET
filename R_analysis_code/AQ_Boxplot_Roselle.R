@@ -9,7 +9,7 @@ header <- "
 ### daily, or weekly), but will plot a single bar for each simulation. 
 ### Proided under the boxes are summary statistics for each simulation
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Feb 2020
 #############################################################################
 "
 
@@ -32,10 +32,7 @@ filename_bias_pdf <- paste(run_name1,species,pid,"boxplot_roselle_bias.pdf",sep=
 filename_bias_png <- paste(run_name1,species,pid,"boxplot_roselle_bias.png",sep="_")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") { title <- paste(run_name1,species,"for ",dates,sep=" ") }
-   else { title <- custom_title }
-}
+title <- get_title(run_names,species,network_names,dates,custom_title)
 #################################
 
 ## Create a full path to file

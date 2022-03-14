@@ -7,7 +7,7 @@ header <- "
 ### provided through a MYSQL query. The script then plots these values
 ### using the default R boxplot function as a box plot.
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Nov 2020
 ################################################################
 "
 
@@ -34,10 +34,7 @@ filename_png <- paste(figdir,filename_png,sep="/")
 filename_txt <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") { title <- paste(run_name1,species,"for",dates,sep=" ") }
-   else { title <- custom_title }
-}
+title <- get_title(run_names,species,network_names,dates,custom_title,clim_reg)
 
 #################################
 {
@@ -51,7 +48,6 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
       }
    }
    else {
-#      units <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
       data_exists     <- query_result[[2]]
@@ -182,6 +178,10 @@ if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
    bar_width    <- c(0.8,0.5,0.2)
 }
 
+q1.spec4     <- NULL
+median.spec4 <- NULL
+q3.spec4     <- NULL
+
 if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
    q1.spec4     <- tapply(aqdat3.df$Mod_Value, aqdat3.df$ob_hour, quantile, 0.25, na.rm=T)   # Compute model 25% quartile
    median.spec4 <- tapply(aqdat3.df$Mod_Value, aqdat3.df$ob_hour, median, na.rm=T)           # Compute model median value
@@ -202,11 +202,19 @@ if (inc_ranges == 'y') {
 
 ### Set up axes so that they will be big enough for both data species  that will be added ###
 num.groups <- length(unique(aqdat.df$ob_hour))					# Count the number of sites used in each month
-y.axis.min <- min(c(q1.spec1, q1.spec2, q1.spec3))				# Set y-axis minimum values
-y.axis.max.value <- max(c(q3.spec1, q3.spec2, q3.spec3))			# Determine y-axis maximum value
+y.axis.min <- min(c(q1.spec1,q1.spec2,q1.spec3,q1.spec4))				# Set y-axis minimum values
+y.axis.max.value <- max(c(q3.spec1,q3.spec2,q3.spec3,q3.spec4))			# Determine y-axis maximum value
 if (inc_whiskers == 'y') {
-   y.axis.min <- min(c(aqdat.df$Obs_Value,aqdat.df$Mod_Value,aqdat2.df$Mod_Value,aqdat3.df$Mod_Value))                              # Set y-axis minimum values
-   y.axis.max.value <- max(c(aqdat.df$Obs_Value,aqdat.df$Mod_Value,aqdat2.df$Mod_Value,aqdat3.df$Mod_Value))                        # Determine y-axis maximum value
+   y.axis.min <- min(c(aqdat.df$Obs_Value,aqdat.df$Mod_Value))                              # Set y-axis minimum values
+   y.axis.max.value <- max(c(aqdat.df$Obs_Value,aqdat.df$Mod_Value))                        # Determine y-axis maximum value
+   if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
+      y.axis.min <- min(c(y.axis.min,aqdat.df$Mod_Value,aqdat2.df$Mod_Value))                              # Set y-axis minimum values
+      y.axis.max.value <- max(c(y.axis.max.value,aqdat2.df$Mod_Value))                        # Determine y-axis maximum value
+   }
+   if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
+      y.axis.min <- min(c(y.axis.min,aqdat.df$Mod_Value,aqdat3.df$Mod_Value))                              # Set y-axis minimum values
+      y.axis.max.value <- max(c(y.axis.max.value,aqdat3.df$Mod_Value))                        # Determine y-axis maximum value
+   }
 }
 y.axis.max <- y.axis.max.value+(y.axis.max.value-y.axis.min)*.30
 if (length(y_axis_max) > 0) {

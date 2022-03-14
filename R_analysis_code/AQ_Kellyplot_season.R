@@ -1,16 +1,16 @@
 header <- "
 ############################## KELLY MULTISIMULATION PLOT ################################
-### AMET CODE: AQ_Kellyplot_region.R 
+### AMET CODE: AQ_Kellyplot_season.R 
 ###
 ### This script is part of the AMET-AQ system. It essentially creates a grid plot of model
 ### NMB, NME, RMSE, MB, ME and correlation for a single network/species and multiple 
-### simulations. The grid is plotted with NOAA climate region on the y-axis and simulation
-### on the x-axis. Each shaded box in the grid is color coded to the performance range for 
-### that particular region/simulation. This particular version of the code is designed to 
+### simulations. The grid is plotted with season on the x-axis and simulation
+### on the y-axis. Each shaded box in the grid is color coded to the performance range for 
+### that particular season/simulation. This particular version of the code is designed to 
 ### work for multiple simulations.
 ###
 ### Note that this code does not currently work without the database, as database metadata 
-### are needed to identify the NOAA climate regions by State.
+### are needed to identify the seasons by month.
 ###
 ### Original concept and some code developed by Jim Kelly of EPA.  
 ###
@@ -37,14 +37,14 @@ num_runs <- length(run_names)
 ################################################
 ## Set output names and remove existing files ##
 ################################################
-filename_nmb    <- paste(run_name1,species,pid,"Kellyplot_region_NMB",sep="_")
-filename_nme    <- paste(run_name1,species,pid,"Kellyplot_region_NME",sep="_")
-filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_region_RMSE",sep="_")
-filename_mb     <- paste(run_name1,species,pid,"Kellyplot_region_MB",sep="_")
-filename_me     <- paste(run_name1,species,pid,"Kellyplot_region_ME",sep="_")
-filename_corr   <- paste(run_name1,species,pid,"Kellyplot_region_Corr",sep="_")
-filename_txt    <- paste(run_name1,species,pid,"Kellyplot_stats_data_region.csv",sep="_")      # Set output file name
-filename_zip    <- paste(run_name1,species,pid,"Kellyplot_region.zip",sep="_")
+filename_nmb    <- paste(run_name1,species,pid,"Kellyplot_season_NMB",sep="_")
+filename_nme    <- paste(run_name1,species,pid,"Kellyplot_season_NME",sep="_")
+filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_season_RMSE",sep="_")
+filename_mb     <- paste(run_name1,species,pid,"Kellyplot_season_MB",sep="_")
+filename_me     <- paste(run_name1,species,pid,"Kellyplot_season_ME",sep="_")
+filename_corr   <- paste(run_name1,species,pid,"Kellyplot_season_Corr",sep="_")
+filename_txt    <- paste(run_name1,species,pid,"Kellyplot_stats_data_season.csv",sep="_")      # Set output file name
+filename_zip    <- paste(run_name1,species,pid,"Kellyplot_season.zip",sep="_")
 
 ## Create a full path to file
 filename        <- NULL
@@ -95,6 +95,7 @@ state2region <- data.frame(state=c("IL","IN","KY","MO","OH","TN","WV","IA","MI",
 
 ### Categorize each month into a season ###
 month2season <- data.frame(month=c(1,2,3,4,5,6,7,8,9,10,11,12),season = c("Winter","Winter","Spring","Spring","Spring","Summer","Summer","Summer","Fall","Fall","Fall","Winter"))
+season_names <- c("Winter","Spring","Summer","Fall")
 
 for (s in 1:length(run_names)) {
    run_name <- run_names[s]
@@ -112,11 +113,11 @@ for (s in 1:length(run_names)) {
    ob_col_name <- paste(species,"_ob",sep="")
    mod_col_name <- paste(species,"_mod",sep="")
    aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,month=aqdat_query.df$month,state=aqdat_query.df$state,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
-   aqdat.df$region <- state2region$reg[match(aqdat.df$state,state2region$state)]
-   aqdat.df$region <- factor(aqdat.df$region, levels=c("Ohio Valley","Upper Midwest","Northeast","Northwest","South","Southeast","Southwest","West","NRockiesPlains"))
+   aqdat.df$season <- month2season$season[match(aqdat.df$month,month2season$month)]
+   aqdat.df$season <- factor(aqdat.df$season, levels=c("Winter","Spring","Summer","Fall"))
 
-   for (r in 1:length(region_names)) {
-      aqdat_sub.df <- subset(aqdat.df,aqdat.df$region == region_names[r])
+   for (r in 1:length(season_names)) {
+      aqdat_sub.df <- subset(aqdat.df,aqdat.df$season == season_names[r])
       data_all.df <- data.frame(network=I(aqdat_sub.df$Network),stat_id=I(aqdat_sub.df$Stat_ID),lat=aqdat_sub.df$lat,lon=aqdat_sub.df$lon,ob_val=aqdat_sub.df$Obs_Value,mod_val=aqdat_sub.df$Mod_Value)
       stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))       # Compute stats using DomainStats function for entire domain
       if (is.null(stats_all.df$Mean_Bias)) {
@@ -126,14 +127,14 @@ for (s in 1:length(run_names)) {
          stats_all.df$Mean_Err <- NA
          stats_all.df$RMSE <- NA
          stats_all.df$Correlation <- NA
-         print(paste("Query returned no data for the",region_names[r]," region. Replacing with NAs.",sep=""))
+         print(paste("Query returned no data for the",season_names[r]," season. Replacing with NAs.",sep=""))
       }
       {
          if (k == 1) {
-            sinfo_data.df<-data.frame(NMB=stats_all.df$Percent_Norm_Mean_Bias,NME=stats_all.df$Percent_Norm_Mean_Err,MB=stats_all.df$Mean_Bias,ME=stats_all.df$Mean_Err,RMSE=stats_all.df$RMSE,COR=stats_all.df$Correlation,region=region_names[r],simulation=run_names[s])
+            sinfo_data.df<-data.frame(NMB=stats_all.df$Percent_Norm_Mean_Bias,NME=stats_all.df$Percent_Norm_Mean_Err,MB=stats_all.df$Mean_Bias,ME=stats_all.df$Mean_Err,RMSE=stats_all.df$RMSE,COR=stats_all.df$Correlation,season=season_names[r],simulation=run_names[s])
          }
          else {
-            sinfo_data_temp.df <- data.frame(NMB=stats_all.df$Percent_Norm_Mean_Bias,NME=stats_all.df$Percent_Norm_Mean_Err,MB=stats_all.df$Mean_Bias,ME=stats_all.df$Mean_Err,RMSE=stats_all.df$RMSE,COR=stats_all.df$Correlation,region=region_names[r],simulation=run_names[s])
+            sinfo_data_temp.df <- data.frame(NMB=stats_all.df$Percent_Norm_Mean_Bias,NME=stats_all.df$Percent_Norm_Mean_Err,MB=stats_all.df$Mean_Bias,ME=stats_all.df$Mean_Err,RMSE=stats_all.df$RMSE,COR=stats_all.df$Correlation,season=season_names[r],simulation=run_names[s])
             sinfo_data.df <- rbind(sinfo_data.df,sinfo_data_temp.df)
          }
       }
@@ -145,10 +146,11 @@ for (s in 1:length(run_names)) {
 
 sinfo_data.df$simulation <- factor(sinfo_data.df$simulation, levels=run_names)
 
-data_melted.df <- melt(sinfo_data.df,id=c("simulation","region"))
+#data_melted.df <- melt(sinfo_data.df,id=c("simulation","region"))
+data_melted.df <- melt(sinfo_data.df,id=c("season","simulation"))
 data_melted.df = as.data.table(data_melted.df)
 data_melted.df$simulation = factor(data_melted.df$simulation, levels=rev(run_names),labels=rev(run_names))
-data_melted.df$region = factor(data_melted.df$region, levels=rev(c("Northeast","Ohio Valley","Upper Midwest","Southeast","South","NRockiesPlains","Southwest","West","Northwest")))
+data_melted.df$season = factor(data_melted.df$season, levels=c("Winter","Spring","Summer","Fall"))
 
 
 if ((!exists("mb_max")) || (!exists("me_min")) || (!exists("me_max")) || (!exists("rmse_min")) || (!exists("rmse_max"))) { print("Some plotting options not set, defaulting to NULL. You can specifiy mb_max, me_min, me_max, rmse_min and rmse_max in the configure file.") }
@@ -166,9 +168,10 @@ for (i in 1:6) {
    stat_in <- stats[i]
    data.tmp <- data_melted.df[data_melted.df$variable == stat_in,]
    if (stat_in == "NMB") {
-      nmb.val <- max(abs(data.tmp$value),na.rm=T)
+      nmb.val <- ceiling(max(abs(data.tmp$value),na.rm=T))
       nmb.max <- signif(nmb.val,1)
       nmb.min <- signif(min(abs(data.tmp$value),na.rm=T),1)
+#      int <- signif(ceiling((2*nmb.max)/10),1)
       int <- ceiling((2*nmb.max)/10)
       nmb.max <- 5*int
       if (int <= 0) { int <- 1 }
@@ -187,10 +190,17 @@ for (i in 1:6) {
       nme.val <- max(abs(data.tmp$value),na.rm=T)
       nme.max <- ceiling(max(data.tmp$value,na.rm=T))
       nme.min <- floor(min(data.tmp$value,na.rm=T))
+#      int <- ceiling((nme.max-nme.min)/9)
       nme.range <- nme.max-nme.min
       if (nme.range < 1) { int <- ceiling(100*(signif((nme.range)/9,2)))/100 }
       if (nme.range >= 1) { int <- ceiling(10*(signif((nme.range)/9,2)))/10 }
       if (nme.range > 100) { int <- signif((nme.range)/9,1) }
+
+      print(nme.val)
+      print(nme.max)
+      print(nme.min)
+      print(int)
+#      nme.max <- nme.max+int
       nme.max <- nme.min+(9*int)
       if (int < 1) { int <- 1 }
       if (length(nme_max) != 0) { nme.max <- nme_max }
@@ -198,7 +208,7 @@ for (i in 1:6) {
       if (length(nme_min) != 0) { nme.min <- nme_min }
       data.tmp <- binval(dt=data.tmp,mn=nme.min,mx=nme.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
-      col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
+      col.rng  <- (brewer.pal(nlab,'YlOrBr'))
       alp <- 1
       write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
@@ -208,7 +218,7 @@ for (i in 1:6) {
       if (mb.val >= 1) { mb.max <- signif(mb.val,1) }
       int <- signif((2*mb.max)/10,2)
       mb.max <- 5*int
-      if (mb.max < mb.val) { mb.max <- mb.max+int }
+      if (mb.max < mb.val) { nmb.max <- nmb.max+int }
       if (length(mb_max) != 0) { mb.max <- mb_max }
       if (length(mb_int) != 0) { int <- mb_int }
       data.tmp <- binval(dt=data.tmp,mn=-mb.max,mx=mb.max,sp=int)
@@ -236,14 +246,14 @@ for (i in 1:6) {
       me.range  <- me.max-me.min
       int <- signif((me.range/9),2)
       me.max <- me.min+(9*int)
-      data.tmp  <- binval(dt=data.tmp,mn=me.min,mx=me.max,sp=int)
+      data.tmp <- binval(dt=data.tmp,mn=me.min,mx=me.max,sp=int)
       nlab      <- data.tmp[,length(levels(fac))]
-      col.rng   <- rev(brewer.pal(nlab,'YlOrBr'))
+      col.rng   <- (brewer.pal(nlab,'YlOrBr'))
       alp <- 1
       write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
    if (stat_in == "RMSE") {
-      rmse.max  <- (max(data.tmp$value,na.rm=T))
+            rmse.max  <- (max(data.tmp$value,na.rm=T))
       rmse.min  <- (min(data.tmp$value,na.rm=T))
       {
          if (rmse.max < 1) { rmse.max <- ceiling(rmse.max*10)/10 }
@@ -262,7 +272,7 @@ for (i in 1:6) {
       rmse.max <- rmse.min+(9*int)
       data.tmp <- binval(dt=data.tmp,mn=rmse.min,mx=rmse.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
-      col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
+      col.rng  <- (brewer.pal(nlab,'YlOrBr'))
       alp <- 0.9
       write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
@@ -275,15 +285,16 @@ for (i in 1:6) {
       int <- signif((cor.range/8),1)
       if (length(cor_int) != 0) { int <- cor_int }
       data.tmp <- binval(dt=data.tmp,mn=cor.min,mx=cor.max,sp=int)
-      nlab      <- data.tmp[,length(levels(fac))]
-      col.rng   <- rev(brewer.pal(nlab,'YlGnBu'))
+      nlab     <- data.tmp[,length(levels(fac))]
+      col.rng  <- rev(brewer.pal(nlab,'YlGnBu'))
       alp <- 0.9   
       write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
+   print(col.rng)
    if (!exists("inc_kelly_stats")) { inc_kelly_stats <- "n" }
    data.tmp$round_value <- signif(data.tmp$value,2)
    plt <- ggplot() +
-     geom_tile(data=data.tmp,aes(x=region,y=simulation,fill=fac),color='black',lwd=0.3,alpha=0.8) +
+     geom_tile(data=data.tmp,aes(x=season,y=simulation,fill=fac),color='black',lwd=0.3,alpha=0.8) +
      facet_wrap(~variable) +
      scale_fill_manual(values=col.rng,name=stat_unit[i],drop=F) +
      scale_x_discrete(name='',expand=c(0,0)) +
@@ -292,16 +303,17 @@ for (i in 1:6) {
      theme(strip.text=element_text(size=18),
            plot.margin=margin(t=0.1,r=0.1,b=0,l=0.1,unit="cm"),
            axis.text.y=element_text(size=8),
-           axis.text.x=element_text(size=9,angle=90,vjust=0.5,hjust=1.0),
+           axis.text.x=element_text(size=10,angle=0,hjust=0.5),
            axis.title=element_text(size=15),
            legend.text=element_text(size=13),
            legend.title=element_text(size=13),
            plot.title=element_text(size=14,hjust=0.5),
            plot.subtitle=element_text(size=6,hjust=0)) +
      labs(title=title)
-   if (inc_kelly_stats == "y") {
-      plt <- plt + geom_text(size=2.5,data=data.tmp,aes(x=region,y=simulation,label=round_value))   #Add the value for each color square to the Kelly plot.
+     if (inc_kelly_stats == "y") {
+      plt <- plt + geom_text(size=2.5,data=data.tmp,aes(x=season,y=simulation,label=round_value))   #Add the value for each color square to the Kelly plot.
    }
+
    ggsave(plt,file=paste(filename[i],".pdf",sep=""),dpi=600,width=6.5,height=5)
 
    ### Convert pdf file to png file ###
