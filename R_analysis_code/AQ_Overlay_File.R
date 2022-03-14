@@ -11,7 +11,7 @@ header <- "
 ### The time period of the query should be limited to about a month for AQS network
 ### if querying the entire domain due to memory limits.
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Feb 2022
 ################################################################
 "
 
@@ -23,7 +23,7 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required Libraries 
-if(!require(date)){stop("Required Package date was not loaded")}
+#if(!require(date)){stop("Required Package date was not loaded")}
 
 ################################################
 ## Set output names and remove existing files ##
@@ -53,10 +53,16 @@ filename_overlay	<- paste(figdir,filename_overlay,sep="/")
 j <- 1							# only use first network (not coded for multiple networks)
 network		<- network_names[[j]]				# set network 
 run_name	<- run_name1		# Set run_name to run_name1 since only using one simulation
-query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour")
+query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour"))
 aqdat.df	<- query_result[[1]]
+data_exists     <- query_result[[2]]
+if (data_exists == "y") { units <- query_result[[3]] }
 
-year_day <- aqdat.df$"DATE_FORMAT(d.ob_dates,'%Y%j')"
+#print(aqdat.df$ob_dates)
+tmp <- as.Date(aqdat.df$ob_dates, format = "%Y-%m-%d")
+year_day <- format(tmp, "%Y%j")
+#year_day <- aqdat.df$"DATE_FORMAT(ob_dates,'%Y%j')"
+#print(year_day)
 
 ob_col_name <- paste(species,"_ob",sep="")
 {
@@ -75,8 +81,10 @@ ob_col_name <- paste(species,"_ob",sep="")
 write("#!/bin/sh", file=filename_script, append=F)
 write("FILETYPE=OBS; export FILETYPE", file=filename_script, append=T)
 write(paste("INFILE=",filename_out,"; export INFILE",sep=""), file=filename_script, append=T)
-write("SPECIES=\"O3\"; export SPECIES", file=filename_script, append=T)
-write("UNITS=\"ppb\"; export UNITS", file=filename_script, append=T)
+#write("SPECIES=\"O3\"; export SPECIES", file=filename_script, append=T)
+write(paste("SPECIES=\"",species,"\"; export SPECIES",sep=""), file=filename_script, append=T)
+#write("UNITS=\"ppb\"; export UNITS", file=filename_script, append=T)
+write(paste("UNITS=\"",units,"\"; export UNITS",sep=""), file=filename_script, append=T)
 write(paste("OLAYTYPE=",overlay_type,"; export OLAYTYPE",sep=""), file=filename_script, append=T)
 write(paste("OUTFILE=",filename_overlay,sep=""), file=filename_script, append=T)
 write(Bldoverlay_exe, file=filename_script, append=T)

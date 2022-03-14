@@ -7,7 +7,7 @@ header <- "
 ### Although limited to a single network, up to two simulations may be included. Output
 ### format is png, pdf or both.     
 ###
-### Last Updated by Wyat Appel: June, 2019
+### Last Updated by Wyat Appel: Feb 2021
 ######################################################################################
 "
 
@@ -53,6 +53,7 @@ point_color	<- NULL
 ### Define statistics arrays ###
 ################################
 num_pairs	     <- NULL
+num_sites	     <- NULL
 corr                 <- NULL
 index_agr            <- NULL
 rmse                 <- NULL
@@ -144,6 +145,7 @@ for (j in 1:num_runs) {
          #########################################################
          data_all.df <- data.frame(network=I(aqdat_stats.df$Network),stat_id=I(aqdat_stats.df$Stat_ID),lat=aqdat_stats.df$lat,lon=aqdat_stats.df$lon,ob_val=aqdat_stats.df$Obs_Value,mod_val=aqdat_stats.df$Mod_Value)
          stats.df <-try(DomainStats(data_all.df))      # Compute stats using DomainStats function for entire domain
+         num_sites	<- stats.df$NUM_SITES
          num_pairs	<- stats.df$NUM_OBS
          nmb[j]       	<- round(stats.df$Percent_Norm_Mean_Bias,1)
          nme[j]        	<- round(stats.df$Percent_Norm_Mean_Err,1)
@@ -342,6 +344,7 @@ for (k in 1:num_runs) {
    text(x=x_stats[2],y=y_stats[7],"MinDiff ",adj=c(0,0),cex=.8)
    text(x=x_stats[2],y=y_stats[8],"Med_O ",adj=c(0,0),cex=.8)
    text(x=x_stats[2],y=y_stats[9],"Med_M ",adj=c(0,0),cex=.8)
+   text(x=x_stats[2],y=y_stats[10],"Num_Sites ",adj=c(0,0),cex=.8)
 #   text(x=x_stats[3],y=y_stats[1],"=",adj=c(0,0),cex=.8)
 #   text(x=x_stats[3],y=y_stats[2],"=",adj=c(0,0),cex=.8)
    text(x=x_stats[3],y=y_stats[1],"=",adj=c(0,0),cex=.8)
@@ -390,7 +393,8 @@ for (k in 1:num_runs) {
    text(x=x_stats[6],y=y_stats[7],sprintf("%.2f",min_diff[k]),adj=c(1,0),cex=.8)
    text(x=x_stats[6],y=y_stats[8],sprintf("%.2f",median_obs[k]),adj=c(1,0),cex=.8)
    text(x=x_stats[6],y=y_stats[9],sprintf("%.2f",median_mod[k]),adj=c(1,0),cex=.8)
-   #####################################################
+   text(x=x_stats[6],y=y_stats[10],sprintf("%.0f",num_sites[k]),adj=c(1,0),cex=.8) 
+  #####################################################
 }
 
 ### Add descripitive text to plot area ###

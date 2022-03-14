@@ -7,7 +7,7 @@ header <- "
 ### includes percent composition on each plot. Requires a full year and CONUS data to work properly,
 ### as plots are created for each season and region. Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Nov 2020
 ##############################################################################################
 "
 
@@ -21,11 +21,6 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 network <- network_names[1]
 network_name <- network_label[1]
 num_runs <- 1
-
-### Retrieve units and model labels from database table ###
-#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
-#model_name <- db_Query(model_name_qs,mysql)
-################################################
 
 ### Set filenames and titles ###
 filename_pdf    <- paste(run_name1,pid,"stacked_barplot_panel_AE6.pdf",sep="_")

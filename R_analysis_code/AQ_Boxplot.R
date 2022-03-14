@@ -9,7 +9,7 @@ header <- "
 ### and model values.  The script then plots these values as a box plot. Suggest using
 ### the new ggplot or plotly AMET box plots for better box plot graphics. 
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Nov 2020
 #####################################################################################
 "
 
@@ -22,8 +22,6 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Retrieve units label from database table ###
 network <- network_names[1] 
-#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-#units <- db_Query(units_qs,mysql) 
 run2 <- "False"
 run3 <- "False"
 ################################################
@@ -38,10 +36,9 @@ filename_norm_bias_pdf  <- paste(run_name1,species,pid,"boxplot_norm_bias.pdf",s
 filename_norm_bias_png  <- paste(run_name1,species,pid,"boxplot_norm_bias.png",sep="_")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") { title <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ") }
-   else { title <- custom_title }
-}
+title       <- get_title(run_names,species,network_names,dates,custom_title,clim_reg)
+title.bias  <- get_title(run_names,species,network_names,dates,custom_text="Bias",custom_title)
+title.normb <- get_title(run_names,species,network_names,dates,custom_text="Normalized Bias",custom_title)
 
 ## Create a full path to file
 filename_all_pdf         <- paste(figdir,filename_all_pdf,sep="/")
@@ -78,7 +75,6 @@ Norm_Bias3	<- NULL
       }
    }
    else {
-#      units	      <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
       data_exists     <- query_result[[2]]
@@ -439,7 +435,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title, cex.main=0.9)
+title(main=title.bias, cex.main=0.9)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###
@@ -532,7 +528,7 @@ if (run3 == "True") {
 ###############################################################
 
 ### Put title at top of boxplot ###
-title(main=title, cex.main=0.9)
+title(main=title.normb, cex.main=0.9)
 ###################################
 
 ### Place points, connected by lines, to denote where the medians are ###
