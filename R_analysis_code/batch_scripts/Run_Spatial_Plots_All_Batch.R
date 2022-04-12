@@ -57,8 +57,15 @@ print(run_name2)
 custom_title <- ""
 ##############################
 
+if (!exists("hourly_pm_analysis")) {
+   print("hourly_pm_analysis flag not found. Defaulting to n. Set hourly_pm_analysis flag in batch config file to include hourly PM data from AQS.")
+   hourly_pm_analysis <- "n"
+}
+
 ### Main Database Query String. ###
 query_string<-paste(" and s.stat_id=d.stat_id and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
+
+pid_date <- paste(start_year,start_month,sep="")
 
 ### Set and create output directory ###
 #out_dir 		<- paste(out_dir,"spatial_plots",sep="/")
@@ -71,9 +78,9 @@ run_script_command2 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial.R",sep=
 run_script_command3 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_Diff.R",sep="")
 run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_MtoM.R",sep="")
 run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_Ratio.R",sep="")
-run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_interactive.R",sep="")
-run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_Diff_interactive.R",sep="")
-run_script_command8 <- paste(amet_base,"/R_analysis_code/AQ_Stats_Plots_interactive.R",sep="")
+run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_leaflet.R",sep="")
+run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Plot_Spatial_Diff_leaflet.R",sep="")
+run_script_command8 <- paste(amet_base,"/R_analysis_code/AQ_Stats_Plots_leaflet.R",sep="")
 
 ##########################################################################################
 ### This portion of the code will create monthly spatial plots for the various species ###
@@ -94,7 +101,7 @@ if (hourly_ozone_analysis == 'y') {
       dates 		<- batch_names[m]
       network_names 	<- c("AQS_Hourly","CASTNET_Hourly","NAPS","EMEP_Hourly")
       network_label 	<- c("AQS","CASTNET","NAPS","EMEP")
-      pid               <- "multi_network"
+      pid               <- paste(pid_date,"multi_network",sep="_")
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
       print(query)
       system(mkdir_command)
@@ -126,7 +133,7 @@ if (daily_ozone_analysis == 'y') {
       dates 		<- batch_names[m]
       network_names 	<- c("AQS_Daily_O3","CASTNET_Daily","NAPS_Daily_O3","EMEP_Daily_O3")
       network_label 	<- c("AQS","CASTNET","NAPS","EMEP")
-      pid            	<- "multi_network"
+      pid            	<- paste(pid_date,"multi_network",sep="_")
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
 #      print(query)
       system(mkdir_command)
@@ -154,7 +161,7 @@ if (daily_ozone_analysis == 'y') {
       dates 		<- batch_names[m]
       network_names 	<- c("AQS_Daily_O3","CASTNET_Daily","NAPS_Daily_O3","EMEP_Daily_O3")
       network_label 	<- c("AQS","CASTNET","NAPS","EMEP")
-      pid            	<- "multi_network"
+      pid            	<- paste(pid_date,"multi_network",sep="_")
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
       system(mkdir_command)
       if (stat_plots    == 'y') { 
@@ -187,7 +194,7 @@ if (aerosol_analysis == 'y') {
          mkdir_command	<- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE","CSN","CASTNET")
          network_label 	<- c("IMPROVE","CSN","CASTNET")
-         pid 		<- "multi_network"
+         pid 		<- paste(pid_date,"multi_network",sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          print(query)
          system(mkdir_command)
@@ -218,7 +225,7 @@ if (aerosol_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("CASTNET")
          network_label 	<- c("CASTNET")
-         pid 		<- network_names 
+         pid 		<- paste(pid_date,network_names,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
          if (stat_plots    == 'y') { 
@@ -244,9 +251,13 @@ if (aerosol_analysis == 'y') {
       }
       mkdir_command 	<- paste("mkdir -p",figdir)
       dates 		<- batch_names[m]
-      network_names 	<- c("IMPROVE","CSN","AQS_Daily","AQS_Hourly","NAPS")
-      network_label 	<- c("IMPROVE","CSN","AQS_Daily","AQS_Hourly","NAPS")
-      pid 		<- "multi_network"
+      network_names 	<- c("IMPROVE","CSN","AQS_Daily","NAPS")
+      network_label 	<- c("IMPROVE","CSN","AQS_Daily","NAPS")
+      if (hourly_pm_analysis == "y") {
+         network_names     <- c(network_names,"AQS_Hourly")
+         network_label     <- c(network_label,"AQS_Hourly")
+      }
+      pid 		<- paste(pid_date,"multi_network",sep="_")
       query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
       system(mkdir_command)
       if (stat_plots    == 'y') { 
@@ -275,7 +286,7 @@ if (aerosol_analysis == 'y') {
          dates 		<- batch_names[m]
          network_names 	<- c("IMPROVE","CSN")
          network_label 	<- c("IMPROVE","CSN")
-         pid 		<- "multi_network" 
+         pid 		<- paste(pid_date,"multi_network",sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          print(query)
          system(mkdir_command)
@@ -311,7 +322,7 @@ if (dep_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("NADP")
          network_label 	<- c("NADP")
-         pid 		<- network_label
+         pid 		<- paste(pid_date,network_label,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          print(query)
          system(mkdir_command)
@@ -346,7 +357,7 @@ if (gas_analysis == 'y') {
          dates          <- batch_names[m]
          network_names  <- c("AQS_Hourly","NAPS")
          network_label  <- c("AQS","NAPS")
-         pid            <- "multi_network"
+         pid            <- paste(pid_date,"multi_network",sep="_")
          query          <- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
          if (stat_plots    == 'y') { 
@@ -374,7 +385,7 @@ if (gas_analysis == 'y') {
       dates          <- batch_names[m]
       network_names  <- c("CASTNET")
       network_label  <- c("CASTNET")
-      pid            <- network_names
+      pid            <- paste(pid_date,network_names,sep="_")
       query          <- paste(query_string,"and (",batch_query[m],")",sep=" ")
       system(mkdir_command)
       if (stat_plots    == 'y') { 
@@ -406,7 +417,7 @@ if (AE6_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE","CSN")
          network_label 	<- c("IMPROVE","CSN")
-         pid 		<- "multi_network"
+         pid 		<- paste(pid_date,"multi_network",sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
          if (stat_plots    == 'y') { 
@@ -439,7 +450,7 @@ if (AOD_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AERONET")
          network_label 	<- c("AERONET")
-         pid 		<- paste(run_name1,dates,species,sep="_")
+         pid 		<- paste(run_name1,pid_date,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
          if (stat_plots    == 'y') { 
@@ -471,7 +482,7 @@ if (PAMS_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
-         pid 		<- paste(run_name1,dates,species,sep="_")
+         pid 		<- paste(run_name1,pid_date,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)        
          if (stat_plots    == 'y') { 
@@ -501,7 +512,7 @@ if (PAMS_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Daily")
          network_label 	<- c("AQS_Daily")
-         pid 		<- paste(run_name1,dates,species,sep="_")
+         pid 		<- paste(run_name1,pid_date,species,sep="_")
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          system(mkdir_command)
          if (stat_plots    == 'y') { 

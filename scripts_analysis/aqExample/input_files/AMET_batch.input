@@ -7,8 +7,8 @@
 #start_date	<- 20110701
 #end_date	<- 20110714
 
-start_date 	<- gsub('-','',Sys.getenv("START_DATE_H"))
-end_date   	<- gsub('-','',Sys.getenv("END_DATE_H"))
+start_date 	<- gsub('-','',Sys.getenv("AMET_SDATE"))
+end_date   	<- gsub('-','',Sys.getenv("AMET_EDATE"))
 
 date_query <- paste("d.ob_dates between ",start_date," and ",end_date," and d.ob_datee between ",start_date," and ",end_date,sep="")
 
@@ -105,11 +105,28 @@ bugle_plot      <- 'y'  # AQ_Bugleplot.R
 additional_query	<- ""
 #additional_query	<- "and d.O3_8hrmax_ob >= 60"
 
+### Include SEARCH network in analysis ###
+inc_search <- 'n'
+
 ### Additional run names for some analyses ###
-run_name3		<- ""
-run_name4               <- ""
-run_name5               <- ""
-run_name6               <- ""
+#run_name3	<- 
+#run_name4	<- 
+#run_name5	<- 
+#run_name6	<- 
+#run_name7	<-
+##run_name8	<-
+##run_name9	<-
+##run_name10	<-
+##run_name11	<-
+##run_name12	<-
+##run_name13	<-
+##run_name14	<-
+##run_name15	<-
+##run_name16	<-
+##run_name17	<-
+##run_name18	<-
+##run_name19	<-
+##run_name20	<-
 
 ######################################################################
 ### The options in this section apply to the various AMET scripts. ###
@@ -129,31 +146,34 @@ png_res <- 300
 ##################################
 #custom_title<-"My really cool title"
 
+### Use only common sites among mulitple simulations ###
+common_sites	<- "n"
+
 #####################################
 ### Spatial Decomposition Options ###
 #####################################
 
 ### Monitoring Sites to Include ###
-site_id<-"All"
+site_id	<- "All"
 
 ### Create individual time plots by site (y/n).
 ### If set to y, the site variable will default to NULL
-by_site<-"n"
+by_site	<- "n"
 
 ### States to Include ###
-state<-"All"
+state	<- "All"
 
 ### Regional Planning Organizations to Include ###
-rpo<-"None"
+rpo	<- "None"
 
 ### Priciple Component Analysis (PCA) Region ###
-pca<-"None"
+pca	<- "None"
 
 ### Merge statid and POC into a single site id name ###
-merge_statid_POC <- "y"
+merge_statid_POC <-"y"
 
 ### Aggregate multiple PO Codes from the same site ###
-aggregate_data<-"n"
+aggregate_data	<- "n"
 
 ######################################
 
@@ -162,40 +182,44 @@ aggregate_data<-"n"
 ############################
 
 ### Flag to Include or Remove Zero Precipitation Observations ###
-zeroprecip<-"n"
+zeroprecip	<- "n"
 
 ### Numerical Limit for Data Completeness ###
-coverage_limit<-50
-all_valid<-"y"
-all_valid_amon<-""
+coverage_limit	<- 75
+all_valid	<- "y"
+all_valid_amon	<- "y"
 
 ### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
-soccerplot_opt<-1
+soccerplot_opt	<- 1
 
 ### Flag for PAVE Overlay; 1=hourly, 2=daily ###
-overlay_opt<-1
+overlay_opt	<- 1
 
 ### Flag to include run info text on plots ###
-run_info_text<- "y"
+run_info_text	<- "y"
 
 ### Remove Negatives Flag ###
-remove_negatives<-"y"
-remove_mean <- 'n'
-color_ranges <- 'n'
+remove_negatives	<- 'y'
+remove_mean 		<- 'n'
+color_ranges 		<- 'n'
 
 ### Numerical Limit for Data Completeness as minimum number of required observations (used when calulating site statistics or averages)###
-num_obs_limit<-1
+num_obs_limit	<- 1
 
 ### Flag to use average values for computing statistics; default is no (""); set to "y" to use average stats ###
-use_avg_stats<- ""
+use_avg_stats	<- "n"
 
 ### Plotly Options ###
-img_height<-900
-img_width<-1600
+img_height	<- 900
+img_width	<- 1600
+png_from_html   <- "n"  # create png file from html file
 
 #########################
 ### Axis Plot Options ###
 #########################
+
+### Specify angle of x-axis text on ggplot boxplot
+x_label_angle	<- 0
 
 ### x and y axes limits ###
 axis_max_limit	<- NULL
@@ -223,6 +247,8 @@ inc_legend		<- 'y'
 inc_bias		<- 'y'
 inc_rmse		<- 'n'
 inc_corr		<- 'n'
+inc_nmb			<- 'n'
+inc_nme			<- 'n'
 obs_per_day_limit	<- 0
 avg_func		<-"mean"
 line_width		<- "1"
@@ -230,18 +256,25 @@ line_width		<- "1"
 ###########################
 #### Kelly Plot Options ###
 ###########################
-nmb_max<-NULL
-nme_max<-NULL
-mb_max<-NULL
-me_min<-NULL
-me_max<-NULL
-rmse_min<-NULL
-rmse_max<-NULL
+inc_kelly_stats <- "n"
+nmb_int         <- NULL
+nmb_max         <- NULL
+nme_int         <- NULL
+nme_min         <- NULL
+nme_max         <- NULL
+mb_max          <- NULL
+me_min          <- NULL
+me_max          <- NULL
+rmse_min        <- NULL
+rmse_max        <- NULL
 
 ############################
 ### Spatial Plot Options ###
 ############################
-num_ints	<- 20 
+plot_radius     <- 0
+outlier_radius  <- 40
+fill_opacity    <- 0.8
+num_ints	<- NULL 
 perc_error_max	<- NULL
 abs_error_max	<- NULL
 rmse_range_max	<- NULL
@@ -274,6 +307,7 @@ inc_median_points	<- 'y'
 
 ### Include median points on box plots ###
 inc_median_lines	<- 'y'
+overlap_boxes           <- ""
 
 ############################
 ### Scatter Plot Options ###
@@ -289,17 +323,17 @@ conf_line	<-'n'
 stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
 
 ### Binned Scatter Plot Options ###
-pca_flag<-"n"
-bin_by_mod<-"n"
-inc_error<-"n"
+pca_flag	<- 'n'
+bin_by_mod	<- 'n'
+inc_error	<- 'n'
 
 ### Density Scatter plot options ###
-density_zlim<-NULL
-num_dens_bins<-NULL
+density_zlim	<- NULL
+num_dens_bins	<- NULL
 
 ### Skill plot criteria line ###
-O3_max_limit<-70
-PM_max_limit<-25
+O3_max_limit	<- 70
+PM_max_limit	<- 25
 
 ##################################
 ### Stacked Bar Charts Options ###
@@ -311,7 +345,7 @@ remove_other 	<- 'n'
 ##################################
 
 ### File containing list of stations created dynamically by the user ###
-stat_file<-""
+stat_file	<- ""
 
 ##################################
 ###### Path of Network Input file ###

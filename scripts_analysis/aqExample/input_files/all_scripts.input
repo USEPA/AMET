@@ -41,10 +41,24 @@ run_name1<-Sys.getenv("AMET_PROJECT")
 run_name2<-Sys.getenv("AMET_PROJECT2")
 
 ### Additional run names for some analyses ###
-run_name3	<- ""
-run_name4	<- ""
-run_name5	<- ""
-run_name6	<- ""
+#run_name3	<- 
+#run_name4	<- 
+#run_name5	<- 
+#run_name6	<- 
+#run_name7	<-
+#run_name8	<-
+#run_name9	<-
+#run_name10	<-
+#run_name11	<-
+#run_name12	<-
+#run_name13	<-
+#run_name14	<-
+#run_name15	<-
+#run_name16	<-
+#run_name17	<-
+#run_name18	<-
+#run_name19	<-
+#run_name20	<-
 
 #######################
 ### Species to Plot ###
@@ -53,6 +67,9 @@ run_name6	<- ""
 
 #species<-Sys.getenv("AMET_AQSPECIES")
 species<-unlist(strsplit(Sys.getenv("AMET_AQSPECIES"),","))
+custom_species		<-""
+custom_species_name	<-""
+custom_units		<-""
 
 ######################
 ###  Title Options ###
@@ -65,20 +82,52 @@ custom_title<-Sys.getenv("AMET_TITLE")
 figdir <- Sys.getenv("AMET_OUT")
 #figdir <- "~/AMET/output/aqExample"
 
-###########################################################################
+######################################################################
+### The options in this section apply to the various AMET scripts. ###
+### These are the same options contained in the AMET_batch.input   ###
+### file. See the AMET User's guide for more details on these 	   ###
+### options.  							   ###
+######################################################################
+
+################################
+### Set PNG image resolution ###
+### Integer value (100-1200) ###
+################################
+png_res <- 300
+
+##################################
+### Custom Title for All Plots ###
+##################################
+#custom_title<-"My really cool title"
+
+### Use only common sites among mulitple simulations ###
+common_sites	<- "n"
 
 #####################################
 ### Spatial Decomposition Options ###
 #####################################
 
 ### Monitoring Sites to Include ###
-site	<- 'All'
-### States to Include ###
-state	<- 'All'
+site_id	<- "All"
+
+### Create individual time plots by site (y/n).
+### If set to y, the site variable will default to NULL
+by_site	<- "n"
+
+### State to Include ###
+state	<- "All"
+
 ### Regional Planning Organizations to Include ###
-rpo	<- 'None'
+rpo	<- "None"
+
 ### Priciple Component Analysis (PCA) Region ###
-pca	<- 'None'
+pca	<- "None"
+
+### Merge statid and POC into a single site id name ###
+merge_statid_POC <-"y"
+
+### Aggregate multiple PO Codes from the same site ###
+aggregate_data	<- "n"
 
 ######################################
 
@@ -86,47 +135,45 @@ pca	<- 'None'
 ### Various Option Flags ###
 ############################
 
-### Time average flag (n=none; hour=h; day=d; month=m; season=s; annual=a; entire period=e; year/month=ym)
-averaging<-"n"
 ### Flag to Include or Remove Zero Precipitation Observations ###
-zeroprecip	<- 'n'
-### Data Completeness ###
-coverage_limit<-25
-all_valid<-"y"
-all_valid_amon<-"y"
+zeroprecip	<- "n"
+
+### Numerical Limit for Data Completeness ###
+coverage_limit	<- 75
+all_valid	<- "y"
+all_valid_amon	<- "y"
+
 ### Flag for Soccer and Bugle Plots Setting NMB/NME or FB/FE ###
 soccerplot_opt	<- 1
+
 ### Flag for PAVE Overlay; 1=hourly, 2=daily ###
 overlay_opt	<- 1
+
 ### Flag to include run info text on plots ###
-run_info_text	<- 'y'
+run_info_text	<- "y"
+
 ### Remove Negatives Flag ###
 remove_negatives	<- 'y'
 remove_mean 		<- 'n'
 color_ranges 		<- 'n'
+
 ### Numerical Limit for Data Completeness as minimum number of required observations (used when calulating site statistics or averages)###
 num_obs_limit	<- 1
+
 ### Flag to use average values for computing statistics; default is no (""); set to "y" to use average stats ###
-use_avg_stats	<- 'n'
-### Default resolution of the png files in dpi. 300 is considered medium quality
-png_res		<- 300 
+use_avg_stats	<- "n"
 
-### Plotly Image File Dimentions ###
-img_height<-NULL
-img_width<-NULL
-
-### Aggregate data from sites with multiple POCs
-aggregate_data<-"n"
-
-### Merge statid and POC into a single site id name ###
-merge_statid_POC <- "y"
+### Plotly Options ###
+img_height	<- 900
+img_width	<- 1600
+png_from_html   <- "n"  # create png file from html file
 
 #########################
 ### Axis Plot Options ###
 #########################
 
 ### Specify angle of x-axis text on ggplot boxplot
-x_label_angle <- 0
+x_label_angle	<- 0
 
 ### x and y axes limits ###
 axis_max_limit	<- NULL
@@ -150,36 +197,38 @@ plot_symbols    <- c(16,17,15,18,11,8,4)
 ################################
 use_var_mean 		<- 'n'
 inc_points 		<- 'y'
-line_width		<- 1
 inc_legend		<- 'y' 
+inc_bias		<- 'y'
+inc_rmse		<- 'n'
+inc_corr		<- 'n'
+inc_nmb			<- 'n'
+inc_nme			<- 'n'
 obs_per_day_limit	<- 0
+avg_func		<-"mean"
+line_width		<- "1"
 
-### Specify which type of value to plot (mean, median or sum) ###
-avg_func	<- 'mean'
-#avg_func	<- 'median'
-#avg_func	<- 'sum'
-
-### Include bias,rmse on plotly timeseries plot ###
-inc_bias  <- 'y'
-inc_rmse  <- 'y'
-inc_corr  <- 'y'
-inc_error <- 'y'
-
-##########################
-### Kelly Plot Options ###
-##########################
-nmb_max<-NULL
-nme_max<-NULL
-mb_max<-NULL
-me_min<-NULL
-me_max<-NULL
-rmse_min<-NULL
-rmse_max<-NULL
+###########################
+#### Kelly Plot Options ###
+###########################
+inc_kelly_stats <- "n"
+nmb_int         <- NULL
+nmb_max         <- NULL
+nme_int         <- NULL
+nme_min         <- NULL
+nme_max         <- NULL
+mb_max          <- NULL
+me_min          <- NULL
+me_max          <- NULL
+rmse_min        <- NULL
+rmse_max        <- NULL
 
 ############################
 ### Spatial Plot Options ###
 ############################
-num_ints	<- 20 
+plot_radius     <- 0
+outlier_radius  <- 40
+fill_opacity    <- 0.8
+num_ints	<- NULL 
 perc_error_max	<- NULL
 abs_error_max	<- NULL
 rmse_range_max	<- NULL
@@ -194,52 +243,51 @@ inc_counties	<- "y"
 symbsizfac	<- 1
 map_leg_size	<- 0.65
 hist_max	<- NULL
+map_type	<- 1
 quantile_min	<- 0.001
 quantile_max	<- 0.999
 
 #######################
 ### Boxplot Options ###
 #######################
-
 ### Include whiskers on box plots ###
 inc_whiskers	<- 'n'
+
 ### Include boxplot quartile ranges ###
 inc_ranges	<- 'y'
+
 ### Include median points on box plots ###
 inc_median_points	<- 'y'
+
 ### Include median points on box plots ###
 inc_median_lines	<- 'y'
+overlap_boxes           <- ""
 
 ############################
 ### Scatter Plot Options ###
 ############################
-
 ### Flags for Confidence Lines to Plot on Scatterplots ###
 conf_line	<-'n'
 
 ### Array of flags for which statistics to include on scatter plots ###
-#  1) num_pairs, 2) mean(obs),  3) mean(mod),  4) indx_agr,    5) corr,      
+#  1) num_pairs, 2) mean(obs),  3) mean(mod),  4) indx_agr,    5) corr,
 #  6) r_sqrd,    7) rmse,       8) rmse_sys,   9) rmse_unsys, 10) nmb,
 # 11) nme,      12) nmdnb,     13) nmdne,     14) mb,         15) me,
 # 16) med_bias, 17) med_error, 18) fb,        19) fe
 stats_flags<-c("","","","","","","y","","","y","y","","","","y","y","","","")
 
-###################################
 ### Binned Scatter Plot Options ###
-###################################
-pca_flag	<- "n"
-bin_by_mod	<- "n"
+pca_flag	<- 'n'
+bin_by_mod	<- 'n'
+inc_error	<- 'n'
 
-####################################
-### Density Scatter Plot Options ###
-####################################
-density_zlim<-NULL
-num_dens_bins<-NULL
+### Density Scatter plot options ###
+density_zlim	<- NULL
+num_dens_bins	<- NULL
 
-##################################
-### Skill Scatter Plot Options ###
-##################################
-max_limit <- 70
+### Skill plot criteria line ###
+O3_max_limit	<- 70
+PM_max_limit	<- 25
 
 ##################################
 ### Stacked Bar Charts Options ###
@@ -251,7 +299,7 @@ remove_other 	<- 'n'
 ##################################
 
 ### File containing list of stations created dynamically by the user ###
-stat_file<-""
+stat_file	<- ""
 
 ##################################
 ### Path of Network Input file ###

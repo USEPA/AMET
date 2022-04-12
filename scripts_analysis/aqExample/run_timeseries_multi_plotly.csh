@@ -1,18 +1,20 @@
 #!/bin/csh -f
 # --------------------------------
-# Interactive Timeseries (plotly version)
+# Timeseries - Multi network (plotly version)
 # -----------------------------------------------------------------------
 # Purpose:
+#
 # This is an example c-shell script to run the R-script that generates
-# an interactive timeseries plot.  The script can accept multiple sites, 
-# as they will be time averaged to create the timeseries plot.  The script
-# can also plot bias, RMSE, and correlation between the obs and model. This
-# version of the plot accepts multiple simulatios, but only a single network
-# and species.
+# a timeseries plot.  The script can accept multiple sites and networks, 
+# as they will be time averaged to create the timeseries plot. This version
+# of the multi network timeseries utilizes the plotly R package to create an
+# interactive html plot. The script can also plot bias, RMSE, and correlation
+# between the obs and model for each network. This version only accepts a
+# single simulation.
 #
-# Initial version: Wyat Appel - Sep, 2018
+# Initial version:  Wyat Appel - Dec, 2012
 #
-# Revised version: Wyat Appel - Apr, 2022
+# Revised version:  Wyat Appel - Apr, 2022
 # -----------------------------------------------------------------------
 
   
@@ -24,22 +26,16 @@
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
-
+  
   ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
   setenv AMET_DB  T
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
-  ### Set the project name to be used for model-to-model comparisons ###
-  #setenv AMET_PROJECT2  aqExample
-
-  ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
-  #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/
-
   ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_plotly
-
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_multi_networks_plotly
+  
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"
   setenv AMET_EDATE "2016-07-31"
@@ -51,10 +47,9 @@
 
   ###  Custom title (if not set will autogenerate title based on variables 
   ###  and plot type)
-  setenv AMET_TITLE ""
-  #  setenv AMET_TITLE "Time Series Plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
+  #  setenv AMET_TITLE ""
 
-  ###  Plot Type, options are only html with the interactive plots
+  ###  Plot Type, options are "html"
   setenv AMET_PTYPE html
 
   # Additional query to subset the data.
@@ -68,29 +63,32 @@
   # Select by state(s)
 #  setenv AMET_ADD_QUERY "and (s.state='NY' or s.state='MA')"
 
+  # label for plot - indicates state 
+  # if "All", will not label plot w/ state
+  setenv AMET_STATELABEL "All"
+#  setenv AMET_STATELABEL "NY & MA"
+
   ### Species to Plot ###
   ### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM_TOT,PM25_TOT,PM_FRM,PM25_FRM,EC,OC,TC,O3,O3_1hrmax,O3_8hrmax
   ### SO2,CO,NO,SO4_dep,SO4_conc,NO3_dep,NO3_conc,NH4_dep,NH4_conc,precip,NOy 
   ### AE6 (CMAQv5.0) Species
   ### Na,Cl,Al,Si,Ti,Ca,Mg,K,Mn,Soil,Other,Ca_dep,Ca_conc,Mg_dep,Mg_conc,K_dep,K_conc
 
-  setenv AMET_AQSPECIES O3_8hrmax 
-#  setenv AMET_AQSPECIES SO4
+  setenv AMET_AQSPECIES SO4
 
   ### Observation Network to plot -- One only
   ###  set to 'y' to turn on, default is off
   ###  NOTE: species are not available in every network
-#  setenv AMET_CSN y
-#  setenv AMET_IMPROVE y
+  setenv AMET_CSN y
+  setenv AMET_IMPROVE y
 #  setenv AMET_CASTNET y
 #  setenv AMET_CASTNET_Hourly y
-#  setenv AMET_CASTNET_Daily_O3 y
 #  setenv AMET_CASTNET_Drydep y
 #  setenv AMET_NADP y
 #  setenv AMET_AIRMON y
 #  setenv AMET_AQS_Hourly y
-  setenv AMET_AQS_Daily_O3 y
-#  setenv AMET_AQS_Daily y
+#  setenv AMET_AQS_Daily_O3 y
+#  setenv AMET_AQS_Daily_PM y
 #  setenv AMET_SEARCH y
 #  setenv AMET_SEARCH_Daily y
 #  setenv AMET_CAPMON y
@@ -108,16 +106,31 @@
 #  setenv AMET_ADMN y
 #  setenv AMET_NAMN y
 
+  # Additional query to subset the data.
+  # Averages over all monitors that meet this additional criteria
+  # Note: This is added to the sql query. If commented out, it will
+  # automatically get all monitors for the above network.
+  # Select by Monitor ID: 
+  # Note: the monitor must correspond to the network and species
+#  setenv AMET_ADD_QUERY "and s.stat_id='170310064'"
+  
+  # Select by state(s)
+#  setenv AMET_ADD_QUERY "and (s.state='NY' or s.state='MA')"
+
+  # label for plot - indicates state 
+  # if "All", will not label plot w/ state
+  setenv AMET_STATELABEL "All"
+#  setenv AMET_STATELABEL "NY & MA"
+  
   # Log File for R script
-  setenv AMET_LOG timeseries_plotly.log
+  setenv AMET_LOG timeseries_multi_networks_plotly.log
   
 ##--------------------------------------------------------------------------##
 ##                Most users will not need to change below here
 ##--------------------------------------------------------------------------##
 
   ## Set the input file for this R script
-#  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/timeseries.input  
-setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scripts.input
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scripts.input  
   setenv AMET_NET_INPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/Network.input
   
   # Check for plot and text output directory, create if not present
@@ -126,14 +139,14 @@ setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scrip
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Timeseries_plotly.R $AMET_LOG
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Timeseries_multi_networks_plotly.R $AMET_LOG
   setenv AMET_R_STATUS $status
   
   if($AMET_R_STATUS == 0) then
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_timeseries.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else
