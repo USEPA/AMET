@@ -1,12 +1,13 @@
 header <- "
 ####################### MODEL TO MODEL SCATTERPLOT ####################### 
-### AMET CODE: R_Scatterplot_MtoM.r 
+### AMET CODE: R_Scatterplot_MtoM_density.r 
 ###
 ### This script is part of the AMET-AQ system.  This script creates a single
-### model-to-model scatterplot.  However, the model points correspond to network
-### observation sites, and does not use all the model grid points (only what
-### is in the database).  Two model runs must be provided.  The script attempts
-### to match all points in one run with all points in the other run.  
+### model-to-model density scatterplot.  However, the model points correspond 
+### to network observation sites, and does not use all the model grid points 
+### (only what is in the database).  Two model runs must be provided.  The 
+### script attempts to match all points in one run with all points in the other
+### run. This version of the plot utilizes the GGPLOT R package. 
 ###
 ### Last Updated by Wyat Appel: Jun 2020
 ##########################################################################

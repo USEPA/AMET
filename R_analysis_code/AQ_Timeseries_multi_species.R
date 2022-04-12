@@ -4,8 +4,8 @@ header <- "
 ###
 ### This script is part of the AMET-AQ system.  It plots a timeseries for multiple species 
 ### from a single network for a single simulation. Data are averaged across time and space
-### to create single time series for the data. The script also plots the bias, RMSE and correlation.
-### Output format is png, pdf or both.
+### to create single time series for the data. The script also plots the bias, RMSE and 
+### correlation. Output format is png, pdf or both.
 ###
 ### Last updated by Wyat Appel: Jan 2022
 ###########################################################################################
