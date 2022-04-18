@@ -97,7 +97,7 @@ if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
       }
       else {
          query_result3    <- query_dbase(run_name3,network,species)
-         aqdat_query3.df  <- query_result2[[1]]
+         aqdat_query3.df  <- query_result3[[1]]
       }
    }
    aqdat3.df <- aqdat_query3.df
