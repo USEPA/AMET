@@ -17,8 +17,12 @@
 #       - Added function to check if file is empty. 
 #       - Fixed error messages when obs file download fails. Download.file function creates empty local file 
 #         when remote file is missing. Then attempts to unzip. Fix checks size of file and deletes the empties.
-#       - added functions to WGET, read and average SURFRAD observations if BSRN data is not availiable
+#       - added functions to WGET, read and average SURFRAD observations if BSRN data is not available.
 #       - Code clean and format. Found numerous functions that did not have proper informational headings.
+#  V1.5, 2022Apr20, Robert Gilliam:
+#       - AutFTP option was expanded to check MADIS real-time directory if main archive search fails.
+#         This real-time directory has obs files within the hour of observed, but only the last few days.
+#         Main archive has data several day old, so this update checks both now so AMET can get obs immediately.
 #
 #######################################################################################################
 #######################################################################################################
@@ -98,6 +102,27 @@
     nogzname    <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
     remote_file <- paste(madis_server,"/",datetime$yc,"/",datetime$mc,"/",datetime$dc,
                          madispath,gzname,sep="")
+
+    writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
+    try(download.file(remote_file,gzname,"wget"), silent=T)
+    if(!file.empty(gzname)) {
+      system(paste("gunzip",gzname))
+      system(paste("mv",nogzname,madis_file))
+      system(paste("rm -f ",gzname))
+    }
+    if(file.empty(gzname)) {
+      system(paste("rm -f ",gzname))
+    }
+  }  
+  if(!file.exists(madis_file) & autoftp) {
+    madispath   <-paste("/point/",madis_dset,"/netcdf/",sep="")
+    if(madis_dset == "mesonet") {
+      madispath   <-"/LDAD/mesonet/netCDF/"
+    }
+    gzname      <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00.gz",sep="")
+    nogzname    <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
+    remote_file <- paste(madis_server,"/",madispath,gzname,sep="")
+
     writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
     try(download.file(remote_file,gzname,"wget"), silent=T)
     if(!file.empty(gzname)) {
@@ -287,6 +312,25 @@
     nogzname    <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
     remote_file <- paste(madis_server,"/",datetime$yc,"/",datetime$mc,"/",datetime$dc,
                          madispath,gzname,sep="")
+
+    writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
+    try(download.file(remote_file,gzname,"wget",quiet = T), silent=T)
+    if(!file.empty(gzname)) {
+      system(paste("gunzip",gzname))
+      system(paste("mv",nogzname,madis_file))
+      system(paste("rm -f ",gzname))
+    }
+    if(file.empty(gzname)) {
+      system(paste("rm -f ",gzname))
+    }
+  }  
+
+  if(!file.exists(madis_file) & autoftp) {
+    madispath   <-paste("/point/",madis_dset,"/netcdf/",sep="")
+    gzname      <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00.gz",sep="")
+    nogzname    <-paste(datetime$yc,datetime$mc,datetime$dc,"_",datetime$hc,"00",sep="")
+    remote_file <- paste(madis_server,"/",madispath,gzname,sep="")
+
     writeLines(paste("Getting remote file, unzipping and moving to the MADIS archive:",remote_file,nogzname))
     try(download.file(remote_file,gzname,"wget",quiet = T), silent=T)
     if(!file.empty(gzname)) {
