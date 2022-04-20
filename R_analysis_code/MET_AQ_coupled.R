@@ -3,7 +3,7 @@
 #                                                                       #
 #                AMET (Atmospheric Model Evaluation Tool)               #
 #                                                                       #
-#                   Example Met-AQ coupled analysis                     #
+#                   Example Met-AQ coupled analysis 	                  #
 #                       MET_AQ_coupled.R                                #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -16,7 +16,8 @@
 # Version 1.2, May 6, 2013, Robert Gilliam
 # - Cleaned code
 #########################################################################
-#:::::::::::::::::::::::::::::::::::::::::::
+  options(warn=-1)
+#:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
   require(RMySQL)
   require(maps)
@@ -88,7 +89,7 @@
        met_data	<-ametQuery(met_query,met_mysql)
        met_sites<-ametQuery(met_site_query,met_mysql)       
 
-    writeLines(paste(â€œNumber of dimisions of aq_sitesâ€, dim(aq_sites)[1], dim(aq_sites)[2]))
+    writeLines(paste(“Number of dimisions of aq_sites”, dim(aq_sites)[1], dim(aq_sites)[2]))
 
     n.sites <- length(aq_sites[,1])
     
@@ -278,5 +279,3 @@
     title("Diurnal AQ and MET BIAS",line=2, cex.sub=0.50)                                                  
     box()
     dev.off()
-##### END
-

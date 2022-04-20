@@ -30,6 +30,9 @@
 #         - Temp text query files pushed to MySQL file naming was changed by adding a random large
 #           number in the name (num between 1-100000). This allows multiple threads at the same time
 #           in the same project directory.
+#  V1.5, 2022Apr20, Robert Gilliam: 
+#         - Updated the handling of forecast and the calculation of forecast hour for sub-hourly instances.
+#           Tested forecasting capability during the 2022 ALPACA project using 72 hour WRF forecasts.
 #
 #######################################################################################################
 #######################################################################################################
@@ -104,6 +107,7 @@
   buffer           <- 5
   total_loop_count <- 1 
   interp           <- 1
+  fcast_hr         <- 0
 
   # MySQL connection information and command to send temporary query file to database.
   # This method is dramatically quicker than sending single queries for each of the
@@ -133,7 +137,6 @@
   if (is.na(fcast) || !fcast) {
      fcast    <- F
      init_utc <- -99
-     fcast_hr <- 0
      dthr     <- 0
   }
 
@@ -213,7 +216,9 @@ for(f in 1:nf) {
     init_utc <- model_time_format(model$raob_met$time)$hc
      dthr    <- as.numeric(model_time_format(model$raob_met$time[2])$hc) -
                 as.numeric(model_time_format(model$raob_met$time[1])$hc)
-    fcast_hr <- 0
+     if(is.na(dthr)){
+       dthr  <- 1.0
+     }
   }
 
 ##########################################################################
@@ -230,11 +235,11 @@ for(t in skipind:nt){
   # modeldate, modeltime, yc, mc, dc, hc
   datetime <- model_time_format(model$raob_met$time[t])
   # Limit times to standard soundings (i.e.; 00 and 12 UTC)
-  if(datetime$hc != "00" & datetime$hc != "12") { next }
+  #if(datetime$hc != "00" & datetime$hc != "12") { next }
 
   # Compute forecast hour if applicable
-  if (fcast) {
-    fcast_hr <- (t-1) * dthr
+  if (fcast & total_loop_count > 1) {
+    fcast_hr <- fcast_hr + dthr
   }
 
   # Extract obs from MADIS file along with site metadata
@@ -319,7 +324,8 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     }
     if(verbose) {
       writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                       "Model time:",datetime$modeltime,"  Obs time:",actual_time))
+                       "Model time:",datetime$modeltime,"  Obs time:",actual_time,
+                       " forecast/init hr:",fcast_hr,"/",init_utc))
     }
 
     ###############################################################################################
