@@ -33,6 +33,21 @@
  # 10 million is about the number of data extracted for
  # 2/3rds of a year.
  maxrec   <- 5E6	
+
+#########################################################################
+# GROSS QC/QA limits for T (K), WS (m/s), and Q (g/kg): Min, Max
+#########################################################################
+ qcT   <-c(240,315)
+ qcQ   <-c(0,30)
+ qcWS  <-c(1.5,25)
+ qclims<-list(qcT=qcT,qcQ=qcQ,qcWS=qcWS)
+
+########################################################################
+# QC limits on max difference between Model and Obs as another filter
+# value assignment is T, WS, Q, RH  -- SI units
+# ######################################################################
+ qcerror <- c(15,20,10,50)
+
 ###########################
 #  Directory Information  #
 ###########################
