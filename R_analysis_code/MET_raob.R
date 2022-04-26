@@ -32,7 +32,7 @@
 #        and raob obs overlaid with same color scale symbols. Also      #
 #        the difference between obs and model is a secondary plot.      #
 #                                                                       #         
-# Version 1.5, Apr 30, 2021, Robert Gilliam                             #
+# Version 1.5, Apr 25, 2022, Robert Gilliam                             #
 #         - Wind vector error added for better wind error analysis      #
 #         - Gross QC limits on Mod-Obs difference allowed in stats      # 
 #           calculations. Defined in raob.input. Default use if         #
@@ -40,6 +40,11 @@
 #         - Wind vector error calculated for spatial and timeseries     #
 #           plots. (need to make backward compatible if old             #
 #           raob.input is used)                                         #
+#         - New split config input file where "more" static settings    #
+#           are split into a timeseries.static.input and key configs    #
+#           remain in the timeseries.input. Backward compatible.        #
+#         - Added auto lat-lon bounds if set to NA or missing.          #
+#         - Mod config file so lat-lon is used in site grouping queries #
 #         - Other streamline updates.                                   #
 #                                                                       #         
 #########################################################################
@@ -62,11 +67,15 @@
  mysqlloginconfig <- Sys.getenv("MYSQL_CONFIG")
  ametdbase        <- Sys.getenv("AMET_DATABASE")
  mysqlserver      <- Sys.getenv("MYSQL_SERVER")
+ ametRstatic      <- Sys.getenv("AMETRSTATIC")
 
  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
  # and not specified via AMET_OUT, then set figdir to the current directory
- if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
- if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
+ if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")  }
+ if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"                    }
+ if(ametRstatic=="")                            { ametRstatic <- "./"               }
+ writeLines(paste("AMET R Config input file:",ametRinput))
+ writeLines(paste("AMET R Static input file:",ametRstatic))
 
  ## source some configuration files, AMET libs, and input
  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
@@ -74,6 +83,7 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
+ source (ametRstatic)
 
  ## MySQL list for connection and date range list
  mysql      <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
@@ -109,6 +119,10 @@
   query  <-paste("SELECT",my.varget.spatial,"FROM",criteria.tm,extrall," ORDER BY stat_id")
   writeLines(paste(query))
   dataq  <-ametQuery(query,mysql)
+  if(dim(dataq)[1] == 0) {
+    stop(paste("No data found. Check query dates or other settings and rerun"))
+  }
+
   sitesq <- unique(dataq[,1])
   nsq    <- length(sitesq)
   statsq <-array(NA,c(nsq,5,5))
@@ -121,6 +135,13 @@
      obs         <-dataq[a,10]
      mod         <-dataq[a,12]
      statsq[s,1,]<-simple.stats(obs,mod)
+  }
+
+  if(anyNA(bounds)){
+    bounds          <-c(range(slatlon[,1]),range(slatlon[,2]))
+    plotopts$bounds <-bounds
+    writeLines(paste("** WARNING ** bounds for spatial analysis were not found. Setting to RAOB site range."))
+    writeLines(paste("** BOUNDS  ** LAT/LON SOUTH, NORTH, WEST, EAST:",bounds[1],bounds[2],bounds[3],bounds[4]))
   }
 
   # RH
@@ -370,8 +391,8 @@
      obsws                    <-ifelse(obsws < 0, NA, obsws)
      obsws                    <-ifelse(obsws > 250, NA, obsws)
      modws                    <-ifelse( is.na(obsws), NA, modws)
-     obsmodws[l,1,1:length(a)]<-obsws
-     obsmodws[l,2,1:length(a)]<-modws
+     obsmodws[l,1,1:length(a)]<-obsws[1:length(a)]
+     obsmodws[l,2,1:length(a)]<-modws[1:length(a)]
      diffsq[l,3,]             <-obsmodws[l,2,] - obsmodws[l,1,]
      statsq[l,3,]             <-simple.stats(obsmodws[l,1,],obsmodws[l,2,])
 
@@ -383,8 +404,8 @@
      obswd0      <-runif(length(diffwd),min=0,max=0.001)
      modwd0      <-diffwd
 
-     obsmodwd[l,1,1:length(a)] <-obswd0
-     obsmodwd[l,2,1:length(a)] <-modwd0
+     obsmodwd[l,1,1:length(a)]<-obswd0[1:length(a)]
+     obsmodwd[l,2,1:length(a)]<-modwd0[1:length(a)]
      diffsq[l,4,]             <-obsmodwd[l,2,] - obsmodwd[l,1,]
      statsq[l,4,]             <-simple.stats(obsmodwd[l,1,],obsmodwd[l,2,])
     }
@@ -604,11 +625,11 @@
 
    minmax    <- range(iso.datet,iso.daterh,iso.datews,na.rm=T)
    date.vec  <-seq(minmax[1],minmax[2],by=(60*60*12))
-   tmp<- plotProfTimeM(obsmodt.new, levels.new, iso.datet, date.vec,statidc[s], 
+   tmp<- plotProfTimeM(obsmodt.new, levels.new, iso.datet, date.vec, statidc[s], 
                  1, plotopts, plotlab, nt.thresh=5) 
-   tmp<- plotProfTimeM(obsmodrh.new, levels.new, iso.daterh, date.vec,statidc[s],
+   tmp<- plotProfTimeM(obsmodrh.new, levels.new, iso.daterh, date.vec, statidc[s],
                  2, plotopts, plotlab, nt.thresh=5) 
-   tmp<- plotProfTimeM(obsmodws.new, levels.new, iso.datews, date.vec,statidc[s],
+   tmp<- plotProfTimeM(obsmodws.new, levels.new, iso.datews, date.vec, statidc[s],
                  3, plotopts, plotlab, nt.thresh=5) 
 
 
@@ -709,5 +730,4 @@
 
  }
 ############################################################################
-quit(save='no')
 

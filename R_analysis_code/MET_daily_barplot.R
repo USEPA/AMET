@@ -76,7 +76,7 @@
                         passwd=amet_pass,maxrec=maxrec)
 
  plotopts       <-list(plotfmt=plotfmt)
- dailybox.Rfile <-paste(figdir,"/daily_bar_",project,".",runid,".Rdata",sep="")
+ dailybox.Rfile <-paste(figdir,"/",project,".",runid,".daily_barplot.Rdata",sep="")
 
 
  # User QC settings representing the largest difference allowed between mod and obs.
@@ -440,4 +440,3 @@
  axis(1,labels=dates,at=mp,las=2)
  phandle<-dev.off()
  #################################
-quit(save='no')

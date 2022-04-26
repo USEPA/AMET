@@ -39,6 +39,11 @@
 #                 ob_network = SRAD || BSRN in query string             #
 #               - Added text output option for spatial, diurnal and TS  # 
 #               - Added considerations for forecast model eval          #             
+# Version 1.5, Apr 25, 2022, Robert Gilliam                             #
+#  Updates: - New split config input file where "more" static settings  # 
+#             are split into a timeseries.static.input and key configs  #  
+#             remain in the timeseries.input. Backward compatible.      #
+#           - Added auto lat-lon bounds to range of obs sites if missed #
 #                                                                       #
 #########################################################################
   options(warn=-1)
@@ -58,6 +63,17 @@
  ametR            <- paste(ametbase,"/R_analysis_code",sep="")
  ametRinput       <- Sys.getenv("AMETRINPUT")
  mysqlloginconfig <- Sys.getenv("MYSQL_CONFIG")
+ ametRstatic      <- Sys.getenv("AMETRSTATIC")
+
+ # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
+ # and not specified via AMET_OUT, then set figdir to the current directory
+ if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
+ if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
+ ## Check for Static file setting and set to empty if missing. Backward compat.
+ ## & print input files for user notification 
+ if(ametRstatic=="") { ametRstatic <- "./" }
+ writeLines(paste("AMET R Config input file:",ametRinput))
+ writeLines(paste("AMET R Static input file:",ametRstatic))
 
  ## source some configuration files, AMET libs, and input
  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
@@ -65,6 +81,7 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
+ source (ametRstatic)
 
  ametdbase1   <- Sys.getenv("AMET_DATABASE")
  ametdbase2   <- Sys.getenv("AMET_DATABASE2")
@@ -120,7 +137,7 @@
  lon_loc    <- 5
  sr_mod_loc <- 6
  sr_ob_loc  <- 7
- tod.label  <- c("eary-morning","mid-morning","early-afternoon","late-afternoon")
+ tod.label  <- c("early-morning","mid-morning","early-afternoon","late-afternoon")
  nhrbin     <- length(tod.label)
  # Determine number of unique sites and their information from main project
  sites <- unique(data1[,id_loc])
@@ -151,6 +168,18 @@
  # Do spatial plot mode if specified in namelist
 if(spatial) {
 
+  # Check for existence or NA of lat-lon bounds for spatial plotting
+  # set to site range with buffer area of 5 deg. 10 on west for label.
+  # Users have full control if they want to set.
+  if(!exists("lats") || is.na(lats) || is.na(latn) || is.na(lonw) || is.na(lone)) {
+    lats    <-range(lat)[1]-5
+    latn    <-range(lat)[2]+5
+    lonw    <-range(lon)[1]-10
+    lone    <-range(lon)[2]+5
+    writeLines(paste("** WARNING ** User did not specify lat-lon bounds of spatial plot"))
+    writeLines(paste("Will use obs range with 5 deg buffer:",lats,latn,lonw,lone))
+  }
+  
   writeLines(paste("Spatial Statistic Plots",sep=""))
   # Define sites and location then prepare statistics arrays
   stat_array <- array(NA,c(nsites,7,nhrbin))
@@ -357,7 +386,7 @@ if(diurnal) {
 
   # Reorder array to center around max radiation (solar noon) time of day
   max_hr_loc    <- which(stat_array_diurnal[2,] == max(stat_array_diurnal[2,],na.rm=T))
-  offset        <-hour_obs_utc[max_hr_loc]
+  offset        <-hour_obs_utc[max_hr_loc][1]
   hr_center_map <- 12
 
   hour_obs_utc_centered <- hour_obs_utc + (hr_center_map+offset)
@@ -393,7 +422,7 @@ if(diurnal) {
     diurnalRdf<- paste(figdir,"/srad.diurnal.",sites[ss],".",d1,"-",d2,".Rdata",sep="")
     save(stat_array_diurnal, file=diurnalRdf)
   }
-  writeLines(paste(figure,".pdf",sep=""))
+  writeLines(paste("Diurnal analysis:",figure,".pdf",sep=""))
   pdf(file= paste(figure,".pdf",sep=""), width = 10, height = 5)
   #:::::::::::::::::::::::::::::::::::::::::::::::
   par(mfrow=c(3,1))
@@ -511,7 +540,6 @@ if(diurnal) {
            lty = 1, bg="white", pch=NA, xjust=0, yjust=1)
   box()
   #######################################################################
-
   #------------------------------------------------------------------------------------------------------------
   dev.off()
   #-------------------------------------------------------------------------------
