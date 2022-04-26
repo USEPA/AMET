@@ -16,6 +16,9 @@
 #  - Code cleansing. Removed tabs. Added list and description of functions
 #  - Added function simple.stats for RAOB statistics
 #
+# Version 1.5, Apr 20, 2022, Robert Gilliam
+#  - Added a function for systematic and unsystematic RMSE (rmseSU)
+#
 #-----------------------------------------------------------------------##################
 ##########################################################################################
 ##########################################################################################
@@ -28,6 +31,7 @@
 #       nmbias        --> normalized mean bias
 #       nmerror       --> normalized mean error
 #       rmserror      --> root mean squared error
+#       rmseSU        --> rRMSE split into systematic and unsystematic components
 #       simple.stats  --> simple statistic array (rmse,mae,bias,corr)
 #
 ###############################################################
@@ -181,6 +185,39 @@ mngerror <- function (base, comp, na.rm = FALSE)
     score <- sqrt(mean((comp[1:min.length] - base[1:min.length])^2, 
                   na.rm = na.rm))
     return(score)
+}
+##########################################################################################
+#----------------------------------------  END OF FUNCTION  ----------------------------##
+##########################################################################################
+
+###############################################################
+#- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
+###############################################################
+ rmseSU <- function (base, comp, na.rm = FALSE) 
+{
+    if (!is.numeric(base) | !is.numeric(comp)) 
+        stop("Both base and comp must be numeric")
+    N <- min(length(base), length(comp))
+    if (length(base) != length(comp)) 
+        stop(paste("Both arguments do not have the same length.Proceeding",
+                "by truncating length of the longer to the length of the shorter"))
+    # Note X is considered comp or model values
+    X     <- comp
+    Y     <- base
+    N     <- sum(ifelse(!is.na(X*Y),1,0))
+
+    # Least squares regression coefficients Y = mX + b
+    slope <- (  (N * sum(X*Y,na.rm=T)) - ( sum(X,na.rm=T) * sum(Y,na.rm=T))  ) / 
+             ( (N*sum(X^2,na.rm=T)) - (sum(X,na.rm=T))^2  )
+    inter <- ( sum(Y,na.rm=T)  - slope*sum(X,na.rm=T) ) / N
+
+
+    CC<-inter+ slope*X
+
+    rmses<- sqrt(  (1/N) * sum( (CC - Y)^2, na.rm=T )     )
+    rmseu<- sqrt(  (1/N) * sum( (CC - X)^2, na.rm=T )     )
+    rmsec<- sqrt(var(X-Y,use="complete.obs"))
+    return(c(rmses,rmseu,rmsec))
 }
 ##########################################################################################
 #----------------------------------------  END OF FUNCTION  ----------------------------##
