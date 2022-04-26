@@ -34,10 +34,6 @@
  extra     <- "AND d.fcast_hr BETWEEN 0 and 23"
  extra     <- ""
 
- # Intervals over the sunlight hours to average statistics. This works
- # well for 12 hours+ of sunlight. Change at your own risk.
- delt      <- 3
-
  # Plot Options: symbol size, type and
  symb      <- 19
  symbsiz   <- 1.35
@@ -54,17 +50,7 @@
  latn      <- as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LAT")," ")))[2]
  lonw      <- as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LON")," ")))[1]
  lone      <- as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LON")," ")))[2]
- bounds    <- c(lats,latn,lonw,lone) 
 
- # Parse input date string
- ys        <-as.numeric(substr(date[1],1,4))
- ye        <-as.numeric(substr(date[2],1,4))
- ms        <-as.numeric(substr(date[1],5,6))
- me        <-as.numeric(substr(date[2],5,6))
- ds        <-as.numeric(substr(date[1],7,8))
- de        <-as.numeric(substr(date[2],7,8))
- hs        <-as.numeric(substr(date[1],9,10))
- he        <-as.numeric(substr(date[2],9,10))
 #########################################################################
 #----- 			END OF INPUT FILE	------------------------#
 #########################################################################

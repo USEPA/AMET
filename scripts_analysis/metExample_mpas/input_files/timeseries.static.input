@@ -1,0 +1,41 @@
+#########################################################################
+#                 STATIC INPUT FILE for Main R Scripts                  #
+#-----------------------------------------------------------------------#
+#                                                                       #
+#            Input to MET_timeseries.R & MET_timeseries_rh.R            #
+#           For "STATIC" variables or those for advanced Users          #
+#                     Developed by US EPA                               #
+#                                                                       #
+#-----------------------------------------------------------------------#
+#########################################################################
+# Change LOG
+#-----------------------------------------------------------------------
+# NEW, Jan 2022, Robert Gilliam
+#  - This is a new convention for better GUI control where "setup", static
+#    and advanced User options are pulled from old timeseries.input
+#    and put in second input called a "static" input.
+#  - Update MET_timeseries.R will read this, but work with
+#    consolidated  old input.
+#########################################################################
+
+# date setttings that are not user configurable unless advanced understanding
+ hs   <-0
+ he   <-23
+ dates<-list(y=as.numeric(ys),m=as.numeric(ms),d=as.numeric(ds),h=as.numeric(hs))
+ datee<-list(y=as.numeric(ye),m=as.numeric(me),d=as.numeric(de),h=as.numeric(he))
+
+# MySQL table definition
+ statstr<-paste(" stat_id='",statid,"' ",sep="")
+ table1<-paste(model1,"_surface",sep="")
+ table2<-paste(model2,"_surface",sep="")        
+     
+ window  <-0
+ comp    <-F
+ if(model1 != model2 & model2 != "") { 
+   comp  <- T
+ }    
+
+#########################################################################
+#-----                  END OF INPUT FILE       ------------------------#
+#########################################################################
+
