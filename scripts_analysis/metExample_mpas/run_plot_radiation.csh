@@ -54,8 +54,9 @@
   #-----------------------------------------------------------------------------------------------------------------------
 
   ## Set the input file for this R script
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
   setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/plot_radiation.input 
-  
+  setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/plot_radiation.static.input  
   # Create output directory for project and analysis subdirectory
   mkdir -p $AMETBASE/output/$AMET_PROJECT
   mkdir -p $AMET_OUT
