@@ -1,16 +1,11 @@
-#!/usr/bin/perl
 ##---------------------------------------------------------------
 #	Surface Station Update Script 				#
 #								#
-#	PURPOSE: To update the surface station			#
-#		database information (id,lat,lon,elev,etc)	#
+#	Purpose: To update the surface station			#
+#		 database information (id,lat,lon,elev,etc)	#
 #								#
+#       Last Update: 01/2022 by K. Wyat Appel			#
 #----------------------------------------------------------------
-
-#amet_base <- Sys.getenv('AMETBASE')
-#if (!exists("amet_base")) {
-#   stop("Must set AMETBASE environment variable")
-#}
 
 obs_data_dir           <- Sys.getenv('AMET_OBS')
 if (!exists("obs_data_dir")) {
@@ -55,9 +50,7 @@ if (!exists("con")) {
 for (j in 1:length(site_file)) {											# For each network
    file_in <- paste(obs_data_dir,"/site_metadata_files/",site_file[j],sep="")
    if (file.exists(file_in)) {
-#   site_data <- read.csv(paste(amet_base,"/obs/AQ/site_files/",site_file[j],sep=""),stringsAsFactors=F,colClasses="character")
       site_data <- read.csv(file_in,stringsAsFactors=F,colClasses="character")
-#   site_data <- read.csv(paste("/work/MOD3EVAL/cmaq_exp/post_data/NLCD_landuse/site_metadata_files_with_landuse/",site_file[j],sep=""),stringsAsFactors=F,colClasses="character")
       col_names <- colnames(site_data)
       if(!"state" %in% col_names)		{ site_data$state <- "NULL" }
       if(!"city" %in% col_names) 		{ site_data$city  <- "NULL" }

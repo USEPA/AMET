@@ -33,12 +33,15 @@
 #  Updates: - Moved hard-coded QC limits that remove model-obs pairs    #
 #             when difference exceeds the limits to summary.input file. #
 #             If QC limit is not specified, old hard-coded limit used.  # 
+#                                                                       #
+#  Version 1.5, Apr 19, 2022, Robert Gilliam                            # 
+#  Updates: - Minor updates (backward comp) to prep for GUI release.    #
 #-----------------------------------------------------------------------#
 #                                                                       #
 #########################################################################
-
+  options(warn=-1)
 #########################################################################
-#::::::::::::::::::::::::::::::::::::::::::::
+#:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
   if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
   if(!require(maps))  {stop("Required Package maps was not loaded")}
@@ -68,6 +71,14 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
+
+ # Compatibility check for new variables in case of old config files
+ if(!exists("querystr") & !exists("query_str")){
+   stop("No valid query specification was set. Check config files for querystr or query_str variables.")
+ }
+ if(!exists("query_str") ) {  query_str <- querystr }
+ if(!exists("date_s") )    {  date_s    <- dates }
+ if(!exists("date_e") )    {  date_e    <- datee }
  
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
@@ -82,7 +93,7 @@
  varid		<-c("T","Q","WS","WD")
  varxstr	<-paste("SELECT DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_date),d.stat_id,s.ob_network,d.T_mod,d.T_ob, 
                    d.Q_mod,d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod,d.V_ob, HOUR(ob_time)")
- query		<-paste(varxstr," FROM ",project,"_surface d, stations s WHERE  s.stat_id=d.stat_id ",querystr,sep="")
+ query		<-paste(varxstr," FROM ",project,"_surface d, stations s WHERE  s.stat_id=d.stat_id ",query_str,sep="")
 ################################################################################
  for(q in 1:length(query)){
    
@@ -125,7 +136,7 @@
          ################################
          #	Temperature Stats	#
          ################################
-         writeLines("Plotting diurnal Temperature.. Figure name:")
+         writeLines("Plotting diurnal 2-m temperature")
          figure<-paste(figdir,"/",project,".",pid[q],".T.diurnal",sep="")
          obs<-datap$temp[,2]
          mod<-datap$temp[,1]
@@ -151,7 +162,7 @@
          ################################
          #	Wind Speed Stats	#
          ################################
-         writeLines("Plotting diurnal Wind Speed.. Figure name:")
+         writeLines("Plotting diurnal 10-m wind speed")
          figure<-paste(figdir,"/",project,".",pid[q],".WS.diurnal",sep="")
          obs<-datap$ws[,2]
          mod<-datap$ws[,1]
@@ -177,7 +188,7 @@
          ################################
          #	Wind Direction Stats	#
          ################################
-         writeLines("Plotting diurnal Wind Direction.. Figure name:")
+         writeLines("Plotting diurnal 10-m wind direction")
          figure<-paste(figdir,"/",project,".",pid[q],".WD.diurnal",sep="")
          obs=datap$wd[,2]
          mod=datap$wd[,1]
@@ -208,7 +219,7 @@
          ################################
          #	Mixing Ratio Stats	#
          ################################
-         writeLines("Plotting diurnal Mixing Ratio.. Figure name:")
+         writeLines("Plotting diurnal 2-m water vapor mixing ratio")
          figure<-paste(figdir,"/",project,".",pid[q],".Q.diurnal",sep="")
          obs<-datap$q[,2]*1000
          mod<-datap$q[,1]*1000
@@ -242,15 +253,15 @@
          ################################
          #	Temperature Stats	#
          ################################
-         writeLines("Plotting summary of 2-m Temperature. Figure name:")
-         figure<-paste(figdir,"/",project,".",pid[q],".T.ametplot",sep="")
-         qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[1],
-                  statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
-         obs=datap$temp[,2]
-         mod=datap$temp[,1]
+         writeLines("Plotting summary of 2-m temperature")
+         figure  <-paste(figdir,"/",project,".",pid[q],".T.ametplot",sep="")
+         qdesc   <-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[1],
+                     statid,obnetwork,lat,lon,elev,landuse,date_s[q],date_e[q],obtime,fcasthr,level,syncond,query[q],figure,1)
+         obs     <-datap$temp[,2]
+         mod     <-datap$temp[,1]
          if(length(na.omit(obs)) > 0 ) {
-         var<-list(obs=obs,mod=mod)
-         stats<-genvarstats(var,varsName[1])
+         var     <-list(obs=obs,mod=mod)
+         stats   <-genvarstats(var,varsName[1])
          try(ametplot(obs,mod,datap$ws[,2],stats$metrics,qdesc=qdesc,pid=pid,figureid=figure,plotopts=plotopts))
           if (textstats){
     	      sfile<-file(paste(figdir,"/tmp",sep=""),"a") 
@@ -258,7 +269,7 @@
               writeLines("Collective Temperature (2 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
+              tmp<-data.frame(stats$id, stats$metrics)
               write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
@@ -269,24 +280,23 @@
          ################################
          #	Wind Speed Stats	#
          ################################
-         writeLines("Plotting summary of Wind Speed. Figure name:")
-         figure<-paste(figdir,"/",project,".",pid[q],".WS.ametplot",sep="")
-         qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[3],statid,
-                  obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
-         obs=datap$ws[,2]
-         mod=datap$ws[,1]
+         writeLines("Plotting summary of 10-m wind speed")
+         figure  <-paste(figdir,"/",project,".",pid[q],".WS.ametplot",sep="")
+         qdesc   <-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[3],statid,
+                     obnetwork,lat,lon,elev,landuse,date_s[q],date_e[q],obtime,fcasthr,level,syncond,query[q],figure,1)
+         obs     <-datap$ws[,2]
+         mod     <-datap$ws[,1]
          if(length(na.omit(obs)) > 0 ) {
-         var<-list(obs=obs,mod=mod)
-         stats<-genvarstats(var,varsName[3])
+         var     <-list(obs=obs,mod=mod)
+         stats   <-genvarstats(var,varsName[3])
          try(ametplot(obs,mod,datap$ws[,2],stats$metrics,qdesc=qdesc,pid=pid,figureid=figure,plotopts=plotopts))
-
-          if (textstats){
+         if (textstats){
     	      sfile<-file(paste(figdir,"/tmp",sep=""),"a") 
     	      writeLines("--------------------------------------------------------", con =sfile)
               writeLines("Collective Wind Speed (10 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
+              tmp<-data.frame(stats$id, stats$metrics)
               write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
@@ -297,30 +307,29 @@
          ################################
          #	Wind Direction Stats	#
          ################################
-         writeLines("Plotting summary of Wind Direction.. Figure name:")
-         figure<-paste(figdir,"/",project,".",pid[q],".WD.ametplot",sep="")
-         qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[4],statid,
-                  obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,4)
-         obs=datap$wd[,2]
-         mod=datap$wd[,1]
-         diff<-mod-obs
-         diff<-ifelse(diff > 180 , diff-360, diff)
-         diff<-ifelse(diff< -180 , diff+360, diff)
-         obs<-runif(length(diff),min=0,max=0.001)
-         mod<-diff
+         writeLines("Plotting summary of 10-m Wind Direction")
+         figure   <-paste(figdir,"/",project,".",pid[q],".WD.ametplot",sep="")
+         qdesc   <-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[4],statid,
+                     obnetwork,lat,lon,elev,landuse,date_s[q],date_e[q],obtime,fcasthr,level,syncond,query[q],figure,4)
+         obs     <-datap$wd[,2]
+         mod     <-datap$wd[,1]
+         diff    <-mod-obs
+         diff    <-ifelse(diff > 180 , diff-360, diff)
+         diff    <-ifelse(diff< -180 , diff+360, diff)
+         obs     <-runif(length(diff),min=0,max=0.001)
+         mod     <-diff
          if(length(na.omit(obs)) > 0 ) {
-         var<-list(obs=obs,mod=mod)
-         stats<-genvarstats(var,varsName[4])
+         var     <-list(obs=obs,mod=mod)
+         stats   <-genvarstats(var,varsName[4])
          try(ametplot(obs,mod,datap$ws[,2],stats$metrics,qdesc=qdesc,pid=pid,figureid=figure,wdflag=1,plotopts=plotopts))
-
-          if (textstats){
+         if (textstats){
    	      sfile<-file(paste(figdir,"/tmp",sep=""),"a") 
     	      writeLines("--------------------------------------------------------", con =sfile)
               writeLines("Collective Wind Direction (10 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
-              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE)
+              tmp<-data.frame(stats$id, stats$metrics)
+              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
          }
@@ -330,25 +339,24 @@
          ################################
          #	Mixing Ratio Stats	#
          ################################
-         writeLines("Plotting summary of Mixing Ratio.. Figure name:")
-         figure<-paste(figdir,"/",project,".",pid[q],".Q.ametplot",sep="")
-         qdesc<-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[2],
-                  statid,obnetwork,lat,lon,elev,landuse,dates[q],datee[q],obtime,fcasthr,level,syncond,query[q],figure,1)
-         obs=datap$q[,2]*1000
-         mod=datap$q[,1]*1000
+         writeLines("Plotting summary of 2-m water vapor mixing ratio")
+         figure   <-paste(figdir,"/",project,".",pid[q],".Q.ametplot",sep="")
+         qdesc    <-c(mysql$server,mysql$dbase,mysql$login,"pass",project,model,queryID[q],varid[2],
+                      statid,obnetwork,lat,lon,elev,landuse,date_s[q],date_e[q],obtime,fcasthr,level,syncond,query[q],figure,1)
+         obs      <-datap$q[,2]*1000
+         mod      <-datap$q[,1]*1000
          if(length(na.omit(obs)) > 0 ) {
-         var<-list(obs=obs,mod=mod)
-         stats<-genvarstats(var,varsName[2])
+         var      <-list(obs=obs,mod=mod)
+         stats    <-genvarstats(var,varsName[2])
          try(ametplot(obs,mod,datap$ws[,2],stats$metrics,qdesc=qdesc,pid=pid,figureid=figure,plotopts=plotopts))
-
-          if (textstats){
+         if (textstats){
     	      sfile<-file(paste(figdir,"/tmp",sep=""),"a") 
     	      writeLines("--------------------------------------------------------", con =sfile)
               writeLines("Collective Mixing Ratio (2 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
-              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE)
+              tmp<-data.frame(stats$id, stats$metrics)
+              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
          }

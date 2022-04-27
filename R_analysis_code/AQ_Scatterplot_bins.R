@@ -7,7 +7,7 @@ header <- "
 ### species from a single network but for multiple simulations. Output format
 ### in png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2019
+### Last Updated by Wyat Appel: Mar 2021
 ###########################################################################
 "
 
@@ -25,17 +25,6 @@ network <- network_names[1]
 
 ### Set file names and titles ###
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") {
-      main.title        <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ")
-      main.title.bias   <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ")
-   }
-   else {
-     main.title   <- custom_title
-     main.title.bias <- custom_title
-  }
-}
-sub.title       <- ""
 
 filename_pdf <- paste(run_name1,species,pid,"scatterplot_bins.pdf",sep="_")                          # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot_bins.png",sep="_")                          # Set PNG filenam
@@ -139,7 +128,7 @@ for (j in 1:num_runs) {
          if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
       }
       else {
-         if (pca_flag == "n") { legend_names <- c(legend_names,run_names[j]) }
+         if (pca_flag != "y") { legend_names <- c(legend_names,run_names[j]) }
          if (averaging != "n") {
             aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
             {

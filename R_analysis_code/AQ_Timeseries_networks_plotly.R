@@ -10,13 +10,14 @@ header <- "
 ### from the R htmlwidgets package and PANDOC. If PANDOC is not available, the selfcontained option
 ### should be set to F. Output format is html.
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Jan 2022
 ###############################################################################################
 "
 
 library(plotly)
 library(xts)
 library(htmlwidgets)
+library(RColorBrewer)
 
 sessionInfo()
 
@@ -143,18 +144,11 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
 
    Date_Hour_Factor     <- factor(aqdat.df$Date_Hour,levels=unique(aqdat.df$Date_Hour))                   # Create unique levels so tapply maintains correct time order
 
-   centre <- function(x, type) {
-       switch(type,
-          mean = mean(x,na.rm=T),
-          median = median(x,na.rm=T),
-          sum = sum(x,na.rm=T))
-   }
-
    ### Calculate Obs and Model Means ###
    Obs_Period_Mean[[j]]	<- mean(aqdat.df$Obs_Value)
    Mod_Period_Mean[[j]]	<- mean(aqdat.df$Mod_Value)
-   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,centre,type=avg_func)
-   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,centre,type=avg_func)
+   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,FUN=avg_func)
+   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,FUN=avg_func)
    Num_Obs[[j]]         <- length(aqdat.df$Obs_Value)
 
    if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
@@ -177,8 +171,8 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
       yearmonth            <- paste(years,months,sep="-")
       aqdat.df$Year	   <- years
       aqdat.df$YearMonth   <- yearmonth
-      Obs_Mean[[j]]	   <- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,centre,type=avg_func)
-      Mod_Mean[[j]]	   <- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,centre,type=avg_func)
+      Obs_Mean[[j]]	   <- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,FUN=avg_func)
+      Mod_Mean[[j]]	   <- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Corr_Mean[[j]]            <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value))
       RMSE_Mean[[j]]       <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)sqrt(mean((dfrm$Mod_Value - dfrm$Obs_Value)^2)))
@@ -191,8 +185,8 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
       yearmonth            <- paste(years[1],months,sep="-")
       aqdat.df$Year        <- years 
       aqdat.df$YearMonth   <- yearmonth
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Corr_Mean[[j]]            <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value))
       RMSE_Mean[[j]]       <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2)))
@@ -200,8 +194,8 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
       x_label		   <- "Month"
    }
    if (averaging == "d") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Corr_Mean[[j]]            <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Start_Date,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value))
       RMSE_Mean[[j]]       <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Start_Date,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2)))
@@ -211,8 +205,8 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
       years                <- substr(aqdat.df$Start_Date,1,4)
       months               <- substr(aqdat.df$Start_Date,6,7)
       days		   <- substr(aqdat.df$Start_Date,9,10)
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Corr_Mean[[j]]            <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value))
       RMSE_Mean[[j]]       <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2)))
@@ -223,8 +217,8 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
    if (averaging == "a") {
       years                <- substr(aqdat.df$Start_Date,1,4)
       aqdat.df$Year        <- years
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       Corr_Mean[[j]]            <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value))
       RMSE_Mean[[j]]       <- by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2)))
@@ -291,25 +285,29 @@ xaxis <- list(title= x_label, automargin = TRUE,titlefont=list(size=30))
 yaxis <- list(title=paste(species," (",units,")"),automargin=TRUE,titlefont=list(size=30))
 
 #p <- plot_ly(data.df, x=~Dates, y=~Obs, type="scatter", mode='lines', name=network[1], text=~paste("Name: ",network[1],"<br>Date: ",Dates,"<br>Obs value: ",round(Obs,3))) %>%
-p <- plot_ly(type="scatter", mode='lines', height=img_height, width=img_width) %>%
+p <- plot_ly(type="scatter", mode='lines+markers', height=img_height, width=img_width) %>%
   layout(title=main.title,titlefont=list(size=25),xaxis=xaxis,yaxis=yaxis,margin=list(t=50,b=110))
 #     p <- add_trace(p, x=~Dates, y=Mod_Mean[[j]], type="scatter", name=run_names[1],mode='lines', text=paste("Name: ",run_names[1],"<br>Date: ",Dates[[j]],"<br>Model value: ",round(Mod_Mean[[j]],3)))   
 
+colors <- brewer.pal(12,"Set1")
+colors[6] <- "#CCCC00"
+obs_colors <- c('#0A0A0A','#696969','#9B9B9B','#CDCDCD')
+
 for (j in 1:length(network_names)) {
-   p <- add_trace(p, x=Dates[[j]], y=Obs_Mean[[j]], type="scatter", name=paste("Obs (",network_names[j],")"),mode='lines', text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Obs value: ",round(Mod_Mean[[j]],3))) %>%
+   p <- add_trace(p, x=Dates[[j]], y=Obs_Mean[[j]], type="scatter", name=paste("Obs (",network_names[j],")"),mode='lines+markers', line = list(color=obs_colors[j]), marker=list(symbol='circle',color=obs_colors[j],size=10), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Obs value: ",round(Obs_Mean[[j]],3))) %>%
       layout(annotations = list(x=Dates[[j]],y=Obs_Mean[[j]],text=network_names[j],xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
-   p <- add_trace(p, x=Dates[[j]], y=Mod_Mean[[j]], type="scatter", name=paste(run_names[1]," (",network_names[j],")"),mode='lines', text=paste("Name: ",run_names[1]," (",network_names[j],")","<br>Date: ",Dates[[j]],"<br>Model value: ",round(Mod_Mean[[j]],3))) %>%
+   p <- add_trace(p, x=Dates[[j]], y=Mod_Mean[[j]], type="scatter", name=paste(run_names[1]," (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='circle',color=colors[j],size=10), text=paste("Name: ",run_names[1]," (",network_names[j],")","<br>Date: ",Dates[[j]],"<br>Model value: ",round(Mod_Mean[[j]],3))) %>%
       layout(annotations = list(x=Dates[[j]],y=Mod_Mean[[j]],text=paste(run_names[1]," (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    if (inc_bias == 'y') {
-      p <- add_trace(p, x=Dates[[j]], y=Bias_Mean[[j]], type="scatter", name=paste("Bias (",network_names[j],")"), mode='lines', text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Bias: ",round(Bias_Mean[[j]],3))) %>%
+      p <- add_trace(p, x=Dates[[j]], y=Bias_Mean[[j]], type="scatter", name=paste("Bias (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='square-open', color=colors[j],size=10), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Bias: ",round(Bias_Mean[[j]],3))) %>%
       layout(annotations = list(x=Dates[[j]],y=Bias_Mean[[j]],text=paste("Bias (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    }
    if (inc_rmse == 'y') {
-      p <- add_trace(p, x=Dates[[j]], y=RMSE_Mean[[j]], type="scatter", name=paste("RMSE (",network_names[j],")"), mode='lines', text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>RMSE value: ",round(RMSE_Mean[[j]],3))) %>%
+      p <- add_trace(p, x=Dates[[j]], y=RMSE_Mean[[j]], type="scatter", name=paste("RMSE (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='diamond-open',color=colors[j],size=11), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>RMSE value: ",round(RMSE_Mean[[j]],3))) %>%
       layout(annotations = list(x=Dates[[j]],y=RMSE_Mean[[j]],text=paste("RMSE (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    }
    if (inc_corr == 'y') {
-      p <- add_trace(p, x=Dates[[j]], y=Corr_Mean[[j]], type="scatter", name=paste("Correlation (",network_names[j],")"), mode='lines', text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Correlation value: ",round(Corr_Mean[[j]],3))) %>%
+      p <- add_trace(p, x=Dates[[j]], y=Corr_Mean[[j]], type="scatter", name=paste("Correlation (",network_names[j],")"), mode='lines+markers', line = list(color=colors[j]), marker=list(symbol='hexagram-open',color=colors[j],size=11), text=paste("Name: ",network_names[j],"<br>Date: ",Dates[[j]],"<br>Correlation value: ",round(Corr_Mean[[j]],3))) %>%
       layout(annotations = list(x=Dates[[j]],y=Corr_Mean[[j]],text=paste("Correlation (",network_names[j],")"),xanchor='left',yanchor='middle',showarrow=FALSE,clicktoshow='onoff',visible=FALSE))
    }
 }

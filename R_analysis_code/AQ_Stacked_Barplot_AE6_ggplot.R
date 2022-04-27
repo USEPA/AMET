@@ -8,7 +8,7 @@ header <- "
 ### plotted as a stacked bar plot, along with the percent of the total PM2.5 that each 
 ### species comprises.
 ###
-### Last updated by Wyat Appel: June, 2019
+### Last updated by Wyat Appel: Jan 2021
 ######################################################################################
 "
 
@@ -48,7 +48,10 @@ if (use_median == "y") {
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
-   if (custom_title == "") { title <- paste(network_name," Stacked Barplot for ",run_name1," for ",dates,sep="") }
+   if (custom_title == "") { 
+      title <- paste(dates,sep="")
+      if (clim_reg != "None") { paste(title,clim_reg,sep=", ") } 
+   }
    else { title <- custom_title }
 }
 ################################
@@ -188,8 +191,8 @@ for (j in 1:length(run_names)) {
       if (j == 1) {
          NUM_SITES <- c(num_sites,num_sites)
          NUM_PAIRS <- c(num_pairs,num_pairs)
-         data_out.df <- data.frame(obs_mod=network,species=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Si","Ti","Na","Cl","NCOM","OTHR"),value=c(medians.df$SO4_ob,medians.df$NO3_ob,medians.df$NH4_ob,medians.df$EC_ob,medians.df$OC_ob,medians.df$Al_ob,medians.df$Ca_ob,medians.df$Fe_ob,medians.df$K_ob,medians.df$Mg_ob,medians.df$Si_ob,medians.df$Ti_ob,medians.df$Na_ob,medians.df$Cl_ob,medians.df$NCOM_ob,other_ob))
-         data_out_mod.df <- data.frame(obs_mod=paste("Sim",j,sep=""),species=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Si","Ti","Na","Cl","NCOM","OTHR"),value=c(medians.df$SO4_mod,medians.df$NO3_mod,medians.df$NH4_mod,medians.df$EC_mod,medians.df$OC_mod,medians.df$Al_mod,medians.df$Ca_mod,medians.df$Fe_mod,medians.df$K_mod,medians.df$Mg_mod,medians.df$Si_mod,medians.df$Ti_mod,medians.df$Na_mod,medians.df$Cl_mod,medians.df$NCOM_mod,other_mod))    
+         data_out.df <- data.frame(obs_mod=network,species=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Mn","Si","Ti","Na","Cl","NCOM","OTHR"),value=c(medians.df$SO4_ob,medians.df$NO3_ob,medians.df$NH4_ob,medians.df$EC_ob,medians.df$OC_ob,medians.df$Al_ob,medians.df$Ca_ob,medians.df$Fe_ob,medians.df$K_ob,medians.df$Mg_ob,medians.df$Mn_ob,medians.df$Si_ob,medians.df$Ti_ob,medians.df$Na_ob,medians.df$Cl_ob,medians.df$NCOM_ob,other_ob))
+         data_out_mod.df <- data.frame(obs_mod=paste("Sim",j,sep=""),species=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Mn","Si","Ti","Na","Cl","NCOM","OTHR"),value=c(medians.df$SO4_mod,medians.df$NO3_mod,medians.df$NH4_mod,medians.df$EC_mod,medians.df$OC_mod,medians.df$Al_mod,medians.df$Ca_mod,medians.df$Fe_mod,medians.df$K_mod,medians.df$Mg_mod,medians.df$Mn_mod,medians.df$Si_mod,medians.df$Ti_mod,medians.df$Na_mod,medians.df$Cl_mod,medians.df$NCOM_mod,other_mod))    
          data_out.df <- rbind(data_out.df,data_out_mod.df)
          sim_legend <- paste("Sim1: ",run_names[j],sep="")
       }
@@ -197,15 +200,18 @@ for (j in 1:length(run_names)) {
       else {
          NUM_SITES <- c(NUM_SITES,num_sites)
          NUM_PAIRS <- c(NUM_PAIRS,num_pairs)
-         data_out_mod.df <- data.frame(obs_mod=paste("Sim",j,sep=""),species=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Si","Ti","Na","Cl","NCOM","OTHR"),value=c(medians.df$SO4_mod,medians.df$NO3_mod,medians.df$NH4_mod,medians.df$EC_mod,medians.df$OC_mod,medians.df$Al_mod,medians.df$Ca_mod,medians.df$Fe_mod,medians.df$K_mod,medians.df$Mg_mod,medians.df$Si_mod,medians.df$Ti_mod,medians.df$Na_mod,medians.df$Cl_mod,medians.df$NCOM_mod,other_mod))
+         data_out_mod.df <- data.frame(obs_mod=paste("Sim",j,sep=""),species=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Mn","Si","Ti","Na","Cl","NCOM","OTHR"),value=c(medians.df$SO4_mod,medians.df$NO3_mod,medians.df$NH4_mod,medians.df$EC_mod,medians.df$OC_mod,medians.df$Al_mod,medians.df$Ca_mod,medians.df$Fe_mod,medians.df$K_mod,medians.df$Mg_mod,medians.df$Mn_mod,medians.df$Si_mod,medians.df$Ti_mod,medians.df$Na_mod,medians.df$Cl_mod,medians.df$NCOM_mod,other_mod))
          data_out.df <- rbind(data_out.df,data_out_mod.df)
          sim_legend <- paste(sim_legend,"\nSim",j,": ",run_names[j],sep="")
       }
    }
 }
-data_out.df$species <- factor(data_out.df$species, levels=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Si","Ti","Na","Cl","NCOM","OTHR"))
-bar_colors <- c("red","yellow","orange","grey20","black","lightblue","blue","firebrick","yellow4","green4","gray50","orange","purple","lightseagreen","pink","gray70")
+data_out.df$species <- factor(data_out.df$species, levels=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Mn","Si","Ti","Na","Cl","NCOM","OTHR"))
+bar_colors <- c("red","yellow","orange","grey20","black","lightblue","blue","firebrick","yellow4","green4","blue4","gray50","orange","purple","lightseagreen","pink","gray70")
 axis.max <- axis.max+(0.05*j)*axis.max	# Make room at the top for simulations legend
+if (length(y_axis_max) > 0) {
+   axis.max <- y_axis_max
+}
 
 #pdf(file=filename_pdf,width=9,height=9)
 bp <- ggplot(data_out.df, aes(x=obs_mod,y=value)) + geom_bar(aes(color=species,fill=species),stat="identity",position=position_stack(reverse=TRUE)) + scale_color_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + scale_fill_manual(values=bar_colors,guide=guide_legend(reverse=TRUE)) + theme(panel.grid.major.x = element_blank(), panel.grid.major.y=element_line(size=.1, color="white")) + labs(title=title,x="Network / Simulation", y=paste(method," Concentration (",units,")",sep="")) + scale_y_continuous(expand=c(0,0.1), limits=c(0,axis.max), breaks = pretty(c(0,axis.max), n = 10)) + theme(axis.title.y=element_text(size=15),axis.title.x=element_blank(), plot.title=element_text(size=10, hjust=0.5), axis.text.y=element_text(size=12),axis.text.x=element_text(size=12))

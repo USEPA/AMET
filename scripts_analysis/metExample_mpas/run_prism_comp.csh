@@ -40,6 +40,7 @@
  # datasets. Also monthly (M3) and daily (D2) grids. Users must pick the datasets that properly
  # match the model output files and time increments in those files.
  # Data: http://prism.oregonstate.edu/recent/
+ # Data   FTP: ftp://prism.oregonstate.edu/
  # Users can choose the daily or monthly data for a year or month. Choose the .asc (ASCII) files.
  # Download and extract to a PRISM archive directory. Specify that below via PRISM_DIR and correct
  # PRISM_PREFIX setting. Here is an example file: PRISM_ppt_stable_4kmM3_201610_asc.asc

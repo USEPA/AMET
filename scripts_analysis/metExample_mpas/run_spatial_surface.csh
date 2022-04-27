@@ -16,7 +16,6 @@
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
 
-
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
   # These are the only required for meteorological analysis. AQ requires more.
@@ -28,10 +27,10 @@
   setenv AMET_DATABASE  user_database
   setenv MYSQL_SERVER   mysql.server.gov 
 
-  #  AMET project id or simulation id
-   setenv AMET_PROJECT metExample_mpas
+  # AMET project id or simulation id
+  setenv AMET_PROJECT metExample_mpas
   
-  #  Directory where figures and text output will be directed
+  # Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/spatial_surface
   
   # Do you want a CVS files with spatial statistics?
@@ -57,7 +56,7 @@
   # Option to do daily statistics over the specified period above
   # Or statistics for the entire period.
   setenv DAILY F
-  
+
   # lat-lon plot bounds. Note that all sites in a domain
   # will be considered when stats are calculated, but the
   # spatial plots will only cover the area below.
@@ -69,7 +68,9 @@
   setenv AMET_PTYPE pdf             
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/spatial_surface.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/spatial_surface.input
+  setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/spatial_surface.static.input
   
   # Check for plot and text output directory, create if not present
   mkdir -p $AMETBASE/output/$AMET_PROJECT

@@ -7,7 +7,7 @@ header <- "
 ### limited to a single network and species, but will accept multiple simulations. Output
 ### format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2019
+### Last Updated by Wyat Appel: Feb 2021
 ######################################################################################
 "
 
@@ -140,10 +140,10 @@ leg_names <- network_label[1]
 pdf(file=filename_ecdf_pdf,width=8,height=8)
 Fn_obs <- ecdf(sinfo[[1]]$plotval_obs)  	# Compute CDF information for observations
 xmax <- max(sinfo[[1]]$plotval_obs,sinfo[[1]]$plotval_mod)
-plot(Fn_obs, col='black', xlab=paste('value (', units,')',sep=""),xlim=c(0,xmax),main=paste("CDF for",run_name1,"/",network_label[1],species,"for",dates,sep=" "),cex.main=1)	# Plot CDF for Observations
+plot(Fn_obs, col=plot_colors[1], xlab=paste('value (', units,')',sep=""),xlim=c(0,xmax),main=paste("CDF for",run_name1,"/",network_label[1],species,"for",dates,sep=" "),cex.main=1)	# Plot CDF for Observations
 for (i in 1:num_runs) {		# For each model simulation
    Fn_mod <- ecdf(sinfo[[i]]$plotval_mod)
-   plot(Fn_mod, col=plot_cols[i], add=T)
+   plot(Fn_mod, col=plot_cols[i+1], add=T)
    leg_names <- c(leg_names, run_names[i])
 }
 legend("bottomright", leg_names, pch=1, col=plot_colors,bty='n',cex=1,inset=c(0,0.03))	# Plot legend

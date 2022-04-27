@@ -7,9 +7,14 @@
 # raob statistical plots of model performance for a specified day, period,
 # site or group of sites. See raob.input file for extra settings including
 # sample size thresholds and plotting options. Analysis includes T, RH, WS and WD.
+# WNDVEC in AMET1.5+ that provided wind vector error
+#
+# Apr 2022: Added a loop for single time native profiles. The script now
+#           runs this script for each 00/12 UTC time over date range provided
 # -----------------------------------------------------------------------
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
+
 
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
@@ -20,7 +25,9 @@
 
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   mysql.server.gov 
+  setenv MYSQL_SERVER   mysql.server.gov
+  setenv AMET_DATABASE  amad_nrt
+  setenv MYSQL_SERVER   amet.ib
 
   #  AMET project id or simulation id
   setenv AMET_PROJECT metExample_mpas 
@@ -35,10 +42,10 @@
   setenv RAOB_SPATIAL   T 
   # Sounding timeseries statistics for defined pressure layer (AMET_PLAYER below T/F)
   # AMET_BOUNDS_LAT and AMET_BOUNDS_LON are used to choose sites for timeseries stats.
-  setenv RAOB_TSERIES   F 
+  setenv RAOB_TSERIES   T 
   # Profile statistics for all mandatory levels (T/F). 
   # NOTE: Site grouping is allowed. Done for all availiable pressure levels.
-  setenv RAOB_PROFILEM  F 
+  setenv RAOB_PROFILEM  T 
   # Curtain plot of model, raob and difference on mandatory pressure levels (T/F).
   # NOTE: No site grouping allowed. Script ignores this setting and plots each site.
   setenv RAOB_CURTAINM  F 
@@ -58,15 +65,15 @@
   #  the start and end values with one space between. Use two digit MM and DD.
   #  Below is the example for May 1-10, 2017
   setenv AMET_YY "2016 2016"
-  setenv AMET_MM "07 08"
-  setenv AMET_DD "01 01"
+  setenv AMET_MM "07 07"
+  setenv AMET_DD "01 31"
   setenv AMET_HH "00 00"
 
   #  Observation site ID array. 
   #  "ALL" will get data for all sites, but only applicable for RAOB_PROFILEM option
   #  AMET_GROUPSITES allows grouping (or not) of defined site IDs for RAOB_PROFILEM option
   set SITES=(ALL)
-  set SITES=(KGSO KMFL KPIT KSLC KDNR KOUN KOAK KBIS)
+  set SITES=(KGSO KMHX)
 
   # Should SITES be grouped or averaged (T/F). Grouped sites only work for 
   # profile statistics on mandatory pressure levels via RAOB_PROFILEM T
@@ -80,10 +87,11 @@
   # curtain plots when RAOB_CURTAINN and/or setenv RAOB_PROFILEN is true
   setenv AMET_PLIM "1000 600"             
 
-  # Lat-lon plot bounds for spatial analysis. 
-  # This is also used for bounds of spatial plots.
-  setenv AMET_BOUNDS_LAT "-85 85"
-  setenv AMET_BOUNDS_LON "-180 180"
+  # lat-lon plot bounds. Note that all sites in a domain
+  # will be considered when stats are calculated, but the
+  # spatial plots will only cover the area below.
+  setenv AMET_BOUNDS_LAT "23 55"
+  setenv AMET_BOUNDS_LON "-135 -60"
 
   # Do you want a CVS files with Spatial and Daily Statistics?
   setenv AMET_TEXTSTATS T
@@ -93,7 +101,9 @@
   setenv AMET_PTYPE pdf             
 
   ## Set the input file for this R script
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
   setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/raob.input  
+  setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/raob.static.input
   
   # Check for plot and text output directory, create if not present
   mkdir -p $AMETBASE/output/$AMET_PROJECT
@@ -102,8 +112,65 @@
   # NOTE: Do not modify; this statement is necessary if an array of sites is specified.
   setenv AMET_SITEID "$SITES[*]"
 
+  ################################################################################
+  # New 2022 update for single time native profile plotting. This is added cshell scripting
+  # to facilitate ease of use. Prior version required running the script for each single
+  # profile time. This new functionality take existing date range for other scripts and
+  # first turns off RAOB_PROFILEN and runs script for other analyses. Then reruns the script
+  # in a loop for the RAOB_PROFILEN only by turning off all other options.
+  set profilen_loop=0
+  if(${RAOB_PROFILEN} == "T") then
+    echo "Single time native profile plots of RAOB and model soundings = .True."
 
+    set envstr="${AMET_YY}"
+    set split_y = ($envstr:as/ / /)
+    set envstr="${AMET_MM}"
+    set split_m = ($envstr:as/ / /)
+    set envstr="${AMET_DD}"
+    set split_d = ($envstr:as/ / /)
+    set begday=${split_y[1]}${split_m[1]}${split_d[1]}
+    set endday=${split_y[2]}${split_m[2]}${split_d[2]}
+
+    set profilen_loop=1
+    setenv RAOB_PROFILEN  F
+  endif
+  ################################################################################
+
+  # Run script for all options other than PROFILEN
   R --slave --no-save < $AMETBASE/R_analysis_code/MET_raob.R 
+
+  ################################################################################
+  # Run PROFILEN only in loop over defined period for single profile comparisons
+  if(${profilen_loop} == 1) then
+    setenv RAOB_PROFILEN  T
+    setenv RAOB_SPATIAL   F 
+    setenv RAOB_TSERIES   F 
+    setenv RAOB_PROFILEM  F 
+    setenv RAOB_CURTAINM  F
+    setenv RAOB_CURTAINN  F
+
+    set date = $begday
+    echo $begday
+    @ count = 1
+    #-- Main LOOP Over Days defined above.
+    while ( $date <= $endday )
+      setenv YYYYS `echo $date |cut -b1-4`
+      setenv YYS   `echo $date |cut -b3-4`
+      setenv MMS   `echo $date |cut -b5-6`
+      setenv DDS   `echo $date |cut -b7-8`
+      echo 'Looping single profile comparison for date:' $YYYYS $MMS $DDS
+      setenv AMET_YY "${YYYYS} ${YYYYS}"
+      setenv AMET_MM "${MMS} ${MMS}"
+      setenv AMET_DD "${DDS} ${DDS}"
+      setenv AMET_HH "00 00"
+      R --slave --no-save < $AMETBASE/R_analysis_code/MET_raob.R 
+      setenv AMET_HH "12 12"
+      R --slave --no-save < $AMETBASE/R_analysis_code/MET_raob.R 
+      set date = `date -d "$date 1 days" '+%Y%m%d' `
+      @ count ++
+    end
+  endif
+  ################################################################################
 
 
 exit(1)  

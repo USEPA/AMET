@@ -6,7 +6,7 @@ header <- "
 ### using ggplot2. Individual observation/model pairs are provided 
 ### through a MYSQL query. The script then plots these values as a box plot.
 ###
-### Last updated by Wyat Appel: March, 2019
+### Last updated by Wyat Appel: Dec 2021
 #######################################################################
 "
 
@@ -20,18 +20,15 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 library(plotly)
 library(htmlwidgets)
 
-### Retrieve units label from database table ###
-#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
-#units <- db_Query(units_qs,mysql) 
-################################################
-
-if(!exists("x_label_angle")) { x_label_angle <- 0 }
+if(!exists("x_label_angle")) { x_label_angle <- 90 }
+if(!exists("overlap_boxes")) { overlap_boxes <- "n" }
 
 ### Set file names and titles ###
 network<-network_names[[1]]
 level_names_bias <- NULL
 
 filename_pdf		<- paste(run_name1,species,pid,"boxplot_ggplot.pdf",sep="_")
+filename_pdf_new        <- paste(run_name1,species,pid,"boxplot_ggplot_new.pdf",sep="_")
 filename_bias_pdf	<- paste(run_name1,species,pid,"boxplot_bias_ggplot.pdf",sep="_")
 filename_png            <- paste(run_name1,species,pid,"boxplot_ggplot.png",sep="_")
 filename_bias_png       <- paste(run_name1,species,pid,"boxplot_bias_ggplot.png",sep="_")
@@ -39,22 +36,19 @@ filename_txt            <- paste(run_name1,species,pid,"boxplot_ggplot.csv",sep=
 
 ## Create a full path to file
 filename_pdf            <- paste(figdir,filename_pdf,sep="/")
+filename_pdf_new        <- paste(figdir,filename_pdf_new,sep="/")
 filename_pdf_bias       <- paste(figdir,filename_bias_pdf,sep="/")
 filename_png            <- paste(figdir,filename_png,sep="/")
 filename_png_bias       <- paste(figdir,filename_bias_png,sep="/")
 filename_txt             <- paste(figdir,filename_txt,sep="/")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-{
-   if (custom_title == "") { 
-      title <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ") 
-      title_bias <- paste(run_name1,species," bias for",network_label[1],"for",dates,sep=" ")
-   }
-   else { 
-      title <- custom_title 
-      title_bias <- custom_title
-   }
-}
+title <- get_title(run_names,species,network_label,dates,custom_title,clim_reg)
+title_bias <- get_title(run_names,species,network_label,dates,custom_title,clim_reg,bias=T)
+bias.title <- title_bias
+
+sp_new <- NULL
+widths <- c(0.7,0.5,0.3,0.1)
 
 for (j in 1:length(run_names)) {
    run_name <- run_names[j]
@@ -141,7 +135,8 @@ for (j in 1:length(run_names)) {
          {
             if (j == 1) {
                aqdat_out.df          <- data.frame(Value=aqdat.df$Obs_Value,bin=aqdat.df$Split_On)
-               aqdat_out.df$Sim      <- network
+               aqdat_out.df$Sim      <- network_label
+               aqdat_out_obs.df      <- aqdat_out.df  
                data                  <- split(aqdat_out.df$Value,aqdat.df$Split_On)
                num_obs               <- lapply(data,length) 
                aqdat_temp            <- data.frame(Value=aqdat.df$Mod_Value,bin=aqdat.df$Split_On)
@@ -150,12 +145,12 @@ for (j in 1:length(run_names)) {
                bias                  <- aqdat.df$Mod_Value-aqdat.df$Obs_Value
                aqdat_out_bias.df     <- data.frame(Value=bias,bin=aqdat.df$Split_On)
                aqdat_out_bias.df$Sim <- run_name
-               level_names           <- network
+               level_names           <- network_label
                data_to_write         <- cbind(aqdat.df,bias)
                write.table(run_names[j],file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
                write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
                write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-               write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+               write.table(network_label,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
                write.table(data_to_write,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
             }
             else {
@@ -176,7 +171,23 @@ for (j in 1:length(run_names)) {
          level_names_bias <- c(level_names_bias,run_name)
       }
    }
+   ymax <- max(aqdat_out.df$Value)
+   ymin <- min(aqdat_out.df$Value)
+   {
+      if (j == 1) {
+         sp1<-ggplot(aqdat_out_obs.df,aes(x=bin,y=Value,color=Sim,fill=Sim)) + geom_boxplot(position="identity",width=0.9,outlier.size=1) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_color_manual(values=plot_colors2) + scale_y_continuous(limits = c(ymin,ymax), breaks = pretty(ymin:ymax, n = 10))
+         sp1<- sp1 + geom_boxplot(data=aqdat_temp,aes(x=bin,y=Value,color=Sim,fill=Sim),position="identity",width=widths[j],outlier.size=1) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_color_manual(values=plot_colors2) + scale_y_continuous(limits = c(ymin,ymax), breaks = pretty(ymin:ymax, n = 10))
+         sp_bias<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,color=Sim,fill=Sim)) + geom_boxplot(position="identity",width=widths[j]) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) +  scale_color_manual(values=plot_colors2[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))         
+      }
+      else {
+         sp1 <- sp1 + geom_boxplot(data=aqdat_temp,aes(x=bin,y=Value,color=Sim,fill=Sim),position="identity",width=widths[j],outlier.size=1) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_color_manual(values=plot_colors2) + scale_y_continuous(limits = c(ymin,ymax), breaks = pretty(ymin:ymax, n = 10))
+         sp_bias <- sp_bias + geom_boxplot(data=aqdat_temp_bias,aes(x=bin,y=Value,color=Sim,fill=Sim)) + geom_boxplot(position="identity",width=widths[j]) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) + scale_color_manual(values=plot_colors2[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))
+      }
+   }
 }
+ggsave(filename_pdf,plot=sp1,height=9,width=9)
+ggsave(filename_bias_pdf,plot=sp_bias,height=9,width=9)
+
 aqdat_out.df$Sim <- factor(aqdat_out.df$Sim, levels = level_names)
 aqdat_out_bias.df$Sim <- factor(aqdat_out_bias.df$Sim, levels=level_names_bias)
 
@@ -185,12 +196,29 @@ bias.title <- title_bias
 
 options(bitmapType='cairo')
 
+ymax <- max(aqdat_out.df$Value)
+ymin <- min(aqdat_out.df$Value)
+
+if (length(y_axis_max) > 0) {
+   ymax         <- y_axis_max
+}
+if (length(y_axis_min) > 0) {
+   ymin         <- y_axis_min
+}
+if (length(bias_y_axis_max) > 0) {
+    bias_max   <- bias_y_axis_max
+}
+if (length(bias_y_axis_min) > 0) {
+    bias_min   <- bias_y_axis_min
+}
+
 #pdf(file=filename_pdf,width=9,height=9)
 #sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.position="top",plot.title=element_text(hjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10)) + guides(fill=guide_legend(nrow=2,byrow=TRUE))
-sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(breaks = pretty(aqdat_out.df$Value, n = 10))
+sp<-ggplot(aqdat_out.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8),outlier.size=1) + theme(legend.title=element_blank(), legend.text = element_text(size=13), legend.key.size = unit(0.8, 'cm'), legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=title,x=date_title,y=paste(species,"(",units,")")) + scale_fill_manual(values=plot_colors) + scale_y_continuous(limits = c(ymin,ymax), breaks = pretty(ymin:ymax, n = 10))
+
 #sp
 #dev.off()
-ggsave(filename_pdf,height=9,width=9)
+if (overlap_boxes != "y") { ggsave(filename_pdf,plot=sp,height=9,width=9) }
 
 if ((ametptype == "png") || (ametptype == "both")) {
    convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf," png:",filename_png,sep="")
@@ -204,10 +232,11 @@ if ((ametptype == "png") || (ametptype == "both")) {
 
 
 #pdf(file=filename_pdf_bias,width=9,height=9)
-sp<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))
+sp<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(position=position_dodge(0.8)) + theme(legend.title = element_blank(), legend.text = element_text(size=13), legend.key.size = unit(0.8, 'cm'), legend.justification=c(0,1), legend.position=c(0.02,0.98), legend.background=element_blank(), legend.key=element_blank(), plot.title=element_text(hjust=0.5), axis.text.x=element_text(angle=x_label_angle, vjust=0.5)) + labs(title=bias.title,x=date_title,y=paste(species,"Bias (",units,")")) + geom_hline(yintercept=0,color="black") + scale_fill_manual(values=plot_colors[-1]) + scale_y_continuous(breaks = pretty(aqdat_out_bias.df$Value, n = 10))
+
 #sp
 #dev.off()
-ggsave(filename_pdf_bias,height=9,width=9)
+if (overlap_boxes != "y") { ggsave(filename_pdf_bias,plot=sp,height=9,width=9) }
 
 if ((ametptype == "png") || (ametptype == "both")) {
    convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf_bias," png:",filename_png_bias,sep="")

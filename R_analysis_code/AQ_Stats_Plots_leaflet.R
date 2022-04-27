@@ -10,7 +10,7 @@ header <- "
 ### self-contained using PANDOC. If PANDOC is unavailable, the selfcontained options at
 ### the end of this code should be set to false.
 ###
-### Last modified by Wyat Appel; March 2019
+### Last modified by Wyat Appel: Feb 2022
 ##################################################################################
 "
 
@@ -22,27 +22,29 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required Libraries 
-if(!require(leaflet)){stop("Required Package leaflet was not loaded")}
-if(!require(htmlwidgets)){stop("Required Package htmlwidgets was not loaded")}
-if(!require(maps)){stop("Required Package maps was not loaded")}
-if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
+#if(!require(leaflet)){stop("Required Package leaflet was not loaded")}
+#if(!require(htmlwidgets)){stop("Required Package htmlwidgets was not loaded")}
+#if(!require(maps)){stop("Required Package maps was not loaded")}
+#if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
+if(!require(webshot)){stop("Required Package webshot was not loaded")}
 
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
+if(!exists("png_from_html")) { png_from_html <- "n" }
 
 ################################################
 ## Set output names and remove existing files ##
 ################################################
 filename_all 	<- paste(run_name1,species,pid,"stats.csv",sep="_")
 filename_sites 	<- paste(run_name1,species,pid,"sites_stats.csv",sep="_")
-filename_nmb	<- paste(run_name1,species,pid,"stats_plot_NMB.html",sep="_")
-filename_nme	<- paste(run_name1,species,pid,"stats_plot_NME.html",sep="_")
-filename_fb	<- paste(run_name1,species,pid,"stats_plot_FB.html",sep="_")
-filename_fe	<- paste(run_name1,species,pid,"stats_plot_FE.html",sep="_")
-filename_rmse	<- paste(run_name1,species,pid,"stats_plot_RMSE.html",sep="_")
-filename_mb	<- paste(run_name1,species,pid,"stats_plot_MB.html",sep="_")
-filename_me	<- paste(run_name1,species,pid,"stats_plot_ME.html",sep="_")
-filename_corr	<- paste(run_name1,species,pid,"stats_plot_Corr.html",sep="_")
+filename_nmb	<- paste(run_name1,species,pid,"stats_plot_NMB",sep="_")
+filename_nme	<- paste(run_name1,species,pid,"stats_plot_NME",sep="_")
+filename_fb	<- paste(run_name1,species,pid,"stats_plot_FB",sep="_")
+filename_fe	<- paste(run_name1,species,pid,"stats_plot_FE",sep="_")
+filename_rmse	<- paste(run_name1,species,pid,"stats_plot_RMSE",sep="_")
+filename_mb	<- paste(run_name1,species,pid,"stats_plot_MB",sep="_")
+filename_me	<- paste(run_name1,species,pid,"stats_plot_ME",sep="_")
+filename_corr	<- paste(run_name1,species,pid,"stats_plot_Corr",sep="_")
 filename_txt 	<- paste(run_name1,species,pid,"stats_data.csv",sep="_")      # Set output file name
 filename_zip    <- paste(run_name1,species,pid,"stats_plots.zip",sep="_")
 
@@ -50,14 +52,23 @@ filename_zip    <- paste(run_name1,species,pid,"stats_plots.zip",sep="_")
 filename_all 	<- paste(figdir,filename_all,sep="/")
 filename_sites 	<- paste(figdir,filename_sites,sep="/")
 filename	<- NULL
-filename[1]	<- paste(figdir,filename_nmb,sep="/")
-filename[2]	<- paste(figdir,filename_nme,sep="/")
-filename[3]	<- paste(figdir,filename_fb,sep="/")
-filename[4]	<- paste(figdir,filename_fe,sep="/")
-filename[5]	<- paste(figdir,filename_rmse,sep="/")
-filename[6]	<- paste(figdir,filename_mb,sep="/")
-filename[7]	<- paste(figdir,filename_me,sep="/")
-filename[8]	<- paste(figdir,filename_corr,sep="/")
+filename_png	<- NULL
+filename[1]	<- paste(figdir,"/",filename_nmb,".html",sep="")
+filename[2]	<- paste(figdir,"/",filename_nme,".html",sep="")
+filename[3]	<- paste(figdir,"/",filename_fb,".html",sep="")
+filename[4]	<- paste(figdir,"/",filename_fe,".html",sep="")
+filename[5]	<- paste(figdir,"/",filename_rmse,".html",sep="")
+filename[6]	<- paste(figdir,"/",filename_mb,".html",sep="")
+filename[7]	<- paste(figdir,"/",filename_me,".html",sep="")
+filename[8]	<- paste(figdir,"/",filename_corr,".html",sep="")
+filename_png[1] <- paste(figdir,"/",filename_nmb,".png",sep="")
+filename_png[2] <- paste(figdir,"/",filename_nme,".png",sep="")
+filename_png[3] <- paste(figdir,"/",filename_fb,".png",sep="")
+filename_png[4] <- paste(figdir,"/",filename_fe,".png",sep="")
+filename_png[5] <- paste(figdir,"/",filename_rmse,".png",sep="")
+filename_png[6] <- paste(figdir,"/",filename_mb,".png",sep="")
+filename_png[7] <- paste(figdir,"/",filename_me,".png",sep="")
+filename_png[8] <- paste(figdir,"/",filename_corr,".png",sep="")
 filename_txt 	<- paste(figdir,filename_txt,sep="/")
 filename_zip    <- paste(figdir,filename_zip,sep="/")
 #################################################
@@ -160,13 +171,13 @@ for (j in 1:total_networks) {
       ### If there are data, continue ###
       else {
          available_networks <- c(available_networks,network_label[j])
-         aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
+         aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),Stat_ID_NoPOC=I(aqdat_query.df$stat_id_noPOC),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
          if (use_avg_stats == "y") {
             aqdat.df <- Average(aqdat.df)
          }
    
          ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
-         data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
+         data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),stat_id_noPOC=I(aqdat.df$Stat_ID_NoPOC),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
          stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))	# Compute stats using DomainStats function for entire domain
          ##################################
 
@@ -175,7 +186,7 @@ for (j in 1:total_networks) {
 
          ### Compute site stats using SitesStats function ###
          sites_stats.df <- try(SitesStats(data_all.df))
-         sinfo_data[[k]] <-list(stat_id=sites_stats.df$Site_ID,lat=sites_stats.df$lat,lon=sites_stats.df$lon,NMB=sites_stats.df$NMB, NME=sites_stats.df$NME, MB=sites_stats.df$MB, ME=sites_stats.df$ME, FB=sites_stats.df$FB, FE=sites_stats.df$FE, RMSE=sites_stats.df$RMSE, CORR=sites_stats.df$COR)
+         sinfo_data[[k]] <-list(network=network,stat_id=sites_stats.df$Site_ID,lat=sites_stats.df$lat,lon=sites_stats.df$lon,NMB=sites_stats.df$NMB, NME=sites_stats.df$NME, MB=sites_stats.df$MB, ME=sites_stats.df$ME, FB=sites_stats.df$FB, FE=sites_stats.df$FE, RMSE=sites_stats.df$RMSE, CORR=sites_stats.df$COR)
          k <- k+1
 
          all_nmb	<- c(all_nmb,sites_stats.df$NMB)
@@ -191,6 +202,20 @@ for (j in 1:total_networks) {
          all_site	<- c(all_site,sites_stats.df$Site_ID)
       }
    }
+   lat_max <- max(all_lats)
+   lat_min <- min(all_lats)
+   lon_max <- max(all_lons)
+   lon_min <- min(all_lons)
+   lat_diff <- abs(lat_max) - abs(lat_min)
+   lon_diff <- abs(lon_max - lon_min)
+   center_lat <- lat_max - (abs(lat_max) - abs(lat_min))/2
+   center_lon <- lon_max - abs(lon_max - lon_min)/2
+   zoom_level <- 5
+   ### Terrible hack to adjust zoom for webshot pngs ###
+   if ((lat_diff < 16) && (lon_diff < 32)) { zoom_level <- 6 }
+   if ((lat_diff < 9) && (lon_diff < 18)) { zoom_level <- 7 }
+   #####################################################
+
    ##########################################
    ## Write output to comma delimited file ##
    ##########################################
@@ -221,13 +246,14 @@ stat_names      <- c("NMB (%)","NME (%)"," FB (%)", " FE (%)", paste(" RMSE (",u
 units_all       <- c("%","%","%","%",units,units,units,"none")
 #########################
 
-mapStates <- map("state",fill=T,plot=F)
-
 plot_data_all	<- c("all_nmb","all_nme","all_fb","all_fe","all_rmse","all_mb","all_me","all_corr")
 
+run_name_elements <-unlist(strsplit(run_name1,"_"))
+run_name_title <- run_name_elements[1]
+for (l in 2:length(run_name_elements)) { run_name_title <- paste(run_name_title,run_name_elements[l],sep="<br>") }
 for (i in 1:8) {
   plot_data <- get(plot_data_all[i])
-  plot_title <- paste(species,stat_names[i],"<br>",run_name1,"<br>", dates,sep=" ")
+  plot_title <- stat_names[i]
   if (custom_title != "") { plot_title <- custom_title }
   my.colors <- colorRampPalette(c(grey(.8),"mediumpurple","darkorchid4", "#002FFF", "green", "yellow", "orange", "red", "brown"))
   data.df <- data.frame(site.id=all_site,latitude=all_lats,longitude=all_lons,data.obs=plot_data)
@@ -274,56 +300,63 @@ for (i in 1:8) {
   n.bins <- length(data.seq)
   binpal2 <- colorBin(my.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
 
-  leaflet_map <- c("OpenStreetMap.Mapnik","OpenStreetMap.BlackAndWhite","OpenTopoMap","Esri.WorldImagery","Esri.WorldStreetMap")
-  my.leaf <- leaflet(data=mapStates) %>% addProviderTiles(leaflet_map[1],group="Street Map")  %>%
-                                       addProviderTiles(leaflet_map[2],group="B&W Street Map")  %>%
-                                       addProviderTiles(leaflet_map[3],group="Topo Map") %>%
-                                       addProviderTiles(leaflet_map[4],group="ESRI World Imagery") %>%
-                                       addProviderTiles(leaflet_map[5],group="ESRI Street Map")
-
+  my.leaf <- my.leaf.base
   for (j in 1:length(available_networks)) {
     if(i == 1) {
         plot_val <- sinfo_data[[j]]$NMB
         name <- "NMB"
         val_units <- "%"
+        ecdf_data <- all_nmb
      }
      if(i == 2) {
         plot_val <- sinfo_data[[j]]$NME
         name <- "NME"
         val_units <- "%"
+        ecdf_data <- all_nme
      }
      if(i == 3) {
         plot_val <- sinfo_data[[j]]$FB
         name <- "FB"
         val_units <- "%"
+        ecdf_data <- all_fb
      }
      if(i == 4) {
         plot_val <- sinfo_data[[j]]$FE
         name <- "FE"
         val_units <- "%"
+        ecdf_data <- all_fe
      }
      if(i == 5) {
         plot_val <- sinfo_data[[j]]$RMSE
         name <- "RMSE"
         val_units <- units
+        ecdf_data <- all_rmse
      }
      if(i == 6) {
         plot_val <- sinfo_data[[j]]$MB
         name <- "MB"
         val_units <- units
+        ecdf_data <- all_mb
      }    
      if(i == 7) {
         plot_val <- sinfo_data[[j]]$ME
         name <- "ME"
         val_units <- units
+        ecdf_data <- all_me
      }
      if(i == 8) {
         plot_val <- sinfo_data[[j]]$COR
         name <- "Correlation"
         val_units <- "none"
+        ecdf_data <- all_corr
      }
-    data.df <- data.frame(site.id=sinfo_data[[j]]$stat_id,latitude=sinfo_data[[j]]$lat,longitude=sinfo_data[[j]]$lon,data.obs=plot_val)
-    contents <- paste("Site: ", sinfo_data[[j]]$stat_id,
+#    tag.map.title.png <- tag_map_title_png_func(30)
+    main_title <- tags$div(tag.map.title.html, HTML(paste(run_name1,species,name,dates,sep=" ")))
+    main_title_png <- tags$div(tag.map.title.png, HTML(paste(run_name1,species,name,dates,sep=" ")))
+    data.df <- data.frame(network=sinfo_data[[j]]$network,site.id=sinfo_data[[j]]$stat_id,latitude=sinfo_data[[j]]$lat,longitude=sinfo_data[[j]]$lon,data.obs=plot_val)
+    contents <- paste("Network: ",sinfo_data[[j]]$network,
+                  "<br/>",
+                  "Site: ", sinfo_data[[j]]$stat_id,
                   "<br/>",
                   "NMB: ", round(sinfo_data[[j]]$NMB, 2),"%",
                   "<br/>",
@@ -341,19 +374,33 @@ for (i in 1:8) {
                   "<br/>",
                   "Correlation:", round(sinfo_data[[j]]$COR, 2), sep=" ")
 
-    contents2 <- paste("Site: ", sinfo_data[[j]]$stat_id,"   ",name,": ", round(plot_val, 2), val_units, sep=" ")
-
-      my.leaf <- my.leaf %>% addCircleMarkers(sinfo_data[[j]]$lon,sinfo_data[[j]]$lat,color=~binpal2(plot_val),group=available_networks[[j]],radius=5,data=data.df,opacity=1,fillOpacity=1,popup=contents,label=contents2)
+    contents2 <- paste("Network: ",sinfo_data[[j]]$network,"; Site: ", sinfo_data[[j]]$stat_id,"; ",name,": ", round(plot_val, 2), val_units, sep=" ")
+    
+    if(!exists("plot_radius")) { plot_radius <- 0 }
+    if(!exists("outlier_radius")) { outlier_radius <- 40 }
+    if(!exists("fill_opacity")) { fill_opacity <- 0.8 }
+    plot_rad <- plot_radius
+    if (plot_rad == 0) {
+       max.radius <- 20
+       min.radius <- 4
+       plot_rad <- ecdf(abs(ecdf_data))(abs(plot_val))*max.radius
+       plot_rad[plot_rad < min.radius] <- min.radius
+       plot_rad[abs(plot_val) > max.data] <- outlier_radius
+    }
+    my.leaf <- my.leaf %>% addCircleMarkers(sinfo_data[[j]]$lon,sinfo_data[[j]]$lat,color="black",fillColor=~binpal2(plot_val),group=available_networks[[j]],radius=plot_rad*symbsizfac,stroke=TRUE,weight=1,data=data.df,opacity=1,fillOpacity=fill_opacity,popup=contents,label=contents2, labelOptions = labelOptions(noHide = F, textsize = "15px"))
     }
 
-  my.leaf <- my.leaf %>% addLegend("bottomright", pal = binpal2, values = c(min.data,max.data), title = plot_title, opacity = 2) %>%
-  addLayersControl(
-          baseGroups = c("Street Map","B&W Street Map","Topo Map","ESRI World Imagery","ESRI Street Map"),
-          overlayGroups = c(available_networks),
-          options =  layersControlOptions(collapsed = FALSE,position="topleft")
-  )
+  my.leaf <- my.leaf %>% addLegend("bottomright", pal = binpal2, values = c(min.data,max.data), title = plot_title, opacity = 2) 
+  my.leaf2 <- my.leaf %>% addProviderTiles(leaflet_map[1],group="Street Map") %>% setView(center_lon,center_lat,zoom=zoom_level)
+  my.leaf <- my.leaf %>% addControl(main_title,position="topright",className="map-title")
+  my.leaf2 <- my.leaf2 %>% addControl(main_title_png,position="topright",className="map-title")
+  my.leaf <- my.leaf %>%
+  addLayersControl(baseGroups = base_Groups,overlayGroups = c(available_networks),options =  layersControlOptions(collapsed = FALSE,position="topleft"))
   saveWidget(my.leaf, file=filename[i],selfcontained=T)	# Use if PANDOC is available
-#  saveWidget(my.leaf, file=filename[i],selfcontained=F) # Use if PANDOC is not available
+  saveWidget(my.leaf2, file="Rplot.html",selfcontained=T)
+  if (png_from_html == "y") {
+     webshot("Rplot.html", file = filename_png[i],cliprect = "viewport",zoom=2,vwidth=max(lon_diff*24.5,1600),vheight=max(lat_diff*36.5,800))
+  }
 }
 
 zip_files <- paste(run_name1,species,pid,"*",sep="_")

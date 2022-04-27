@@ -3,7 +3,7 @@
 #                                                                       #
 #                AMET (Atmospheric Model Evaluation Tool)               #
 #                                                                       #
-#                   Example Met-AQ coupled analysis                     #
+#                   Example Met-AQ coupled analysis 	                  #
 #                       MET_AQ_coupled.R                                #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -16,7 +16,8 @@
 # Version 1.2, May 6, 2013, Robert Gilliam
 # - Cleaned code
 #########################################################################
-#:::::::::::::::::::::::::::::::::::::::::::
+  options(warn=-1)
+#:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
   require(RMySQL)
   require(maps)

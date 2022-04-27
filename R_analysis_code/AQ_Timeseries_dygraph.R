@@ -9,7 +9,7 @@ header <- "
 ### the R htmlwidgets package and PANDOC. If PANDOC is not available, the selfcontained option
 ### should be set to F. Output format is html.
 ###
-### Last updated by Wyat Appel, June 2019
+### Last updated by Wyat Appel: Mar 2021
 ###########################################################################################
 "
 
@@ -75,28 +75,6 @@ rmse_min	<- NULL
 x_label		<- "Date"
 #######################
 
-{
-   run_names       <- run_name1  
-   if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
-      run_names <- c(run_names,run_name2)
-   }
-   if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
-      run_names <- c(run_names,run_name3)
-   }
-   if ((exists("run_name4")) && (nchar(run_name4) > 0)) {
-      run_names <- c(run_names,run_name4)
-   }
-   if ((exists("run_name5")) && (nchar(run_name5) > 0)) {
-      run_names <- c(run_names,run_name5)
-   }
-   if ((exists("run_name6")) && (nchar(run_name6) > 0)) {
-      run_names <- c(run_names,run_name6)
-   }
-   if ((exists("run_name7")) && (nchar(run_name7) > 0)) {
-      run_names <- c(run_names,run_name7)
-   }
-}
-
 labels <- c(network,run_names)
 num_runs <- length(run_names)
 
@@ -149,18 +127,11 @@ for (j in 1:num_runs) {	# For each simulation being plotted
 
    Date_Hour_Factor     <- factor(aqdat.df$Date_Hour,levels=unique(aqdat.df$Date_Hour))                   # Create unique levels so tapply maintains correct time order
 
-   centre <- function(x, type) {
-       switch(type,
-          mean = mean(x,na.rm=T),
-          median = median(x,na.rm=T),
-          sum = sum(x,na.rm=T))
-   }
-
    ### Calculate Obs and Model Means ###
    Obs_Period_Mean[[j]]	<- mean(aqdat.df$Obs_Value)
    Mod_Period_Mean[[j]]	<- mean(aqdat.df$Mod_Value)
-   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,centre,type=avg_func)
-   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,centre,type=avg_func)
+   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,FUN=avg_func)
+   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,FUN=avg_func)
    Num_Obs[[j]]         <- length(aqdat.df$Obs_Value)
 
    if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
@@ -181,8 +152,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       yearmonth            <- paste(years,months,sep="-")
       aqdat.df$Year	   <- years
       aqdat.df$YearMonth   <- yearmonth
-      Obs_Mean[[j]]	   <- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,centre,type=avg_func)
-      Mod_Mean[[j]]	   <- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,centre,type=avg_func)
+      Obs_Mean[[j]]	   <- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,FUN=avg_func)
+      Mod_Mean[[j]]	   <- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)sqrt(mean((dfrm$Mod_Value - dfrm$Obs_Value)^2))))
@@ -195,8 +166,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       yearmonth            <- paste(years[1],months,sep="-")
       aqdat.df$Year        <- years 
       aqdat.df$YearMonth   <- yearmonth
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
@@ -204,8 +175,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       x_label		   <- "Month"
    }
    if (averaging == "d") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Start_Date,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Start_Date,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
@@ -215,8 +186,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       years                <- substr(aqdat.df$Start_Date,1,4)
       months               <- substr(aqdat.df$Start_Date,6,7)
       days		   <- substr(aqdat.df$Start_Date,9,10)
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
@@ -227,8 +198,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    if (averaging == "a") {
       years                <- substr(aqdat.df$Start_Date,1,4)
       aqdat.df$Year        <- years
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,centre,type=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,centre,type=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,FUN=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,FUN=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))

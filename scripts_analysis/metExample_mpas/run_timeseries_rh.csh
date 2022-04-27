@@ -64,7 +64,9 @@
   ######################################################################
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries_rh.input  
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
+  setenv AMETRINPUT  $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries_rh.input
+  setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.static.input
   
   # NOTE: Do not modify; this statement is necessary if an array of sites is specified.
   setenv AMET_SITEID "$SITES[*]"
@@ -108,7 +110,7 @@
   set de2=`echo $AMET_DD | awk '{split($0,a,""); print a[5]}'`
   set datestart = $ys1$ys2$ys3$ys4$ms1$ms2$ds1$ds2
   set dateend   = $ye1$ye2$ye3$ye4$me1$me2$de1$de2
-  set outfile   = $AMET_OUT/$AMET_PROJECT1.RH.$PLOT_ID.$datestart\-$dateend
+  set outfile   = $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.$datestart\-$dateend\.time_series_RH
   ######################################################################
 
   if(-e $outfile.$AMET_PTYPE) then

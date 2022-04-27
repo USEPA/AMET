@@ -7,7 +7,7 @@ header <- "
 ### plot a single species from multiple simulations and multiple networks on
 ### a single plot. Output format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June, 2019
+### Last Updated by Wyat Appel: Mar 2021
 ##########################################################################
 "
 
@@ -36,10 +36,7 @@ if(!exists("trend_line")) { trend_line <- "n" }
 
 #################################
 
-{
-   if (custom_title == "") { title <- paste(run_name1," ",species," for ",dates,sep="") }
-   else { title <- custom_title }
-}
+title <- get_title(run_names,species,network_names,dates,custom_title)
 
 sinfo 		<- NULL
 axis.max 	<- NULL

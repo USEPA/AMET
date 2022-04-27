@@ -23,6 +23,14 @@
 #  - Added functions for new T, Q, RH and PS timeseries
 #  - Added a number of RAOB-Model plotting functions
 #
+# Version 1.5, Apr 16, 2021, Robert Gilliam
+#  - Wind vector error added for better wind error analysis
+#  - Gross QC limits on Mod-Obs difference allowed in stats calculations. 
+#    Defined in raob.input. Default use if old raob.input.
+#  - Wind vector error calculated for spatial and timeseries plots.
+#  - Other minor streamline updates. 
+#  - AMETPLOT statistics change -- removed normalized for un/systematic error
+#
 #-----------------------------------------------------------------------##################
 ##########################################################################################
 ##########################################################################################
@@ -43,7 +51,7 @@
 #       plotSpatialRaob  --> Plots RAOB spatial statistics from mandatory pressure level
 #                            data for specified lat-lon bounds. T, RH, WS, WD. 
 #
-#       plotTseriesRaobM   --> Plots daily RAOB statistics from mandatory pressure level
+#       plotTseriesRaobM --> Plots daily RAOB statistics from mandatory pressure level
 #                            data for specified lat-lon bounds. T, RH, WS, WD. 
 # 
 #       plotProfRaobM    --> Plots RAOB-Model profiles on Mandantory pressure levels.
@@ -146,7 +154,7 @@
   legend(date.vec[1],maxy,leglab,col=tscols,lty=1,lwd=2,cex=0.90,xjust=.20)
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC  ",ss$ioa,seps,ss2$ioa)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -196,7 +204,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC  ",ss$ioa,seps,ss2$ioa)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -245,7 +253,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC  ",ss$ioa,seps,ss2$ioa)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -572,47 +580,57 @@
        if( sum(var[ind,3],na.rm=T) == 0 ) { next;	}
        stats		<-genvarstats(list(obs=var[ind,3],mod=var[ind,2]),"Temperature (2m)")
        dstats[h,]	<-stats$metrics[statloc]
-       allstats[h,]	<-stats$metrics   
+       allstats[h,]	<-stats$metrics
    }
    statsAllHours<-genvarstats(list(obs=var[,3],mod=var[,2]),"Temperature (2m)")
-   allstatsx<-list(metrics=allstats,id=stats$id,name=stats$name,allHoursStats=statsAllHours$metrics[statloc])
+   allstatsx    <-list(metrics=allstats,id=stats$id,name=stats$name,allHoursStats=statsAllHours$metrics[statloc])
   ##########################################################################
  
   #################################################################################################################################
   #	GENERATE DIURNAL STATISTICS PLOT
   #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-  if (plotopts$plotfmt == "pdf"){writeLines(paste(figure,".pdf",sep=""));pdf(file= paste(figure,".pdf",sep=""), width = 10, height = 5)	}
-  if (plotopts$plotfmt == "bmp"){writeLines(paste(figure,".png",sep=""));bitmap(file=paste(figure,".png",sep=""), width = (700*plotopts$plotsize)/100, height = (350*plotopts$plotsize)/100, res=100,pointsize=10*plotopts$plotsize)	}
-  #if (plotopts$plotfmt == "png"){writeLines(paste(figure,".png",sep=""));png(file=paste(figure,".png",sep=""), width = (700*plotopts$plotsize), height = (350*plotopts$plotsize), pointsize=10*plotopts$plotsize)	}
-  if (plotopts$plotfmt == "jpeg"){writeLines(paste(figure,".jpeg",sep=""));jpeg(file=paste(figure,".jpeg",sep=""), width = (700*plotopts$plotsize), height = (350*plotopts$plotsize), quality=100)	}
-  if (plotopts$plotfmt == "png"){writeLines(paste(figure,".png",sep=""));bitmap(file=paste(figure,".png",sep=""), width = (700*plotopts$plotsize)/100, height = (350*plotopts$plotsize)/100, res=100,pointsize=10*plotopts$plotsize)	}
+  if (plotopts$plotfmt == "pdf"){
+    writeLines(paste("Figure: ",figure,".pdf",sep=""))
+    pdf(file= paste(figure,".pdf",sep=""), width = 10, height = 5)
+  }
+  if (plotopts$plotfmt == "bmp"){
+    writeLines(paste("Figure: ",figure,".png",sep=""))
+    bitmap(file=paste(figure,".png",sep=""), width = (700*plotopts$plotsize)/100, height = (350*plotopts$plotsize)/100, res=100,pointsize=10*plotopts$plotsize)
+  }
+  if (plotopts$plotfmt == "jpeg"){
+    writeLines(paste("Figure: ",figure,".jpeg",sep=""))
+    jpeg(file=paste(figure,".jpeg",sep=""), width = (700*plotopts$plotsize), height = (350*plotopts$plotsize), quality=100)
+  }
+  if (plotopts$plotfmt == "png"){
+    writeLines(paste("Figure: ",figure,".png",sep=""))
+    bitmap(file=paste(figure,".png",sep=""), width = (700*plotopts$plotsize)/100, height = (350*plotopts$plotsize)/100, res=100,pointsize=10*plotopts$plotsize)
+  }
   #:::::::::::::::::::::::::::::::::::::::::::::::
 
 
   ##############################################
   # Compute data limits for axis specs, generate labels, line colors, etc
-  maxs<- ceiling(max(dstats,na.rm=TRUE)*1.10)
-  mins<- (min(dstats,na.rm=TRUE)*1.05)
-  ylim<-c(mins,maxs)
-  ylocs<-c(-5,-4,-3,-2,-1,0,1,2,3,4,5)
+  maxs   <- ceiling(max(dstats,na.rm=TRUE)*1.10)
+  mins   <- (min(dstats,na.rm=TRUE)*1.05)
+  ylim   <-c(mins,maxs)
+  ylocs  <-c(-5,-4,-3,-2,-1,0,1,2,3,4,5)
   if(labels$units == "deg"){
-        ylocs<-c(-90,-60,-40,-30,-20,-10,0,10,20,30,40,60,90)
-#       ylim<-c(-90,90)  
-       ylim<-c(mins,maxs)
+    ylocs<-c(-90,-60,-40,-30,-20,-10,0,10,20,30,40,60,90)
+    ylim<-c(mins,maxs)
   }
 
-  ylabs<-ylocs
-  h<-0:23
-  xlim<-c(0,23)
-  xlocs<-seq(0,23,3)
-  xlabs<-paste(xlocs)
+  ylabs     <-ylocs
+  h         <-0:23
+  xlim      <-c(0,23)
+  xlocs     <-seq(0,23,3)
+  xlabs     <-paste(xlocs)
 
-  linecols<-c(2,4,gray(.10),gray(.10),gray(.10))
-  linecols<-c(2,4,3,5,6)
-  ylinescol<-gray(0.80)
-  legbg<-'white'
-  linetype<-c(1,1,1,1,1)
-  pchtype<-c(0,1,4,5,6)
+  linecols  <-c(2,4,gray(.10),gray(.10),gray(.10))
+  linecols  <-c(2,4,3,5,6)
+  ylinescol <-gray(0.80)
+  legbg     <-'white'
+  linetype  <-c(1,1,1,1,1)
+  pchtype   <-c(0,1,4,5,6)
   par(mgp=c(2,0.5,0))
   par(tcl=0.50)
   ##############################################
@@ -627,16 +645,13 @@
 	plot(h,dstats[,s],xlim=xlim, ylim=ylim,xlab="Time of Day (UTC)",ylab=paste("Evaluation Metric (",labels$units,") ",sep=""),
 	     label=FALSE,tick=FALSE,lty=linetype[s],pch=pchtype[s],col=linecols[s],type="b",lwd=2, axes=F )   		
         ng<-1000; ss<-10; e<-12; dd<-(e-ss)/ng
-        #rect(-1,ylim[1]-10,ss,ylim[2]+10,col="black",border=F)
         for(i in 1:ng) {
-            g<-gray(i/ng)
-        #    rect(ss,ylim[1]-10,ss+dd,ylim[2]+10,col=g,border=F)
+            g <-gray(i/ng)
             ss<-ss+dd
         }
         ng<-100; ss<-22; e<-24; dd<-(e-ss)/ng
         for(i in 1:ng) {
-            g<-gray(1-(i/ng))
-        #    rect(ss,ylim[1]-10,ss+dd,ylim[2]+10,col=g,border=F)
+            g <-gray(1-(i/ng))
             ss<-ss+dd
         }
    	par(tck=1)
@@ -745,7 +760,7 @@
 
 ###############################################
 #   Set plot margins and figure name 
-  writeLines(paste(figure,".",plotopts$plotfmt,sep=""))	
+  writeLines(paste("Figure: ",figure,".",plotopts$plotfmt,sep=""))	
 	
   if (plotopts$plotfmt == "pdf"){
     pdf(file= paste(figure,".pdf",sep=""), width = 8.5, height = 11)
@@ -780,31 +795,15 @@
   # Plot Rectangle that outlines table area
   plot(x,y, axes=TRUE, type='n',xlab='',ylab='',tick=FALSE,labels=FALSE )
 
-  #par(new=TRUE)
-  #par(fig=c(px1[2],px2[2],py1[2],py2[2])/10)
-  # Plot Rectangle that outlines table area
-  #plot(x,y, axes=TRUE, type='n',xlab='',ylab='',tick=FALSE,labels=FALSE )
-
   head<-array(NA,c(3,3,2))
-
-  #head[1,1,1]<-"Model";head[1,2,1]<-"Station";head[1,3,1]<-"Date Range";
-  #head[1,1,2]<-model  ;
-  #head[1,2,2]<-statid   ;
-  #head[1,3,2]<-paste(obdatestart," to ",obdateend);
-	
-  #head[2,1,1]<-"Model Run";head[2,2,1]<-"Network";head[2,3,1]<-"Time of Day";
-  #head[2,1,2]<-project    
-  #head[2,2,2]<-obnetwork
-  #head[2,3,2]<-obtime
-
   head[3,1,1]<-"Variable";head[3,2,1]<-"Query ID";head[3,3,1]<-"Forecast Hour";
   head[3,1,2]<-varid     ;head[3,2,2]<-queryID   ;head[3,3,2]<-fcasthr;
   ##########################################################################
   colxmod<-c(0.50,0.40,0.60)
   topdiv <-0.85
   margx  <-0.0
-  spaceV<-topdiv/length(head[,1,1])
-  spaceH<- 0.90*((1-margx)/length(head[1,,1]))
+  spaceV <-topdiv/length(head[,1,1])
+  spaceH <- 0.90*((1-margx)/length(head[1,,1]))
 
   for(c in 1:length(head[1,,1])){
     for(r in 1:length(head[,1,1])){
@@ -812,8 +811,6 @@
       x1<-margx+spaceH*(c-1)
       x2<-margx+spaceH*(colxmod[c])+spaceH*(c-1)
       y<-topdiv-spaceV*r
-      #text(x1,y,paste(head[r,c,1],":"),offset = 0.5, adj=c(0,0),vfont=c("serif","bold"),cex=1.0  )
-      #text(x2,y,head[r,c,2],offset = 0.5, adj=c(0,0),cex=.80 ,vfont=c("serif","plain") )
     }
   }
   par(font=6)
@@ -965,27 +962,27 @@
   plot(x,y, axes=TRUE, type='n',xlab='',ylab='',tick=FALSE,labels=FALSE )
 
   # Define the metrics to plot from the original metrics array
-  metricsID<-c("maxO","minO","meanO","medianO","sumO","varO","maxM","minM","meanM","medianM",
-               "sumM","varM","cor","var","sdev","magerror","mbias","mfbias","mnbias","mngerror",
-               "nmbias","nmerror","rmserror","length")
+  metricsID   <-c("count","maxO","minO","meanO","medianO","sumO","varO","maxM","minM","meanM",
+                  "medianM","sumM","varM","cor","var","sdev","mae","bias","mngerror","nmbias",
+                  "nmerror","rmses","rmseu","rmserror","ac")
   metricsLength<-length(metricsID)
   m2<-array(,);m2id<-array(,)
 
   adjustment<-mean(obs,na.rm=TRUE)/(max(range(obs,na.rm=TRUE),range(mod,na.rm=TRUE))-min(range(obs,na.rm=TRUE),range(mod,na.rm=TRUE)))
 
-  m2[1]<-format(metrics[1],digits=5);             m2id[1]<-'Data count                 ';
-  m2[2]<-format(metrics[14],digits=5);            m2id[2]<-'Correlation                ';
-  m2[3]<-format(metrics[16],digits=5);            m2id[3]<-'Standard Deviation         ';
-  m2[4]<-format(metrics[17],digits=5);            m2id[4]<-'Mean Absolute Error        ';
-  m2[5]<-format(metrics[18],digits=5);            m2id[5]<-'Mean Bias                  ';
-  m2[6]<-format(metrics[19],digits=5);            m2id[6]<-'*Mean Fractional Bias (%)  ';
-  m2[7]<-format(metrics[20]*adjustment,digits=5); m2id[7]<-'*Mean Normalized Bias (%)  ';
-  m2[8]<-format(metrics[21]*adjustment,digits=5); m2id[8]<-'*Mean Normalized Error (%) ';
-  m2[9]<-format(metrics[22]*adjustment,digits=5); m2id[9]<-'*Normalized Mean Bias (%)  ';
-  m2[10]<-format(metrics[23]*adjustment,digits=5);m2id[10]<-'*Normalized Mean Error (%)';
-  m2[11]<-format(metrics[24],digits=5);           m2id[11]<-'Root-Mean-Sqr-Error       ';
-  m2[12]<-format(metrics[25],digits=5);           m2id[12]<-'Index of Agreement        ';
-	
+  m2[1]<-format(metrics[1],digits=5);            m2id[1] <-'Data count                ';
+  m2[2]<-sprintf("%.2f",metrics[14]);            m2id[2] <-'Correlation               ';
+  m2[3]<-sprintf("%.2f",metrics[16]);            m2id[3] <-'Standard Deviation        ';
+  m2[4]<-sprintf("%.2f",metrics[17]);            m2id[4] <-'Mean Absolute Error       ';
+  m2[5]<-sprintf("%.2f",metrics[18]);            m2id[5] <-'Mean Bias                 ';
+  m2[6]<-sprintf("%.2f",metrics[19]*adjustment); m2id[6] <-'*Mean Normalized Error (%)';
+  m2[7]<-sprintf("%.2f",metrics[20]*adjustment); m2id[7] <-'*Normalized Mean Bias (%) ';
+  m2[8]<-sprintf("%.2f",metrics[21]*adjustment); m2id[8] <-'*Normalized Mean Error (%)';
+  m2[9]<-sprintf("%.2f",metrics[22]);            m2id[9] <-'Systematic RMSE           ';
+  m2[10]<-sprintf("%.2f",metrics[23]);           m2id[10]<-'Unsystematic RMSE         ';
+  m2[11]<-sprintf("%.2f",metrics[24]);           m2id[11]<-'Root-Mean-Sqr-Error       ';
+  m2[12]<-sprintf("%.2f",metrics[25]);           m2id[12]<-'Anomaly Correlation       ';
+
   if (wdflag == 1){m2[2]="n/a";m2[6:10]="n/a";m2[12]="n/a"}
     lmarg1<- 0.01
     lmarg2<- 0.75
@@ -1025,62 +1022,65 @@
 ######################################################################################################
   wdScatter <- function(obs,wdd,radius=10,dc=2,fr=0.50) {
 
-	mean(wdd)
-		a<-runif(length(obs),min=0,max=1)
-		x<-((obs+a)*sin(wdd*3.14/180))
-		y<-((obs+a)*cos(wdd*3.14/180))
+  mean(wdd)
+  a     <-runif(length(obs),min=0,max=1)
+  x     <-((obs+a)*sin(wdd*3.14/180))
+  y     <-((obs+a)*cos(wdd*3.14/180))
 
-	min<-min(min(x),min(y))
-	max<-max(max(x),max(y))
-	writeLines(paste(min,max,sep="   "))
-	min<--radius;max<-radius;
-	plot(x,y,axes=FALSE, tick=TRUE,labels=TRUE,pch=".",cex=2,xlab='',ylab='',xlim=c(min,max),ylim=c(min,max),col=dc)
+  min   <-min(min(x),min(y))
+  max   <-max(max(x),max(y))
+  #writeLines(paste(min,max,sep="   "))
+  min   <--radius;max<-radius;
+  plot(x,y,axes=FALSE, tick=TRUE,labels=TRUE,pch=".",cex=2,xlab='',ylab='',xlim=c(min,max),ylim=c(min,max),col=dc)
 
- 	deg<-c(1:360)
-        for (i in 2:radius-1) {
-		r<-i
-		cx<-((i)*sin(deg*3.14/180))
-		cy<-((i)*cos(deg*3.14/180))
+  deg   <-c(1:360)
+  for (i in 2:radius-1) {
+    r   <-i
+    cx  <-((i)*sin(deg*3.14/180))
+    cy  <-((i)*cos(deg*3.14/180))
 
-		if(i < radius){
-			polygon(cx,cy,lty=3)
-		}
-		else {
-			polygon(cx,cy)
-		}
-		text(r+0.25,0.25,paste(r))
-		text(-r+0.25,0.25,paste(r))
-        }
+    if(i < radius){
+      polygon(cx,cy,lty=3)
+    }
+    else {
+      polygon(cx,cy)
+    }
+    text(r+0.25,0.25,paste(r))
+    text(-r+0.25,0.25,paste(r))
+  }
         
-	lines(c(0,0),c(min,max),lw=2)
-        lines(c(min,max),c(0,0),lw=2)
-	cx<-((radius)*sin(deg*3.14/180))
-	cy<-((radius)*cos(deg*3.14/180))
-	polygon(cx,cy)
-	radius<-fr
-	cx<-((radius)*sin(deg*3.14/180))
-	cy<-((radius)*cos(deg*3.14/180))
-	polygon(cx,cy,col=1)
+  lines(c(0,0),c(min,max),lw=2)
+  lines(c(min,max),c(0,0),lw=2)
+  cx     <-((radius)*sin(deg*3.14/180))
+  cy     <-((radius)*cos(deg*3.14/180))
+  polygon(cx,cy)
+  radius <-fr
+  cx     <-((radius)*sin(deg*3.14/180))
+  cy     <-((radius)*cos(deg*3.14/180))
+  polygon(cx,cy,col=1)
 
-	j<-0;radius<-10;offset<-0.5
+  j      <-0
+  radius <-10
+  offset <-0.5
 
-	for (i in 1:12) {
-		cx<-((radius)*sin(j*3.14/180))
-		cy<-((radius)*cos(j*3.14/180))
-		lines(c(0,cx),c(0,cy),lty=3)
+  for (i in 1:12) {
+    cx   <-((radius)*sin(j*3.14/180))
+    cy   <-((radius)*cos(j*3.14/180))
+    lines(c(0,cx),c(0,cy),lty=3)
 
-		lab<-j
-		if (lab > 180){lab<-lab-360;}
+    lab  <-j
+    if (lab > 180){lab<-lab-360;}
 
-		labx<-((radius+offset)*sin(j*3.14/180))
-		laby<-((radius+offset)*cos(j*3.14/180))
-		text(labx,laby,paste(lab))
-		j<-j+30
-	}
+    labx <-((radius+offset)*sin(j*3.14/180))
+    laby <-((radius+offset)*cos(j*3.14/180))
+    text(labx,laby,paste(lab))
+    j    <-j+30
+  }
 
 }
 #####--------------------------		END OF FUNCTION 	--------------------------------------####
 ##########################################################################################################
+
 
 ###############################################################
 #- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
@@ -1114,7 +1114,10 @@
 ###
     plotSpatial<-function(sinfo,varlab,figure="spatial",nlevs=0,
  	                  bounds=c(24,50,-120,-60),plotopts=plotopts,
-                          histplot=F,shadeplot=F,sres=0.25, map.db="worldHires") {
+                          histplot=F,shadeplot=F,sres=0.25, map.db="worldHires",
+                          scale.symb=F, scale.by=sinfo$plotval, mincex=0.50, maxcex=2,
+                          max.val.scaled=max(abs(sinfo$plotval)), 
+                          outline.symb=F, neg.pos=F ) {
 
 ######################################################################################################
 # Open Figure  for plot functions
@@ -1135,9 +1138,8 @@
     sinfo$convFac<-1
   }
 # Set map symbols and calculate size based on relative data magnitude
-  spch    <-plotopts$symb		
-  mincex  <-0.65
-  scex    <-mincex+(abs(sinfo$plotval)/max(sinfo$levs))
+  spch    <-plotopts$symb
+  spch2   <-1
   scex    <-plotopts$symbsiz
   lonw    <- bounds[3]
   lone    <- bounds[4]
@@ -1145,26 +1147,38 @@
   latn    <-bounds[2]
 
   legoffset<- (1/50)*(lone-lonw)
+  
+  if(scale.symb) {
+   scaled  <- abs(scale.by)/max.val.scaled
+   scex    <-mincex+ (scaled * (maxcex-mincex) )
+   #writeLines(paste(scex))
+  }
+
 
 # Plot Map and values
   m<-map('usa',plot=FALSE)
   #map(map.db, xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1)
-  map("world", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1)
+  map("worldHires", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1)
   if(lonw > -150 & lone < 0 & lats > 0 & latn > 25) {
     map("state", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1, add=T)
   }
   points(sinfo$lon,sinfo$lat,pch=spch, cex=scex, col=pcols)
+
+  if(outline.symb) {
+    ocols <-"black"
+    if(neg.pos) {
+     ocols<-ifelse(scale.by < 0,"black","gray")
+    }
+    points(sinfo$lon,sinfo$lat,pch=spch2, cex=scex, col=ocols)
+  }
+
   box()
-  
 # Draw legend
   levLab<-sinfo$levs[1:(length(sinfo$levs)-1)]*sinfo$convFac
-  #legend(lone-legoffset,lats+2*legoffset,levLab,col=sinfo$levcols,pch=spch,xjust=1,yjust=0, pt.cex=0.75, cex=0.75)
   legend(lone,lats,levLab,col=sinfo$levcols,pch=spch,xjust=1,yjust=0, pt.cex=1.35, cex=1.20)
 
 # Draw Title
   title(main=paste(varlab[1]),cex.main = 1.0, line=0.25)
-#    
-  #text(lonw+legoffset,lats+legoffset,"An Atmospheric Model Evaluation Tool (AMET) Product",adj=c(0,1),cex=0.75)
   dev.off() 
  
  if(histplot){
@@ -1219,6 +1233,7 @@
 #----------------------------------------  END OF FUNCTION  ------------------------------------------------##
 ##############################################################################################################
 
+
 ###############################################################
 #- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
 ###############################################################
@@ -1235,12 +1250,23 @@
  plotSpatialRaob <-function(statsq, slatlon, sitesq, lev.array, 
                             col.array, plotopts, plotlab) {
  ################################################################
- nv<- dim(statsq)[2]
- nm<- 4
+ nv<- length(varID)
+ nm<- length(metricID)
  ns<- dim(statsq)[1]
+
+ if( dim(statsq)[2] > nv ) {
+   writeLines("** Importance Notice **")
+   writeLines("raob.input is old and does not consider wind vector error")
+   writeLines("WNDVEC mean error plot skipped until raob.input is update to AMETv1.5+")
+ }
 
  for(v in 1:nv) {
   for(m in 1:nm) {
+
+   #  WNDVEC v=5 only has mean error  m=1, added in v1.5
+   if(v == 5 & m != 2) {
+     next
+   }
 
    num.missing <- sum(is.na(statsq[,v,m]))
    if(num.missing > 0.25*ns) {
@@ -1252,7 +1278,7 @@
    figure  <- paste(plotopts$figdir,"/","raob.spatial.",metricID[m],".",varID[v],".",plotlab$datelab,".", 
                     plotlab$figurelablev,".",plotopts$project,".",plotopts$plotfmt,sep="")
 
-   if (plotopts$plotfmt == "pdf"){
+      if (plotopts$plotfmt == "pdf"){
      pdf(file= figure, width = 11, height = 8.5)
    }
    if (plotopts$plotfmt == "png"){
@@ -1272,6 +1298,7 @@
 
    # Set map symbols and calculate size based on relative data magnitude
    spch    <- plotopts$symb		
+   spch2   <- 21
    mincex  <- 0.65
    scex    <- plotopts$symbsiz
    lonw    <- bounds[3]
@@ -1279,6 +1306,11 @@
    lats    <- bounds[1]
    latn    <- bounds[2]
    legoffset<- (1/50)*(lone-lonw)
+   # Symbol conditions so circle, square, diamond and triangle options are outlined
+   if(spch == 19) { spch2<-21 }
+   if(spch == 15) { spch2<-22 }
+   if(spch == 17) { spch2<-24 }
+   if(spch == 18) { spch2<-23 }
 
    # Plot Map and values
    map('usa',plot=FALSE)
@@ -1287,7 +1319,7 @@
      map("state", xlim=c(lonw,lone),ylim=c(lats,latn),resolution=0, boundary = TRUE, lty = 1, add=T)
    }
    points(slatlon[,2],slatlon[,1],pch=spch, cex=scex, col=pcols)
-   points(slatlon[,2],slatlon[,1],pch=21, cex=scex, col="black")
+   points(slatlon[,2],slatlon[,1],pch=spch2,cex=scex, col="black")
    box()
   
    # Draw legend
@@ -1332,6 +1364,13 @@
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
                col.names=c(" siteID, siteLat "," siteLon "," WD RMSE "," WD MAE "," WD BIAS "),
                row.names=sitesq)
+   textfile   <- paste(plotopts$figdir,"/","raob.spatial.WNDVEC.",plotlab$datelab,".", 
+                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+   writeLines(paste("Writing spatial statistics csv text file for WNDVEC:",textfile))
+   sitetxtout <-data.frame(slatlon,format(statsq[,5,2], digits = 3))
+   write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
+               col.names=c(" siteID, siteLat "," siteLon "," WNDVEV MAE "),
+               row.names=sitesq)
  }
 
   
@@ -1356,10 +1395,16 @@
  plotTseriesRaobM <-function(statsq, date.vecm,
                            plotopts, plotlab, textstats=F) {
  ################################################################
- nv<- dim(statsq)[2]
- nm<- 4
+ nv<- length(varID)
+ nm<- length(metricID)
+ ns<- dim(statsq)[1]
+
+ if( dim(statsq)[2] > nv ) {
+   writeLines("** Importance Notice **")
+   writeLines("raob.input is old and does not consider wind vector error")
+   writeLines("WNDVEC mean error plot skipped until raob.input is update to AMETv1.5+")
+ }
  nt<- length(date.vecm)
- v<-1
  for(v in 1:nv) {
 
    figure  <- paste(plotopts$figdir,"/","raob.daily.",varID[v],".",plotlab$datelab,".", 
@@ -1375,15 +1420,40 @@
             height = (541*plotopts$plotsize)/100, res=100,pointsize=10*plotopts$plotsize)
    }
    writeLines(paste("*************************************************"))
-   writeLines(paste("Plotting RAOB Timeseries Statistis ",plotlab$varName[v]))
+   writeLines(paste("Plotting RAOB Timeseries Statistics ",plotlab$varName[v]))
    writeLines(paste(figure))
+   if(textstats){
+    writeLines(paste("Writing daily statistics csv text file:",textfile))
+    write.table(format(statsq[,v,1:4], digits = 3),file=textfile,append=F, quote=F, sep=",",
+                col.names=c("     DATE/TIME,        RMSE","    MAE","     BIAS","    CORR"),
+                row.names=date.vecm)
+   }
 
    par(mfrow=c(4,1))
    par(bg="white")
    par(fg="black")
    par(mai=c(0.25,0.5,0.25,0.25))
    par(mgp=c(1.40,0.2,0))
-# source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
+
+   if(v == 5) {
+     # If mean wind vector error plot as MAE and skip other panels
+     m <-2
+     tmpvarlab1<-paste(metricID[m]," (",plotlab$varUnits[v],")", sep="")
+     tmpvarlab2<-paste("Daily ",plotlab$varName[v]," ",metricID[m]," (",plotlab$varUnits[v],")", sep="")
+     plotvar   <-statsq[,v,m]
+     par(new=F)
+     plot(date.vecm,plotvar,xlab="",axes=FALSE,ylab=tmpvarlab1,
+          xlim=range(date.vecm),pch=4,cex=0.75,col="black",
+          vfont=c("serif","bold"),label=TRUE,type="l",lwd=2)
+     par(tck=1)
+     axis(1,col="black",lty=3,at=date.vecm[seq(1,nt)],
+          labels=date.vecm[seq(1,nt)], col.ticks="gray")
+     axis(2,col="black",lty=3, col.ticks="gray")
+     title(tmpvarlab2)
+     box()
+     dev.off()
+     break
+   }
 
    # RMSE Panel (1 of 4)
    m <-1
@@ -1400,6 +1470,7 @@
    axis(2,col="black",lty=3, col.ticks="gray")
    title(tmpvarlab2)
    box()
+   
    # MAE Panel (2 of 4)
    m <-2
    tmpvarlab1<-paste(metricID[m]," (",plotlab$varUnits[v],")", sep="")
@@ -1430,6 +1501,10 @@
    title(tmpvarlab2)
    box()
    # Correlation Panel (4 of 4)
+   if(v == 4) {
+     # If wind direction skip correlation panel and end plot
+     dev.off()
+   }
    if(v != 4) {
     m <-4
     tmpvarlab1<-paste(metricID[m], sep="")
@@ -1445,20 +1520,12 @@
     axis(2,col="black",lty=3, col.ticks="gray")
     title(tmpvarlab2)
     box()
-   }
-   dev.off()
-
-   if(textstats){
-    writeLines(paste("Writing daily statistics csv text file:",textfile))
-    write.table(format(statsq[,v,1:4], digits = 3),file=textfile,append=F, quote=F, sep=",",
-                col.names=c("     DATE/TIME,        RMSE","    MAE","     BIAS","    CORR"),
-                row.names=date.vecm)
+    dev.off()
    }
 
  }   # End loop over variables
 
-# textfile <-
-  return()
+ return()
 
  }
 ###############################################################
@@ -1554,6 +1621,7 @@
   par(mgp=c(2,0.7,0))
   xlims    <- ceiling(range(statsq.new[,v,1],na.rm=T))
   xlims[1] <- 0
+  #xlims[2] <- 25
   par(tck=0.05)
   plot(statsq.new[,v,1],levels.new,xlim=xlims,ylim=rev(proflim), axes=T,
        ylab="Pressure (mb)", xlab=paste("RMSE (",plotlab$varUnits[v],")",sep=""),
@@ -1699,9 +1767,9 @@
  mod <-array(NA,c(nz,nt))
  for(tt in 1:nt){
    a<-which(date.vec[tt] == iso.date)
-   if(length(a) == 0) { next }
-   obs[,a[1]] <-obsmod[is.mandatory,1,a]
-   mod[,a[1]] <-obsmod[is.mandatory,2,a]
+   if(length(a) == 0 || a>nt ) { next }
+   obs[,a[1]] <-obsmod[is.mandatory,1,a[1]]
+   mod[,a[1]] <-obsmod[is.mandatory,2,a[1]]
  }
 
  nt.nona<-sum(ifelse(!is.na(obs[nz,]),1,0))

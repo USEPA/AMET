@@ -8,7 +8,7 @@ header <- "
 ### network.  Mutiple values for a site are averaged to a single value for plotting purposes.
 ### The map area plotted is dynamically generated from the input data.   
 ###
-### Last modified by Wyat Appel: June, 2019
+### Last modified by Wyat Appel: Feb 2022
 ########################################################################################
 "
 
@@ -25,6 +25,7 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
+if(!exists("near_zero_color")) { near_zero_color <- "grey50" }
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
@@ -63,6 +64,9 @@ all_min		<- NULL
 bounds          <- NULL						# Set map bounds to NULL
 sub_title       <- NULL						# Set sub title to NULL
 lev_lab         <- NULL
+legend_names    <- NULL
+legend_chars    <- NULL
+
 plot.symbols<-as.integer(plot_symbols)
 pick.symbol.name.fun<-function(x){
    master.symbol.df<-data.frame(plot.symbols=c(16,17,15,18,8,11,4),names=c("CIRCLE","TRIANGLE","SQUARE","DIAMOND","BURST","STAR","X"))
@@ -79,6 +83,7 @@ spch<-plot.symbols
 
 remove_negatives <- "n"
 total_networks <- length(network_names)
+k <- 1
 for (j in 1:total_networks) {                                            # Loop through for each network
    sites	<- NULL
    lats		<- NULL
@@ -122,6 +127,8 @@ for (j in 1:total_networks) {                                            # Loop 
          if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
       }
       else {
+         legend_names <<- c(legend_names,network_label[j])
+         legend_chars <<- c(legend_chars,spch[k])
          ### Match the points between each of the runs.  This is necessary if the data from each query do not match exactly ###
          aqdat1.df$statdate<-paste(aqdat1.df$stat_id,aqdat1.df$ob_dates,aqdat1.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 1
          aqdat2.df$statdate<-paste(aqdat2.df$stat_id,aqdat2.df$ob_dates,aqdat2.df$ob_hour,sep="")     # Create unique column that combines the site name with the ob start date for run 2
@@ -167,7 +174,8 @@ for (j in 1:total_networks) {                                            # Loop 
          all_diff <- c(all_diff,avg_diff)
          all_max  <- c(all_max,max_diff)
          all_min  <- c(all_min,min_diff)
-         sub_title    <- paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched w/ the appropriate symbol
+         #sub_title    <- paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched w/ the appropriate symbol
+         k<-k+1
       }
    }
 }
@@ -176,12 +184,12 @@ for (j in 1:total_networks) {                                            # Loop 
 bounds<-c(min(all_lats,bounds[1]),max(all_lats,bounds[2]),min(all_lons,bounds[3]),max(all_lons,bounds[4]))
 plotsize<-1.50									# Set plot size
 symb<-15										# Set symbol character
-symbsiz<-0.9										# Set symbol size
+symbsiz<-1.1										# Set symbol size
 if (length(sites) > 500) {
-   symbsiz <- 0.7
+   symbsiz <- 0.9
 }
 if (length(sites) > 10000) {
-   symbsiz <- 0.5
+   symbsiz <- 0.7
 }
 #########################
 
@@ -235,8 +243,8 @@ cols_diff                               <- NULL
 leg_colors_diff				<- NULL
 low_range                               <- cool_colors(trunc(length_levs_diff/2))
 high_range                              <- hot_colors(trunc(length_levs_diff/2))
-cols_diff                               <- c(low_range,"grey50",high_range)
-leg_colors_diff                         <- c(low_range,"grey50","grey50",high_range)
+cols_diff                               <- c(low_range,near_zero_color,high_range)
+leg_colors_diff                         <- c(low_range,near_zero_color,near_zero_color,high_range)
 #####################################################################
 
 #####################################
@@ -277,8 +285,8 @@ cols_max                                <- NULL
 leg_colors_max				<- NULL
 low_range                               <- cool_colors(trunc(length_levs_max/2))
 high_range                              <- hot_colors(trunc(length_levs_max/2))
-cols_max                                <- c(low_range,"grey50",high_range)
-leg_colors_max                          <- c(low_range,"grey50","grey50",high_range)
+cols_max                                <- c(low_range,near_zero_color,high_range)
+leg_colors_max                          <- c(low_range,near_zero_color,near_zero_color,high_range)
 #####################################################################
 
 for (l in 1:total_networks) {

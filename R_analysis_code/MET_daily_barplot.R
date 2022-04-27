@@ -34,7 +34,15 @@
 #           - two digit hour taken from ob_date, not ob_time to be      #
 #             consistant with new MySQL time structure. No impact       #
 #             since hour of day is not used in daily barplots.          #
+#                                                                       #            
+#  Version 1.5, Apr 19, 2021, Robert Gilliam                            # 
+#  Updates: - QC for range of values and mod-obs diff were hidden in    #
+#             data prep routine. These are now controlled by user       #
+#             daily_barplot.input file for more transparent QA with info#
+#           - Added average wind vector error daily WNDVEC              # 
+#                                                                       #            
 #########################################################################
+  options(warn=-1)
 #:::::::::::::::::::::::::::::::::::::::::::::
 #	Load required modules
  if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
@@ -68,7 +76,35 @@
                         passwd=amet_pass,maxrec=maxrec)
 
  plotopts       <-list(plotfmt=plotfmt)
- dailybox.Rfile <-paste(figdir,"/daily_bar_",project,".",runid,".Rdata",sep="")
+ dailybox.Rfile <-paste(figdir,"/",project,".",runid,".daily_barplot.Rdata",sep="")
+
+ # Compatibility check for new variables in case of old config files
+ if(!exists("querystr") & exists("query_str")) {  querystr <- query_str }
+ if(!exists("querystr") & !exists("query_str")){
+   stop("No valid query specification was set. Check config files for querystr or query_str variables.")
+ }
+
+ # User QC settings representing the largest difference allowed between mod and obs.
+ # if these are not defined because of old daily_barplot.input, set default values and notify
+ if(!exists("qcerror") )   {
+   writeLines("** Importance Notice **")
+   writeLines("User QC limits (qcerror) in AMETv1.5+ not defined in daily_barplot.input because it is old.")
+   writeLines("Default to 15, 20, 10, 50 for T, WS, Q and RH. User can alter if they update daily_barplot.input")
+   writeLines("e.g., qcerror <- c(15,20,10,50)")
+   writeLines(" ****************************************** ")
+   qcerror <- c(15,20,10,50)
+ }
+ # Make sure user is aware of QC limits on diff
+ writeLines(paste("QC applied on mod-obs difference allowed (see daily_barplot.input qcerror)"))
+ writeLines(paste("Max diff allowed T/WS/Q ...",qcerror[1],qcerror[2],qcerror[3]))
+ if(!exists("qcWS") )   {
+   writeLines("** Importance Notice **")
+   writeLines("User QC of wind speed range qcWS in AMETv1.5+ not defined in daily_barplot.input because it is old.")
+   writeLines("Default to 0.5 to 25 m/s. User can alter if they update daily_barplot.input qcWS <- c(0.25,25) ")
+   writeLines(" ****************************************** ")
+   qcWS <- c(0.5,25)
+ }
+
 #####################################################################
 # MAIN PROGRAM
 # 1. Query for data over requested time period
@@ -109,8 +145,8 @@
  colnames(corData) <- c("T","Q","WS","WD")
  biasData          <- array(NA,c(numDays,4))
  colnames(biasData)<- c("T","Q","WS","WD")
- RMSEData          <- array(NA,c(numDays,4))
- colnames(RMSEData)<- c("T","Q","WS","WD")
+ RMSEData          <- array(NA,c(numDays,5))
+ colnames(RMSEData)<- c("T","Q","WS","WD","WNDVEC")
  
 #####################################################################
  # Loop through dates to generate data
@@ -150,7 +186,13 @@
  	  corData[i,4]  <- cor(dayData$wd[,2],dayData$wd[,1],use="complete.obs")
  	  biasData[i,4] <- mbias(dayData$wd[,2],dayData$wd[,1],na.rm=T)
  	  RMSEData[i,4] <- rmserror(dayData$wd[,2],dayData$wd[,1],na.rm=T)
-  }
+        }
+
+ 	if(sum(ifelse(is.na(dayData$u[,1]), 0,1)) != 0 ){
+ 	  RMSEData[i,5] <- mean (sqrt( (dayData$u[,1]-dayData$u[,2])^2 + 
+                                       (dayData$v[,1]-dayData$v[,2])^2 ), na.rm=T)
+        }
+
  }
  writeLines(paste("Daily R file output",dailybox.Rfile))
  save(corData,biasData,RMSEData,file=dailybox.Rfile)
@@ -272,6 +314,19 @@
 
  system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".WD.daily_stats.csv",sep=""))
  system(paste("rm -f ",figdir,"/tmp* ",sep=""))
+
+ # Write out daily wind vector error to text file
+
+ sfile<-file(paste(figdir,"/tmp",sep=""),"a")
+ writeLines("--------------------------------------------------------", con =sfile)
+ writeLines("Daily Wind Vector (10 m) mean error", con =sfile)
+ close(sfile)
+ write.table(data.frame(dates,RMSEData[,5]),paste(figdir,"/tmpx",sep=""),sep=",",col.names=F, row.names=F, quote=FALSE)
+ system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
+ system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
+
+ system(paste("mv ",figdir,"/tmp ",figdir,"/",project,".",runid,".WNDVEC.daily_stats.csv",sep=""))
+ system(paste("rm -f ",figdir,"/tmp* ",sep=""))
 #####################################################################
 
 #####################################################################
@@ -281,7 +336,7 @@
  #################################
  #Temperature Bar Plots
  dates <- format(seq.Date(from=as.Date(data[1,1],format="%Y%m%d"),length.out=numDays,by="day"),'%b-%d-%y')
- pname <-paste(figdir,"/",project,".",runid,".T.daily_barplot_cor.",plotopts$plotfmt,sep="")
+ pname <-paste(figdir,"/",project,".",runid,".T.daily_barplot_CORR.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  mp    <- barplot(corData[,1],beside=T,main=paste(varsName[1],"Daily Correlation"),mar=c(7,4,4,2))
@@ -289,7 +344,7 @@
  phandle<-dev.off()
 
 
- pname <-paste(figdir,"/",project,".",runid,".T.daily_barplot_bias.",plotopts$plotfmt,sep="")
+ pname <-paste(figdir,"/",project,".",runid,".T.daily_barplot_BIAS.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  mp    <- barplot(biasData[,1],beside=T,main=paste(varsName[1],"Daily Bias"),mar=c(7,4,4,2))
@@ -310,14 +365,14 @@
  # Mixing Ratio Bar Plots
  # Test to see if data is missing.  This is true for MCIP as there is no Q in the METCRO2D files
  if(length(which(is.na(dayData$q)) == TRUE) != length(dayData$q)) {
-   pname<-paste(figdir,"/",project,".",runid,".Q.daily_barplot_cor.",plotopts$plotfmt,sep="")
+   pname<-paste(figdir,"/",project,".",runid,".Q.daily_barplot_CORR.",plotopts$plotfmt,sep="")
    if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
    if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
    barplot(corData[,2],beside=T,main=paste(varsName[2],"Daily Correlation"),mar=c(7,4,4,2))
    axis(1,labels=dates,at=mp,las=2)
    phandle<-dev.off()
 
-   pname<-paste(figdir,"/",project,".",runid,".Q.daily_barplot_bias.",plotopts$plotfmt,sep="")
+   pname<-paste(figdir,"/",project,".",runid,".Q.daily_barplot_BIAS.",plotopts$plotfmt,sep="")
    if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
    if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
    barplot(biasData[,2],beside=T,main=paste(varsName[2],"Daily Bias"),mar=c(7,4,4,2))
@@ -334,15 +389,15 @@
  #################################
 
  #################################
- #Wind Speed Bar Plots
- pname<-paste(figdir,"/",project,".",runid,".WS.daily_barplot_cor.",plotopts$plotfmt,sep="")
+ # Wind Speed Bar Plots
+ pname<-paste(figdir,"/",project,".",runid,".WS.daily_barplot_CORR.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(corData[,3],beside=T,main=paste(varsName[3],"Daily Correlation"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
  phandle<-dev.off()
 
- pname<-paste(figdir,"/",project,".",runid,".WS.daily_barplot_bias.",plotopts$plotfmt,sep="")
+ pname<-paste(figdir,"/",project,".",runid,".WS.daily_barplot_BIAS.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(biasData[,3],beside=T,main=paste(varsName[3],"Daily Bias"),mar=c(7,4,4,2))
@@ -358,15 +413,25 @@
  #################################
 
  #################################
- #Wind Direction Bar Plots
- pname<-paste(figdir,"/",project,".",runid,".WD.daily_barplot_cor.",plotopts$plotfmt,sep="")
+ # Wind Vector mean error
+ pname<-paste(figdir,"/",project,".",runid,".WNDVEC.daily_barplot_ME.",plotopts$plotfmt,sep="")
+ if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
+ if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
+ barplot(RMSEData[,5],beside=T,main=paste("Daily Mean 10m Wind Vector Error"),mar=c(7,4,4,2))
+ axis(1,labels=dates,at=mp,las=2)
+ phandle<-dev.off()
+ #################################
+
+ #################################
+ # Wind Direction Bar Plots
+ pname<-paste(figdir,"/",project,".",runid,".WD.daily_barplot_CORR.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(corData[,4],beside=T,main=paste(varsName[4],"Daily Correlation"),mar=c(7,4,4,2))
  axis(1,labels=dates,at=mp,las=2)
  phandle<-dev.off()
 
- pname<-paste(figdir,"/",project,".",runid,".WD.daily_barplot_bias.",plotopts$plotfmt,sep="")
+ pname<-paste(figdir,"/",project,".",runid,".WD.daily_barplot_BIAS.",plotopts$plotfmt,sep="")
  if (plotopts$plotfmt == "pdf"){pdf(file= pname, width = 11, height = 8.5)	}
  if (plotopts$plotfmt == "png"){png(file=pname, width=600,height=600)      }
  barplot(biasData[,4],beside=T,main=paste(varsName[4],"Daily Bias"),mar=c(7,4,4,2))
@@ -380,4 +445,3 @@
  axis(1,labels=dates,at=mp,las=2)
  phandle<-dev.off()
  #################################
-quit(save='no')
