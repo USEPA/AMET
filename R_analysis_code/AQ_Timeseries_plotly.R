@@ -353,6 +353,7 @@ inc_nme <- "n"
 
 #data.df <- data.frame(Dates=Dates[[1]],Obs=Obs_Mean[[1]])
 #data.df <- data.frame(Dates=Dates_All,Obs=Obs_All)
+data.df <- unique(data.df)	# remove any duplicative rows
 
 xaxis <- list(title= x_label, automargin = TRUE,titlefont=list(size=30),tickfont=list(size=20))
 yaxis <- list(title=paste(species," (",units,")"),automargin=TRUE,titlefont=list(size=30),tickfont=list(size=20))
