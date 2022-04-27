@@ -73,6 +73,9 @@
  source (ametRinput)
 
  # Compatibility check for new variables in case of old config files
+ if(!exists("querystr") & !exists("query_str")){
+   stop("No valid query specification was set. Check config files for querystr or query_str variables.")
+ }
  if(!exists("query_str") ) {  query_str <- querystr }
  if(!exists("date_s") )    {  date_s    <- dates }
  if(!exists("date_e") )    {  date_e    <- datee }
@@ -266,7 +269,7 @@
               writeLines("Collective Temperature (2 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
+              tmp<-data.frame(stats$id, stats$metrics)
               write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
@@ -293,7 +296,7 @@
               writeLines("Collective Wind Speed (10 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
+              tmp<-data.frame(stats$id, stats$metrics)
               write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
@@ -325,8 +328,8 @@
               writeLines("Collective Wind Direction (10 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
-              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE)
+              tmp<-data.frame(stats$id, stats$metrics)
+              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
          }
@@ -352,8 +355,8 @@
               writeLines("Collective Mixing Ratio (2 m) Statistics", con =sfile)
               close(sfile)
     
-              tmp<-data.frame(stats$id,stats$metrics)
-              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE)
+              tmp<-data.frame(stats$id, stats$metrics)
+              write.table(tmp,paste(figdir,"/tmpx",sep=""),sep=",",quote=FALSE, row.names=F)
               system(paste("cat ",figdir,"/tmp ",figdir,"/tmpx> ",figdir,"/tmpxx",sep=""))
               system(paste("mv ",figdir,"/tmpxx ",figdir,"/tmp",sep=""))
          }

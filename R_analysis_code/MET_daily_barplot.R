@@ -78,6 +78,11 @@
  plotopts       <-list(plotfmt=plotfmt)
  dailybox.Rfile <-paste(figdir,"/",project,".",runid,".daily_barplot.Rdata",sep="")
 
+ # Compatibility check for new variables in case of old config files
+ if(!exists("querystr") & exists("query_str")) {  querystr <- query_str }
+ if(!exists("querystr") & !exists("query_str")){
+   stop("No valid query specification was set. Check config files for querystr or query_str variables.")
+ }
 
  # User QC settings representing the largest difference allowed between mod and obs.
  # if these are not defined because of old daily_barplot.input, set default values and notify
