@@ -19,7 +19,6 @@
 #	Configurable DATE Definitions
 #########################################################################
   querystr <-Sys.getenv("AMET_CRITERIA")	
-  query_str<-querystr
   pid      <-Sys.getenv("AMET_RUNID") 
   project  <-Sys.getenv("AMET_PROJECT")
   queryID  <-pid

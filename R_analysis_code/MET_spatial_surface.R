@@ -53,14 +53,7 @@
 #             End date with no hour is considered 00 UTC on that day, so a day is added to user
 #             end date and query was changed to less than end date.
 #                  
-#  Version 1.5, Apr 19, 2022, Robert Gilliam                            
-#  Updates: - New split config input file where "more" static settings  
-#             are split into a timeseries.static.input and key configs  
-#             remain in the timeseries.input. Backward compatible.
-#           - More robust threshold setting control for GUI and backward compat.
-#
-#############################################################################################################
-  options(warn=-1)
+#-----------------------------------------------------------------------#####################################
 #############################################################################################################
 #	Load required modules
   if(!require(maps))   {stop("Required Package maps was not loaded")}
@@ -74,21 +67,15 @@
 #    AND Load required function and conf. files
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## get some environmental variables and setup some directories
- ametbase         <- Sys.getenv("AMETBASE")
- ametR            <- paste(ametbase,"/R_analysis_code",sep="")
+ ametbase         <-Sys.getenv("AMETBASE")
+ ametR            <-paste(ametbase,"/R_analysis_code",sep="")
  ametRinput       <- Sys.getenv("AMETRINPUT")
- mysqlloginconfig <- Sys.getenv("MYSQL_CONFIG")
- ametRstatic      <- Sys.getenv("AMETRSTATIC")
+ mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
 
  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
  # and not specified via AMET_OUT, then set figdir to the current directory
  if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
  if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
- ## Check for Static file setting and set to empty if missing. Backward compat.
- ## & print input files for user notification 
- if(ametRstatic=="")                            { ametRstatic <- "./"               }
- writeLines(paste("AMET R Config input file:",ametRinput))
- writeLines(paste("AMET R Static input file:",ametRstatic))
 
  ## source some configuration files, AMET libs, and input
  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
@@ -96,7 +83,6 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
- source (ametRstatic)
 
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
@@ -104,16 +90,9 @@
                         passwd=amet_pass,maxrec=maxrec)
 
  # Site data count below which site is skipped at statistics set to NA
- # Logic added for backward compatibility where thresh is ENV setting
- # Or directly specified in ametRinput like in AMET GUI
- thresh_env     <- as.numeric(Sys.getenv("THRESHOLD"))
- if(!exists("thresh") & is.na(thresh_env)){ 
-    writeLines(paste("*** WARNING ***   Threshold count for statistics not defined. Setting to 24..."))
-    thresh <- 24 
- }
- if(is.numeric(thresh_env) & !exists("thresh")){ 
-    thresh <- thresh_env
- }
+ thresh         <- as.numeric(Sys.getenv("THRESHOLD"))
+ if(!exists("thresh") ){ thresh <- 20	}
+
 
  dates <- mdy.date(month = ms, day = ds, year = ys)
  datee <- mdy.date(month = me, day = de, year = ye)+1
@@ -162,7 +141,6 @@ while(datex <= datee) {
   }
   else {
     writeLines(paste(query))
-    writeLines(paste(qstat))
     sstats<-try(stationStatsSfc(query,qstat,mysql,wsmin=0.5,thresh=thresh,t.test=t.test.flag),silent=FALSE)
   } 	
   if(wantsave ){
@@ -256,5 +234,5 @@ while(datex <= datee) {
  writeLines(str, con =sfile)
  close(sfile)
 ############################################################################
-#quit(save='no')
+quit(save='no')
 

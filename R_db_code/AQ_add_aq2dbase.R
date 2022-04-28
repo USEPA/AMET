@@ -5,7 +5,7 @@
 #       PURPOSE: To input site compare output into      #
 #               the AMET-AQ MYSQL database              #
 #                                                       #
-#   Last Update by Wyat Appel: Feb 2022                 #
+#   Last Update: 06/2017 by Wyat Appel                  #
 #                                                       #
 #   Note that is program assumes a consistent           #
 #   configuration of the input files, mainly from       #
@@ -17,14 +17,10 @@
 ## Load Required Libraries
 if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
 
-run_dir		 <- Sys.getenv('AMET_RUN',unset=NA)
+run_dir          <- Sys.getenv('AMET_OUT')
 dbase            <- Sys.getenv('AMET_DATABASE')
 base_dir         <- Sys.getenv('AMETBASE')
 config_file      <- Sys.getenv('MYSQL_CONFIG')
-
-if (is.na(run_dir)) {
-   run_dir <- Sys.getenv('AMET_OUT')
-}
 
 source(config_file)
 
@@ -86,11 +82,14 @@ sitex_names <- as.character(sitex_in2[3,])   # Store species names
 sitex_units <- as.character(sitex_in2[1,])   # Store species units
 sitex_modob <- as.character(sitex_in2[2,])   # Store mod/ob designation
 col_offset <- which(sitex_names=="Emm")
+#col_offset <- 18
 if ((dtype == 'AQS_Daily_O3') || (dtype == 'CASTNET_Daily') || (dtype == 'EMEP_Daily_O3') || (dtype == 'NAPS_Daily_O3')) {
    col_offset <- which(sitex_names=="EYYYY" )
+#   col_offset <- 14
 }
 if (dtype == 'NADP') {
   col_offset <- which(sitex_names=="Invalcode_ob")
+#  col_offset <- 20
 }
 if (dtype == 'AMON') {
   if ("QR_ob" %in% sitex_names) {
@@ -261,11 +260,9 @@ cat("done. \n")
       cat("Table column will be added for species: \n")
       cat(paste(species_to_add[1],"\n"))
       create_species_column <- paste("alter table ",project_id," add column ",species_to_add[1]," double",sep="")
-      if (length(species_to_add) > 1) {
-         for (i in 2:length(species_to_add)) {
-            cat(paste(species_to_add[i],"\n"))
-            create_species_column <- paste(create_species_column,", add column ",species_to_add[i]," double",sep="")
-         }
+      for (i in 2:length(species_to_add)) {
+         cat(paste(species_to_add[i],"\n"))
+         create_species_column <- paste(create_species_column,", add column ",species_to_add[i]," double",sep="")
       }
       create_species_column <- paste(create_species_column,";",sep="")
       cat(paste("\nCreating table columns for all missing species...",sep=""))
@@ -289,6 +286,7 @@ if (dtype == 'AMON') {
 for (i in 1:length(database_species_names)) {
    q2_main <- paste(q2_main,database_species_names[i],sep=", ")
 }
+
 q3_main <- data.frame(project_id=paste("'",sitex_in$project_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,sitex_in[(col_offset+1):num_cols])
 if (dtype == 'NADP') {
    q3_main <- data.frame(project_id=paste("'",sitex_in$project_id,"'",sep=""),dtype=paste("'",sitex_in$dtype,"'",sep=""),SiteId=paste("'",sitex_in$SiteId,"'",sep=""),sitex_in$POCode,stat_id_POCode=paste("'",sitex_in$SiteId,sitex_in$POCode,"'",sep=""),sitex_in$Latitude,sitex_in$Longitude,sitex_in$Column,sitex_in$Row,start_time,end_time,sitex_in$hour,sitex_in$Month,valid_code=paste("'",sitex_in$Valcode,"'",sep=""),invalid_code=paste("'",sitex_in$Invalcode,"'",sep=""),sitex_in[(col_offset+1):num_cols])
@@ -330,6 +328,7 @@ proj_date    <- info_all[,7]
 proj_time    <- info_all[,8]
 min_date_old <- info_all[,9]
 max_date_old <- info_all[,10]
+
 if ((is.na(min_date_old)) || (min_date_old == '00000000')) {        # override the initial value of 0 for the earliest date record
    min_date_old <- min_date
 }

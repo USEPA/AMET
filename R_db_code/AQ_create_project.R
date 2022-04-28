@@ -4,10 +4,10 @@
 #       PURPOSE: To create a MYSQL table usable for     #
 #               the AMET-AQ system                      #
 #							#
-#       Last Update: 01/2022 by K. Wyat Appel           #
+#       Last Update: 06/08/2017 by Wyat Appel           #
 #--------------------------------------------------------
 
-#############################################################
+######################################################################################
 
 suppressMessages(require(RMySQL))	# Use RMYSQL package
 
@@ -102,36 +102,7 @@ if (length(MYSQL_tables) != 0) {
             cat(paste("\nproj_date=",proj_date))
             table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",log_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
             mysql_result <- dbSendQuery(con,table_query)
-            #####################################################################################################################################
-            ### This section automatically updates the min and max dates in the project_log table each time the add_aq2dbase.R script is run  ###
-            #####################################################################################################################################
-            cat("\nUpdating project log...")
-            query_all <- paste("SELECT proj_code,model,user_id,passwd,email,description,DATE_FORMAT(proj_date,'%Y%m%d'),proj_time,DATE_FORMAT(min_date,'%Y%m%d'),DATE_FORMAT(max_date,'%Y%m%d') from aq_project_log where proj_code='",log_id,"' ",sep="")    # set query for project log table for all information regarding current project
-            info_all <- dbGetQuery(con,query_all)
-            model        <- info_all[,2]
-            user_id      <- info_all[,3]
-            password     <- info_all[,4]
-            email        <- info_all[,5]
-            description  <- info_all[,6]
-            proj_date    <- info_all[,7]
-            proj_time    <- info_all[,8]
-            min_date_old <- info_all[,9]
-            max_date_old <- info_all[,10]
-            if ((is.na(min_date_old)) || (min_date_old == '00000000')) {        # override the initial value of 0 for the earliest date record
-               query_date_min <- paste("select min(ob_dates) from ",project_id,";",sep="")
-               info_date_min <- dbGetQuery(con,query_date_min)
-               min_date <- info_date_min[,1]
-            }
-            if ((is.na(max_date_old)) || (max_date_old == '00000000')) {        # override the initial value of 0 for the earliest date record
-               query_date_max <- paste("select max(ob_datee) from ",project_id,";",sep="")
-               info_date_max <- dbGetQuery(con,query_date_max)
-               max_date <- info_date_max[,] 
-            }   
-            query_dates <- paste("REPLACE INTO aq_project_log (proj_code,model,user_id,passwd,email,description,proj_date,proj_time,min_date,max_date) values ('",log_id,"','",model,"','",user_id,"','",password,"','",email,"','",description,"','",proj_date,"','",proj_time,"','",min_date,"','",max_date,"')",sep="")                    # put first and last dates into project log
-            mysql_result <- dbSendQuery(con,query_dates)
-            cat("done updating project start and end dates.\n")
             cat("\nThe following existing project description has been successfully updated.  Please review the following for accuracy, then use the link below to advance to the next step.")
-#######################################################################################################################################
          }
          else {
             cat(paste("\nWould you like to re-make the table for project ",project_id," (y/n)? (Note this will delete all existing data in project ",project_id," but retain the existing project description): \n",sep=""))

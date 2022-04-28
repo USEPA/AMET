@@ -10,7 +10,7 @@ header <- "
 ### statistics can be plotted with a small change to the script.  The script 
 ### works with multiple years as well.
 ###
-### Last updated by Wyat Appel: Jan 2022
+### Last updated by Wyat Appel: June, 2019
 #################################################################################
 "
 
@@ -21,7 +21,19 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
+################################################
+### Retrieve units label from database table ###
+################################################
 network		<- network_names[1]
+#units_qs	<- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units 		<- db_Query(units_qs,mysql)
+#model_name_qs 	<- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name 	<- db_Query(model_name_qs,mysql)
+#model_name 	<- model_name[[1]]
+#if (length(units) == 0) {
+# units <- ""
+#}
+################################################
 
 ################################################
 ## Set output names and remove existing files ##
@@ -64,8 +76,6 @@ monthly_NME		<- NULL
 monthly_NMdnB		<- NULL
 monthly_NMdnE		<- NULL
 monthly_CORR		<- NULL
-monthly_MB		<- NULL
-monthly_ME		<- NULL
 monthly_FB		<- NULL
 monthly_FE		<- NULL
 monthly_MdnB		<- NULL
@@ -164,8 +174,6 @@ for (y in 1:num_years) {
       monthly_NMB		<- c(monthly_NMB,stats_all.df$Percent_Norm_Mean_Bias)
       monthly_NME		<- c(monthly_NME,stats_all.df$Percent_Norm_Mean_Err)
       monthly_CORR		<- c(monthly_CORR,stats_all.df$Correlation)      
-      monthly_MB                <- c(monthly_MB,stats_all.df$Mean_Bias)
-      monthly_ME                <- c(monthly_ME,stats_all.df$Mean_Err)
       monthly_FB		<- c(monthly_FB,stats_all.df$Frac_Bias)
       monthly_FE		<- c(monthly_FE,stats_all.df$Frac_Err)
       monthly_MdnB		<- c(monthly_MdnB,stats_all.df$Median_Bias)
@@ -185,7 +193,7 @@ num_months      <- length(months)
 ###########################################
 ### Write Stats File with Monthly Stats ###
 ###########################################
-all_stats.df <- data.frame(Month=months, Number_of_Obs = monthly_OBS, Mean_Obs=monthly_Mean_OBS, Mean_Mod=monthly_Mean_MOD, Sum_Obs=monthly_Sum_OBS, Sum_Mod=monthly_Sum_MOD, Percent_Normalized_Mean_Bias=monthly_NMB, Percent_Normalized_Mean_Error=monthly_NME, Correlation=monthly_CORR, Mean_Bias=monthly_MB, Mean_Error=monthly_ME, Percent_Fractional_Bias=monthly_FB, Percent_Fractional_Error=monthly_FE, Median_Bias=monthly_MdnB, Median_Error=monthly_MdnE, Percent_Normalized_Median_Bias=monthly_NMdnB, Percent_Normalized_Median_Error=monthly_NMdnE, RMSE=monthly_RMSE, Median_Difference=monthly_median, Paired_Median_Difference=monthly_diff_median)
+all_stats.df <- data.frame(Month=months, Number_of_Obs = monthly_OBS, Mean_Obs=monthly_Mean_OBS, Mean_Mod=monthly_Mean_MOD, Sum_Obs=monthly_Sum_OBS, Sum_Mod=monthly_Sum_MOD, Percent_Normalized_Mean_Bias=monthly_NMB, Percent_Normalized_Mean_Error=monthly_NME, Correlation=monthly_CORR, Percent_Fractional_Bias=monthly_FB, Percent_Fractional_Error=monthly_FE, Median_Bias=monthly_MdnB, Median_Error=monthly_MdnE, Percent_Normalized_Median_Bias=monthly_NMdnB, Percent_Normalized_Median_Error=monthly_NMdnE, RMSE=monthly_RMSE, Median_Difference=monthly_median, Paired_Median_Difference=monthly_diff_median)
 
 header <- c(paste("Run Name = ",run_name1,sep=""),paste("Evaluation Dates = ",dates,sep=""),paste("Species = ",species,sep=""),paste("State = ",state,sep=""),paste("Site Name = ",site,sep=""),paste("Network = ",network_name,sep=""),paste("Units = ",units,sep=""))
 write.table(header, file=filename_stats, append=F, sep="," ,col.names=F, row.names=F)

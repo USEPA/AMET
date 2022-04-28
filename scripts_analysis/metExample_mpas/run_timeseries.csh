@@ -24,7 +24,7 @@
   # comparison of runs that may reside in different databases
   setenv AMET_DATABASE1  user_database
   setenv AMET_DATABASE2  user_database
-  setenv MYSQL_SERVER    mysql.server.gov
+  setenv MYSQL_SERVER   mysql.server.gov 
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. Project2 should be left blank for single project.
@@ -65,9 +65,7 @@
   ######################################################################
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
-  setenv AMETRINPUT  $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.input
-  setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.static.input
+  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.input  
   
   # NOTE: Do not modify; this statement is necessary if an array of sites is specified.
   setenv AMET_SITEID "$SITES[*]"
@@ -111,7 +109,7 @@
   set de2=`echo $AMET_DD | awk '{split($0,a,""); print a[5]}'`
   set datestart = $ys1$ys2$ys3$ys4$ms1$ms2$ds1$ds2
   set dateend   = $ye1$ye2$ye3$ye4$me1$me2$de1$de2
-  set outfile   = $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.$datestart\-$dateend\.time_series
+  set outfile   = $AMET_OUT/$AMET_PROJECT1.$PLOT_ID.$datestart\-$dateend
   ######################################################################
 
   if(-e $outfile.$AMET_PTYPE) then

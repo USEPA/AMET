@@ -3,7 +3,7 @@
 #                                                                       #
 #                AMET (Atmospheric Model Evaluation Tool)               #
 #                                                                       #
-#            AMET PRISM-Model Precipitation Function Library	        #
+#            AMET PRISM-Model Precipitation Function Library	          #
 #                       MET_amet.prism-lib.R                            #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
@@ -15,8 +15,6 @@
 #    populate a NetCDF file with those grids. Note the NetCDF file is created using NCO commands
 #    in the csh run script prior to the execution of the main R script. 
 #     
-# Version 1.5, Jun 3, 2021, Robert Gilliam
-#  - Added example function to total prism-model NetCDF files for defined period and compute grid stats
 #	
 #-----------------------------------------------------------------------###############################
 #######################################################################################################
@@ -33,8 +31,6 @@
 #  prism_to_mpas_grid--> Take mpas and prism precip and grid information and interpolate prism to mpas
 #
 #  prism_to_wrf_grid --> Take wrf and prism precip and grid information and interpolate prism to mpas
-#
-#  precip_accum      --> Example function to take daily/monthly prism-model NetCDF files and total + stats
 #
 #######################################################################################################
 #######################################################################################################
@@ -269,72 +265,6 @@ wrf_precip <-function(model_output,tindex=1,rainc_var="RAINC",rainnc_var="RAINNC
 
 }
 #####--------------------------	  END OF FUNCTION: PRISM_TO_WRF_GRID       --------------------------####
-##########################################################################################################
-##########################################################################################################
-#####--------------------------   START OF FUNCTION: PRECIP ACCUM   ------------------------####
-#  Purpose: This is an example function of how users can add precip from daily or monthly
-#           prism-model NetCDF files to defined period, seasonal/annual file. Also prints 
-#           domain precip statistics of that file.
-#
-# Input: precipdir --> location of model-prism daily or monthly NetCDF files to be totaled
-#        accumout  --> path and name of total precip file of defined period
-#        prefix    --> this is a prefix used to list desired daily/monthly prism-model files
-#                      to be considered in total precip and statistics calcs.
-#
-# Output: Nothing is passed out of this function, but accumout file is generated within function.
-#
-
- precip_accum <-function(precipdir,accumout,prefix="") {
-   
-  require(ncdf4)
-  #precipdir <-"/home/grc/AMET_v13/output/wrf_conus12_oaqps/prism/accum-bin"
-  #prefix    <-"mpas_prism_precip"
-  #accumout  <-"/home/grc/AMET_v13/output/wrfv4_hyb_nomodis/prism/wrfv4_hyb_nomodis_2016Annual.nc"
-
-  files <-system(paste("ls -lh ",precipdir,"/",prefix,"*",sep=''),intern=T)
-  nf    <-length(files)
-
-  for(f in 1:nf) {
-    parts<-unlist(strsplit(files[f], " "))
-    file <-parts[length(parts)]
-    writeLines(paste("Reading wrf-prism file and adding to total precip:",file))
-
-    f1  <-nc_open(file)
-      tmpp<- ncvar_get(f1,varid="PRISM_PRECIP_MM")
-      tmpm<- ncvar_get(f1,varid="MODEL_PRECIP_MM")
-    nc_close(f1)
-
-    if(f ==1 ){
-      prism_total<-tmpp
-      model_total<-tmpm
-    }
-    if(f>1) {
-      prism_total<- prism_total + tmpp
-      model_total<- model_total + tmpm
-    }
-
-  }
-  prism_total_masked<-ifelse(prism_total==0,NA,prism_total)
-  model_total_masked<-ifelse(prism_total==0,NA,model_total)
-  diff <- model_total_masked- prism_total_masked
-  bias.grid <-mean(diff,na.rm=T)
-  mea.grid  <-mean(abs(diff),na.rm=T)
-  cor.grid  <-cor(matrix(model_total_masked),matrix(prism_total_masked),use='complete.obs')
-  writeLines(paste("Creating accumulated precipitation file:",accumout))
-  system(paste("cp",file,accumout))
-  f1  <-nc_open(accumout, write=T)
-    tmpp<- ncvar_put(f1,varid="PRISM_PRECIP_MM",prism_total)
-    tmpm<- ncvar_put(f1,varid="MODEL_PRECIP_MM",model_total)
-  nc_close(f1)
-  writeLines(paste("Grid Mean Error -- Bias (mm):",bias.grid))  
-  writeLines(paste("Grid Mean Absolute Error (mm):",mea.grid))  
-  writeLines(paste("Grid Correlation:",cor.grid))
-  writeLines(paste("Note that model and obs gridpoint are set to missing for all no-precip obs cells."))
-
- return(list())
-
-}
-#####--------------------------	  END OF FUNCTION: PRECIP ACCUM      ---------------------------------####
 ##########################################################################################################
 
 ##########################################################################################################

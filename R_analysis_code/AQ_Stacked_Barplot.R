@@ -8,7 +8,7 @@ header <- "
 ### bar plot, along with the percent of the total PM2.5 that each species comprises.
 ### Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel: Nov 2020
+### Last updated by Wyat Appel: June, 2019
 ######################################################################################
 "
 
@@ -22,6 +22,11 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 network <- network_names[1]
 network_name <- network_label[1]
 num_runs <- 1   
+
+### Retrieve units and model labels from database table ###
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name <- db_Query(model_name_qs,mysql)
+################################################
 
 ### Set filenames and titles ###
 filename_pdf    <- paste(run_name1,pid,"stacked_barplot.pdf",sep="_")
@@ -108,7 +113,7 @@ if (num_runs > 1) {
       }
       else {
          query_result2    <- query_dbase(run_name2,network,species,criteria)
-         aqdat_query2.df  <- query_result2[[1]]   
+         aqdat_query2.df  <- query_result[[1]]   
       }
    }
    #############################################

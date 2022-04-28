@@ -15,20 +15,8 @@
 #     Modified for T, Q, RH and PS (surface pressure).                  #
 #     Surface pressure was added to the model-obs surface met matching  #
 #     since it is needed for RH calcs (saturated mixing ratio).         #
-#                                                                       #
-#  Version 1.5, Apr 19, 2022, Robert Gilliam                            # 
-#  Updates: - QC for range of values and mod-obs diff were hidden in    #
-#             data prep routine. These are now controlled by user       #
-#             timseries.input file for more transparent QA with info    #
-#           - Added extra2 (if specified) for query criteria for        #
-#             project2 (i.e., compare forecast with different init).    #
-#           - New split config input file where "more" static settings  #
-#             are split into a timeseries.static.input and key configs  #
-#             remain in the timeseries.input. Backward compatible.      #
-#           - Bug fix where text file had model1 Q in model2 column     #
 #-----------------------------------------------------------------------#
 #########################################################################
-  options(warn=-1)
 #########################################################################
 #	Load required modules
   if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
@@ -39,21 +27,15 @@
 ##############################################################################################
 
 ## get some environmental variables and setup some directories
- ametbase         <- Sys.getenv("AMETBASE")
- ametR            <- paste(ametbase,"/R_analysis_code",sep="")
+ ametbase         <-Sys.getenv("AMETBASE")
+ ametR            <-paste(ametbase,"/R_analysis_code",sep="")
  ametRinput       <- Sys.getenv("AMETRINPUT")
- mysqlloginconfig <- Sys.getenv("MYSQL_CONFIG")
- ametRstatic      <- Sys.getenv("AMETRSTATIC")
+ mysqlloginconfig <-Sys.getenv("MYSQL_CONFIG")
 
  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
  # and not specified via AMET_OUT, then set figdir to the current directory
  if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
  if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
- ## Check for Static file setting and set to empty if missing. Backward compat.
- ## & print input files for user notification 
- if(ametRstatic=="") { ametRstatic <- "./" }
- writeLines(paste("AMET R Config input file:",ametRinput))
- writeLines(paste("AMET R Static input file:",ametRstatic))
   
  ## source some configuration files, AMET libs, and input
  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
@@ -61,10 +43,6 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
- source (ametRstatic)
-
- # Compatibility check for new variables in case of old config files
- if(!exists("extra2") ) { extra2 <- extra	}
 
  ametdbase1     <- Sys.getenv("AMET_DATABASE1")
  ametdbase2     <- Sys.getenv("AMET_DATABASE2")
@@ -102,9 +80,10 @@
   # Then set up figure names. 
   if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
   if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
-  figure  <-paste(figdir,"/",model1,".",statid,".",drange_plot,".time_series_RH",sep="")
-  textfile<-paste(figdir,"/",model1,".",statid,".",drange_plot,".time_series_RH.txt",sep="") 
-  savefile_name<-paste(figure,".Rdata",sep="")
+  figure  <-paste(figdir,"/",model1,".RH.",statid,".",drange_plot,sep="")
+  textfile<-paste(figdir,"/",model1,".RH.",statid,".",drange_plot,".txt",sep="")
+ 
+ savefile_name<-paste(figure,".Rdata",sep="")
    
 
 for (sn in 1:length(statid)){
@@ -327,7 +306,7 @@ for (sn in 1:length(statid)){
   if(textout) {
      #writeLines(paste("R text file output:",textfile[sn]))
      write.table(
-     data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],q[,3],
+     data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],q[,2],
                 rh[,1],rh[,2],rh[,3],ps[,1],ps[,2],ps[,3]),textfile[sn],sep=",", 
                 col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)",
                             "Q Mod (g/kg)","Q Obs (g/kg)","Q Mod2 (g/kg)",
@@ -349,4 +328,4 @@ for (sn in 1:length(statid)){
 ########################################################################################################################
 #				FINISHED
 ########################################################################################################################
-
+quit(save="no")

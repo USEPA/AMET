@@ -14,7 +14,7 @@ header <- "
 ###
 ### Original concept and some code developed by Jim Kelly of EPA.
 ###
-### Last updated by Wyat Appel: Jun 2020
+### Last updated by Wyat Appel: June, 2019
 #############################################################################################
 "
 
@@ -65,10 +65,9 @@ if (use_median == "y") {
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
-   if (custom_title == "") { title <- paste(run_name1,network,species,"for",dates,sep=" ") }
+   if (custom_title == "") { title <- paste(network_name," Stacked Barplot (",method,") for ",run_name1," for ",dates,sep="") }
    else { title <- custom_title }
 }
-
 ################################################
 
 season         <- NULL
@@ -167,12 +166,12 @@ for (i in 1:6) {
       nmb.val <- max(abs(data.tmp$value),na.rm=T)
       nmb.max <- 100
       int     <- 20
+      if (length(nmb_max) != 0) { nmb.val <- nmb_max }
+#      if (max(abs(data.tmp$value),na.rm=T) < 75) {
       if (nmb.val < 75) {
          nmb.max <- 50
          int     <- 10
       }
-      if (length(nmb_max) != 0) { nmb.max <- nmb_max }
-      if (length(nmb_int) != 0) { int <- nmb_int }
       data.tmp <- binval(dt=data.tmp,mn=-nmb.max,mx=nmb.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'RdBu'))
@@ -184,12 +183,11 @@ for (i in 1:6) {
       nme.val <- max(abs(data.tmp$value),na.rm=T)
       nme.max <- 180
       int     <- 20
+      if (length(nme_max) != 0) { nme.val <- nme_max }
       if (nme.val < 125) {
          nme.max <- 90
          int     <- 10
       }
-      if (length(nme_max) != 0) { nme.max <- nme_max }
-      if (length(nme_int) != 0) { int <- nme_int }
       data.tmp <- binval(dt=data.tmp,mn=0,mx=nme.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
@@ -276,8 +274,7 @@ for (i in 1:6) {
            axis.title=element_text(size=15),
            legend.text=element_text(size=15),
            legend.title=element_text(size=15),
-           plot.title=element_text(size=8,hjust=0.5)) +
-     labs(title=title)
+           plot.title=element_text(size=16))
 
    ggsave(plt,file=paste(filename[i],".pdf",sep=""),dpi=600,width=6,height=3.2)
 #   plt

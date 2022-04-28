@@ -1,1 +1,0 @@
-run_plot_radiation.csh

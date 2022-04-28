@@ -18,21 +18,20 @@
 # Version 1.3, May 6, 2013, Robert Gilliam
 #  - better formatting of script
 #  - added requirement that password is passed via argument input.
-#
-# Version 1.5, Jun 3, 2021, Robert Gilliam
-#  - added qcerror that allows users to filter mod-obs pairs where
-#    differences are above some value.
-#
 #########################################################################
 #---------------------------------------------------##
 #       Configurable DATE Definitions
 #---------------------------------------------------##
+ hs   <-0
+ he   <-23
  ds   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_DD")," ")))[1]
  de   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_DD")," ")))[2]
  ms   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_MM")," ")))[1]
  me   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_MM")," ")))[2]
  ys   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_YY")," ")))[1]
  ye   <-as.numeric(unlist(strsplit(Sys.getenv("AMET_YY")," ")))[2]
+ dates<-list(y=ys,m=ms,d=ds,h=hs)
+ datee<-list(y=ye,m=me,d=de,h=he)
 
 #########################################################################
 #       Database/Tables/Query Specifications
@@ -49,46 +48,41 @@
  figdir     <-Sys.getenv("AMET_OUT")
 
 #########################################################################
-#       GROUP sites in array into one average timeseries
-#########################################################################
- groupstat    <-as.logical(Sys.getenv("AMET_GROUPSITES"))
-
-#########################################################################
 #       Plot/Output Format
 #########################################################################
  plotfmt  <-Sys.getenv("AMET_PTYPE")
- symb     <-15                # Plot symbol (15-square,19-circle)
- symbsiz  <-2                 # Plot symbol size (0.5 very small to 1.5 large, 1 suites most applications)
+ symb     <-15
+ symbsiz  <-2
  plotsize <-1
- scex     <-0.65              # Statistics Text size
- maxrec   <-10000
+ scex     <-0.65
 
 #########################################################################
-# GROSS	QC/QA limits for T (K), WS (m/s), Q (g/kg)
-# RH (%) and PS (hPa): Min, Max
+# GROSS	QC/QA limits for T (K), WS (m/s), and Q (g/kg): Min, Max
 #########################################################################
  qcT   <-c(240,315)
  qcQ   <-c(0,30)
- qcWS  <-c(1.5,25)
- qcRH  <-c(0,102)
- qcPS  <-c(50,107)
- qclims<-list(qcT=qcT,qcQ=qcQ,qcWS=qcWS,qcRH=qcRH,qcPS=qcPS)                                                                   
-
-########################################################################
-# QC limits on max difference between Model and Obs as another filter
-# value assignment is T, WS, Q, RH  -- SI units
-# ######################################################################
- qcerror <- c(15,20,10,50)
-
+ qcWS  <-c(0.5,25)
+ qclims<-list(qcT=qcT,qcQ=qcQ,qcWS=qcWS)                                                                   
 
  # This is the maximum allowable number of data points
  # allowed to be extracted from database. Used as check
  # against unruly extraction such as via web interface.
  # 10 million is about the number of data extracted for
  # 2/3rds of a year.
- maxrec   <- 10E4
+ maxrec   <- 10E4	
 
 #########################################################################
 #-----                  END OF INPUT FILE       ------------------------#
 #########################################################################
+#---------------------------------------------------##
+#       Script Prep. Do not modify
 
+ statstr<-paste(" stat_id='",statid,"' ",sep="")
+
+ table1<-paste(model1,"_surface",sep="")
+ table2<-paste(model2,"_surface",sep="")        
+     
+ groupstat    <-as.logical(Sys.getenv("AMET_GROUPSITES"))
+ comp <-F
+ if(model1 != model2 & model2 != "") { comp  <- T }    
+ window          <-0

@@ -7,7 +7,7 @@ header <- "
 ### plot for a single species from a single network but for multiple   
 ### model runs. 
 ###
-### Last Updated by Wyat Appel: Feb 2020
+### Last Updated by Wyat Appel: June, 2017
 ########################################################################
 "
 
@@ -28,7 +28,17 @@ network <- network_names[1]
 
 ### Set file names and titles ###
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-main.title 	  <- get_title(run_names,species,network_names,dates,custom_title)
+{
+   if (custom_title == "") {
+      main.title        <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ")
+      main.title.bias   <- paste(run_name1,species,"for",network_label[1],"for",dates,sep=" ")
+   }
+   else {
+     main.title   <- custom_title
+     main.title.bias <- custom_title
+  }
+}
+sub.title       <- ""
 
 filename_html <- paste(run_name1,species,pid,"scatterplot_bins.html",sep="_")                          # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot_bins.png",sep="_")                          # Set PNG filenam

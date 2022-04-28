@@ -10,7 +10,7 @@ header <- "
 ### 1 versus simulation 2, while warm colors indicate higher bias/error in simulation
 ### 1 versus simulation 2. 
 ###
-### Last modified by Wyat Appel: Feb 2022
+### Last modified by Wyat Appel: June, 2019
 ###################################################################################
 "
 
@@ -27,7 +27,6 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
-if(!exists("near_zero_color")) { near_zero_color <- "grey50" }
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
@@ -90,8 +89,6 @@ all_error_diff	<- NULL
 bounds          <- NULL						# Set map bounds to NULL
 sub_title       <- NULL						# Set sub title to NULL
 lev_lab         <- NULL
-legend_names    <- NULL
-legend_chars    <- NULL
 plot.symbols<-as.integer(plot_symbols)
 pick.symbol.name.fun<-function(x){
    master.symbol.df<-data.frame(plot.symbols=c(16,17,15,18,8,11,4),names=c("CIRCLE","TRIANGLE","SQUARE","DIAMOND","BURST","STAR","X"))
@@ -108,7 +105,6 @@ spch<-plot.symbols
 
 remove_negatives <- 'n'      # Set remove negatives to false. Negatives are needed in the coverage calculation and will be removed automatically by Average
 total_networks <- length(network_names)
-l <- 1
 for (j in 1:total_networks) {							# Loop through for each network
    sites          	<- NULL							# Set sites vector to NULL
    lats          	<- NULL							# Set lats vector to NULL
@@ -161,10 +157,10 @@ for (j in 1:total_networks) {							# Loop through for each network
          if (total_networks == 0) { stop("Stopping because total_networks is zero. Likely no data found for query.") }
 
       }
+
       ### If there are data, continue ###
       else {
-         legend_names <<- c(legend_names,network_label[j])
-         legend_chars <<- c(legend_chars,spch[l])         
+         
 #         aqdat1.df$ob_dates <- aqdat1.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
 #         aqdat2.df$ob_dates <- aqdat2.df[,5]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
 #         aqdat1.df$ob_datee <- aqdat1.df[,6]          # remove hour,minute,second values from start date (should always be 000000 anyway, but could change)
@@ -196,44 +192,42 @@ for (j in 1:total_networks) {							# Loop through for each network
             sub_all.df  <- split_sites_all[[i]]	# Store current site i in sub_all.df dataframe
             num_total_obs <- length(sub_all.df$Ob_Value_1)	# Count the total number of obs available for the site
             num_good_obs <- 0				# Set number of good obs to 0
-            if (length(sub_all.df$stat_id) > 0) {
-               for (k in 1:length(sub_all.df$Ob_Value_1)) { 	# Count the number of non-missing obs (good obs)
-                  if (sub_all.df[k,8] >= -90) {		# If ob value is >= 0, count as good
-                     num_good_obs <- num_good_obs+1	# Increment good ob count by one
-                  }
+            for (k in 1:length(sub_all.df$Ob_Value_1)) { 	# Count the number of non-missing obs (good obs)
+               if (sub_all.df[k,8] >= -90) {		# If ob value is >= 0, count as good
+                  num_good_obs <- num_good_obs+1	# Increment good ob count by one
                }
-               coverage <- (num_good_obs/num_total_obs)*100	# Compute coverage value for good_obs/total_obs
-               if (coverage >= coverage_limit) {  			# determine if the number of non-missing obs is >= to the coverage limit
-                  indic.nonzero <- sub_all.df$Mod_Value_1 >= -90		# Identify good obs in dataframe
-                  sub_good.df <- sub_all.df[indic.nonzero,]	# Update dataframe to only include good obs (remove missing obs)
-                  indic.nonzero <- sub_good.df$Mod_Value_2 >= -90
-                  sub_good.df <- sub_good.df[indic.nonzero,]
-                  indic.nonzero <- sub_good.df$Ob_Value_1 >= -90
-                  sub_good.df <- sub_good.df[indic.nonzero,] 
-                  sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
-                  lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
-                  lons         <- c(lons, unique(sub_good.df$lon))				# Add current lon to lon list
-                  mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  	# Compute the site mean bias for simulation 1
-                  mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  	# Compute the site mean bias for simulation 2
-                  mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  			# Store site bias for simulation 1 in an array
-                  mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  			# Store site bias for simulation 2 in an array
-                  bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))	# Compute diff in site mean bias between two simulations
-                  mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
-                  mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
-                  mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
-                  mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
-                  error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
-               }
+            }
+            coverage <- (num_good_obs/num_total_obs)*100	# Compute coverage value for good_obs/total_obs
+            if (coverage >= coverage_limit) {  			# determine if the number of non-missing obs is >= to the coverage limit
+               indic.nonzero <- sub_all.df$Mod_Value_1 >= -90		# Identify good obs in dataframe
+               sub_good.df <- sub_all.df[indic.nonzero,]	# Update dataframe to only include good obs (remove missing obs)
+               indic.nonzero <- sub_good.df$Mod_Value_2 >= -90
+               sub_good.df <- sub_good.df[indic.nonzero,]
+               indic.nonzero <- sub_good.df$Ob_Value_1 >= -90
+               sub_good.df <- sub_good.df[indic.nonzero,] 
+               sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
+               lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
+               lons         <- c(lons, unique(sub_good.df$lon))				# Add current lon to lon list
+               mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  	# Compute the site mean bias for simulation 1
+               mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  	# Compute the site mean bias for simulation 2
+               mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  			# Store site bias for simulation 1 in an array
+               mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  			# Store site bias for simulation 2 in an array
+               bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))	# Compute diff in site mean bias between two simulations
+               mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
+               mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
+               mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
+               mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
+               error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
             }
          }
 
          sites_avg.df 			<- data.frame(Network=network,Site_ID=I(sites),lat=lats,lon=lons,Bias_1=mod_bias_1_all,Bias_2=mod_bias_2_all,Bias_Diff=bias_diff,Error_1=mod_error_1_all,Error_2=mod_error_2_all,Error_Diff=error_diff)	# Create properly formatted dataframe for use with PlotSpatial function
-         sinfo_bias_1_data[[l]]		<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_1)
-         sinfo_bias_2_data[[l]]		<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_2)
-         sinfo_bias_diff_data[[l]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_Diff)
-         sinfo_error_1_data[[l]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_1)
-         sinfo_error_2_data[[l]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_2)
-         sinfo_error_diff_data[[l]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_Diff)
+         sinfo_bias_1_data[[j]]		<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_1)
+         sinfo_bias_2_data[[j]]		<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_2)
+         sinfo_bias_diff_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Bias_Diff)
+         sinfo_error_1_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_1)
+         sinfo_error_2_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_2)
+         sinfo_error_diff_data[[j]]	<-list(lat=sites_avg.df$lat,lon=sites_avg.df$lon,plotval=sites_avg.df$Error_Diff)
 
          all_sites		<- c(all_sites,sites_avg.df$Site_ID)
          all_lats		<- c(all_lats,sites_avg.df$lat)
@@ -246,8 +240,7 @@ for (j in 1:total_networks) {							# Loop through for each network
          all_error_diff	<- c(all_error_diff,sites_avg.df$Error_Diff)
    
          All_Data <- data.frame(Site=all_sites,Lat=all_lats,Lon=all_lons,Bias1=all_bias,Bias2=all_bias2,Bias_Diff=all_bias_diff,Error1=all_error,Error2=all_error2,Error_Diff=all_error_diff)
-#         sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the symbol name used for that network
-         l <- l + 1
+         sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the symbol name used for that network
       }
       write.table(c(paste("Run1 = ",run_name1,sep=""),paste("Run2 = ",run_name2,sep="")),file=filename_csv,append=F,col.names=F,row.names=F,sep=",")
       write.table(All_Data,file=filename_csv,append=T,row.names=F,sep=",")     # Write header for raw data file
@@ -258,12 +251,12 @@ for (j in 1:total_networks) {							# Loop through for each network
 bounds<-c(min(all_lats,bounds[1]),max(all_lats,bounds[2]),min(all_lons,bounds[3]),max(all_lons,bounds[4]))
 plotsize<-1.50									# Set plot size
 symb<-15										# Set symbol character
-symbsiz<-1.1										# Set symbol size
+symbsiz<-0.9										# Set symbol size
 if (length(all_sites) > 3000) {
-   symbsiz <- 0.9
+   symbsiz <- 0.7
 }
 if (length(all_sites) > 10000) {
-   symbsiz <- 0.7
+   symbsiz <- 0.5
 }
 #########################
 
@@ -330,8 +323,8 @@ levs_bias 				<- levs_bias[-zero_place]
 levels_label_bias 			<- levels_label_bias[-zero_place]
 low_range				<- cool_colors(trunc(length(levels_label_bias)/2))
 high_range				<- hot_colors(trunc(length(levels_label_bias)/2))
-colors_bias				<- c(low_range,near_zero_color,high_range)
-leg_colors_bias				<- c(low_range,near_zero_color,near_zero_color,high_range)
+colors_bias				<- c(low_range,"grey50",high_range)
+leg_colors_bias				<- c(low_range,"grey50","grey50",high_range)
 ###########################################
 
 ######################################
@@ -402,8 +395,8 @@ levs_diff_bias					<- levs_diff_bias[-zero_place]
 levels_diff_bias				<- levs_diff_bias
 low_range					<- cool_colors(trunc(length_levs_diff_bias/2))
 high_range					<- hot_colors(trunc(length_levs_diff_bias/2))
-colors_diff_bias				<- c(low_range,near_zero_color,high_range)
-leg_colors_diff_bias				<- c(low_range,near_zero_color,near_zero_color,high_range)
+colors_diff_bias				<- c(low_range,"grey50",high_range)
+leg_colors_diff_bias				<- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
 #############################################
@@ -446,8 +439,8 @@ levs_diff_error                                 <- levs_diff_error[-zero_place]
 levels_diff_error                               <- levs_diff_error
 low_range                                       <- cool_colors(trunc(length_levs_diff_error/2))
 high_range                                      <- hot_colors(trunc(length_levs_diff_error/2))
-colors_diff_error                               <- c(low_range,near_zero_color,high_range)
-leg_colors_diff_error                           <- c(low_range,near_zero_color,near_zero_color,high_range)
+colors_diff_error                               <- c(low_range,"grey50",high_range)
+leg_colors_diff_error                           <- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
 for (k in 1:total_networks) {
