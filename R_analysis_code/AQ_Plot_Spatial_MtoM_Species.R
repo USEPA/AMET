@@ -9,7 +9,7 @@ header <- "
 ### to a single value for plotting purposes.  The map area plotted is dynamically
 ### generated from the input data.   
 ###
-### Last modified by Wyat Appel: Feb 2022
+### Last modified by Wyat Appel: June, 2019
 ##################################################################################
 "
 
@@ -24,7 +24,6 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!require(maps)){stop("Required Package maps was not loaded")}
 if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
-if(!exists("near_zero_color")) { near_zero_color <- "grey50" }
 
 ### Retrieve units label from database table ###
 network <- network_names[1]														# When using mutiple networks, units from network 1 will be used
@@ -244,8 +243,8 @@ cols_diff                               <- NULL
 leg_colors_diff				<- NULL
 low_range                               <- cool_colors(trunc(length_levs_diff/2))
 high_range                              <- hot_colors(trunc(length_levs_diff/2))
-cols_diff                               <- c(low_range,near_zero_color,high_range)
-leg_colors_diff                         <- c(low_range,near_zero_color,near_zero_color,high_range)
+cols_diff                               <- c(low_range,"grey50",high_range)
+leg_colors_diff                         <- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
 #########################
@@ -280,8 +279,8 @@ levs_nmb                        <- levs_nmb[-zero_place]
 cols_nmb                        <- NULL
 low_range                       <- cool_colors(trunc(length_levs_nmb/2))
 high_range                      <- hot_colors(trunc(length_levs_nmb/2))
-cols_nmb                        <- c(low_range,near_zero_color,high_range)
-leg_colors_nmb                  <- c(low_range,near_zero_color,near_zero_color,high_range)
+cols_nmb                        <- c(low_range,"grey50",high_range)
+leg_colors_nmb                  <- c(low_range,"grey50","grey50",high_range)
 ############################################
 
 
@@ -323,8 +322,8 @@ cols_max                                <- NULL
 leg_colors_max				<- NULL
 low_range                               <- cool_colors(trunc(length_levs_max/2))
 high_range                              <- hot_colors(trunc(length_levs_max/2))
-cols_max                                <- c(low_range,near_zero_color,high_range)
-leg_colors_max                          <- c(low_range,near_zero_color,near_zero_color,high_range)
+cols_max                                <- c(low_range,"grey50",high_range)
+leg_colors_max                          <- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
 for (l in 1:total_networks) {

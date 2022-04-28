@@ -1,18 +1,16 @@
 #!/bin/csh -f
 # --------------------------------
-# Interactive Timeseries (plotly version)
+# Interactive Timeseries
 # -----------------------------------------------------------------------
 # Purpose:
 # This is an example c-shell script to run the R-script that generates
 # an interactive timeseries plot.  The script can accept multiple sites, 
 # as they will be time averaged to create the timeseries plot.  The script
-# can also plot bias, RMSE, and correlation between the obs and model. This
-# version of the plot accepts multiple simulatios, but only a single network
-# and species.
+# also plots the bias, RMSE and correlation between the obs and model.
 #
-# Initial version: Wyat Appel - Sep, 2018
+# This script is new to AMET as of AMETv1.4.
 #
-# Revised version: Wyat Appel - Apr, 2022
+# Initial version:  Wyat Appel - Sep, 2018
 # -----------------------------------------------------------------------
 
   

@@ -6,7 +6,7 @@
 # This is an example c-shell script to run the R-script that generates
 # statistical plots and text output of model performance. User can 
 # provided some criteria that identifies what data to include. Plots
-# include T, Q, WS, WD and WNDVEC for wind vector error.
+# include T, Q, WS and WD.
 # -----------------------------------------------------------------------
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS

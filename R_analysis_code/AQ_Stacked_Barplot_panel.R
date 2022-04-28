@@ -9,7 +9,7 @@ header <- "
 ### soil species, Na, Cl, or NCOM as it is designed to work with vesions of CMAQ running AE5 or older.
 ### Output format is png, pdf or both.
 ###
-### Last updated by Wyat Appel: Nov 2020
+### Last updated by Wyat Appel: June, 2019
 ##############################################################################################
 "
 
@@ -23,6 +23,11 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 network <- network_names[1]
 network_name <- network_label[1]
 num_runs <- 1  
+
+### Retrieve units and model labels from database table ###
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name <- db_Query(model_name_qs,mysql)
+################################################
 
 ### Set filenames and titles ###
 filename_pdf    <- paste(run_name1,pid,"stacked_barplot_panel.pdf",sep="_")

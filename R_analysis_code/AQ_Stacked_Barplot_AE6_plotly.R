@@ -8,7 +8,7 @@ header <- "
 ### plotted on a stacked bar plot, along with the percent of the total PM2.5 that each species
 ### comprises.
 ###
-### Last updated by Wyat Appel: Jan 2021
+### Last updated by Wyat Appel: June, 2019
 #######################################################################################
 "
 
@@ -46,7 +46,7 @@ if (use_median == "y") {
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
-   if (custom_title == "") { title <- paste(network_name," Stacked Barplot for ",run_name1," for ",dates,sep="") }
+   if (custom_title == "") { title <- paste(network_name," Stacked Barplot (",method,") for ",run_name1," for ",dates,sep="") }
    else { title <- custom_title }
 }
 ################################
@@ -73,16 +73,14 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
    }
 }
 
-sinfo	        <- NULL
-medians         <- NULL
-data.df         <- NULL
-medians_        <- NULL
-data2.df        <- NULL
-drop_names      <- NULL
-species_names   <- NULL
-species_names2  <- NULL
-num_sites	<- NULL
-num_pairs	<- NULL
+sinfo	       <- NULL
+medians        <- NULL
+data.df        <- NULL
+medians_       <- NULL
+data2.df       <- NULL
+drop_names     <- NULL
+species_names  <- NULL
+species_names2 <- NULL
 
 remove_negatives <- "n"
 criteria <- paste(" WHERE d.SO4_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
@@ -160,7 +158,6 @@ for (j in 1:length(run_names)) {
          medians.df   <- lapply(data.df,mean, na.rm=TRUE)
       }
    }
-   print(medians.df$Mn_mod)
    ##############################################################
 
    ########################################################################################
@@ -237,7 +234,6 @@ for (j in 1:length(run_names)) {
          Fe   <- c(Fe,medians.df$Fe_mod)
          K    <- c(K,medians.df$K_mod)
          Mg   <- c(Mg,medians.df$Mg_mod)
-         Mn   <- c(Mn,medians.df$Mn_mod)
          Si   <- c(Si,medians.df$Si_mod)
          Ti   <- c(Ti,medians.df$Ti_mod)
          Na   <- c(Na,medians.df$Na_mod)
@@ -255,7 +251,6 @@ for (j in 1:length(run_names)) {
          Fe_perc   <- c(Fe_perc,round(100*(medians.df$Fe_mod/medians_tot_mod),1))
          K_perc   <- c(K_perc,round(100*(medians.df$K_mod/medians_tot_mod),1))
          Mg_perc   <- c(Mg_perc,round(100*(medians.df$Mg_mod/medians_tot_mod),1))
-         Mn_perc   <- c(Mn_perc,round(100*(medians.df$Mn_mod/medians_tot_mod),1))
          Si_perc   <- c(Si_perc,round(100*(medians.df$Si_mod/medians_tot_mod),1))
          Ti_perc   <- c(Ti_perc,round(100*(medians.df$Ti_mod/medians_tot_mod),1))
          Na_perc   <- c(Na_perc,round(100*(medians.df$Na_mod/medians_tot_mod),1))
@@ -285,14 +280,13 @@ p <- plot_ly(data=merged.df,x=ob_mod,y=~SO4,type="bar",height=img_height,width=i
   add_trace(y=~Fe, name="Fe", marker=list(color="firebrick"), text=paste("% of total:",Fe_perc)) %>%
   add_trace(y=~K, name="K", marker=list(color="darkyellow"), text=paste("% of total:",K_perc)) %>%
   add_trace(y=~Mg, name="Mg", marker=list(color="green"), text=paste("% of total:",Mg_perc)) %>%
-  add_trace(y=~Mn, name="Mn", marker=list(color="darkblue"), text=paste("% of total:",Mn_perc)) %>%
   add_trace(y=~Si, name="Si", marker=list(color="gray"), text=paste("% of total:",Si_perc)) %>%
-  add_trace(y=~Ti, name="Ti", marker=list(color="darkorange"), text=paste("% of total:",Ti_perc)) %>%
+  add_trace(y=~Ti, name="Ti", marker=list(color="orange"), text=paste("% of total:",Ti_perc)) %>%
   add_trace(y=~Na, name="Na", marker=list(color="purple"), text=paste("% of total:",Na_perc)) %>%
   add_trace(y=~Cl, name="Cl", marker=list(color="lightseagreen"), text=paste("% of total:",Cl_perc)) %>%
   add_trace(y=~NCOM, name="NCOM", marker=list(color="pink"), text=paste("% of total:",NCOM_perc)) %>%
   add_trace(y=~OTHR, name="Other", marker=list(color="lightgray"), text=paste("% of total:",OTHR_perc)) %>%
-  layout(title=title,yaxis=list(title=paste(method," Concentration (",units,")")),barmode='stack', xaxis=xform)
+  layout(title=title,yaxis=list(title=paste("Mean Concentration (",units,")")),barmode='stack', xaxis=xform)
 
 saveWidget(p, file=filename_html,selfcontained=T)
 

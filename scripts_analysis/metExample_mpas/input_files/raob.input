@@ -12,15 +12,6 @@
 # Version 1.4, Sep 30, 2018, Robert Gilliam
 #
 #########################################################################
-#########################################################################
-# PLOT controls spatial, profiles, timeseries & curtains
-#########################################################################
- SPATIALM  <-as.logical(Sys.getenv("RAOB_SPATIAL"))
- TSERIESM  <-as.logical(Sys.getenv("RAOB_TSERIES"))
- PROFM     <-as.logical(Sys.getenv("RAOB_PROFILEM"))
- CURTAINM  <-as.logical(Sys.getenv("RAOB_CURTAINM"))
- PROFN     <-as.logical(Sys.getenv("RAOB_PROFILEN"))
- CURTAINN  <-as.logical(Sys.getenv("RAOB_CURTAINN"))
 
 #########################################################################
 # Sample size thresholds for statistics
@@ -34,14 +25,10 @@
  # Sample size threshold for number of sounding
  sounding.thresh<- 5
  
- # Sample size threshold for minimum levels needed for native profile plot
+ # Sample size threshold for minimum layers needed for native profile plot
  profilen.thresh<- 5
 
- # QC limits on max difference between Model and Obs as another filter
- # value assignment is ordered T, WS, Q, RH  -- SI units
- qcerror <- c(15,20,10,50)
-
- # Configurable range for difference *PLOT* range (Native Curtain plots)
+ # Configurable range for difference plot range (Native Curtain plots)
  # Note diff.t 5 is -5 to +5 diff range.
  use.user.range <- TRUE
  diff.t         <- 5
@@ -63,6 +50,8 @@
  ye         <-unlist(strsplit(Sys.getenv("AMET_YY")," "))[2]
  dates      <-list(y=ys,m=ms,d=ds,h=hs)
  datee      <-list(y=ye,m=me,d=de,h=he)
+ datesn     <-as.numeric(dates)
+ dateen     <-as.numeric(datee)
 
 #########################################################################
 #-- Manual plot bounds, Note: comment out bounds below for automatic setting
@@ -74,24 +63,152 @@
  bounds  <-c(lats,latn,lonw,lone)
  extrall <-paste("AND (s.lat BETWEEN",lats," AND ",latn, 
                  "AND s.lon BETWEEN",lonw," AND ",lone,")")
-#########################################################################
  
 #########################################################################
 # Database/Tables/Query Specifications
 #########################################################################
  project    <-Sys.getenv("AMET_PROJECT")
+ figdir     <-Sys.getenv("AMET_OUT")
+ layervar   <-"plevel"
+ textstats  <-as.logical(Sys.getenv("AMET_TEXTSTATS"))
+ extra<-"  "
+ #---------------------------------------------------------##
+
+ # General Query settings used by more than one plotting mode 
+ raob.table <-paste(project,"_raob",sep="")
+ site.table <-paste(raob.table," d ",",stations s", sep="")
+ table.link <-paste(site.table," WHERE d.stat_id=s.stat_id")
+
+ my.dates   <-paste(ys,"-",ms,"-",ds," ",hs,":00:00",sep="")
+ my.datee   <-paste(ye,"-",me,"-",de," ",he,":00:00",sep="")
+ my.drange  <-paste("BETWEEN '",my.dates,"' AND '",my.datee,"'",sep="")
+
+ my.varget.main    <-paste("stat_id, YEAR(ob_date), MONTH(ob_date), DAY(ob_date), HOUR(ob_date),",
+                            layervar,", v1_id, v1_val, v2_id, v2_val",sep="")
+ my.varget.spatial <-paste("s.stat_id, s.lat, s.lon, YEAR(d.ob_date), MONTH(d.ob_date), DAY(d.ob_date),
+                            HOUR(d.ob_date), d.",layervar,", d.v1_id, d.v1_val, d.v2_id, d.v2_val",sep="")
+
+ ############################################################
+ # Set up Site array and condition if sites should be grouped
+ # Or if ALL sites should be included instead of a subset
  statid     <-unlist(strsplit(Sys.getenv("AMET_SITEID")," "))
  groupstat  <-as.logical(Sys.getenv("AMET_GROUPSITES"))
- textstats  <-as.logical(Sys.getenv("AMET_TEXTSTATS"))
- figdir     <-Sys.getenv("AMET_OUT")
- proflim    <-c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[1],
-                as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[2])
- layer      <- c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[1],
-                 as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[2])
- # Note Extra is for custom extra specs added to query. Must know MySQL
- extra<-"  "
-#########################################################################
+ statqc     <-paste("d.stat_id='",statid,"'",sep="")
+ statidc    <-statid
+ ns         <-length(statid)
+ nsc        <-length(statid)
 
+  if(groupstat)  {
+    tmp<-"("
+    statvar     <-"d.stat_id"
+    for(sn in 1:length(statid) ) {
+      conj <-" OR "
+      if(sn == length(statid)) { conj<-""}
+      tmp  <-paste(tmp,statvar,"='",statid[sn],"'",conj,sep="")
+    }
+    statq  <-paste(tmp,")")
+    statid <-"GROUP_AVG"
+    ns     <-1 
+  }
+
+  if(!groupstat)  {
+    statid <-unlist(strsplit(Sys.getenv("AMET_SITEID")," "))
+    ns     <-length(statid)
+    statq  <-paste("d.stat_id='",statid,"'",sep="")
+  }
+
+  if(statid[1] == "ALL") {
+    ns     <- 1
+    statq  <-paste("d.stat_id!='ALL'")
+  }
+
+ #---------------------------------------------------##
+ ############################################################
+
+ ############################################################
+ # Plotting Options for Mandatory Layer Model-Obs data
+ #---------------------------------------------------------##
+ #  Script Mode settings for Spatial-P-layer Stats "player"
+ #---------------------------------------------------------##
+ SPATIALM    <-as.logical(Sys.getenv("RAOB_SPATIAL"))
+ TSERIESM    <-as.logical(Sys.getenv("RAOB_TSERIES"))
+ layerlab    <- "Pressure"
+ layervar    <- "plevel"
+ layerunit   <- "mb"
+ layer       <- c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[1],
+                  as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[2])
+ layer       <- sort(layer)
+ varcri.tm   <-" (d.v1_id='T_OBS_M'  OR d.v2_id='T_MOD_M') "
+ varcri.rhm  <-" (d.v1_id='RH_OBS_M' OR d.v2_id='RH_MOD_M')"
+ varcri.um   <-" (d.v1_id='U_OBS_M'  OR d.v2_id='U_MOD_M') "
+ varcri.vm   <-" (d.v1_id='V_OBS_M'  OR d.v2_id='V_MOD_M') "
+
+ criteria.tm <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.tm,
+                     " AND d.",layervar," BETWEEN ",layer[1]," AND ", layer[2], sep="")
+ criteria.rhm<-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.rhm,
+                     " AND d.",layervar," BETWEEN ",layer[1]," AND ", layer[2],sep="")
+ criteria.um <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.um,
+                     " AND d.",layervar," BETWEEN ",layer[1]," AND ", layer[2],sep="")
+ criteria.vm <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.vm,
+                     " AND d.",layervar," BETWEEN ",layer[1]," AND ", layer[2],sep="")
+
+ #-----------------------------------------------------------##
+ #  Script Mode settings for Site profile plots on Mandatory
+ #-----------------------------------------------------------##
+ PROFM        <-as.logical(Sys.getenv("RAOB_PROFILEM"))
+ CURTAINM     <-as.logical(Sys.getenv("RAOB_CURTAINM"))
+ proflim      <- c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[1],
+                   as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[2])
+ proflim      <- sort(proflim)
+
+ criteria.tms <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.tm, " AND ",statq,sep="")
+ criteria.rhms<-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.rhm," AND ",statq,sep="")
+ criteria.ums <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.um, " AND ",statq,sep="")
+ criteria.vms <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.vm, " AND ",statq,sep="")
+
+ criteria.tmc <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.tm, " AND ",statqc,sep="")
+ criteria.rhmc<-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.rhm," AND ",statqc,sep="")
+ criteria.umc <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.um, " AND ",statqc,sep="")
+ criteria.vmc <-paste(table.link," AND d.ob_date ",my.drange," AND ",varcri.vm, " AND ",statqc,sep="")
+
+ #---------------------------------------------------##
+ ############################################################
+
+ ############################################################
+ # Plotting Options for Native Level Analysis
+ #---------------------------------------------------------##
+ #  Script Mode settings for Single Profiles per site one time
+ #---------------------------------------------------------##
+ PROFN     <-as.logical(Sys.getenv("RAOB_PROFILEN"))
+ CURTAINN  <-as.logical(Sys.getenv("RAOB_CURTAINN"))
+
+ varcri.ton    <-" (v1_id='T_OBS_N' OR v2_id='RH_OBS_N') "
+ varcri.tmn    <-" (v1_id='T_MOD_N' OR v2_id='RH_MOD_N') "
+ varcri.uon    <-" (v1_id='U_OBS_N' OR v2_id='V_OBS_N')  "
+ varcri.umn    <-" (v1_id='U_MOD_N' OR v2_id='V_MOD_N')  "
+
+ criteria.ton1 <-paste("ob_date='",my.dates,"' AND ",varcri.ton," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ criteria.tmn1 <-paste("ob_date='",my.dates,"' AND ",varcri.tmn," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ criteria.uon1 <-paste("ob_date='",my.dates,"' AND ",varcri.uon," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ criteria.umn1 <-paste("ob_date='",my.dates,"' AND ",varcri.umn," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ #---------------------------------------------------------##
+ #  Script Mode settings for Curtain P-t Model-Obs
+ #---------------------------------------------------------##
+ criteria.ton2 <-paste("ob_date ",my.drange," AND ",varcri.ton," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ criteria.tmn2 <-paste("ob_date ",my.drange," AND ",varcri.tmn," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ criteria.uon2 <-paste("ob_date ",my.drange," AND ",varcri.uon," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ criteria.umn2 <-paste("ob_date ",my.drange," AND ",varcri.umn," AND stat_id='",statidc,"'",
+                       " AND ",layervar," BETWEEN ",proflim[1]," AND ", proflim[2], sep="")
+ 
+ ############################################################
+ 
 #########################################################################
 #       Plot Ouput Format
 #########################################################################
@@ -104,7 +221,128 @@
  symbsiz    <-1.5*plotsize
  plotopts   <-list(figdir=figdir,plotsize=plotsize, plotfmt=plotfmt,symb=symb,symbo=symbo,
                    symbsiz=symbsiz,pheight=pheight,pwidth=pwidth, bounds=bounds, project=project)
-######################################################################### 
+ ######################################################################### 
+ #########################################################################
+ #                   WARNING, WARNING, WARNING 
+ # Various "firm" coded definitions that should be used with extreme 
+ # caution. These are set for the official release and any modifications
+ # may cause untested/unwanted behviour.
+
+ metricID    <-c("RMSE","MAE","BIAS","CORR")
+ varName     <-c("Temperature","Relative Humidity","Wind Speed","Wind Direction")
+ varID       <-c("TEMP","RH","WS","WD")
+ varUnits    <-c("K","%","m/s","Deg")
+ #-----------------------------------------------------------------------------------------##
+ ##  Color Scale for Variable Biases. This is a static color scale, but if the current 
+ ##  scale is not desired, it can be changed below.
+
+ # T, RH, WS and WD are temp, rel. hum., wind speed, wind dir.
+ # e, b, c are error, bias and correlation.
+
+ # Temp levels and colors
+ levsTe             <-c(seq(0,5,by=0.5),10)
+ levsTe             <-c(seq(0,2,by=0.25),3,5)
+ levsTb             <-c(-500,-300,-200,-150,-100,-50,0,50,100,150,200,300,500)/100
+ levsTc             <-c(0,0.25,seq(0.60,1.0,by=0.05))
+ colTe              <-rainbow(length(levsTe))
+ colTe              <-tim.colors(length(levsTe))
+ colTb              <-tim.colors(length(levsTb))
+ tmp                <- (length(levsTb)-1)/2
+ colTb[tmp:(tmp+1)] <-"gray"
+ colTc              <-tim.colors(length(levsTc))
+
+ # RH levels and colors
+ levsRHe            <-c(0,5,10,15,20,25,30,35,40,45,50)
+ levsRHe            <-c(seq(0,30,by=3.3))
+ levsRHb            <-c(-40,-30,-20,-15,-10,-5,0,5,10,15,20,30,40)
+ levsRHc            <-c(0,0.25,seq(0.60,1.0,by=0.05))
+ colRHe             <-rainbow(length(levsRHe))
+ colRHe             <-tim.colors(length(levsRHe))
+ colRHb             <-tim.colors(length(levsRHb))
+ tmp                <- (length(levsRHb)-1)/2
+ colRHb[tmp:(tmp+1)]<-"gray"
+ colRHc             <-tim.colors(length(levsRHc))
+
+ # WS levels and colors
+ levsWSe             <-c(seq(0,5,by=0.5),10)
+ levsWSb             <-c(-500,-300,-200,-150,-100,-50,0,50,100,150,200,300,500)/100
+ levsWSc             <-c(0,0.25,seq(0.60,1.0,by=0.05))
+ colWSe              <-rainbow(length(levsTe))
+ colWSe              <-tim.colors(length(levsTe))
+ colWSb              <-tim.colors(length(levsTb))
+ tmp                 <- (length(levsTb)-1)/2
+ colWSb[tmp:(tmp+1)] <-"gray"
+ colWSc              <-tim.colors(length(levsTc))
+
+ # WD levels and colors
+ levsWDe            <-c(0,5,10,15,20,25,30,35,40,45,50)
+ levsWDb            <-c(-40,-30,-20,-15,-10,-5,0,5,10,15,20,30,40)
+ levsWDc            <-c(0,0.25,seq(0.60,1.0,by=0.05))
+ colWDe             <-rainbow(length(levsWDe))
+ colWDe             <-tim.colors(length(levsWDe))
+ colWDb             <-tim.colors(length(levsWDb))
+ tmp                <- (length(levsWDb)-1)/2
+ colWDb[tmp:(tmp+1)]<-"gray"
+ colWDc             <-tim.colors(length(levsWDc))
+
+ lev.array          <-array(NA,c(30,length(varID),length(metricID)))
+ col.array          <-array(NA,c(30,length(varID),length(metricID)))
+
+ # Main Color and level array setup. Same shape as Statistics array
+ lev.array[1:length(levsTe),1,1]    <- levsTe
+ lev.array[1:length(levsTe),1,2]    <- levsTe
+ lev.array[1:length(levsTb),1,3]    <- levsTb
+ lev.array[1:length(levsTc),1,4]    <- levsTc
+
+ lev.array[1:length(levsRHe),2,1]   <- levsRHe
+ lev.array[1:length(levsRHe),2,2]   <- levsRHe
+ lev.array[1:length(levsRHb),2,3]   <- levsRHb
+ lev.array[1:length(levsRHc),2,4]   <- levsRHc
+
+ lev.array[1:length(levsWSe),3,1]   <- levsWSe
+ lev.array[1:length(levsWSe),3,2]   <- levsWSe
+ lev.array[1:length(levsWSb),3,3]   <- levsWSb
+ lev.array[1:length(levsWSc),3,4]   <- levsWSc
+
+ lev.array[1:length(levsWDe),4,1]   <- levsWDe
+ lev.array[1:length(levsWDe),4,2]   <- levsWDe
+ lev.array[1:length(levsWDb),4,3]   <- levsWDb
+ lev.array[1:length(levsWDc),4,4]   <- levsWDc
+
+ col.array[1:length(colTe),1,1]     <- colTe
+ col.array[1:length(colTe),1,2]     <- colTe
+ col.array[1:length(colTb),1,3]     <- colTb
+ col.array[1:length(colTc),1,4]     <- colTc
+
+ col.array[1:length(colRHe),2,1]    <- colRHe
+ col.array[1:length(colRHe),2,2]    <- colRHe
+ col.array[1:length(colRHb),2,3]    <- colRHb
+ col.array[1:length(colRHc),2,4]    <- colRHc
+
+ col.array[1:length(colWSe),4,1]    <- colWSe
+ col.array[1:length(colWSe),4,2]    <- colWSe
+ col.array[1:length(colWSb),4,3]    <- colWSb
+ col.array[1:length(colWSc),4,4]    <- colWSc
+
+ col.array[1:length(colWDe),3,1]    <- colWDe
+ col.array[1:length(colWDe),3,2]    <- colWDe
+ col.array[1:length(colWDb),3,3]    <- colWDb
+ col.array[1:length(colWDc),3,4]    <- colWDc
+
+#-----------------------------------------------------------------------------------------##
+##  Plot Lables 
+ infolab      <-paste("Date Range ",ys,ms,ds," to ",ye,me,de," * ",
+                      "Hour Range ",hs," to ",he," UTC"," * ","Layer (",layerlab,") ",
+                      layer[1]," to ",layer[2]," ",layerunit,sep="")
+ infolabProf1 <-paste("Rawinsonde Site ID:",statid)
+ infolabProf2 <-paste("Date: ",ys,ms,ds," to ",ye,me,de,sep="")
+ infolabProf3 <-paste("Time: ",hs," to ",he," UTC",sep="")
+ figurelablev <-paste(rev(layer)[1],"-",rev(layer)[2],layerunit,sep="")
+ datelab      <-paste(ys,ms,ds,"-",ye,me,de,sep="")
+ plotlab      <-list(infolab=infolab,infolabProf1=infolabProf1,infolabProf2=infolabProf2,
+                     infolabProf3=infolabProf3,figurelablev=figurelablev,datelab=datelab,
+                     metricID=metricID, varName=varName, varID=varID, varUnits=varUnits)
+
 #########################################################################
 #----- 			END OF INPUT FILE	------------------------#
 #########################################################################

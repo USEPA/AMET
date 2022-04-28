@@ -8,7 +8,7 @@ header <- "
 ### Spatial plots are also produced for several select statistics, specifically MB, ME, FB,
 ### FE, NMB, NME, RMSE and Correlation. Images can be output as png, pdf or both.
 ###
-### Last modified by Wyat Appel: Feb 2022
+### Last modified by Wyat Appel, June 2019
 #####################################################################################
 "
 
@@ -89,8 +89,7 @@ all_me     <-NULL
 all_corr   <-NULL
 bounds     <-NULL
 sub_title  <-NULL
-legend_names <- NULL
-legend_chars <- NULL
+
 ### Set plot characters ###
 plot.symbols<-as.integer(plot_symbols)
 pick.symbol.name.fun<-function(x){
@@ -163,15 +162,13 @@ for (j in 1:total_networks) {
 
       ### If there are data, continue ###
       else {
-         legend_names <<- c(legend_names,network_label[j])
-         legend_chars <<- c(legend_chars,spch[k])
-         aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),Stat_ID_NoPOC=I(aqdat_query.df$stat_id_noPOC),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
+         aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]])
          if (use_avg_stats == "y") {
             aqdat.df <- Average(aqdat.df)
          }
-#         sub_title<-paste(sub_title,symbols[k],"=",network,"; ",sep="")
+         sub_title<-paste(sub_title,symbols[k],"=",network,"; ",sep="")
          ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
-         data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),stat_id_noPOC=I(aqdat.df$Stat_ID_NoPOC),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
+         data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
          stats_all.df <-try(DomainStats(data_all.df,rm_negs="T"))	# Compute stats using DomainStats function for entire domain
          ##################################
 
@@ -414,12 +411,12 @@ lon_max<-max(all_lon)
 bounds<-c(min(lat_min,bounds[1]),max(lat_max,bounds[2]),min(lon_min,bounds[3]),max(lon_max,bounds[4]))		# Set lat/lon bounds
 plotsize<-1.50													# Set plot size
 symb<-15														# Set symbol to use
-symbsiz<-1.1                                                                         # Set symbol size
+symbsiz<-1                                                                         # Set symbol size
 if (length(unique(aqdat.df$Stat_ID)) > 500) {
-   symbsiz <- 0.9
+   symbsiz <- 0.7
 }
 if (length(unique(aqdat.df$Stat_ID)) > 10000) {
-   symbsiz <- 0.7
+   symbsiz <- 0.4
 }
 ##################################### 
       

@@ -7,7 +7,7 @@ header <- "
 ### function. Designed for single simulation, single network and
 ### single species.
 ###
-### Last Updated by Wyat Appel: Nov 2020
+### Last Updated by Wyat Appel: June, 2019
 ##################################################################
 "
 
@@ -17,6 +17,13 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
+
+### Retrieve units label from database table ###
+network <- network_names[1]
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#units <- db_Query(units_qs,mysql)
+################################################
+
 
 network <- network_names[[1]]                                             # Set network
 

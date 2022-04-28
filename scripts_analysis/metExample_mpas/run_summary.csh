@@ -23,7 +23,7 @@
 
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   mysql.server.gov
+  setenv MYSQL_SERVER   mysql.server.gov 
   
   #  AMET project id or simulation id
   setenv AMET_PROJECT metExample_mpas
@@ -73,7 +73,7 @@
     echo "Performance plot will have the name convention ---------->" $AMET_OUT/$AMET_PROJECT.$AMET_RUNID.VARIABLE.ametplot.$AMET_PTYPE
     echo "Diurnal performance plot will have the name convention -->" $AMET_OUT/$AMET_PROJECT.$AMET_RUNID.VARIABLE.diurnal.$AMET_PTYPE
     echo 
-    echo "Text statistics are in file: ---------------------------->" $AMET_OUT/stats.$AMET_PROJECT.$AMET_RUNID.csv
+    echo "Text statistics are in file: ---------------------------->" $AMET_OUT/stats.$AMET_PROJECT.$AMET_RUNID.dat
     echo "-----------------------------------------------------------------------------------------"
   else
      echo "Please check options above, the AMET R script did not produce any output."

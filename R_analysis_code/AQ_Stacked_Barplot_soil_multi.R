@@ -6,7 +6,7 @@ header <- "
 ### (i.e. CSN, IMPROVE, AQS Daily). Single simulation. Output format is png, pdf or
 ### both.
 ###
-### Last updated by Wyat Appel: Apr 2020
+### Last updated by Wyat Appel: June, 2019
 ###################################################################################
 "
 
@@ -43,7 +43,7 @@ if (use_median == "y") {
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {
-   if (custom_title == "") { title <- paste(network_name," Stacked Barplot for ",run_name1," for ",dates,sep="") }
+   if (custom_title == "") { title <- paste(network_name," Stacked Barplot (",method,") for ",run_name1," for ",dates,sep="") }
    else { title <- custom_title }
 }
 
@@ -253,12 +253,12 @@ par(mai=c(1,1,0.5,0.5))		# set margins
 
 {
    if (total_networks == 1) {
-      barplot(data_matrix, beside=FALSE, ylab=paste(method," Concentration (ug/m3)",sep=""),names.arg=sim_names,width=0.5,xlim=c(0,2),ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=.6,cex.axis=1.4,cex.names=1.2,cex.lab=1.2)
+      barplot(data_matrix, beside=FALSE, ylab="Mean Concentration (ug/m3)",names.arg=sim_names,width=0.5,xlim=c(0,2),ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=.6,cex.axis=1.4,cex.names=1.2,cex.lab=1.2)
       x1_adjust <- 1
       x2_adjust <- 1
    }
    else {
-      barplot(data_matrix, beside=FALSE, ylab=paste(method," Concentration (ug/m3)",sep=""),names.arg=sim_names,width=0.27,xlim=c(0,2),ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=c(.3,.3,1,.3),cex.axis=1.4,cex.names=1.2,cex.lab=1.2)
+      barplot(data_matrix, beside=FALSE, ylab="Mean Concentration (ug/m3)",names.arg=sim_names,width=0.27,xlim=c(0,2),ylim=c(0,yaxis.max),col=plot_cols,xpd=F,space=c(.3,.3,1,.3),cex.axis=1.4,cex.names=1.2,cex.lab=1.2)
       x1_adjust <- .91
       x2_adjust <- .77
    }

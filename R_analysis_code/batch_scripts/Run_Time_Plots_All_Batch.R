@@ -57,30 +57,12 @@ if(!exists("by_site")) {
    print("by_site flag not set. Defaulting to n. Set by_site flag in config file to create plots by individual site id.")
    by_site <- "n" 
 }
-if (!exists("hourly_pm_analysis")) {
-      print("hourly_pm_analysis flag not found. Defaulting to n. Set hourly_pm_analysis flag in batch config file to include hourly PM data from AQS.")
-      hourly_pm_analysis <- "n"
-}
 if ((by_site == 'T') || (by_site == "t") || (by_site == "Y")) { by_site <- "y" }
 
-if(!exists("kelly_plot")) {
-   print("kelly_plot flag not set. Defaulting to n. Add kelly_plot flag (kelly_plot <- 'y') in config file to create Kelly plots by NOAA climate region for a single or multiple simulutions.")
-   kelly_plot <- "n"
-}
-if(!exists("kelly_plot_annual")) {
-   print("kelly_plot_annual flag not set. Defaulting to n. Add kelly_plot_annual flag (kelly_plot_annual <- 'y') in config file to create seasonal NOAA region Kelly plots using annual data.")
-   kelly_plot_annual <- "n"
-}
-if(!exists("inc_search")) {
-   print("inc_search flag not set. Defaulting to n. Set inc_search flag in config file to include the limited SEARCH network data.")
-   by_site <- "n"
-}
 
 ### Main Database Query String. ###
 query_string<-paste(" and s.stat_id=d.stat_id and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
 query_string2<-paste(" and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
-
-pid_date <- paste(start_year,start_month,sep="")
 
 ### Set and create output directory ###
 #out_dir 		<- paste(out_dir,"time_plots",sep="/")
@@ -98,10 +80,6 @@ run_script_command7 <- paste(ametbase,"/R_analysis_code/AQ_Timeseries_MtoM.R",se
 run_script_command8 <- paste(ametbase,"/R_analysis_code/AQ_Timeseries_plotly.R",sep="")
 run_script_command9 <- paste(ametbase,"/R_analysis_code/AQ_Boxplot_plotly.R",sep="")
 run_script_command10 <- paste(ametbase,"/R_analysis_code/AQ_Boxplot_ggplot.R",sep="")
-run_script_command11 <- paste(ametbase,"/R_analysis_code/AQ_Kellyplot.R",sep="")
-run_script_command12 <- paste(ametbase,"/R_analysis_code/AQ_Kellyplot_multisim.R",sep="") 
-run_script_command13 <- paste(ametbase,"/R_analysis_code/AQ_Kellyplot_season.R",sep="")
-run_script_command14 <- paste(ametbase,"/R_analysis_code/AQ_Kellyplot_region.R",sep="")
 
 #######################################################################################
 ### This portion of the code will create monthly stat plots for the various species ###
@@ -121,7 +99,7 @@ if (hourly_ozone_analysis == 'y') {
          dates 		<- batch_names[m]
          network_names	<- network_names_list[i]
          network_label 	<- network_label_list[i]
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -129,11 +107,12 @@ if (hourly_ozone_analysis == 'y') {
             print(qs)
             sites.df <- db_Query(qs,mysql)
             sites    <- sites.df$stat_id
+            print(sites)
             if (length(sites) == 0) { sites <- "All" }
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -168,16 +147,6 @@ if (hourly_ozone_analysis == 'y') {
                system(mkdir_command)
                try(source(run_script_command7)) 
             }  
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
-            }
          }
       }
    }
@@ -199,7 +168,9 @@ if (daily_ozone_analysis == 'y') {
             }
             mkdir_command 	<- paste("mkdir -p",figdir)
             dates 		<- batch_names[m]
-            pid                 <- paste(pid_date,network_label,sep="_")
+#            network_names 	<- c("AQS_Daily_O3")
+#            network_label 	<- c("AQS_Daily")
+            pid		<- network_label
             query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
             sites <- "All"
             if (by_site == 'y') {
@@ -210,7 +181,7 @@ if (daily_ozone_analysis == 'y') {
             }
             for (s in 1:length(sites)) {
                if (sites[s] != "All") {
-                  pid   <- paste(pid_date,network_label,sites[s],sep="_")
+                  pid   <- paste(network_label,sites[s],sep="_")
                   query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                   site  <- sites[s]
                }
@@ -241,16 +212,6 @@ if (daily_ozone_analysis == 'y') {
                   system(mkdir_command)
                   try(source(run_script_command7))
                }
-               if (kelly_plot_annual == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command11))
-               }
-               if (kelly_plot == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command12))
-                  try(source(run_script_command13))
-                  try(source(run_script_command14))
-               }
             }
          }        
       }
@@ -271,7 +232,7 @@ if (aerosol_analysis == 'y') {
          mkdir_command 	<- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE")
          network_label 	<- c("IMPROVE")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -282,7 +243,7 @@ if (aerosol_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -313,16 +274,6 @@ if (aerosol_analysis == 'y') {
                system(mkdir_command)
                try(source(run_script_command7))
             }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
-            }
          }
       }
    }
@@ -338,7 +289,7 @@ if (aerosol_analysis == 'y') {
          dates 		<- batch_names[m]
          network_names 	<- c("CSN")
          network_label 	<- c("CSN")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -349,7 +300,7 @@ if (aerosol_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -379,16 +330,6 @@ if (aerosol_analysis == 'y') {
             if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
                system(mkdir_command)
                try(source(run_script_command7))
-            }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
             }
          }	
       }
@@ -405,7 +346,7 @@ if (aerosol_analysis == 'y') {
          dates 		<- batch_names[m]
          network_names 	<- c("CASTNET")
          network_label 	<- c("CASTNET")
-         pid            <- paste(pid_date,network_label,sep="_") 
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -416,7 +357,7 @@ if (aerosol_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -446,16 +387,6 @@ if (aerosol_analysis == 'y') {
             if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
                system(mkdir_command)
                try(source(run_script_command7))
-            }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
             }
          }
       }
@@ -473,7 +404,7 @@ if (aerosol_analysis == 'y') {
          dates 		<- batch_names[m]
          network_names 	<- c("AQS_Daily")
          network_label 	<- c("AQS_Daily")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -484,7 +415,7 @@ if (aerosol_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -515,250 +446,22 @@ if (aerosol_analysis == 'y') {
                system(mkdir_command)
                try(source(run_script_command7))
             }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
-            }
          }
       }
    }
-   if (hourly_pm_analysis == "y") {
-      for (m in 1:length(batch_query)) {
-         species_list <- c("PM_TOT")
-         for (i in 1:length(species_list)) {
-            species 	<- species_list[i]
-            figdir                 <- paste(out_dir,species,sep="/")
-            if (batch_names[m] != "None") {
-               figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
-            }
-            mkdir_command 	<- paste("mkdir -p",figdir)
-            dates 		<- batch_names[m]
-            network_names 	<- c("AQS_Hourly")
-            network_label 	<- c("AQS_Hourly")
-            pid                 <- paste(pid_date,network_label,sep="_")
-            query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
-            sites <- "All"
-            if (by_site == 'y') {
-               qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
-               sites.df <- db_Query(qs,mysql)
-               sites    <- sites.df$stat_id
-               if (length(sites) == 0) { sites <- "All" }
-            }
-            for (s in 1:length(sites)) {
-               if (sites[s] != "All") {
-                  pid   <- paste(pid_date,network_label,sites[s],sep="_")
-                  query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
-                  site  <- sites[s]
-               }
-               if (timeseries_plot    == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command1))
-                  try(source(run_script_command8))
-               }
-               if (temporal_plot      == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command2))
-               }
-               if (box_plot           == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command3))
-                  try(source(run_script_command9))
-                  try(source(run_script_command10))
-               }
-               if (box_plot_roselle   == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command4))
-               }
-               if (monthly_stat_plot  == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command5))
-               }
-               if (box_plot_hourly   == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command6))
-               }
-               if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
-                  system(mkdir_command)
-                  try(source(run_script_command7))
-               }
-               if (kelly_plot_annual == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command11))
-               }
-               if (kelly_plot == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command12))
-                  try(source(run_script_command13))
-                  try(source(run_script_command14))
-               }
-            }
-         }
-      }
-   }
-}
-if (dep_analysis == 'y') {	
-   averaging <- deposition_averaging
-   species_list <- c("SO4_dep","NO3_dep","NH4_dep","Precip")
    for (m in 1:length(batch_query)) {
+      species_list <- c("PM_TOT")
       for (i in 1:length(species_list)) {
          species 	<- species_list[i]
-         dates		<- batch_names[m]
          figdir                 <- paste(out_dir,species,sep="/")
          if (batch_names[m] != "None") {
             figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
          }
          mkdir_command 	<- paste("mkdir -p",figdir)
-         network_names	<- c("NADP") 
-         network_label	<- c("NADP")
-         pid            <- paste(pid_date,network_label,sep="_")
-         query		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
-         sites <- "All"
-         if (by_site == 'y') {
-            qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
-            sites.df <- db_Query(qs,mysql)
-            sites    <- sites.df$stat_id
-            if (length(sites) == 0) { sites <- "All" }
-         }
-         for (s in 1:length(sites)) {
-            if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
-               query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
-               site  <- sites[s]
-            }
-            if (timeseries_plot    == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command1))
-               try(source(run_script_command8))
-            }
-            if (temporal_plot      == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command2))
-            }
-            if (box_plot           == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command3))
-               try(source(run_script_command9))
-               try(source(run_script_command10))
-            }
-            if (box_plot_roselle   == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command4))
-            }
-            if (monthly_stat_plot  == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command5))
-            }
-            if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
-               system(mkdir_command)
-               try(source(run_script_command7))
-            }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
-            }
-         }
-      }
-   }
-}
-if (gas_analysis == 'y') {	
-   averaging <- gas_averaging 
-   if (inc_search == 'y') {
-      species_list <- c("O3","SO2","NO","NO2","NOY","CO")
-      for (m in 1:length(batch_query)) {
-         for (i in 1:length(species_list)) {
-            species 	<- species_list[i]
-            dates 		<- batch_names[m]
-            figdir         <- paste(out_dir,species,sep="/")
-            if (batch_names[m] != "None") {
-               figdir      <- paste(out_dir,batch_names[m],species,sep="/")
-            }
-            network_names 	<- c("SEARCH")
-            network_label 	<- c("SEARCH")
-            pid            <- paste(pid_date,network_label,sep="_")
-            query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
-            sites <- "All"
-            if (by_site == 'y') {
-               qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
-               sites.df <- db_Query(qs,mysql)
-               sites    <- sites.df$stat_id
-               if (length(sites) == 0) { sites <- "All" }
-            }
-            for (s in 1:length(sites)) {
-               if (sites[s] != "All") {
-                  pid   <- paste(pid_date,network_label,sites[s],sep="_")
-                  query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
-                  site  <- sites[s]
-               }
-               if (timeseries_plot    == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command1))
-                  try(source(run_script_command8))
-               }
-               if (temporal_plot      == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command2))
-               }
-               if (box_plot           == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command3))
-                  try(source(run_script_command9))
-                  try(source(run_script_command10))
-               }
-               if (box_plot_roselle   == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command4))
-               }
-               if (monthly_stat_plot  == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command5))
-               }
-               if (box_plot_hourly   == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command6))
-               }
-               if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
-                  system(mkdir_command)
-                  try(source(run_script_command7))
-               }
-               if (kelly_plot == 'y') {
-                  system(mkdir_command)
-                  try(source(run_script_command11))
-               }
-               if ((kelly_plot == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
-                  system(mkdir_command)
-                  try(source(run_script_command12))
-                  try(source(run_script_command13))
-                  try(source(run_script_command14))
-               }
-            }
-         }
-      }
-   }
-   species_list <- c("SO2","NO","NO2","NOX","NOY","CO")
-   for (m in 1:length(batch_query)) {
-      for (i in 1:length(species_list)) {
-         species 	<- species_list[i]
          dates 		<- batch_names[m]
-         figdir                 <- paste(out_dir,species,sep="/")
-         if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
-         }
-         mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -769,7 +472,7 @@ if (gas_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -804,15 +507,190 @@ if (gas_analysis == 'y') {
                system(mkdir_command)
                try(source(run_script_command7))
             }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
+         }
+      }
+   }
+}
+if (dep_analysis == 'y') {	
+   averaging <- deposition_averaging
+   species_list <- c("SO4_dep","NO3_dep","NH4_dep","Precip")
+   for (m in 1:length(batch_query)) {
+      for (i in 1:length(species_list)) {
+         species 	<- species_list[i]
+         dates		<- batch_names[m]
+         figdir                 <- paste(out_dir,species,sep="/")
+         if (batch_names[m] != "None") {
+            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+         }
+         mkdir_command 	<- paste("mkdir -p",figdir)
+         network_names	<- c("NADP") 
+         network_label	<- c("NADP")
+         pid            <- network_label
+         query		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
+         sites <- "All"
+         if (by_site == 'y') {
+            qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+            sites.df <- db_Query(qs,mysql)
+            sites    <- sites.df$stat_id
+            if (length(sites) == 0) { sites <- "All" }
+         }
+         for (s in 1:length(sites)) {
+            if (sites[s] != "All") {
+               pid   <- paste(network_label,sites[s],sep="_")
+               query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+               site  <- sites[s]
             }
-            if (kelly_plot == 'y') {
+            if (timeseries_plot    == 'y') {
                system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
+               try(source(run_script_command1))
+               try(source(run_script_command8))
+            }
+            if (temporal_plot      == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command2))
+            }
+            if (box_plot           == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command3))
+               try(source(run_script_command9))
+               try(source(run_script_command10))
+            }
+            if (box_plot_roselle   == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command4))
+            }
+            if (monthly_stat_plot  == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command5))
+            }
+            if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+               system(mkdir_command)
+               try(source(run_script_command7))
+            }
+         }
+      }
+   }
+}
+if (gas_analysis == 'y') {	
+   averaging <- gas_averaging 
+   species_list <- c("O3","SO2","NO","NO2","NOY","CO")
+   for (m in 1:length(batch_query)) {
+      for (i in 1:length(species_list)) {
+         species 	<- species_list[i]
+         dates 		<- batch_names[m]
+         figdir         <- paste(out_dir,species,sep="/")
+         if (batch_names[m] != "None") {
+            figdir      <- paste(out_dir,batch_names[m],species,sep="/")
+         }
+         mkdir_command  <- paste("mkdir -p",figdir)
+         network_names 	<- c("SEARCH")
+         network_label 	<- c("SEARCH")
+         pid            <- network_label
+         query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
+         sites <- "All"
+         if (by_site == 'y') {
+            qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+            sites.df <- db_Query(qs,mysql)
+            sites    <- sites.df$stat_id
+            if (length(sites) == 0) { sites <- "All" }
+         }
+         for (s in 1:length(sites)) {
+            if (sites[s] != "All") {
+               pid   <- paste(network_label,sites[s],sep="_")
+               query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+               site  <- sites[s]
+            }
+            if (timeseries_plot    == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command1))
+               try(source(run_script_command8))
+            }
+            if (temporal_plot      == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command2))
+            }
+            if (box_plot           == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command3))
+               try(source(run_script_command9))
+               try(source(run_script_command10))
+            }
+            if (box_plot_roselle   == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command4))
+            }
+            if (monthly_stat_plot  == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command5))
+            }
+            if (box_plot_hourly   == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command6))
+            }
+            if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+               system(mkdir_command)
+               try(source(run_script_command7))
+            }
+         }
+      }
+   }
+   species_list <- c("SO2","NO","NO2","NOX","NOY","CO")
+   for (m in 1:length(batch_query)) {
+      for (i in 1:length(species_list)) {
+         species 	<- species_list[i]
+         dates 		<- batch_names[m]
+         figdir                 <- paste(out_dir,species,sep="/")
+         if (batch_names[m] != "None") {
+            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+         }
+         mkdir_command  <- paste("mkdir -p",figdir)
+         network_names 	<- c("AQS_Hourly")
+         network_label 	<- c("AQS_Hourly")
+         pid            <- network_label
+         query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
+         sites <- "All"
+         if (by_site == 'y') {
+            qs <- paste("SELECT distinct(d.stat_id) from ",run_name1," as d, site_metadata as s where d.network = '",network_names,"' ",query,sep="")
+            sites.df <- db_Query(qs,mysql)
+            sites    <- sites.df$stat_id
+            if (length(sites) == 0) { sites <- "All" }
+         }
+         for (s in 1:length(sites)) {
+            if (sites[s] != "All") {
+               pid   <- paste(network_label,sites[s],sep="_")
+               query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
+               site  <- sites[s]
+            }
+            if (timeseries_plot    == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command1))
+               try(source(run_script_command8))
+            }
+            if (temporal_plot      == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command2))
+            }
+            if (box_plot           == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command3))
+               try(source(run_script_command9))
+               try(source(run_script_command10))
+            }
+            if (box_plot_roselle   == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command4))
+            }
+            if (monthly_stat_plot  == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command5))
+            }
+            if (box_plot_hourly   == 'y') {
+               system(mkdir_command)
+               try(source(run_script_command6))
+            }
+            if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
+               system(mkdir_command)
+               try(source(run_script_command7))
             }
          }
       }
@@ -832,7 +710,7 @@ if (AE6_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("CSN")
          network_label 	<- c("CSN")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label         
 	 query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -843,7 +721,7 @@ if (AE6_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -873,16 +751,6 @@ if (AE6_analysis == 'y') {
             if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
                system(mkdir_command)
                try(source(run_script_command7))
-            }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
             }
          }
       }
@@ -899,7 +767,7 @@ if (AE6_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("IMPROVE")
          network_label 	<- c("IMPROVE")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -910,7 +778,7 @@ if (AE6_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -940,16 +808,6 @@ if (AE6_analysis == 'y') {
             if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
                system(mkdir_command)
                try(source(run_script_command7))
-            }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
             }
          }
       }
@@ -970,7 +828,7 @@ if (AOD_analysis == 'y') {
          system(mkdir_command)
          network_names 	<- c("AERONET")
          network_label 	<- c("AERONET")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query <- paste(query_string,"and (",batch_query[m],")",sep=" ")
          if (timeseries_plot    == 'y') {
             system(mkdir_command)
@@ -999,16 +857,6 @@ if (AOD_analysis == 'y') {
             system(mkdir_command)
             try(source(run_script_command7))
          }
-         if (kelly_plot_annual == 'y') {
-            system(mkdir_command)
-            try(source(run_script_command11))
-         }
-         if (kelly_plot == 'y') {
-            system(mkdir_command)
-            try(source(run_script_command12))
-            try(source(run_script_command13))
-            try(source(run_script_command14))
-         }
       }
    }
 }
@@ -1026,7 +874,7 @@ if (PAMS_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Hourly")
          network_label 	<- c("AQS_Hourly")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -1037,7 +885,7 @@ if (PAMS_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -1072,16 +920,6 @@ if (PAMS_analysis == 'y') {
                system(mkdir_command)
                try(source(run_script_command7))
             }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
-            }
          }
       }
    }
@@ -1097,7 +935,7 @@ if (PAMS_analysis == 'y') {
          mkdir_command  <- paste("mkdir -p",figdir)
          network_names 	<- c("AQS_Daily")
          network_label 	<- c("AQS_Daily")
-         pid            <- paste(pid_date,network_label,sep="_")
+         pid            <- network_label
          query 		<- paste(query_string,"and (",batch_query[m],")",sep=" ")
          sites <- "All"
          if (by_site == 'y') {
@@ -1108,7 +946,7 @@ if (PAMS_analysis == 'y') {
          }
          for (s in 1:length(sites)) {
             if (sites[s] != "All") {
-               pid   <- paste(pid_date,network_label,sites[s],sep="_")
+               pid   <- paste(network_label,sites[s],sep="_")
                query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
                site  <- sites[s]
             }
@@ -1138,16 +976,6 @@ if (PAMS_analysis == 'y') {
             if ((timeseries_mtom    == 'y') && (exists("run_name2")) && (nchar(run_name2) > 0)) {
                system(mkdir_command)
                try(source(run_script_command7))
-            }
-            if (kelly_plot_annual == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command11))
-            }
-            if (kelly_plot == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command12))
-               try(source(run_script_command13))
-               try(source(run_script_command14))
             }
          }
       }

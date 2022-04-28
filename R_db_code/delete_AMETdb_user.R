@@ -1,11 +1,12 @@
+#!/usr/bin/perl
 ##------------------------------------------------------
 #       AMET Database Setup Script                      #
 #                                                       #
 #       PURPOSE: Deletes a database and an amet         #
 #                user for both MET and AQ               #
 #                                                       #
-#       AUTHOR:  Alexis Zubrow, IE UNC                  # 
-#	LAST UPDATE: 01/2022 by K. Wyat Appel		#
+#       Author:  Alexis Zubrow, IE UNC                  # 
+#	Last Updated by Wyat Appel: April, 2017		#
 #--------------------------------------------------------
 
 
@@ -20,8 +21,10 @@ source.command <- paste(amet_base,"/configure/amet-config.R",sep="")
 source(source.command)
 
 dbase <-Sys.getenv('AMET_DATABASE')
+#       or die "Must set AMET_DATABASE environmental variable\n";
+#}
 
-# LOAD Required R Modules
+# LOAD Required Perl Modules
 require(RMySQL)                                              # Use MYSQL R package
 
 args                    <- commandArgs(TRUE)

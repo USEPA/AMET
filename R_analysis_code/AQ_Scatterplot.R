@@ -8,7 +8,7 @@ header <- "
 ### also allow a second run to plotted on top of the first run. Output format is png, pdf
 ### or both.
 ###
-### Last Updated by Wyat Appel: May 2020
+### Last Updated by Wyat Appel: June, 2019
 #####################################################################################
 "
 
@@ -21,7 +21,10 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ### Set file names and titles ###
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-title <- get_title(run_names,species,network_names,dates,custom_title)
+{
+   if (custom_title == "") { title <- paste(run_name1," ",species," for ",dates,sep="") }
+   else { title <- custom_title }
+}
 
 filename_pdf <- paste(run_name1,species,pid,"scatterplot.pdf",sep="_")             # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot.png",sep="_")		# Set PNG filename
@@ -182,7 +185,7 @@ while (run_count <= num_runs) {
       }
       write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(aqdat.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+      write.table(aqdat_query.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
       ###############################
    }	# End for loop for networks
    run_count <- run_count+1

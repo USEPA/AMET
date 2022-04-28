@@ -6,7 +6,7 @@ header <- "
 ### specific spectrum plots using hourly data.  This code is based on code provided by 
 ### Christian Hogrefe.
 ###
-### Last Updated by Wyat Appel: Nov 2020
+### Last Updated by Wyat Appel: June, 2019
 ########################################################################################
 "
 
@@ -38,7 +38,12 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 #################################
 
+### Retrieve units and model labels from database table ###
 network <- network_names[1]
+#units_qs <- paste("SELECT ",species," from project_units where proj_code = '",run_name1,"' and network = '",network,"'", sep="")
+#model_name_qs <- paste("SELECT model from aq_project_log where proj_code ='",run_name1,"'", sep="")
+#model_name <- db_Query(model_name_qs,mysql)
+################################################
 run_name <- run_name1
 j <- 1
 

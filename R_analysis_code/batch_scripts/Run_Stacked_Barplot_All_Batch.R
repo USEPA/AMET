@@ -54,9 +54,6 @@ if ((by_site == 'T') || (by_site == "t") || (by_site == "Y")) { by_site <- "y" }
 
 ### Main Database Query String. ###
 query_string<-paste(" and s.stat_id=d.stat_id and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
-
-pid_date <- paste(start_year,start_month,sep="")
-
 #query_string2<-paste(" and d.ob_dates >=",start_date,"and d.ob_datee <=",end_date,additional_query,sep=" ")
 
 ### Set and create output directory ###
@@ -69,9 +66,11 @@ run_script_command1 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot.R",s
 run_script_command2 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_AE6.R",sep="")
 run_script_command3 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_soil.R",sep="")
 run_script_command4 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_soil_multi.R",sep="")
+#run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_panel.R",sep="")
+#run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_panel_AE6.R",sep="")
+#run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_panel_AE6_multi.R",sep="")
 run_script_command5 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_AE6_ggplot.R",sep="")
 run_script_command6 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_AE6_plotly.R",sep="")
-run_script_command7 <- paste(amet_base,"/R_analysis_code/AQ_Stacked_Barplot_AE6_ts.R",sep="")
 
 ###############################################################################################
 ### This portion of the code will create seasonal soccer goal plots for the various species ###
@@ -93,7 +92,7 @@ for (m in 1:length(batch_query)) {
       mkdir_command     <- paste("mkdir -p",figdir)
       network_names 	<- c("CSN")
       network_label 	<- c("CSN")
-      pid 		<- paste(pid_date,network_names,sep="_")
+      pid 		<- network_names
       query 		<- paste(query_string,"and (",batch_query[m],")",sep="")
       sites <- "All"
       if (by_site == 'y') {
@@ -104,7 +103,7 @@ for (m in 1:length(batch_query)) {
       }
       for (s in 1:length(sites)) {
          if (sites[s] != "All") {
-            pid   <- paste(pid_date,network_label,sites[s],sep="_")
+            pid   <- paste(network_label,sites[s],sep="_")
             query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
             site  <- sites[s]
          }
@@ -118,10 +117,6 @@ for (m in 1:length(batch_query)) {
                try(source(run_script_command2))
                try(source(run_script_command5))
                try(source(run_script_command6))
-            }
-            if (AE6_barplot_timeseries == 'y') {
-               system(mkdir_command)
-               try(source(run_script_command7))
             }
          }
          if (species_in == "soil") {
@@ -139,14 +134,14 @@ for (m in 1:length(batch_query)) {
    for (i in 1:length(species_list)) {
       species_in        <- species_list[i]
       dates             <- batch_names[m]
-      figdir            <- paste(out_dir,species_in,sep="/")
+      figdir                 <- paste(out_dir,species_in,sep="/")
       if (batch_names[m] != "None") {
          figdir                 <- paste(out_dir,batch_names[m],species_in,sep="/")
       }
       mkdir_command     <- paste("mkdir -p",figdir)
       network_names     <- c("IMPROVE")
       network_label     <- c("IMPROVE")
-      pid               <- paste(pid_date,network_names,sep="_")
+      pid               <- network_names
       query             <- paste(query_string,"and (",batch_query[m],")",sep="")
       sites <- "All"
       if (by_site == 'y') {
@@ -157,7 +152,7 @@ for (m in 1:length(batch_query)) {
       }
       for (s in 1:length(sites)) {
          if (sites[s] != "All") {
-            pid   <- paste(pid_date,network_label,sites[s],sep="_")
+            pid   <- paste(network_label,sites[s],sep="_")
             query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
             site  <- sites[s]
          }
@@ -171,9 +166,6 @@ for (m in 1:length(batch_query)) {
                try(source(run_script_command2)) 
                try(source(run_script_command5))
                try(source(run_script_command6))
-            }
-            if (AE6_barplot_timeseries == 'y') {
-               system(mkdir_command)
                try(source(run_script_command7))
             }
          }
@@ -199,7 +191,7 @@ for (m in 1:length(batch_query)) {
       mkdir_command     <- paste("mkdir -p",figdir)
       network_names     <- c("AQS_Daily")
       network_label     <- c("AQS_Daily")
-      pid               <- paste(pid_date,network_names,sep="_")
+      pid               <- network_names
       query             <- paste(query_string,"and (",batch_query[m],")",sep="")
       sites <- "All"
       if (by_site == 'y') {
@@ -210,7 +202,7 @@ for (m in 1:length(batch_query)) {
       }
       for (s in 1:length(sites)) {
          if (sites[s] != "All") {
-            pid   <- paste(pid_date,network_label,sites[s],sep="_")
+            pid   <- paste(network_label,sites[s],sep="_")
             query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
             site  <- sites[s]
          }
@@ -224,9 +216,6 @@ for (m in 1:length(batch_query)) {
                try(source(run_script_command2))
                try(source(run_script_command5))
                try(source(run_script_command6))
-            }
-            if (AE6_barplot_timeseries == 'y') {
-               system(mkdir_command)
                try(source(run_script_command7))
             }
          }
@@ -246,7 +235,7 @@ for (m in 1:length(batch_query)) {
       mkdir_command        <- paste("mkdir -p",figdir)
       network_names        <- c("CSN","IMPROVE")
       network_label        <- c("CSN","IMPROVE")
-      pid                  <- paste(pid_date,"multi_network",sep="_")
+      pid                  <- "multi_network"
       query                <- paste(query_string,"and (",batch_query[m],")",sep="")
       sites <- "All"
       if (by_site == 'y') {
@@ -257,7 +246,7 @@ for (m in 1:length(batch_query)) {
       }
       for (s in 1:length(sites)) {
          if (sites[s] != "All") {
-            pid   <- paste(pid_date,network_label,sites[s],sep="_")
+            pid   <- paste(network_label,sites[s],sep="_")
             query <- paste(query_string," and (",batch_query[m],") and d.stat_id ='",sites[s],"'",sep="")
             site  <- sites[s]
          }

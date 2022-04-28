@@ -15,7 +15,7 @@
 #       PURPOSE: Run Site Compare and then put the       #
 #                output into the MYSQL database for AMET #
 #                                                        #
-#	LAST UPDATE by Wyat Appel: Feb 2022              #
+#                                                        #
 ##------------------------------------------------------##
 
 amet_base <- Sys.getenv('AMETBASE')
@@ -29,18 +29,11 @@ if (!exists("config_file")) {
 }
 source(config_file)
 
-AMET_DB <- Sys.getenv('AMET_DB')
-if (!exists("AMET_DB")) {
-   print("AMET_DB flag not set. Defaulting to T. Set AMET_DB flag in run script.")
-   AMET_DB <- "T"
+dbase <-Sys.getenv('AMET_DATABASE')
+if (!exists("dbase")) {
+   stop("Must set AMET_DATABASE environment variable")
 }
-print(AMET_DB)
-if ((AMET_DB == "y") || (AMET_DB == "Y") || (AMET_DB == "t") || (AMET_DB == "T")) {
-   dbase <-Sys.getenv('AMET_DATABASE')
-   if (!exists("dbase")) {
-      stop("Must set AMET_DATABASE environment variable")
-   }
-}
+
 EXEC_sitex	 <- Sys.getenv('EXEC_sitecmp')
 if ((!exists("EXEC_sitex")) || (EXEC_sitex == "") || (EXEC_sitex == "Config_file")) { EXEC_sitex <- EXEC_sitex_config }
 
@@ -73,7 +66,7 @@ if (mysql_pass == 'config_file')  { mysql_pass  <- amet_pass  }
 obs_data_dir           <- Sys.getenv('AMET_OBS')
 use_AE6                <- Sys.getenv('INC_AERO6_SPECIES')
 time_shift             <- Sys.getenv('TIME_SHIFT')
-data_dir               <- Sys.getenv('AMET_OUT')
+run_dir                <- Sys.getenv('AMET_OUT')
 project_id             <- Sys.getenv('AMET_PROJECT')
 cutoff                 <- Sys.getenv('INC_CUTOFF')
 start_date             <- Sys.getenv('START_DATE')
@@ -103,7 +96,6 @@ aeronet_flag	       <- Sys.getenv('AERONET')		      # Flag to include AERONET AO
 fluxnet_flag	       <- Sys.getenv('FLUXNET')		      # Flag to include FLUXNET data in the analysis
 naps_hourly_flag       <- Sys.getenv('NAPS_HOURLY')           # Flag to include Canadians NAPS data (hourly) in analysis
 naps_daily_o3_flag     <- Sys.getenv('NAPS_DAILY_O3')
-capmon_flag	       <- Sys.getenv('CAPMoN')
 noaa_esrl_o3_flag      <- Sys.getenv('NOAA_ESRL_O3')	      # Flag to include NOAA ESRL surface O3 observations in the analysis
 
 emep_hourly_flag       <- Sys.getenv('EMEP_HOURLY')           # Flag to include Europe EMEP data (hourly) in analysis
@@ -118,6 +110,8 @@ aganet_flag	       <- Sys.getenv('AGANET')		      # Flag to include Europe AGANE
 admn_flag	       <- Sys.getenv('ADMN')		      # Flag to include Europe ADMN data in analysis
 namn_flag	       <- Sys.getenv('NAMN')		      # Flag to include Europe NAMN data in analysis
 toar_flag	       <- Sys.getenv('TOAR')
+
+#project_id <- gsub("[.]","_",project_id)
 
 ### Check if using old definition names in run script ###
 if (castnet_daily_o3_flag == "") {
@@ -150,33 +144,31 @@ if ((aqs_daily_pm_flag == "y") || (aqs_daily_pm_flag == "Y") || (aqs_daily_pm_fl
 
 ###########################################################
 
-########################################################
-### Check which PM names being used in combine file. ###
-### Ignored if ncdf4 R library is not installed.     ###
-########################################################
+#######################################################
+### Check which PM names being used in combine file ###
+#######################################################
+require(ncdf4)
 PM_MOD_SPEC     <- "ATOTIJ"
 PM_FRM_MOD_SPEC <- "ATOTIJ_FRM"
 PM10_MOD_SPEC   <- "ATOTIJK"
-
-if(require(ncdf4)) {
-   if (Sys.getenv("WRITE_SITEX") == "T") {
-      M3_FILE <- Sys.getenv("CONC_FILE_1")
-      if (file.exists(M3_FILE)) {
-         m3_file_in <- nc_open(M3_FILE)
-         var_list <- ncatt_get(m3_file_in,0,"VAR-LIST")
-         var_list <- var_list$value
-         if(var_list != 0 ) {
-            vars <- strsplit(var_list," +")
-            if ("PMIJ" %in% vars[[1]]) {
-               PM_MOD_SPEC <- "PMIJ"
-               PM_FRM_MOD_SPEC <- "PMIJ_FRM"
-               PM10_MOD_SPEC <- "PM10"
-            }
+if (Sys.getenv("WRITE_SITEX") == "T") {
+   M3_FILE <- Sys.getenv("CONC_FILE_1")
+   if (file.exists(M3_FILE)) {
+      m3_file_in <- nc_open(M3_FILE)
+      var_list <- ncatt_get(m3_file_in,0,"VAR-LIST")
+      var_list <- var_list$value
+      if(var_list != 0 ) {
+         vars <- strsplit(var_list," +")
+         if ("PMIJ" %in% vars[[1]]) {
+            PM_MOD_SPEC <- "PMIJ"
+            PM_FRM_MOD_SPEC <- "PMIJ_FRM"
+            PM10_MOD_SPEC <- "PM10"
          }
       }
    }
 }
 ##########################################################
+
 
 amet_species_list <- Sys.getenv("AQ_SPECIES_LIST")
 if (!exists("amet_species_list")) {
@@ -184,16 +176,6 @@ if (!exists("amet_species_list")) {
 }
 source(amet_species_list)
 
-source_configs <- Sys.getenv("Source_Configs")
-if (!exists("Source_Configs")) {
-   source_configs <- 'F'
-}
-
-if (source_configs == "T") {
-   cmaq_home <- Sys.getenv("CMAQ_HOME")
-   compiler <- Sys.getenv("compiler")
-   source_command_configs <- paste(CMAQ_HOME,"config_cmaq.csh ",compiler,sep="")
-}
 
 ###########################################################
 ### Function to create and execute site compare scripts ###
@@ -202,15 +184,7 @@ if (source_configs == "T") {
 run_sitex <- function(network) {
    ### Start Generic Script Text ###
 
-  header <- paste("#!/bin/csh")
-  
-  if (source_configs == "T") {
-     header <- paste(header,"
-
-     source(",source_command_configs,sep="") 
-  }
-
-  header <- paste(header,"
+   header <- paste("#!/bin/csh
 
   # Set TABLE TYPE
   setenv TABLE_TYPE ",table_type,"
@@ -241,7 +215,7 @@ run_sitex <- function(network) {
   ## set missing value string
   setenv MISSING '-999'
 
-  ## Projection sphere type (use type #20 to match CMAQ)
+  ## Projection sphere type (use type #19 to match CMAQ)
   setenv IOAPI_ISPH 20
 
   ## Time Shift for dealing with aconc files ##
@@ -267,7 +241,7 @@ run_sitex <- function(network) {
   #############################################################
 
   #  output table (tab delimited text file importable to Excel)
-  setenv OUT_TABLE ",data_dir,"/",network,"_",project_id,".csv
+  setenv OUT_TABLE ",run_dir,"/",network,"_",project_id,".csv
 
   ",EXEC,sep="")
 
@@ -285,15 +259,12 @@ run_sitex <- function(network) {
    j <- 1
    m3_files=""
    M3_FILE <- Sys.getenv('CONC_FILE_1')
-   print(network)
-   if ((network == "NADP") || (network == "CAPMoN") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3") || (network == "EMEP_Dep")) {
+   if ((network == "NADP") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3")) {
       M3_FILE <- Sys.getenv('DEP_FILE_1')
    }
    if (network == "TOAR") {
       M3_FILE <- Sys.getenv('HR2DAY_FILE_1')
-   }
-   if (network == "AERONET") {
-      M3_FILE <-Sys.getenv('COLUMN_FILE_1')
+#      M3_FILE <- paste(M3_FILE_IN,".hr2day",sep="")
    }
    while (M3_FILE != "") {
       m3_files <- paste(m3_files,"  setenv M3_FILE_",j," ",M3_FILE,"
@@ -301,7 +272,7 @@ run_sitex <- function(network) {
 
       j <- j+1
        
-      if ((network == "NADP") || (network == "CAPMoN") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3") || (network == "EMEP_Dep")) {
+      if ((network == "NADP") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3")) {
          m3_file_name <- paste("DEP_FILE_",j,sep="")
          M3_FILE <- Sys.getenv(m3_file_name)
       }
@@ -315,32 +286,29 @@ run_sitex <- function(network) {
          M3_FILE <- Sys.getenv(m3_file_name)
 #         M3_FILE <- paste(M3_FILE,".hr2day",sep="")
       }
-      if (network == "AERONET") {
-         m3_file_name <- paste("COLUMN_FILE_",j,sep="")
-         M3_FILE <- Sys.getenv(m3_file_name)
-      }
+#      else { M3_FILE <- M3_FILE_IN }
    }
    dat <- paste(dat,time_settings,m3_files,final_wrapup,sep="")
 
    ### Open, write and close site compare script ###
    if ((write_sitex == "y") || (write_sitex == "Y") || (write_sitex == "t") || (write_sitex == "T")) {
-      filename <- paste(data_dir,"/sitex_",network,"_",project_id,".csh",sep="")
+      filename <- paste(run_dir,"/sitex_",network,"_",project_id,".csh",sep="")
       write.table(dat,file=filename,append=F,col.names=F,row.names=F,sep="",quote=F)
-      cat(paste("\nWrote site compare script for network ",network,".\n\n",sep=" "))
+      cat(paste("\nWrote site compare script for network ",network,sep=" "))
    }
    #########################################
 
    ### Execute site compare script and load output into database ###
    if ((run_sitex_flag == "y") || (run_sitex_flag == "Y") || (run_sitex_flag == "t") || (run_sitex_flag == "T")) {
-      chmod.command <- paste("chmod +x ",data_dir,"/sitex_",network,"_",project_id,".csh",sep="")
+      chmod.command <- paste("chmod +x ",run_dir,"/sitex_",network,"_",project_id,".csh",sep="")
       system(chmod.command)
-      cat(paste(" Running site compare for network ",network,".Depending on length of time being extracted, this may take a while.\n\n",sep=" "))
-      run.command <- paste(data_dir,"/sitex_",network,"_",project_id,".csh",sep="")
+      cat(paste(" Running site compare for network ",network,".Depending on length of time being extracted, this may take a while\n",sep=" "))
+      run.command <- paste(run_dir,"/sitex_",network,"_",project_id,".csh",sep="")
       system(run.command)
-      cat(paste("Finished running site compare for network ",network,".\n\n",sep=" "))
+      cat(paste("Finished running site compare for network ",network,"\n\n",sep=" "))
    }
    if ((load_sitex == "y") || (load_sitex == "Y") || (load_sitex == "t") || (load_sitex == "T")) {
-      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",mysql_login," ",mysql_pass," ",project_id," ",network," ",data_dir,"/",network,"_",project_id,".csv",sep="")
+      load.command <- paste("R --no-save --slave --args < ",amet_base,"/R_db_code/AQ_add_aq2dbase.R ",mysql_login," ",mysql_pass," ",project_id," ",network," ",run_dir,"/",network,"_",project_id,".csv",sep="")
       system(load.command)
       cat(paste("Finshed populating database for network ",network,"\n",sep=" "))
    }
@@ -400,10 +368,17 @@ if ((improve_flag == "y") || (improve_flag == "Y") || (improve_flag == "t") || (
 }
 
 if ((csn_flag == 'y') || (csn_flag == 'Y') || (csn_flag == 't') || (csn_flag == 'T')) {
-   table_type    <- "CASTNET"
+   table_type    <- "STN"
    network       <- "CSN"
    site_file     <- paste(obs_data_dir,site_file_directory,"/AQS",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/",year,"/AQS_CSN_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/CSN_data_",year,".csv",sep="")
+   if (year > 2010) {
+      ob_file       <- paste(obs_data_dir,"/",year,"/CSN_data_",year,"_VIEWS.csv",sep="")
+   }
+   if (year > 2014) {
+      table_type    <- "CASTNET"
+      ob_file       <- paste(obs_data_dir,"/",year,"/AQS_CSN_data_",year,".csv",sep="")
+   }
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -461,15 +436,6 @@ if ((nadp_flag == "y") || (nadp_flag == "Y") || (nadp_flag == "t") || (nadp_flag
    if (year < 2000) {
       ob_file       <- paste(obs_data_dir,"/All_Years/NADP_NTN_data_all.csv",sep="")
    }
-   EXEC          <- EXEC_sitex
-   run_sitex(network)
-}
-
-if ((capmon_flag == "y") || (capmon_flag == "Y") || (capmon_flag == "t") || (capmon_flag == "T")) {
-   table_type    <- "NADP"
-   network       <- "CAPMoN"
-   site_file     <- paste(obs_data_dir,site_file_directory,"/CAPMoN",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/",year,"/CAPMoN_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -602,7 +568,7 @@ if ((emep_daily_o3_flag == "y") || (emep_daily_o3_flag == "Y") || (emep_daily_o3
 if ((emep_daily_flag == "y") || (emep_daily_flag == "Y") || (emep_daily_flag == "t") || (emep_daily_flag == "T")) {
    table_type    <- "SEARCH"
    network       <- "EMEP_Daily"
-   site_file     <- paste(obs_data_dir,site_file_directory,"/EMEP_Daily",site_file_name,sep="")
+   site_file     <- paste(obs_data_dir,site_file_directory,"/EMEP",site_file_name,sep="")
    ob_file       <- paste(obs_data_dir,"/",year,"/EMEP_daily_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
@@ -611,8 +577,8 @@ if ((emep_daily_flag == "y") || (emep_daily_flag == "Y") || (emep_daily_flag == 
 if ((emep_dep_flag == "y") || (emep_dep_flag == "Y") || (emep_dep_flag == "t") || (emep_dep_flag == "T")) {
    table_type    <- "NADP"
    network       <- "EMEP_Dep"
-   site_file     <- paste(obs_data_dir,site_file_directory,"/EMEP_Dep",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/",year,"/EMEP_daily_dep_data_",year,".csv",sep="")
+   site_file     <- paste(obs_data_dir,site_file_directory,"/EMEP",site_file_name,sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/EMEP_dep_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }

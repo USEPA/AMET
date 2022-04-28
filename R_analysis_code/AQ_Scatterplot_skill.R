@@ -9,7 +9,7 @@ header <- "
 ### calculated based on the user specified criteria. So, it may be used with any species.
 ### Output format is png, pdf or both.
 ###
-### Last Updated by Wyat Appel: Feb 2020
+### Last Updated by Wyat Appel: June, 2019
 #####################################################################################
 "
 

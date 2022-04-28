@@ -17,8 +17,6 @@
 #        - Added functions for upper-air meteorology. These include table
 #          creation functions for rawindsonde and wind profilers. Also,
 #          functions to write out profile queries to query file connection.
-#  V1.5, 2020Feb21, Robert Gilliam: 
-#        - Fixed level bug in raob_query functions that in some cases produced Inf values. Skips now.
 #
 #######################################################################################################
 #######################################################################################################
@@ -347,7 +345,7 @@
                      level_id,",",varid_str,",",var_str,")")
 
    for(l in 1:nl) {
-    if(is.infinite(levels[l]) || is.na(levels[l]) || is.na(profiles[l,1]) || is.na(profiles[l,2]) ) { next }
+    if(is.na(levels[l]) || is.na(profiles[l,1]) || is.na(profiles[l,2]) ) { next }
     val1<-ifelse(is.na(profiles[l,1]),'NULL',profiles[l,1])
     val2<-ifelse(is.na(profiles[l,2]),'NULL',profiles[l,2])
     values_str<-paste(val1,",",val2,sep="")
@@ -398,7 +396,6 @@
    mod.lrange   <- rev(range(mod[,1],na.rm=T))
    levels       <- ifelse(levels < mod.lrange[2], NA, levels)
    levels       <- ifelse(levels > mod.lrange[1], NA, levels)
-   levels       <- ifelse(is.infinite(levels), NA, levels)
    
    # Interpolate model to obs levels using spline interpolation function
    func        = splinefun(x=mod[,1], y=mod[,2], method="fmm",  ties = mean)

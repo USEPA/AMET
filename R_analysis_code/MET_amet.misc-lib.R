@@ -33,15 +33,6 @@
 #  - More code cleansing and documentation. Removed tabs. Removed excessive comments
 #    next to clearly understood statistics functions.
 #
-# Version 1.5, Apr 20, 2022, Robert Gilliam
-#  - Added additional QC settings & notification to statistics function massageTseries  
-# -  Formatted some functions & made more readable/clean
-# -  Replaced never-used mean gross error, mean normalized bias with
-#     systematic and unsystematic RMSE. These are all in summary text files as
-#     extra statistics. These swapped statistics are not
-# -  Format summary text stats output file… fewer significant digits 
-#
-#
 #-----------------------------------------------------------------------##################
 ##########################################################################################
 ##########################################################################################
@@ -135,9 +126,9 @@
      nmerror <-format(nmerror(obs, mod, na.rm = TRUE),digits=digs)
      rmserror<-format(rmserror(obs, mod, na.rm = TRUE),digits=digs)
 
-     mae     <-as.numeric(sprintf("%.2f",mae))
-     bias    <-as.numeric(sprintf("%.2f",bias))
-     ioa     <-as.numeric(sprintf("%.2f",ioa))
+     mae     <-format(mae,digits=digs+1)
+     bias    <-format(bias,digits=digs)
+     ioa     <-format(ioa,digits=digs)
 	
      qc<-list(mae=mae,bias=bias,ioa=ioa,mfbias=mfbias,mnbias=mnbias,mngerror=mngerror,
               nmbias=nmbias,nmerror=nmerror,rmserror=rmserror)
@@ -182,41 +173,42 @@
 
      metrics    <-array(,)
      metrics[1] <-length(obs)
-     metrics[1] <-sprintf("%.2f",sum(ifelse(!is.na(mod),1,0)))
-     metrics[2] <-sprintf("%.2f",max(obs,na.rm=T))
-     metrics[3] <-sprintf("%.2f",min(obs,na.rm=T))
-     metrics[4] <-sprintf("%.2f",mean(obs,na.rm=T))
-     metrics[5] <-sprintf("%.2f",median(obs,na.rm=T))
-     metrics[6] <-round(sum(obs,na.rm=T))
-     metrics[7] <-sprintf("%.2f",var(obs,use="complete.obs"))
+     metrics[1] <-sum(ifelse(!is.na(mod),1,0))
+     metrics[2] <-max(obs,na.rm=T)
+     metrics[3] <-min(obs,na.rm=T)
+     metrics[4] <-mean(obs,na.rm=T)
+     metrics[5] <-median(obs,na.rm=T)
+     metrics[6] <-sum(obs,na.rm=T)
+     metrics[7] <-var(obs,use="complete.obs")
 
-     metrics[8] <-sprintf("%.2f",max(mod,na.rm=T))
-     metrics[9] <-sprintf("%.2f",min(mod,na.rm=T))
-     metrics[10]<-sprintf("%.2f",mean(mod,na.rm=T))
-     metrics[11]<-sprintf("%.2f",median(mod,na.rm=T))
-     metrics[12]<-round(sum(mod,na.rm=T))
-     metrics[13]<-sprintf("%.2f",var(mod,use="complete.obs"))
+     metrics[8] <-max(mod,na.rm=T)
+     metrics[9] <-min(mod,na.rm=T)
+     metrics[10]<-mean(mod,na.rm=T)
+     metrics[11]<-median(mod,na.rm=T)
+     metrics[12]<-sum(mod,na.rm=T)
+     metrics[13]<-var(mod,use="complete.obs")
 
-     metrics[14]<-sprintf("%.2f",cor(mod,obs,use="complete.obs"))
-     metrics[15]<-sprintf("%.2f",var(diff,use="complete.obs"))
-     metrics[16]<-sprintf("%.2f",sqrt(var(diff,use="complete.obs")))
+     metrics[14]<-cor(mod,obs,use="complete.obs")
+     metrics[15]<-var(diff,use="complete.obs")
+     metrics[16]<-sqrt(var(diff,use="complete.obs"))
 
 	
-     metrics[17]<-sprintf("%.2f",magerror(obs, mod,na.rm=T))
-     metrics[18]<-sprintf("%.2f",mbias(obs,mod,na.rm=T))
-     metrics[19]<-sprintf("%.2f",mngerror(obs, mod,na.rm=T))
-     metrics[20]<-sprintf("%.2f",nmbias(obs, mod,na.rm=T))
-     metrics[21]<-sprintf("%.2f",nmerror(obs, mod,na.rm=T))
-     metrics[22]<-sprintf("%.2f",rmseSU(obs, mod,na.rm=T)[1])
-     metrics[23]<-sprintf("%.2f",rmseSU(obs, mod,na.rm=T)[2])
-     metrics[24]<-sprintf("%.2f",rmserror(obs, mod,na.rm=T))
-     metrics[25]<-sprintf("%.2f",ac(obs,mod))
-     metricsID   <-c("count","maxO","minO","meanO","medianO","sumO","varO","maxM","minM","meanM",
-                     "medianM","sumM","varM","cor","var","sdev","mae","bias","mngerror","nmbias",
-                     "nmerror","rmses","rmseu","rmserror","ac")
+     metrics[17]<-magerror(obs, mod,na.rm=T)
+     metrics[18]<-mbias(obs,mod,na.rm=T)
+     metrics[19]<-mfbias(obs, mod,na.rm=T)
+     metrics[20]<-mnbias(obs, mod,na.rm=T)
+     metrics[21]<-mngerror(obs, mod,na.rm=T)
+     metrics[22]<-nmbias(obs, mod,na.rm=T)
+     metrics[23]<-nmerror(obs, mod,na.rm=T)
+     metrics[24]<-rmserror(obs, mod,na.rm=T)
+     metrics[25]<-ac(obs,mod)
 		
+
+     metricsID   <-c("count","maxO","minO","meanO","medianO","sumO","varO","maxM","minM","meanM",
+                     "medianM","sumM","varM","cor","var","sdev","mae","bias","mfbias","mnbias",
+                     "mngerror","nmbias","nmerror","rmserror","ac")
      metricsNAME <-c("Number of Pairs","Max. Obs","Min. Obs")
-     out         <-list(metrics=as.numeric(metrics),id=metricsID,name=metricsNAME,var=varname)
+     out         <-list(metrics=metrics,id=metricsID,name=metricsNAME,var=varname)
 
    return(out)
 
@@ -380,88 +372,80 @@
 #
 ###
  massageTseries	<-function(data,loc=c(1,2,3,4,5,6,7,8,9,10,11,12),units="mks",
-                           qcerror=c(15,20,10,50),iftseries=T,addrand=FALSE,
-                           windlim=c(0.5,100),window=0, quite=T)                         
+                           qcerror=c(15,15,10),iftseries=T,addrand=FALSE,
+                           windlim=c(0.5,100),window=0)                         
 {
 ##########################################################################################################
 
-     day        <- data[,loc[1]]
-     timex      <- data[,loc[2]]
-     station    <- data[,loc[3]]
-     obnetwork  <- data[,loc[4]]
-     temp       <- array(NA,c(length(timex),2))
-     q          <- array(NA,c(length(timex),2))
-     ws         <- array(NA,c(length(timex),2))
-     wd         <- array(NA,c(length(timex),2))
-     u          <- array(NA,c(length(timex),2))
-     v          <- array(NA,c(length(timex),2))
+	day<- data[,loc[1]]
+	timex<- data[,loc[2]]
+	station <-data[,loc[3]]
+	obnetwork<-data[,loc[4]]
+	temp<-array(,c(length(timex),2))
+	q<-array(0,c(length(timex),2))
+	ws<-array(,c(length(timex),2))
+	wd<-array(,c(length(timex),2))
 
 
-     iso.date <- ISOdatetime(year=as.numeric(substr(day,1,4)), month=as.numeric(substr(day,5,6)), 
-                             day=as.numeric(substr(day,7,8)),  hour=as.numeric(timex), min=0, sec=0, tz="GMT")
+	iso.date <- ISOdatetime(year=as.numeric(substr(day,1,4)), month=as.numeric(substr(day,5,6)), 
+	                         day=as.numeric(substr(day,7,8)),  hour=as.numeric(timex), min=0, sec=0, tz="GMT")
 
-     # Populate Surface Variable arrays loc 1 = mod loc 2 = obs
-     temp[,1]<-data[,loc[5]]; temp[,2]<-avewindow(data[,loc[6]],window);
-      u[,1]  <-data[,loc[7]];    u[,2]<-avewindow(data[,loc[8]],window);
-      v[,1]  <-data[,loc[9]];    v[,2]<-avewindow(data[,loc[10]],window);
-      q[,1]  <-data[,loc[11]];   q[,2]<-avewindow(data[,loc[12]],window);
+        # Populate Surface Variable arrays
+	temp[,1]<-data[,loc[5]]; temp[,2]<-avewindow(data[,loc[6]],window);
+	ws[,1]  <-data[,loc[7]];   ws[,2]<-avewindow(data[,loc[8]],window);
+	wd[,1]  <-data[,loc[9]];   wd[,2]<-avewindow(data[,loc[10]],window);
+	q[,1]   <-data[,loc[11]];   q[,2]<-avewindow(data[,loc[12]],window);
 
-     wsm     <-sqrt( u[,1]^2 + v[,1]^2 )
-     wso     <-sqrt( u[,2]^2 + v[,2]^2 )
-
-     # Apply QC on mod-obs differences. If larger set values to NA 
-     if(!quite) {
-       writeLines(paste("QC applied on mod-obs difference allowed (see *.input qcerror)"))
-       writeLines(paste("Max diff allowed T/WS/Q ...",qcerror[1],qcerror[2],qcerror[3]))
-       writeLines(paste("Obs wind range allowed in statistics...",windlim[1],"-",windlim[2],"m/s"))
-     }
-     # temperature
-     temp[,1]<-ifelse(abs(temp[,1]-temp[,2]) > qcerror[1],NA,temp[,1])
-     temp[,2]<-ifelse(abs(temp[,1]-temp[,2]) > qcerror[1],NA,temp[,2])
 	
-     # mixing ratio
-     q[,1]   <-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,1])
-     q[,2]   <-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,2])
+	temp[,1]<-ifelse(abs(temp[,1]-temp[,2]) > qcerror[1],NA,temp[,1])
+	temp[,2]<-ifelse(abs(temp[,1]-temp[,2]) > qcerror[1],NA,temp[,2])
+	
+	q[,1]   <-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,1])
+	q[,2]   <-ifelse(abs(q[,1]-q[,2])*1000     > qcerror[3],NA,q[,2])
 
-     # wind speed
-     wso   <-ifelse( abs(wsm-wso) < qcerror[2], wso ,NA)
-     #wsm   <-ifelse( abs(wsm-wso) < qcerror[2], wsm ,NA)   # Do not set model to NA for plotting
+       # If for timeseries then preserve missing data (NA) elements, else if 
+       # for batch statisitcs, remove missing values from arrays
+	if (iftseries){}	
+	else{
+	  dum<-array(,c(length(ws[,1]),4))
+	  dum[,1]=ws[,1];dum[,2]=ws[,2];dum[,3]=wd[,1];dum[,4]=wd[,2];
+	  dum[,2]<-ifelse(sqrt(dum[,2]^2 + dum[,4]^2) < windlim[1] | sqrt(dum[,1]^2 + dum[,3]^2) > windlim[2],NA,dum[,2])
+	  dum[,1]<-ifelse(sqrt(dum[,2]^2 + dum[,4]^2) < windlim[1] | sqrt(dum[,1]^2 + dum[,3]^2) > windlim[2],NA,dum[,1])
+	  ws<-array(,c(length(dum[,1]),2))
+	  wd<-array(,c(length(dum[,1]),2))
+	  ws[,1]=dum[,1];ws[,2]=dum[,2];wd[,1]=dum[,3];wd[,2]=dum[,4];
+	}
 
-     # Raw QC on observed wind limits. Set to NA if observed wind is questionable
-     wso   <-ifelse( wso > windlim[1] & wso < windlim[2], wso ,NA)
-     u[,2] <-ifelse( is.na(wso), NA, u[,2])
-     v[,2] <-ifelse( is.na(wso), NA, v[,2])
+	if(addrand) {
+		tadd<-runif(length(temp[,2]),-0.5,0.5)
+		temp[,2]=temp[,2]+tadd;
+	}
 
-     # Adds a small random +/- 0.25 m/s to observed wind speed
-     if(addrand) {
-       wsadd   <- runif(length(wso),-0.25,0.25)
-       wso     <- wso+wsadd;
-       tadd    <- runif(length(temp[,2]),-0.5,0.5)
-       temp[,2]<- temp[,2]+tadd;
-     }
+	 tmpWSm<-ifelse(sqrt(ws[,1]^2 + wd[,1]^2) < windlim[2],sqrt(ws[,1]^2 + wd[,1]^2) ,NA)
+	 tmpWSo<-ifelse(sqrt(ws[,2]^2 + wd[,2]^2) < windlim[2],sqrt(ws[,2]^2 + wd[,2]^2) ,NA)
+	if(addrand) {
+		wsadd<-runif(length(tmpWSo),-0.25,0.25)
+		tmpWSo=tmpWSo+wsadd;
+	}
 
-
-     wdm <- 180+(360/(2*pi))*atan2(u[,1],v[,1])
-     wdo <- 180+(360/(2*pi))*atan2(u[,2],v[,2])
-
-  ####################################################
-  # Public Friendly Conversions
+	 tmpWDm<-180+(360/(2*pi))*atan2(ws[,1],wd[,1])
+ 	 tmpWDo<-180+(360/(2*pi))*atan2(ws[,2],wd[,2])
+####################################################
+# Public Friendly Conversions
+#	Wind converion to Knots
   if (units == "std"){
-    # Wind speed kt
-    wso   <- wso * 1.94
-    wsm   <- wsm * 1.94
-    #Temp in Fareinheigt
-    temp  <-(temp-273.14)*1.8+32
+	  ws[,1]<-tmpWSm*1.92;    ws[,2]<-tmpWSo*1.92;
+	  wd[,1]<-tmpWDm;    wd[,2]<-tmpWDo;
+	# 	Temp in Fareinheigt
+	  temp<-(temp-273.14)*1.8+32
   }
-  ####################################################
-  ws[,1]  <- wsm
-  ws[,2]  <- wso
-  wd[,1]  <- wdm
-  wd[,2]  <- wdo
-  ####################################################
-  tseries<-list(statid=station, obnet=obnetwork,date=iso.date, temp=temp,
-                 ws=ws, wd=wd, q=q, u=u, v=v, units=units)
-  return(tseries)
+####################################################
+# UNCOMMENT FOR WIND IN m/s
+	  ws[,1]<-tmpWSm;    ws[,2]<-tmpWSo;
+	  wd[,1]<-tmpWDm;    wd[,2]<-tmpWDo;
+####################################################
+   tseries<-list(statid=station,obnet=obnetwork,date=iso.date,temp=temp,ws=ws,wd=wd,q=q,units=units)
+   return(tseries)
 }
 ##########################################################################################################
 #####--------------------------		END OF FUNCTION 	--------------------------------------####
@@ -513,20 +497,10 @@
     quit(save="no")
   }
 
-  uid   <-unique(statdat[,1])
-  ns    <-length(uid)
-  lat   <- array(NA,c(ns))
-  lon   <- array(NA,c(ns))
-  elev  <- array(NA,c(ns))
+  statget=list(id=statdat[,1],lat=statdat[,2],lon=statdat[,3],elev=statdat[,4])
+  ns<-length(statget$id)
 
-  for (s in 1:ns ) {
-    ind     <-which(uid[s] == statdat[,1])[1]
-    lat[s]  <- statdat[ind,2]
-    lon[s]  <- statdat[ind,3]
-    elev[s] <- statdat[ind,4]
-  }
-  statget=list(id=uid,lat=lat,lon=lon,elev=elev)
-
+  #tmpd<-na.omit(data)		
   tmpd<-data
   metrics<-array(NA,dim=c(ns,17,4))
 
@@ -1304,9 +1278,3 @@ find.kz.params.by.cutoff.freq <- function(f, prec=0.001, k=seq(1,25), m=seq(3,25
   order.indic <- order(y$f)
   return(y[order.indic,])
 }
-
-
-
-
-
-

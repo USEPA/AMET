@@ -32,21 +32,9 @@
 #  Updates: - updated ob_date query spec to include hour start and end. #
 #             e.g., ob_date BETWEEN '2016-11-01 00:00:00' and           #
 #                           '2016-11-31 23:00:00'                       #
-#                                                                       #
-#  Version 1.5, Apr 19, 2022, Robert Gilliam                            # 
-#  Updates: - QC for range of values and mod-obs diff were hidden in    #
-#             data prep routine. These are now controlled by user       #
-#             timseries.input file for more transparent QA with info    #
-#           - Added extra2 (if specified) for query criteria for        #
-#             project2 (i.e., compare forecast with different init).    #
-#           - New split config input file where "more" static settings  #
-#             are split into a timeseries.static.input and key configs  #
-#             remain in the timeseries.input. Backward compatible.      #
-#                                                                       #
 #-----------------------------------------------------------------------#
 #                                                                       #
 #########################################################################
-  options(warn=-1)
 #########################################################################
 #	Load required modules
   if(!require(RMySQL)){stop("Required Package RMySQL was not loaded")}
@@ -61,17 +49,11 @@
  ametRinput       <- Sys.getenv("AMETRINPUT")
  mysqlloginconfig <- Sys.getenv("MYSQL_CONFIG")
  ametR            <- paste(ametbase,"/R_analysis_code",sep="")
- ametRstatic      <- Sys.getenv("AMETRSTATIC")
 
  # Check for output directory via namelist and AMET_OUT env var, if not specified in namelist
  # and not specified via AMET_OUT, then set figdir to the current directory
  if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
  if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
- ## Check for Static file setting and set to empty if missing. Backward compat.
- ## & print input files for user notification 
- if(ametRstatic=="") { ametRstatic <- "./" }
- writeLines(paste("AMET R Config input file:",ametRinput))
- writeLines(paste("AMET R Static input file:",ametRstatic))
   
  ## source some configuration files, AMET libs, and input
  source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
@@ -79,14 +61,10 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
- source (ametRstatic)
 
- # Compatibility check for new variables in case of old config files
- if(!exists("extra2") ) { extra2 <- extra	}
- 
- ametdbase1      <- Sys.getenv("AMET_DATABASE1")
- ametdbase2      <- Sys.getenv("AMET_DATABASE2")
- mysqlserver     <- Sys.getenv("MYSQL_SERVER")
+ ametdbase1     <- Sys.getenv("AMET_DATABASE1")
+ ametdbase2     <- Sys.getenv("AMET_DATABASE2")
+ mysqlserver    <- Sys.getenv("MYSQL_SERVER")
  mysql1          <-list(server=mysqlserver,dbase=ametdbase1,login=amet_login,
                         passwd=amet_pass,maxrec=maxrec)
  mysql2          <-list(server=mysqlserver,dbase=ametdbase2,login=amet_login,
@@ -97,17 +75,6 @@
 ########################################################################################################################
 
   drange_plot <-paste(dates$y,dform(dates$m),dform(dates$d),"-",datee$y,dform(datee$m),dform(datee$d),sep="")
-
-  # User QC settings representing the largest difference allowed between mod and obs.
-  # if these are not defined because of old timeseries.input, set default values and notify
-  if(!exists("qcerror") )   {
-    writeLines("** Importance Notice **")
-    writeLines("User QC limits (qcerror) in AMETv1.5+ not defined in timeseries.input because it is old.")
-    writeLines("Default to 15, 20, 10, 50 for T, WS, Q and RH. User can alter if they update timeseries.input")
-    writeLines("e.g., qcerror <- c(15,20,10,50)")
-    writeLines(" ****************************************** ")
-    qcerror <- c(15,20,10,50)
-  }
 
   # If the time series should be an hourly average of a collection  of stations, 
   # convert the station id vector, which contains multiple stations, to a single
@@ -132,9 +99,10 @@
   # Then set up figure names. 
   if(!exists("figdir") )                         { figdir <- Sys.getenv("AMET_OUT")	}
   if( length(unlist(strsplit(figdir,""))) == 0 ) { figdir <- "./"			}
-  figure  <-paste(figdir,"/",model1,".",statid,".",drange_plot,".time_series",sep="")
-  textfile<-paste(figdir,"/",model1,".",statid,".",drange_plot,".time_series",".txt",sep="") 
-  savefile_name<-paste(figure,".Rdata",sep="")
+  figure  <-paste(figdir,"/",model1,".",statid,".",drange_plot,sep="")
+  textfile<-paste(figdir,"/",model1,".",statid,".",drange_plot,".txt",sep="")
+ 
+ savefile_name<-paste(figure,".Rdata",sep="")
    
 
 for (sn in 1:length(statid)){
@@ -155,13 +123,12 @@ for (sn in 1:length(statid)){
   query2<-paste("SELECT  DATE_FORMAT(ob_date,'%Y%m%d'),HOUR(ob_date),stat_id,fcast_hr,T_mod,T_ob,
                  Q_mod,WVMR_ob, U_mod,U_ob, V_mod,V_ob, HOUR(ob_time) FROM ",table2,"  WHERE  ",statstr[sn],
                  "  and ob_date BETWEEN '",dates$y,"-",dform(dates$m),"-",dform(dates$d)," 00:00:00' and '",datee$y,
-                 "-",dform(datee$m),"-",dform(datee$d)," 23:00:00' ",extra2," ORDER BY ob_date,ob_time",sep="")
+                 "-",dform(datee$m),"-",dform(datee$d)," 23:00:00' ",extra," ORDER BY ob_date,ob_time",sep="")
 
   # Query Database and put into data frame, then massage data
   data1<-ametQuery(query1,mysql1)
+
   writeLines(paste(query1))
-  writeLines(paste(query2))
-  
   # Hour of Day fix for MySQL database ob_time format changes. 
   # Looks at HOUR(ob_date) and HOUR(ob_time) and choose the one
   # that is not all zeros.
@@ -184,7 +151,7 @@ for (sn in 1:length(statid)){
   header   <-c("Date","Time","Ob Temp","Model Temp","Ob Sp. Hum","Model Sp. Hum","Ob U","Model U","Ob V",
                "Model V","Ob Precip","Model Precip")
   locs     <-c(1,2,3,4,5,6,9,10,11,12,7,8)
-  tseries1 <-massageTseries(data1,loc=locs,iftseries=TRUE, windlim= qcWS, qcerror=qcerror, quite=F)
+  tseries1 <-massageTseries(data1,loc=locs,iftseries=TRUE)
 
   # Condition that user want to compare a second model to observations and first model
   if (comp){
@@ -201,7 +168,7 @@ for (sn in 1:length(statid)){
      if( sum(data2[,2],na.rm=T) == 0){
        data2[,2] <- data2[,13]
      }
-     tseries2 <-massageTseries(data2,loc=locs,iftseries=TRUE, windlim= qcWS,  qcerror=qcerror, quite=F)
+     tseries2 <-massageTseries(data2,loc=locs,iftseries=TRUE)
   }
   else {
      tseries2 <-tseries1
@@ -282,13 +249,9 @@ for (sn in 1:length(statid)){
   # Write text output if user specifies
   if(textout) {
      writeLines(paste("R text file output:",textfile[sn]))
-#     write.table(data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],ws[,1],ws[,2],wd[,1],wd[,2]),
-#                 textfile[sn],sep=",", col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)",
-#                 "Q Mod (g/kg)","Q Obs (g/kg)","WS Mod (m/s)","WS Obs (m/s)","WD Mod (Deg)","WD Obs (Deg)"),
-#                 row.names=F, quote=FALSE)
-     write.table(data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],q[,3],ws[,1],ws[,2],ws[,3],wd[,1],wd[,2],wd[,3]),
-                 textfile[sn],sep=",", col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)","Q Mod (g/kg)","Q Obs (g/kg)",
-                 "Q Mod2 (g/kg)","WS Mod (m/s)","WS Obs (m/s)","WS Mod2 (m/s)","WD Mod (Deg)","WD Obs (Deg)","WD Mod2 (Deg)"),
+     write.table(data.frame(date.vec,temp[,1],temp[,2],temp[,3], q[,1],q[,2],ws[,1],ws[,2],wd[,1],wd[,2]),
+                 textfile[sn],sep=",", col.names=c("Date Time","Temp Mod (K)","Temp Obs (K)","Temp Mod2 (K)",
+                 "Q Mod (g/kg)","Q Obs (g/kg)","WS Mod (m/s)","WS Obs (m/s)","WD Mod (Deg)","WD Obs (Deg)"),
                  row.names=F, quote=FALSE)
   }
   writeLines(paste("Plotting figure for site: ",statid[sn],"-->",figure[sn],".",plotopts$plotfmt,sep=""))
@@ -305,4 +268,4 @@ for (sn in 1:length(statid)){
 ########################################################################################################################
 #				FINISHED
 ########################################################################################################################
-
+quit(save="no")

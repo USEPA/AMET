@@ -180,35 +180,3 @@ if (rpo == "LADCO") {
 if (rpo == "WRAP") {
    add_query <- paste(add_query,"and (s.state='AK' or s.state='CA' or s.state='OR' or s.state='WA' or s.state='AZ' or s.state='NM' or s.state='CO' or s.state='UT' or s.state='WY' or s.state='SD' or s.state='ND' or s.state='MT' or s.state='ID' or s.state='NV')",sep=" ")
 }
-
-#################################################################
-#### Pre-defined NOAA Climate regions (Change only if needed) ###
-#################################################################
-
-if (clim_reg == "OV") {
-   add_query <- paste(add_query,"and (s.state='IL' or s.state='IN' or s.state='KY' or s.state='MO' or s.state='OH' or s.state='TN' or s.state='WV')",sep=" ")
-}
-if (clim_reg == "UM") {
-   add_query <- paste(add_query,"and (s.state='IA' or s.state='MI' or s.state='MN' or s.state='WI')",sep=" ")
-}
-if (clim_reg == "NE") {
-   add_query <- paste(add_query,"and (s.state='CT' or s.state='DE' or s.state='ME' or s.state='MD' or s.state='MA' or s.state='NH' or s.state='NJ' or s.state='NY' or s.state='PA' or s.state='RI' or s.state='VT')",sep=" ")
-}
-if (clim_reg == "NW") {
-   add_query <- paste(add_query,"and (s.state='ID' or s.state='OR' or s.state='WA')",sep=" ")
-}
-if (clim_reg == "South") {
-   add_query <- paste(add_query,"and (s.state='AR' or s.state='KS' or s.state='LA' or s.state='MS' or s.state='OK' or s.state='TX')",sep=" ")
-}
-if (clim_reg == "SE") {
-   add_query <- paste(add_query,"and (s.state='AL' or s.state='FL' or s.state='GA' or s.state='SC' or s.state='NC' or s.state='VA')",sep=" ")
-}
-if (clim_reg == "SW") {
-   add_query <- paste(add_query,"and (s.state='AZ' or s.state='CO' or s.state='NM' or s.state='UT')",sep=" ")
-}
-if (clim_reg == "West") {
-   add_query <- paste(add_query,"and s.state='CA' or s.state='NV')",sep=" ")
-}
-if (clim_reg == "WNC") {
-   add_query <- paste(add_query,"and s.state='MT' or s.state='NE' or s.state='ND' or s.state='SD' or s.state='WY')",sep=" ")
-}

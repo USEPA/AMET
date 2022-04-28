@@ -7,9 +7,10 @@ header <- "
 ### time and space to create single time series. The script also plots the bias, RMSE
 ### and correlation.
 ###
-### Last updated by Wyat Appel: Mar 2021 
+### Last updated by Wyat Appel, June 2019
 ###################################################################################
 "
+
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
 ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
@@ -44,6 +45,7 @@ filename_txt <- paste(run_name1,species,pid,"timeseries.csv",sep="_")
 ## Create a full path to file
 filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
+
 #######################
 ### Set NULL values ###
 #######################
@@ -67,6 +69,28 @@ rmse_max	<- NULL
 rmse_min	<- NULL
 x_label		<- "Date"
 #######################
+
+{
+   run_names       <- run_name1  
+   if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
+      run_names <- c(run_names,run_name2)
+   }
+   if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
+      run_names <- c(run_names,run_name3)
+   }
+   if ((exists("run_name4")) && (nchar(run_name4) > 0)) {
+      run_names <- c(run_names,run_name4)
+   }
+   if ((exists("run_name5")) && (nchar(run_name5) > 0)) {
+      run_names <- c(run_names,run_name5)
+   }
+   if ((exists("run_name6")) && (nchar(run_name6) > 0)) {
+      run_names <- c(run_names,run_name6)
+   }
+   if ((exists("run_name7")) && (nchar(run_name7) > 0)) {
+      run_names <- c(run_names,run_name7)
+   }
+}
 
 labels <- c(network,run_names)
 num_runs <- length(run_names)
@@ -114,22 +138,25 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       aqdat.df <- aqdat_new.df
    }
 
-   if ((state != "All") && (custom_title == "")) {
-      main.title      <- paste(run_name1,species,"for",network,"State:",aqdat_query.df$state[1],sep=" ")
-      main.title.bias <- paste("Bias for",run_name1,species,"for",network,"Site:",site,"in",aqdat_query.df$county[1],"county,",aqdat_query.df$state[1],sep=" ")
-   }
    if ((site != "All") && (custom_title == "")) {
-      main.title      <- paste(run_name1,species,"for",network,"Site:",site,"in",aqdat_query.df$county[1],"county,",aqdat_query.df$state[1],sep=" ")
-      main.title.bias <- paste("Bias for",run_name1,species,"for",network,"Site:",site,"in",aqdat_query.df$county[1],"county,",aqdat_query.df$state[1],sep=" ")
+      main.title      <- paste(run_name1,species,"for",network,"Site:",site,"in",aqdat_query.df$state[1],sep=" ")
+      main.title.bias <- paste("Bias for",run_name1,species,"for",network,"Site:",site,"in",aqdat_query.df$state[1],sep=" ")
    }
 
    Date_Hour_Factor     <- factor(aqdat.df$Date_Hour,levels=unique(aqdat.df$Date_Hour))                   # Create unique levels so tapply maintains correct time order
 
+   centre <- function(x, type) {
+       switch(type,
+          mean = mean(x,na.rm=T),
+          median = median(x,na.rm=T),
+          sum = sum(x,na.rm=T))
+   }
+
    ### Calculate Obs and Model Means ###
    Obs_Period_Mean[[j]]	<- mean(aqdat.df$Obs_Value)
    Mod_Period_Mean[[j]]	<- mean(aqdat.df$Mod_Value)
-   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,FUN=avg_func)
-   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,FUN=avg_func)
+   Obs_Mean[[j]]	<- tapply(aqdat.df$Obs_Value,Date_Hour_Factor,centre,type=avg_func)
+   Mod_Mean[[j]]	<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,centre,type=avg_func)
    Num_Obs[[j]]         <- length(aqdat.df$Obs_Value)
 
    if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
@@ -150,8 +177,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       yearmonth                 <- paste(years,months,sep="-")
       aqdat.df$Year		<- years
       aqdat.df$YearMonth	<- yearmonth
-      Obs_Mean[[j]]		<- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,FUN=avg_func)
-      Mod_Mean[[j]]		<- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,FUN=avg_func)
+      Obs_Mean[[j]]		<- tapply(aqdat.df$Obs_Value,aqdat.df$YearMonth,centre,type=avg_func)
+      Mod_Mean[[j]]		<- tapply(aqdat.df$Mod_Value,aqdat.df$YearMonth,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$YearMonth,function(dfrm)sqrt(mean((dfrm$Mod_Value - dfrm$Obs_Value)^2))))
@@ -159,8 +186,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       x_label              <- "Month"
    }
    if (averaging == "m") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,FUN=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,FUN=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Month,centre,type=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Month,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Month,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
@@ -168,16 +195,16 @@ for (j in 1:num_runs) {	# For each simulation being plotted
       x_label		   <- "Month"
    }
    if (averaging == "d") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,FUN=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,FUN=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Start_Date,centre,type=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Start_Date,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Start_Date,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Start_Date,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
       Dates[[j]]           <- as.POSIXct(unique(aqdat.df$Start_Date),origin="1970-01-01")
    }
    if (averaging == "h") {
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,FUN=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,FUN=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Hour,centre,type=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Hour,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Hour,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
@@ -187,8 +214,8 @@ for (j in 1:num_runs) {	# For each simulation being plotted
    if (averaging == "a") {
       years                <- substr(aqdat.df$Start_Date,1,4)
       aqdat.df$Year        <- years
-      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,FUN=avg_func)
-      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,FUN=avg_func)
+      Obs_Mean[[j]]        <- tapply(aqdat.df$Obs_Value,aqdat.df$Year,centre,type=avg_func)
+      Mod_Mean[[j]]        <- tapply(aqdat.df$Mod_Value,aqdat.df$Year,centre,type=avg_func)
       Bias_Mean[[j]]       <- Mod_Mean[[j]]-Obs_Mean[[j]]
       CORR[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)cor(dfrm$Obs_Value,dfrm$Mod_Value)))
       RMSE[[j]]            <- as.matrix(by(aqdat.df[,c("Obs_Value","Mod_Value")],aqdat.df$Year,function(dfrm)sqrt(mean((dfrm$Mod_Value-dfrm$Obs_Value)^2))))
@@ -297,9 +324,10 @@ pdf(file=filename_pdf,width=11,height=13)
 par(mfrow = c(4,1),mai=c(.7,1,.4,1))
 par(cex.axis=1,las=1,mfg=c(1,1),lab=c(5,10,7))
 
-plot(Dates[[1]],Mod_Mean[[1]], axes=TRUE, ylim=c(ymin,ymax),type='l',ylab=paste(species,"(",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.8, xaxt="n",lwd=line_width, cex.lab=1.5)  # Plot model data
-#mtext(x_label, side=1, line=3, cex=1.5)
-
+if (custom_title != "") {
+   main.title.bias <- custom_title
+}
+plot(Dates[[1]],Mod_Mean[[1]], axes=TRUE, ylim=c(ymin,ymax),type='l',ylab=paste(species,"(",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.8, xaxt="n",lwd=line_width)  # Plot model data
 if (inc_points == 'y') {
    points(Dates[[1]],Mod_Mean[[1]],col=plot_colors[[2]])
 }
@@ -354,7 +382,7 @@ if (run_info_text == "y") {
       text(max(Dates[[1]]),ymax-((ymax-ymin)*.15),paste("State: ",state,sep=""),pos=2,cex=1)
    }
    if (site != "All") {
-      text(max(Dates[[1]]),ymax-((ymax-ymin)*.10),paste("Site: ",site,", ",aqdat_query.df$county[1]," county, ",aqdat_query.df$state[1],sep=""),pos=2,cex=1)
+      text(max(Dates[[1]]),ymax-((ymax-ymin)*.10),paste("Site: ",site,sep=""),pos=2,cex=1)
    }
 }
 
@@ -388,19 +416,19 @@ for (f in 1:3) {        # Loop for plotting Bias, RMSE and Correlation
 
    {
       if (stat_func == 'corr') { # If plotting correlation instead of bias
-         plot(Dates[[1]],CORR[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab="Correlation",xlab=x_label,lty=1,col=plot_colors[2],cex=.8, xaxt="n",lwd=line_width, cex.lab=1.5)
+         plot(Dates[[1]],CORR[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab="Correlation",xlab=x_label,lty=1,col=plot_colors[2],cex=.8, xaxt="n",lwd=line_width)
          if (inc_points == 'y') {
             points(Dates[[1]],CORR[[1]],col=plot_colors[2])
          }
       }
       else if (stat_func == 'rmse') {
-         plot(Dates[[1]],RMSE[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab=paste("RMSE (",units,")",sep=""),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width,cex.lab=1.5)
+         plot(Dates[[1]],RMSE[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab=paste("Root Mean Square Error (",units,")",sep=""),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width)
          if (inc_points == 'y') {
             points(Dates[[1]],RMSE[[1]],col=plot_colors[2])
          }
       }
       else {
-         plot(Dates[[1]],Bias_Mean[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab=paste("Bias (",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width,cex.lab=1.5)  # Plot model data
+         plot(Dates[[1]],Bias_Mean[[1]], axes=TRUE, ylim=c(y_stat_min,y_stat_max),type='l',ylab=paste(species,"Bias (",units,")",sep=" "),xlab=x_label,lty=1,col=plot_colors[2],cex=.7, xaxt="n",lwd=line_width)  # Plot model data
          if (inc_points == 'y') {
             points(Dates[[1]],Bias_Mean[[1]],col=plot_colors[2])
          }
@@ -458,16 +486,16 @@ for (f in 1:3) {        # Loop for plotting Bias, RMSE and Correlation
 
    if (run_info_text == "y") {
       if (rpo != "None") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.25),paste("RPO: ",rpo,sep=""),pos=2,cex=.8)
       }
       if (pca != "None") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.20),paste("PCA: ",pca,sep=""),pos=2,cex=.8)
       }
       if (state != "All") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.15),paste("State: ",state,sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.15),paste("State: ",state,sep=""),pos=2,cex=.8)
       }
       if (site != "All") {
-         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,", ",aqdat_query.df$county[1]," county, ",aqdat_query.df$state[1],sep=""),pos=2,cex=1)
+         text(max(Dates[[1]]),y_stat_max-((bias_max-bias_min)*.10),paste("Site: ",site,sep=""),pos=2,cex=.8)
       } 
    }
 }	# End loop for plotting Bias, RMSE and Correlation

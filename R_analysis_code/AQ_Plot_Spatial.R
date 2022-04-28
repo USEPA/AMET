@@ -8,9 +8,10 @@ header <- "
 ### network.  Mutiple values for a site are averaged to a single value for plotting purposes.
 ### The map area plotted is dynamically generated from the input data.   
 ###
-### Last modified by Wyat Appel: Feb 2022
+### Last modified by Wyat Appel: June, 2019
 ##########################################################################################
 "
+
 ## get some environmental variables and setup some directories
 ametbase	<- Sys.getenv("AMETBASE")			# base directory of AMET
 ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
@@ -24,7 +25,6 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
-if(!exists("near_zero_color")) { near_zero_color <- "grey50" }
 
 ### Retrieve units label from database table ###
 network		<- network_names[1] # When using mutiple networks, units from network 1 will be used
@@ -70,8 +70,6 @@ all_rat	   	<- NULL
 bounds          <- NULL						# Set map bounds to NULL
 sub_title       <- NULL						# Set sub title to NULL
 lev_lab         <- NULL
-legend_names    <- NULL
-legend_chars    <- NULL
 plot.symbols<-as.integer(plot_symbols)
 pick.symbol.name.fun<-function(x){
    master.symbol.df<-data.frame(plot.symbols=c(16,17,15,18,8,11,4),names=c("CIRCLE","TRIANGLE","SQUARE","DIAMOND","BURST","STAR","X"))
@@ -129,16 +127,10 @@ for (j in 1:total_networks) {							# Loop through for each network
          ####################################
          ## Compute Averages for Each Site ##
          ####################################
-         legend_names <<- c(legend_names,network_label[j])
-         legend_chars <<- c(legend_chars,spch[k])
-         if (averaging == "n") { averaging <- "a" }
+         averaging <- "a"
          ob_col_name <- paste(species,"_ob",sep="")
          mod_col_name <- paste(species,"_mod",sep="")
          aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
-         if ((network == "NADP") || (network == "AMON")) {
-            aqdat_in.df$precip_ob <- aqdat_query.df$precip_ob
-            aqdat_in.df$precip_mod <- aqdat_query.df$precip_mod
-         }
          aqdat.df <- Average(aqdat_in.df)
          Mod_Obs_Diff <- aqdat.df$Mod_Value-aqdat.df$Obs_Value
          Mod_Obs_Rat  <- aqdat.df$Mod_Value/aqdat.df$Obs_Value
@@ -162,7 +154,7 @@ for (j in 1:total_networks) {							# Loop through for each network
          all_diff <- c(all_diff,aqdat.df$Mod_Obs_Diff)
          all_rat  <- c(all_rat,aqdat.df$Mod_Obs_Rat)
          ##################################################
-#         sub_title<-paste(sub_title,symbols[k],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the appropriate symbol
+         sub_title<-paste(sub_title,symbols[k],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the appropriate symbol
          k <- k+1
       }
    }
@@ -173,12 +165,12 @@ for (j in 1:total_networks) {							# Loop through for each network
 bounds<-c(min(all_lats,bounds[1]),max(all_lats,bounds[2]),min(all_lons,bounds[3]),max(all_lons,bounds[4]))
 plotsize<-1.50									# Set plot size
 symb<-15										# Set symbol character
-symbsiz<-1.1										# Set symbol size
+symbsiz<-0.9										# Set symbol size
 if (length(unique(aqdat_in.df$Stat_ID)) > 3000) {
-   symbsiz <- 0.9
+   symbsiz <- 0.7
 }
 if (length(unique(aqdat_in.df$Stat_ID)) > 10000) {
-   symbsiz <- 0.7
+   symbsiz <- 0.5
 }
 #########################
 
@@ -292,8 +284,8 @@ levels_label_diff 			<- levels_label_diff[-zero_place]
 levcols_diff 				<- NULL
 low_range				<- cool_colors(trunc(length(levels_label_diff)/2))
 high_range				<- hot_colors(trunc(length(levels_label_diff)/2))
-levcols_diff 				<- c(low_range,near_zero_color,high_range)
-leg_colors_diff				<- c(low_range,near_zero_color,near_zero_color,high_range)
+levcols_diff 				<- c(low_range,"grey50",high_range)
+leg_colors_diff				<- c(low_range,"grey50","grey50",high_range)
 #####################################################################
 
 for (k in 1:total_networks) {

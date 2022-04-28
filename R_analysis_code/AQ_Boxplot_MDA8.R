@@ -8,7 +8,7 @@ header <- "
 ### showing the data trend throughout the course of a 24-hr period.  The
 ### code is specifically designed to use AQS ozone data to compute MDA8 values.
 ###
-### Last updated by Wyat Appel: Nov 2020
+### Last updated by Wyat Appel: June, 2019
 #############################################################################
 "
 
@@ -33,7 +33,10 @@ filename_pdf <- paste(figdir,filename_pdf,sep="/")
 filename_png <- paste(figdir,filename_png,sep="/")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-title <- get_title(run_names,species,network_names,dates,custom_title)
+{
+   if (custom_title == "") { title <- paste(run_name1,"MDA8 Ozone for",dates,sep=" ") }
+   else { title <- custom_title }
+}
 
 label <- "MDA8 Ozone (ppb)"
 #################################
@@ -45,6 +48,7 @@ label <- "MDA8 Ozone (ppb)"
       units            <- as.character(sitex_info$units[[1]])
    }
    else {
+#      units <- db_Query(units_qs,mysql)
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
       data_exists     <- query_result[[2]]

@@ -2,11 +2,11 @@
 ####################################################################################
 #                          USER CONFIGURATION
 
-# Main AMET directory location. Can be defined explicity here or in user setenv for universal use.
-setenv AMETBASE   /home/user/AMET
+# Main directories of AMET and MADIS data
+setenv AMETBASE  /home/user/AMET_v13
 
 # Define Database and Password from argument input
-setenv MYSQL_LOGIN   my_login_id
+setenv MYSQL_LOGIN   xxxxxxx
 setenv AMET_DATABASE user_database
 setenv MYSQL_SERVER  mysql.server.gov
 setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
@@ -23,9 +23,6 @@ setenv MADISBASE $AMETBASE/obs/MET
 # RUN_DESCRIPTION: Short description of the model run to keep track its details.
 setenv AMET_PROJECT    metExample_mpas 
 setenv RUN_DESCRIPTION "MPAS release test dataset."
-
-# Is this a model forecast where intial date/time and forecast hour should be tracked?
-setenv FORECAST F
 
 # Meteorological model output file location and control. The files that can be listed with
 # location below. A wildcard (*) is added in the script to get list of outputs.
