@@ -20,6 +20,10 @@
 #  V1.5, 2020Feb26, Robert Gilliam: 
 #       - Added random number to site query filename for multiple runs in the same directory
 #       - Old MADIS datasets have site(s) with NA for lat-lon coordinates. Check and skip those now. 
+#  V1.5, 2022May04, Robert Gilliam: 
+#       - New master Metadata file for surface and upper-air sites was developed for reliable state
+#         and country mapping in stations table for more flexible query & data analysis. Ignored 
+#         if file is not present and backward compatible. $AMETBASE/obs/MET/mastermeta.Rdata
 #
 #######################################################################################################
 #######################################################################################################
@@ -69,6 +73,12 @@
 #       cells_on_vertex-- grid cell indicies of vertex cells 
 #       cind           -- MPAS indices where observation site resides
 #       cwgt           -- Barrycentric interpolation weights
+#       mysqldbase     -- mysql database connection list for site update query
+#       sitecommand    -- mysql command to push query file to server
+#       sitemax        -- Optional - max number of sites allowed
+#       updateSiteTable-- Optional - update stations table with potential new sites
+#       tmpquery_file  -- Optional - site update query file name
+#       mastermeta_file-- Optional - master site metadata file name 
 #
 # Output: Update site information
 #         supdate<-list(sitelist=sitelist, sitenum=sitenum, cind=cind, cwgt=cwgt)
@@ -78,13 +88,19 @@
                           lat, lon, latv, lonv, cells_on_vertex,
                           cind, cwgt, mysqldbase, sitecommand, 
                           sitemax=15000, updateSiteTable=F,
-                          tmpquery_file="tmp.site.query") {
+                          tmpquery_file="tmp.site.query",
+                          mastermeta_file="xxxyyyvv") {
 
   # If update site table open temporary site query file
   if(updateSiteTable) {
     system(paste("rm -f ",tmpquery_file)) 
     sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
+    use.metafile  <-F
+    if(file.exists(mastermeta_file)) {
+      load(mastermeta_file)
+      use.metafile<-T
+    }
   }
   
   # Build site arrays with MPAS cell indices and barycentric weights, or
@@ -131,14 +147,29 @@
                      "  MPAS cell coord:",lat[cind[sitenum,2]],lon[cind[sitenum,2]]))
 
     if(updateSiteTable){
-      tmps <- trimws(unlist(strsplit(site_locname[inds],','))[2])
-      state<- ifelse(is.na(unlist(strsplit(tmps,""))[1]),'',substr(tmps,1,2))
-      elevs<- ifelse(is.na(elev[inds]),'NULL',round(elev[inds]))
-      writeLines(paste("Inserting sites into AMET stations table",s,nsr,inds,sites_unique[s],site_locname[inds], state)) 
-      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev) VALUES ('",sitelist[sitenum],"','",
-                   report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,")",sep="")
+      tmps    <- trimws(unlist(strsplit(site_locname[inds],','))[2])
+      state   <- ifelse(is.na(unlist(strsplit(tmps,""))[1]),"99",substr(tmps,1,2))
+      elevs   <- ifelse(is.na(elev[inds]),-9999.99,round(elev[inds]))
+      country <-"99"
+      if(use.metafile){
+        sm<-which(sitelist[sitenum] == mastermeta[,1])[1]
+        if(is.na(sm)) { next }
+        writeLines(paste("DEBUG ------",sm))
+        if(sum(sm)>0) {
+          elevs              <-ifelse(is.na(mastermeta[sm,2]),'NULL',round(as.numeric(mastermeta[sm,2])))
+          site_locname[inds] <-ifelse(is.na(mastermeta[sm,3]) || nchar(trimws(mastermeta[sm,3]))==0,"99",mastermeta[sm,3])
+          state              <-ifelse(is.na(mastermeta[sm,4]) || nchar(trimws(mastermeta[sm,4]))==0,"99",mastermeta[sm,4])
+          country            <-ifelse(is.na(mastermeta[sm,5]) || nchar(trimws(mastermeta[sm,5]))==0,"99",mastermeta[sm,5])
+          site_locname[inds] <-sub("'", "",site_locname[inds])
+        }
+      }
+      writeLines(paste("Inserting site into AMET stations table (meta):",s,sites_unique[s],elevs,site_locname[inds], state, country, site_locname[inds], sep=" ** ")) 
+      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev, country) VALUES ('",sitelist[sitenum],"','",
+                   report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,",'",country,"')",sep="")
       writeLines(paste(query,";"),con=sfile)             
     }
+
+
   }
 
   if(updateSiteTable){
@@ -147,7 +178,7 @@
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
     system(paste("rm -f ",tmpquery_file))
   }
-
+  #stop("DEBUG stop")
   writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 
   writeLines(paste("Num sites excluded because outside of MPAS domain:",nsites_outside_domain))
   writeLines(paste("Finished: Mapping observation sites to MPAS grid. Number of sites mapped:",sitenum))
@@ -176,9 +207,13 @@
 #       proj           -- WRF projection. 1- Lambert, 2-Polar Sterographic (not implemented yet)
 #       wrfind         -- Index mapping to site array with interpolation weights 
 #       interp         -- Interpolation option. 1-Nearest Neighbor, 2-Smart Bi-linear
+#       mysqldbase     -- mysql database connection list for site update query
+#       sitecommand    -- mysql command to push query file to server
 #       sitemax        -- Maximum number of unique sites. Currently MADIS has ~4500 global sites
 #       updateSiteTable-- Update AMET database (stations table) with any new sites. 
-#       buffer         -- # of Grid cells from domain boundary where sites are rejected
+#       buffer         -- Optional - # of Grid cells from domain boundary where sites are rejected
+#       mastermeta_file-- Optional - master site metadata file name 
+#       tmpquery_file  -- Optional - site update query file name
 #
 # Output: List of update site information
 #         supdate<-list(sitelist=sitelist, sitenum=sitenum, wrfind=wrfind)
@@ -187,7 +222,7 @@
  wrf_site_map <-function(site, sites_unique, sitelist, sitenum, slat, slon,
                          elev, report_type, site_locname, proj, wrfind, 
                          interp, mysqldbase, sitecommand, sitemax=15000, 
-                         updateSiteTable=F, buffer=5,
+                         updateSiteTable=F, buffer=5, mastermeta_file="xxxyyyvv",
                          tmpquery_file="tmp.site.query") {
 
   # If update site table open temporary site query file
@@ -195,6 +230,11 @@
     system(paste("rm -f ",tmpquery_file)) 
     sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
+    use.metafile  <-F
+    if(file.exists(mastermeta_file)) {
+      load(mastermeta_file)
+      use.metafile<-T
+    }
   }
 
   # Find range of lat-lon to exclude sites outside of domain. Adjust the
@@ -229,7 +269,7 @@
 
     if(grdind$i < buffer || grdind$i > (proj$nx-buffer) || grdind$j < buffer || grdind$j > (proj$ny-buffer) ) { 
       nsites_outside_domain<-nsites_outside_domain+1
-      writeLines(paste(nsites_outside_domain,"Sites ****",sites_unique[s],"**** excluded because out of WRF domain"))
+#      writeLines(paste(nsites_outside_domain,"Sites ****",sites_unique[s],"**** excluded because out of WRF domain"))
       next 
     }
 
@@ -296,12 +336,24 @@
                      sprintf("%5.3f",dx),sprintf("%5.3f",dy)))
 
     if(updateSiteTable){
-      tmps <- trimws(unlist(strsplit(site_locname[inds],','))[2])
-      state<- ifelse(is.na(unlist(strsplit(tmps,""))[1]),'',substr(tmps,1,2))
-      elevs<- ifelse(is.na(elev[inds]),'NULL',round(elev[inds]))
-      writeLines(paste("Inserting sites into AMET stations table",s,nsr,inds,sites_unique[s],site_locname[inds], state)) 
-      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev) VALUES ('",sitelist[sitenum],"','",
-                   report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,")",sep="")
+      tmps    <- trimws(unlist(strsplit(site_locname[inds],','))[2])
+      state   <- ifelse(is.na(unlist(strsplit(tmps,""))[1]),"99",substr(tmps,1,2))
+      elevs   <- ifelse(is.na(elev[inds]),-9999.99,round(elev[inds]))
+      country <-"99"
+      if(use.metafile){
+        sm<-which(sitelist[sitenum] == mastermeta[,1])[1]
+        if(is.na(sm)) { next }
+        if(sum(sm)>0) {
+          elevs              <-ifelse(is.na(mastermeta[sm,2]),'NULL',round(as.numeric(mastermeta[sm,2])))
+          site_locname[inds] <-ifelse(is.na(mastermeta[sm,3]) || nchar(trimws(mastermeta[sm,3]))==0,"99",mastermeta[sm,3])
+          state              <-ifelse(is.na(mastermeta[sm,4]) || nchar(trimws(mastermeta[sm,4]))==0,"99",mastermeta[sm,4])
+          country            <-ifelse(is.na(mastermeta[sm,5]) || nchar(trimws(mastermeta[sm,5]))==0,"99",mastermeta[sm,5])
+          site_locname[inds] <-sub("'", "",site_locname[inds])
+        }
+      }
+      writeLines(paste("Inserting site into AMET stations table (meta):",s,sites_unique[s],elevs,site_locname[inds], state, country, site_locname[inds], sep=" ** ")) 
+      query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev, country) VALUES ('",sitelist[sitenum],"','",
+                   report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,",'",country,"')",sep="")
       writeLines(paste(query,";"),con=sfile)             
     }
   }
@@ -311,7 +363,6 @@
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
     system(paste("rm -f ",tmpquery_file))
   }
-  
   writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 
   writeLines(paste("Num sites excluded because outside of WRF domain:",nsites_outside_domain))
   writeLines(paste("Finished: Mapping observation sites to WRF grid. Number of sites mapped:",sitenum))

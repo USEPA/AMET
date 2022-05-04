@@ -88,8 +88,12 @@
                 as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[2])
  layer      <- c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[1],
                  as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[2])
- # Note Extra is for custom extra specs added to query. Must know MySQL
- extra<-"  "
+
+ # Note Extra is for custom extra specs added to query. Must know MySQL. Below are
+ # examples of using US States and Countries (ref: $AMETBASE/obs/MET/metar_codes_country.txt)
+ # usage of LIKE searches country names in database for string enclosed %Country%
+ # WARNING: IF State or Country Criteria are set PROFILE Stats Site should be set to ALL
+ extra      <-Sys.getenv("AMET_EXTRA")
 #########################################################################
 
 #########################################################################

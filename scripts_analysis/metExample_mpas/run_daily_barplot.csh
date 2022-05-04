@@ -45,11 +45,16 @@
   # 1. Dates between Jul 1-31, 2011 and only sites *WITHIN* the lat-lon box 23-55 deg and -125-65 deg
   setenv AMET_CRITERIA  "AND d.ob_date >=  20160701 AND d.ob_date < 20160801  AND s.lat BETWEEN 23 AND 55 AND \
                          s.lon BETWEEN -125 AND -65 ORDER BY d.ob_date"
+
   # 2. Dates between Jul 1-31, 2011 and only sites *OUTSIDE* the lat-lon box 23-55 deg and -125-65 deg.
   #    This is a nice way to look at MPAS global output outside of the fine mesh over the US as an example.
   setenv AMET_CRITERIA  "AND d.ob_date >=  20160701 AND d.ob_date < 20160801  AND s.lat NOT BETWEEN 23 AND 55 AND \
                          s.lon NOT BETWEEN -125 AND -65 ORDER BY d.ob_date"
-  # 3. Use all sites in the entire domain and data from Jul 1-31, 2011
+
+  # 3. Dates between Jul 1-31, 2011 and only sites *WITHIN* the United States (only for AMETv1.5+ matching)
+  setenv AMET_CRITERIA  "AND d.ob_date >=  20160701 AND d.ob_date < 20160801 AND s.country LIKE '%United States%' "
+
+  # 4. Use all sites in the entire domain and data from Jul 1-31, 2011
   setenv AMET_CRITERIA  "AND d.ob_date >=  20160701 AND d.ob_date < 20160801  ORDER BY d.ob_date"
   #-----------------------------------------------------------------------------------------------------------------------
 
