@@ -38,15 +38,22 @@
   # This variable (AMET_CRITERIA) controls what data you want to evaluate. It is necessary to understand how to build
   # MySQL queries to develop your own custom queries of data. Below are some examples along with what criteria can be used.
   # Below is the MySQL query that defines the data to be extracted for analysis.
-  # Note:   sample queries: 1) By day range only 2) date range and state 
-  #                         3) date range and observation network and 4) Date range full domain
+  # Note:   sample queries: 1) date range and observation network 2) date range and state 
+  #                         3) date range an country see $AMET1/obs/MET/metar_codes_country.txt for countries
+  #                         4) date range and lat-lon bounds and 5) Date range full domain
   # There are unlimted number of combinations not shown like query by Temperature, wind speed ranges, lat-lon bounds, etc
-  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20160701 AND 20160801 and (s.ob_network='OTHER-MTR' \
-                         or s.ob_network='SAO' or s.ob_network='ASOS' or s.ob_network='MARITIME')"
+  # 1)
+  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20160701 AND 20160801 and (s.ob_network='METAR' \
+                         or s.ob_network='MARITIME')"
+  # 2)
   setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20160701 AND 20160801 AND d.ob_time AND (s.state='FL' \
                          OR s.state='SC' OR s.state='GA' OR s.state='LA' OR s.state='MS' OR s.state='AL' OR s.state='NC') "
+  # 3)
+  setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20160701 AND 20160801 AND d.ob_time AND s.country LIKE '%United States%' "
+  # 4)
   setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20160701 AND 20160801 AND (s.lat BETWEEN \
                          38 and 40 AND s.lon BETWEEN -77.8 and -75.0)"
+  # 5)
   setenv AMET_CRITERIA  "AND d.ob_date BETWEEN 20160701 AND 20160801"
 
   #  Plot Type, plot options are "png" or "pdf" are only plot formats unless user modifies

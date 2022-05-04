@@ -33,6 +33,9 @@
 #  V1.5, 2022Apr20, Robert Gilliam: 
 #         - Updated the handling of forecast and the calculation of forecast hour for sub-hourly instances.
 #           Tested forecasting capability during the 2022 ALPACA project using 72 hour WRF forecasts.
+#         - New master Metadata file for surface and upper-air sites was developed for reliable state
+#           and country mapping in stations table for more flexible query & data analysis. Ignored 
+#           if file is not present and backward compatible. $AMETBASE/obs/MET/mastermeta.Rdata
 #
 #######################################################################################################
 #######################################################################################################
@@ -95,6 +98,8 @@
 
   userid         <-system("echo $USER",intern = TRUE)
   projectdate    <-as.POSIXlt(Sys.time(), "GMT")
+
+  mastermeta_file<- paste(amet_base,"/obs/MET/mastermeta.Rdata",sep="")
 
   # Hard Coded settings that do not require user input with RAOB matching option.
   # maxdtmin is set to 60 since soundings take place over an hour. Raob is the only 
@@ -274,7 +279,7 @@ for(t in skipind:nt){
                                  model$projection$lat, model$projection$lon, model$projection$latv, 
                                  model$projection$lonv, model$projection$cells_on_vertex,
                                  cind, cwgt,  mysql$dbase, sitecommand, sitemax, updateSiteTable,
-                                 tmpquery_file=query_file2)
+                                 tmpquery_file=query_file2, mastermeta_file=mastermeta_file)
     sitenum <-site_update$sitenum
     sitelist<-site_update$sitelist
     cind    <-site_update$cind
@@ -284,7 +289,8 @@ for(t in skipind:nt){
     site_update <- wrf_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
                                 obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname, 
                                 model$projection, wrfind, interp, mysql$dbase, sitecommand, sitemax, 
-                                updateSiteTable, buffer=buffer, tmpquery_file=query_file2)
+                                updateSiteTable, buffer=buffer, tmpquery_file=query_file2,
+                                mastermeta_file=mastermeta_file)
     sitenum <-site_update$sitenum
     sitelist<-site_update$sitelist
     wrfind  <-site_update$wrfind

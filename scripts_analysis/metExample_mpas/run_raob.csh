@@ -11,6 +11,8 @@
 #
 # Apr 2022: Added a loop for single time native profiles. The script now
 #           runs this script for each 00/12 UTC time over date range provided
+# May 2022: Added extra option for Timeseries and Profile stats options for 
+#           additional criteria like state and country.
 # -----------------------------------------------------------------------
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
@@ -26,8 +28,6 @@
   # MySQL database server connection and AMET database
   setenv AMET_DATABASE  user_database
   setenv MYSQL_SERVER   mysql.server.gov
-  setenv AMET_DATABASE  amad_nrt
-  setenv MYSQL_SERVER   amet.ib
 
   #  AMET project id or simulation id
   setenv AMET_PROJECT metExample_mpas 
@@ -72,8 +72,8 @@
   #  Observation site ID array. 
   #  "ALL" will get data for all sites, but only applicable for RAOB_PROFILEM option
   #  AMET_GROUPSITES allows grouping (or not) of defined site IDs for RAOB_PROFILEM option
-  set SITES=(ALL)
   set SITES=(KGSO KMHX)
+  set SITES=(ALL)
 
   # Should SITES be grouped or averaged (T/F). Grouped sites only work for 
   # profile statistics on mandatory pressure levels via RAOB_PROFILEM T
@@ -92,6 +92,16 @@
   # spatial plots will only cover the area below.
   setenv AMET_BOUNDS_LAT "23 55"
   setenv AMET_BOUNDS_LON "-135 -60"
+
+  # Note Extra is for custom extra specs added to query. Must know MySQL. Below are
+  # examples of using US States and Countries (ref: $AMETBASE/obs/MET/metar_codes_country.txt)
+  # usage of LIKE searches country names in database for string enclosed %Country%
+  # WARNING: IF State or Country Criteria are set for RAOB_PROFILEM, User should set SITES=(ALL) 
+  # WARNING: Can result in no data if done incorrectly. Examine query for sensibility 
+  setenv AMET_EXTRA "AND (s.state='NC' OR s.state='GA' OR s.state='FL' OR s.state='VA' OR s.state='SC')"
+  setenv AMET_EXTRA "AND (s.state!='UT' AND s.state!='NV' AND s.state!='CO' AND s.state!='NM' AND s.state!='AZ')"
+  setenv AMET_EXTRA "AND (s.country LIKE '%Mexico%' OR s.country LIKE '%Canada%')"
+  setenv AMET_EXTRA "AND (s.country NOT LIKE '%United States%')"
 
   # Do you want a CVS files with Spatial and Daily Statistics?
   setenv AMET_TEXTSTATS T
