@@ -134,13 +134,13 @@ Tier 2 software includes scientific software utilities for accessing and storing
 **Installation of MariaDB from tarball**
 
 *	Download the most recent MariaDB binary distribution from this URL to the user's home directory
->    https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
+**    https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
 *	Extract the tar.gz in the users home directory
->	tar -zxf mariadb*-x86_64.tar.gz
+**	> tar -zxf mariadb*-x86_64.tar.gz
 *	Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files
->	$HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
+**	> $HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
 *	Create a my.cnf file in $HOME
->	/bin/cat << EOF > $HOME/.my.cnf 
+**	> /bin/cat << EOF > $HOME/.my.cnf 
 [client-server]
 socket=$HOME/mariadb/mysql.sock
 
