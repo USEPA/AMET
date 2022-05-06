@@ -1,5 +1,5 @@
 # Atmospheric Model Evaluation Tool (AMET)
-## Version 1.4 User’s Guide
+## Version 1.5 User’s Guide
 
 -------
 
@@ -1319,9 +1319,13 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a kellyplot of model performance color coded by season and NOAA climate region
    - single network; single species; single simulation; full year data required
    
-**run\_kellyplot_multisim.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_kellyplot_multisim_NMB.png))
+**run\_kellyplot_region.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_kellyplot_region_NMB.png))
    - Creates a kellyplot of model performance color coded by simulation and NOAA climate region
    - single network; single species; multiple simulations allowed; 
+
+**run\_kellyplot_season.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_kellyplot_season_NMB.png))
+   - Creates a kellyplot of model performance color coded by simulation and season (winter, spring, summer, and fall)
+   - single network; single species; multiple simulations allowed;
 
 **run\_monthly\_stat\_plot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_monthly_stat_plot.png))
    - Creates a monthly average time series of obs/mod concentration, bias, RMSE, NMB, NME and correlation
