@@ -133,29 +133,29 @@ Tier 2 software includes scientific software utilities for accessing and storing
 
 **Installation of MariaDB from tarball**
 
-•	Download the most recent MariaDB binary distribution from this URL to the user's home directory
-o	https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
-•	Extract the tar.gz in the users home directory
-o	tar -zxf mariadb*-x86_64.tar.gz
-•	Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files
-o	$HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
-•	Create a my.cnf file in $HOME
-o	/bin/cat << EOF > $HOME/.my.cnf 
+*	Download the most recent MariaDB binary distribution from this URL to the user's home directory
+>    https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
+*	Extract the tar.gz in the users home directory
+>	tar -zxf mariadb*-x86_64.tar.gz
+*	Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files
+>	$HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
+*	Create a my.cnf file in $HOME
+>	/bin/cat << EOF > $HOME/.my.cnf 
 [client-server]
 socket=$HOME/mariadb/mysql.sock
 
 [mariadb]
 datadir=$HOME/mariadb
 EOF
-•	Start MariaDB
-o	$HOME/mariadb*x86_64/bin/mysqld_safe --defaults-file=$HOME/.my.cnf &
-•	Use the mysql command to connect to the server
-o	$HOME/mariadb*x86_64/bin/mysql
-•	Create an AMET user and grant that user access to 
-o	grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
-o	Replace 'some_pass' with an appropriate random password
-•	Once done, you can shutdown the running database safely by running
-o	$HOME/mariadb*x86_64/bin/mysqladmin shutdown
+*	Start MariaDB
+>	$HOME/mariadb*x86_64/bin/mysqld_safe --defaults-file=$HOME/.my.cnf &
+*	Use the mysql command to connect to the server
+>	$HOME/mariadb*x86_64/bin/mysql
+*	Create an AMET user and grant that user access to 
+>	grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
+*	Replace 'some_pass' with an appropriate random password
+*	Once done, you can shutdown the running database safely by running
+>	$HOME/mariadb*x86_64/bin/mysqladmin shutdown
 
 
 **Example for configuring MySQL on a remote host with a user that has full access privileges.**
