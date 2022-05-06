@@ -153,14 +153,14 @@ Tier 2 software includes scientific software utilities for accessing and storing
     
     EOF
     
--	**Start MariaDB
+-	**Start MariaDB**
     - $HOME/mariadb*x86_64/bin/mysqld_safe --defaults-file=$HOME/.my.cnf &
--	**Use the mysql command to connect to the server
+-	**Use the mysql command to connect to the server**
     - $HOME/mariadb*x86_64/bin/mysql
--	**Create an AMET user and grant that user access to 
+-	**Create an AMET user and grant that user access to**
     - grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
     - replace 'some_pass' with an appropriate random password
--	**Once done, you can shutdown the running database safely by running
+-	**Once done, you can shutdown the running database safely by running**
     - $HOME/mariadb*x86_64/bin/mysqladmin shutdown
 
 **Example for configuring MySQL on a remote host with a user that has full access privileges.**
