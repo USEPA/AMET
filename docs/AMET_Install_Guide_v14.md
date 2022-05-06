@@ -163,18 +163,9 @@ Tier 2 software includes scientific software utilities for accessing and storing
 -	**Once done, you can shutdown the running database safely by running**
     - $HOME/mariadb*x86_64/bin/mysqladmin shutdown
 
-**Example for configuring MySQL on a remote host with a user that has full access privileges.**
+The instruction above create an AMET superuser of sorts in that the ametsecure user has been granted all priviledges. AMET only requires users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
 
-After installing MySQL, [initialize a data directory for AMET](https://dev.mysql.com/doc/refman/5.7/en/data-directory-initialization.html) and then [start the server](https://dev.mysql.com/doc/refman/5.7/en/starting-server.html), and [connect to the server](https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-connecting), per the MySQL instructions.
-
-Once connected to the server, use the following commands to set up a single AMET user called
 **ametsecure** with full access to the database. In this example replace, "some_pass" with a password of your choice.  You'll use this password in the AMET configuration script to provide access to the database.
-
-```
-mysql> create user 'ametsecure'@'localhost' identified by 'some_pass';
-mysql> grant all privileges on \*.\* to 'ametsecure'@'localhost' with grant option;
-mysql> \q
-```
 
 #### [R](http://cran.us.r-project.org/index.html)
 
