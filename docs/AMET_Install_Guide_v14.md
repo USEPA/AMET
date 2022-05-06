@@ -163,7 +163,7 @@ Tier 2 software includes scientific software utilities for accessing and storing
 -	**Once done, you can shutdown the running database safely by running**
     - $HOME/mariadb*x86_64/bin/mysqladmin shutdown
 
-The instruction above create an AMET superuser of sorts in that the ametsecure user has been granted all priviledges. AMET only requires users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
+The instructions above create an AMET superuser of sorts, in that the ametsecure user has been granted all priviledges. AMET only requires database users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
 
 **ametsecure** with full access to the database. In this example replace, "some_pass" with a password of your choice.  You'll use this password in the AMET configuration script to provide access to the database.
 
