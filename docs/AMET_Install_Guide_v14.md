@@ -131,7 +131,7 @@ Tier 2 software includes scientific software utilities for accessing and storing
 * If MySQL/MariaDB server is installed on a remote host, the server permissions will need to be granted to support accessing the database from the AMET local host.
 * There are different ways to configure MySQL for use with AMET. In the example below, a single database user, **ametsecure**, is created with root access to the database. This user is given full privileges to read-write to the database. This user would then be able to load data into the database and create plots. As write access to the database is only needed to load data into the system and not to create plots, additional users with only read access could be created, if needed.
 
-#### Installation of MariaDB from tarball
+### Installation of MariaDB from tarball
 
 -	**Download the most recent MariaDB binary distribution from this URL to the user's home directory**
     - https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
