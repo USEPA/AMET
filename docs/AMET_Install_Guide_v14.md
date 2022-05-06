@@ -123,13 +123,40 @@ Tier 2 software includes scientific software utilities for accessing and storing
  * If I/O API and netCDF are already installed on your system, use those packages for AMET.
  * Build the nocpl version of the I/O API for the data formats used with AMET.
 
-#### [MySQL](http://dev.mysql.com/downloads)
+#### [MySQL/MariaDB](http://dev.mysql.com/downloads)
 
 *Notes*:
-* Install both the MySQL server and client. At a minimum, the MySQL client must be on the same machine that will host the AMET scripts. The MySQL server can either be installed on the AMET host or an a remote host.
-* MySQL development files (include files and libraries), such as **mysql.h** and **libmysqlclient.so.15**, are needed on the system that will run AMET.
-* If MySQL server is installed on a remote host, the server permissions will need to be granted to support accessing the database from the AMET local host.
+* Install both the MySQL/MariaDB server and client. At a minimum, the MySQL/MariaDB client must be on the same machine that will host the AMET scripts. The MySQL/MariaDB server can either be installed on the AMET host or an a remote host.
+* MySQL/MariaDB development files (include files and libraries), such as **mysql.h** and **libmysqlclient.so.15**, are needed on the system that will run AMET.
+* If MySQL/MariaDB server is installed on a remote host, the server permissions will need to be granted to support accessing the database from the AMET local host.
 * There are different ways to configure MySQL for use with AMET. In the example below, a single database user, **ametsecure**, is created with root access to the database. This user is given full privileges to read-write to the database. This user would then be able to load data into the database and create plots. As write access to the database is only needed to load data into the system and not to create plots, additional users with only read access could be created, if needed.
+
+**Installation of MariaDB from tarball**
+
+•	Download the most recent MariaDB binary distribution from this URL to the user's home directory
+o	https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
+•	Extract the tar.gz in the users home directory
+o	tar -zxf mariadb*-x86_64.tar.gz
+•	Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files
+o	$HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
+•	Create a my.cnf file in $HOME
+o	/bin/cat << EOF > $HOME/.my.cnf 
+[client-server]
+socket=$HOME/mariadb/mysql.sock
+
+[mariadb]
+datadir=$HOME/mariadb
+EOF
+•	Start MariaDB
+o	$HOME/mariadb*x86_64/bin/mysqld_safe --defaults-file=$HOME/.my.cnf &
+•	Use the mysql command to connect to the server
+o	$HOME/mariadb*x86_64/bin/mysql
+•	Create an AMET user and grant that user access to 
+o	grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
+o	Replace 'some_pass' with an appropriate random password
+•	Once done, you can shutdown the running database safely by running
+o	$HOME/mariadb*x86_64/bin/mysqladmin shutdown
+
 
 **Example for configuring MySQL on a remote host with a user that has full access privileges.**
 
