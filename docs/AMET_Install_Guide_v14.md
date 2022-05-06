@@ -165,8 +165,6 @@ Tier 2 software includes scientific software utilities for accessing and storing
 
 The instructions above create an AMET superuser of sorts, in that the ametsecure user has been granted all priviledges. AMET only requires database users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
 
-**ametsecure** with full access to the database. In this example replace, "some_pass" with a password of your choice.  You'll use this password in the AMET configuration script to provide access to the database.
-
 #### [R](http://cran.us.r-project.org/index.html)
 
 After you have installed the basic R software, AMET also requires the following additional R packages:
