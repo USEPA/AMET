@@ -4,10 +4,10 @@
 #       PURPOSE: To create a MYSQL table usable for     #
 #               the AMET-AQ system                      #
 #							#
-#       Last Update: 01/2022 by K. Wyat Appel           #
+#       Last Update: 06/08/2017 by Wyat Appel           #
 #--------------------------------------------------------
 
-#############################################################
+######################################################################################
 
 suppressMessages(require(RMySQL))	# Use RMYSQL package
 
@@ -35,10 +35,20 @@ description	<- Sys.getenv('RUN_DESCRIPTION')
 delete_table	<- Sys.getenv('DELETE_PROJECT')
 remake_table	<- Sys.getenv('REMAKE_PROJECT')
 update_table	<- Sys.getenv('UPDATE_PROJECT')
+rename_table	<- Sys.getenv('RENAME_PROJECT')
+#if (!exists("rename_table")) {
+if (rename_table == "") {
+  cat(paste("\n*** RENAME_TABLE environment variable not set. Defaulting to F. If you'd like to rename a project, use setenv RENAME_TABLE T and setenv NEW_PROJECT_NAME XXXXXXXXXXXXXXX. ***\n",sep=""))
+  rename_table <- "F"
+}
 
 log_id		<- project_id
 project_id 	<- gsub("[.]","_",project_id)
 project_id      <- gsub("[-]","_",project_id)
+
+if (log_id != project_id) {
+   print("*** Requested project name has been altered to conform with database naming requirements. This likely means that periods and dashes have been replaced with underscores. ***")
+}
 
 args              <- commandArgs(2)
 mysql_login       <- args[1]
@@ -79,7 +89,7 @@ if (length(MYSQL_tables) != 0) {
       if ((delete_table == 'y') || (delete_table == 'Y') || (delete_table == 't') || (delete_table == 'T')) {
          drop <- paste("drop table ",project_id,sep="")
          mysql_result <- dbSendQuery(con,drop)
-         drop2 <- paste("delete from aq_project_log where proj_code = '",log_id,"'",sep="")
+         drop2 <- paste("delete from aq_project_log where proj_code = '",project_id,"'",sep="")
          mysql_result <- dbSendQuery(con,drop2)
          cat("The following MySQL database tables have been successfully removed from the database. \n")
       }
@@ -100,13 +110,13 @@ if (length(MYSQL_tables) != 0) {
             proj_time <- current_time
             proj_date <- paste(year,mon,day,sep="")
             cat(paste("\nproj_date=",proj_date))
-            table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",log_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
+            table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",project_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
             mysql_result <- dbSendQuery(con,table_query)
             #####################################################################################################################################
             ### This section automatically updates the min and max dates in the project_log table each time the add_aq2dbase.R script is run  ###
             #####################################################################################################################################
             cat("\nUpdating project log...")
-            query_all <- paste("SELECT proj_code,model,user_id,passwd,email,description,DATE_FORMAT(proj_date,'%Y%m%d'),proj_time,DATE_FORMAT(min_date,'%Y%m%d'),DATE_FORMAT(max_date,'%Y%m%d') from aq_project_log where proj_code='",log_id,"' ",sep="")    # set query for project log table for all information regarding current project
+            query_all <- paste("SELECT proj_code,model,user_id,passwd,email,description,DATE_FORMAT(proj_date,'%Y%m%d'),proj_time,DATE_FORMAT(min_date,'%Y%m%d'),DATE_FORMAT(max_date,'%Y%m%d') from aq_project_log where proj_code='",project_id,"' ",sep="")    # set query for project log table for all information regarding current project
             info_all <- dbGetQuery(con,query_all)
             model        <- info_all[,2]
             user_id      <- info_all[,3]
@@ -127,24 +137,40 @@ if (length(MYSQL_tables) != 0) {
                info_date_max <- dbGetQuery(con,query_date_max)
                max_date <- info_date_max[,] 
             }   
-            query_dates <- paste("REPLACE INTO aq_project_log (proj_code,model,user_id,passwd,email,description,proj_date,proj_time,min_date,max_date) values ('",log_id,"','",model,"','",user_id,"','",password,"','",email,"','",description,"','",proj_date,"','",proj_time,"','",min_date,"','",max_date,"')",sep="")                    # put first and last dates into project log
+            query_dates <- paste("REPLACE INTO aq_project_log (proj_code,model,user_id,passwd,email,description,proj_date,proj_time,min_date,max_date) values ('",project_id,"','",model,"','",user_id,"','",password,"','",email,"','",description,"','",proj_date,"','",proj_time,"','",min_date,"','",max_date,"')",sep="")                    # put first and last dates into project log
             mysql_result <- dbSendQuery(con,query_dates)
             cat("done updating project start and end dates.\n")
             cat("\nThe following existing project description has been successfully updated.  Please review the following for accuracy, then use the link below to advance to the next step.")
 #######################################################################################################################################
          }
          else {
-            cat(paste("\nWould you like to re-make the table for project ",project_id," (y/n)? (Note this will delete all existing data in project ",project_id," but retain the existing project description): \n",sep=""))
-            cat(paste(remake_table,"\n"))
-            if ((remake_table == 'y') || (remake_table == 'Y') || (remake_table == 't') || (remake_table == 'T')) {
-               drop <- paste("drop table ",project_id,sep="")
-               mysql_result <- dbSendQuery(con,drop)
-               create_table()
-               cat("\nThe following database table has been successfully re-generated.  Please review the following for accuracy, then use the link below to advance to the next step. \n")
+            cat(paste("\nWould you like to rename the existing project (y/n)? \n",sep=""))
+            cat(paste(rename_table,"\n"))
+            if ((rename_table == 'y') || (rename_table == 'Y') || (rename_table == 't') || (rename_table == 'T')) {
+               new_project_id <- Sys.getenv('NEW_AMET_PROJECT_NAME')
+               cat(paste("\nRenaming project ",project_id," to ",new_project_id, ". This could take a while if data are already loaded.\n", sep=""))
+               table_query1 <- paste("update project_units set proj_code = '",new_project_id,"' where proj_code = '",project_id,"';",sep="")
+               table_query2 <- paste("update aq_project_log set proj_code = '",new_project_id,"' where proj_code = '",project_id,"';",sep="")
+               table_query3 <- paste("update ",project_id," set proj_code = '",new_project_id,"' where proj_code = '",project_id,"';",sep="")
+               table_query4 <- paste("rename table ",project_id," to ",new_project_id,";",sep="")
+               mysql_result <- dbSendQuery(con,table_query1)
+               mysql_result <- dbSendQuery(con,table_query2)
+               mysql_result <- dbSendQuery(con,table_query3)
+               mysql_result <- dbSendQuery(con,table_query4)
             }
             else {
-               cat(paste("\nAlright, doing nothing. Change the flags in the script if you wish to delete, update or re-make project ",project_id,".\n\n",sep=""))
-            }
+               cat(paste("\nWould you like to remake the table for project ",project_id," (y/n)? (Note this will delete all existing data in project ",project_id," but retain the existing project description): \n",sep=""))
+               cat(paste(remake_table,"\n"))
+               if ((remake_table == 'y') || (remake_table == 'Y') || (remake_table == 't') || (remake_table == 'T')) {
+                  drop <- paste("drop table ",project_id,sep="")
+                  mysql_result <- dbSendQuery(con,drop)
+                  create_table()
+                  cat("\nThe following database table has been successfully re-generated.  Please review the following for accuracy, then use the link below to advance to the next step. \n")
+               }
+               else {
+                  cat(paste("\nAlright, doing nothing. Change the flags in the script if you wish to delete, update or remake project ",project_id,".\n\n",sep=""))
+               }
+            } 
          }
       }
       exists <- 'y'
@@ -165,15 +191,18 @@ if (exists != "y") {
    day  <- substr(current_date,9,10)
    proj_date <- paste(year,mon,day,sep="")
    proj_time <- current_time
-   table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",log_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
+   table_query <- paste("REPLACE INTO aq_project_log (proj_code, model, user_id, email, description, proj_date, proj_time) VALUES ('",project_id,"','",model,"','",user_name,"','",email,"','",description,"',",proj_date,",'",proj_time,"')",sep="")
    mysql_result <- dbSendQuery(con,table_query)
    create_table()
    cat("\n### The following database tables have been successfully generated.  Please review the following for accuracy. ### \n")
 }
 
-query_min <- paste("SELECT * from aq_project_log where proj_code='",log_id,"' ",sep="")
+if ((rename_table == 'y') || (rename_table == 'Y') || (rename_table == 't') || (rename_table == 'T')) {
+   project_id <- new_project_id
+}
+query_min <- paste("SELECT * from aq_project_log where proj_code='",project_id,"' ",sep="")
 query_results <- suppressWarnings(dbGetQuery(con,query_min))
-cat(paste("project_id  = ",log_id,"\n",sep=""))
+cat(paste("project_id  = ",project_id,"\n",sep=""))
 cat(paste("model       = ",query_results$model,"\n",sep=""))
 cat(paste("user        = ",query_results$user,"\n",sep=""))
 cat(paste("email       = ",query_results$email,"\n",sep=""))
