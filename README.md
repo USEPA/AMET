@@ -10,7 +10,7 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
 ## AMETv1.5
 
 - First item
-- 
+
        - indented item
 
 * Improved error handling for missing data
