@@ -50,6 +50,9 @@
  setenv REMAKE_PROJECT    F     #> T/F; Remake an existing AMET project. Note that all existing data will be deleted
  setenv DELETE_PROJECT    F     #> T/F; Delete an existing AMET project. This will delete all data in the existing
                                 #>      AMET table and remove the table from the database
+  setenv RENAME_PROJECT    F    #> T/F; Rename an existing AMET project. This will retain all existing data
+                                #>      Must also specify new project name using the environment variable NEW_AMET_PROJECT_NAME
+# setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
 
 #> Plotting options
  setenv AMET_DB           T     #> T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
@@ -60,6 +63,8 @@
  setenv scatter_plots     T     #> T/F; Create scatter plots from site compare output?
  setenv misc_plots        T     #> T/F; Create bugle plots and soccer goal plots from site compare output?
 
+#> Other options
+ setenv Source_Configs	  F     #> T/F; Set to true if using environment settings from CMAQ config files in CMAQ_Home instead of .cshrc environment
 
 # ==================================================================================
 #> 2. System configuration, location of observations and code repositories
@@ -67,7 +72,7 @@
 
 #> Configure the system environment
   setenv compiler     intel                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
-  setenv compilerVrsn 18.0                     #> Compiler version
+  setenv compilerVrsn 18.0.1                     #> Compiler version
  # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on EPA system
  # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on EPA system
 
@@ -81,7 +86,14 @@
  set CMAQ_HOME = /path/CMAQv53_repo
 
 #> Base directory where AMET code resides
- setenv AMETBASE	/home/AMETv14b
+ setenv AMETBASE	/home/AMETv15
+
+#> Source CMAQ config files to setup environment
+ if (${Source_Configs} == 'T') then
+    cd $CMAQ_HOME
+    source config_cmaq.csh $compiler
+    source R_env.csh
+ endif
 
 #> Set the location of the observation data.
 #> Observation data in the format needed for sitecmp are available 
@@ -138,10 +150,17 @@
  set COMBINE_DEP_NAME    = COMBINE_DEP_${RUNID}   #> Name of combine DEP file (without date and file extension).
  set HR2DAY_ACONC_NAME   = HR2DAY_ACONC_${RUNID}  #> Name of hr2day file (without date and file extension).
 
- setenv EVALDIR $AMETBASE/output/${RUNID}/sitex_output #> Location where sitecmp files will be saved (or location of existing sitecmp files).
+#> If data for January of the following year exists, set paths and files names here
+ # set APPL2 = v532_cb6r3_ae7_aq_WR413_MYR_STAGE_2018_12US1
+ # setenv POSTDIR2 /work/MOD3EVAL/wtt/EQUATES/data/output_v532_cb6r3_ae7_aq_WR413_MYR_STAGE_2017_12US1/PostProcess
+ # set COMBINE_ACONC_NAME2 = COMBINE_ACONC_${APPL2}                         #> Name of combine ACONC file (without date and file extension)
+ # set COMBINE_DEP_NAME2   = COMBINE_DEP_${APPL2}                           #> Name of combine DEP file (without date and file extension).
+ # set HR2DAY_ACONC_NAME2  = HR2DAY_LST_ACONC_${APPL2}                      #> Name of HR2DAY ACONC file (without date and file extension).
 
+
+#> Names and locations of output files created with this script.
+ setenv EVALDIR $AMETBASE/output/${RUNID}/sitex_output #> Location where sitecmp files will be saved (or location of existing sitecmp files).
  setenv PLOTDIR $AMETBASE/output/${RUNID}/plots  #> Location where evaluaiton plots will be saved.
- 
 
 # =====================================================================
 #> 4. Combine Configuration Options
@@ -247,6 +266,8 @@
  setenv NADP              T
  setenv SEARCH_HOURLY     T
  setenv SEARCH_DAILY      T
+ setenv NAPS_HOURLY       T
+ setenv NAPS_DAILY_O3     T
 
 #> Non-standard networks (should be set to F unless specifically required). 
  setenv EMEP_HOURLY       F
@@ -255,8 +276,6 @@
  setenv EMEP_DEP	  F
  setenv FLUXNET           F
  setenv MDN               F
- setenv NAPS_HOURLY       T 
- setenv NAPS_DAILY_O3	  T
  setenv NOAA_ESRL_O3	  F
  setenv TOAR		  F
 
@@ -558,6 +577,16 @@ if ((${RUN_SITEX} == 'T') || (${WRITE_SITEX} == 'T') || (${LOAD_SITEX} == 'T') |
    set next_month_date = `date -ud "${startg}+1months" +%Y-%m-%d`
    set MMnext = `date -ud "${next_month_date}" +%m`
    set YYYYnext = `date -ud "${next_month_date}" +%Y`
+
+  
+  #> Check to see if the combine files for the January of the next year exist and POSTDIR2 is set.
+  #>
+   if ((${YYYYnext} > ${YYYY}) && ($?POSTDIR2)) then
+     setenv POSTDIR ${POSTDIR2}
+     set COMBINE_ACONC_NAME = ${COMBINE_ACONC_NAME2}
+     set COMBINE_DEP_NAME = ${COMBINE_DEP_NAME2}
+     set HR2DAY_ACONC_NAME = ${HR2DAY_ACONC_NAME2}
+   endif
 
   #> Check to see if the combine ACONC file for the next month exists.
   #> 

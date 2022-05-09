@@ -61,6 +61,8 @@ setenv LOAD_SITEX       T
 setenv UPDATE_PROJECT 		F
 setenv REMAKE_PROJECT 		F
 setenv DELETE_PROJECT 		F
+setenv REMAKE_PROJECT		F	# must also set NEW_AMET_PROJECT_NAME if set to T
+#setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
 
 ### Site compare post-processing options ###
 setenv INC_AERO6_SPECIES	T 
@@ -89,13 +91,13 @@ setenv AQS_DAILY_O3     T
 setenv AQS_DAILY        T
 setenv SEARCH_HOURLY    T
 setenv SEARCH_DAILY     T
+setenv NAPS_HOURLY      T
+setenv NAPS_DAILY_O3    T
+setenv AMON             T
 
 ### Non-standard North America networks (should be set to F unless specifically required) ###
-setenv NAPS_HOURLY      F
-setenv NAPS_DAILY_O3    F
 setenv CASTNET_DRYDEP   F
 setenv AIRMON           F
-setenv AMON		F
 setenv MDN              F
 setenv FLUXNET		F
 
