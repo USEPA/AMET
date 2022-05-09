@@ -9,8 +9,8 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
 
 ## AMETv1.5
 
-* Improved error handling for missing data
-        * Simplified process for adding new AQ networks/species
+- Improved error handling for missing data
+       - Simplified process for adding new AQ networks/species
 * New interactive HTML R plots using the leaflet and dyGraphs R packages
 * Added support for global TOAR and NOAA ESRL networks
 * Ability to process and analyze AQ data without the database present
