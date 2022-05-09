@@ -11,13 +11,13 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
 - New features in AMET version 1.5 include:
  -	Support added for CAPMON 
  -	New analysis scripts
-   -	AQ_Kellyplot_region.R
-   -	AQ_Kellyplot_season.R
-   -	AQ_Kellyplot_multisim.R (removed)
-   -	AQ_Plot_Spatial_MtoM_leaflet.R
-   -	AQ_Scatterplot_mtom_density.R
-   -	AQ_Timeseries_multi_species_plotly.R
-   - AQ_Timeseries_species_plotly.R
+        -	AQ_Kellyplot_region.R
+        -	AQ_Kellyplot_season.R
+        -	AQ_Kellyplot_multisim.R (removed)
+        -	AQ_Plot_Spatial_MtoM_leaflet.R
+        -	AQ_Scatterplot_mtom_density.R
+        -	AQ_Timeseries_multi_species_plotly.R
+        - AQ_Timeseries_species_plotly.R
 -	New analysis script options
  -	Increased number of individual projects that can be specified (currently 18)
  -	Kelly plots have been updated better chose plot ranges
