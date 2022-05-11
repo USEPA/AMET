@@ -61,14 +61,14 @@ The basic structure of AMET consists of two *fields* and two *processes*.
 
 -   The two processes (actions) are **database population** and **analysis**. Database population refers to the underlying structure of AMET; after the observations and model data are paired in space and time, the pairs are inserted into a database (MySQL). Analysis refers to the statistical evaluation of these pairings and their subsequent plotting.
 
-Practically, a user may be interested in using only one of the fields (either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.4 are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement was removed from AMETv1.3 and beyond in an effort to streamline the tool.
+Practically, a user may be interested in using only one of the fields (either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.4+ are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement was removed from AMETv1.3 and beyond in an effort to streamline the tool.
 
 
 <a id="AMET_Project"></a>
 1.2 Concept of an AMET “Project”
 ----------------------------
 
-A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2016 12-km continental U.S. simulation, and another project for a 2016 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample_wrf) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
+A central organizing structure for AMET applications is a project. A project organizes a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with AMET database tables that correspond to that simulation, the scripts necessary to populate that database, the scripts required to analyze that project and statistical analysis outputs. For example, you might have one project for a 2016 12-km continental U.S. simulation, and another project for a 2016 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample_wrf/mpas/mcip) provided with the installation and then renaming it to the new project’s name.
 
 <a id="Users_Guide"></a>
 1.3 Organization of This User’s Guide
@@ -90,12 +90,12 @@ The contents of the remaining sections of this User's Guide are listed below.
     are also shown for illustrative SQL queries.
 
 -   [Section 6](#Project_Creation) gives instructions on how to populate the AMET MySQL database, with
-    specific instructions for each of the WRF and CMAQ models, and also on how to
-    create a new MET project and a new AQ project for subsequent analyses.
+    specific instructions for WRF and CMAQ models, and also on how to
+    create new MET and AQ projects for subsequent analyses.
 
--   [Section 7 ](#Analysis) includes instructions on how to perform model evaluation for each of the
-    WRF and CMAQ models, and includes an overview of the functionality of all the MET
-    and AQ evaluation scripts provided.
+-   [Section 7 ](#Analysis) includes instructions on how to perform model evaluation for
+    WRF and CMAQ models, and includes an overview of the functionality of all availiable MET
+    and AQ evaluation scripts.
 
 ***<span style="font-variant:small-caps;">Important note</span>:*** *The set of
 analyses/evaluation scripts provided in this release are strictly for illustration
@@ -123,13 +123,13 @@ system. For information on the installation process, please see the [Atmospheric
 
 In this guide, the top level of the AMET directory structure is referred to
 as “AMETBASE”. This environment variable is actually set in many of the
-scripts discussed below. For example, if you were to run the AMET version 1.4b installation Git command in the directory /opt:
+scripts discussed below. For example, if you were to run the AMET (example for version 1.5) installation Git command in user's home directory /home/user:
 
 ```
-git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b
+git clone -b 1.5 https://github.com/USEPA/AMET.git AMET_v15
 
 ```
-The setting of AMETBASE would be /opt/AMET_v14b
+The setting of AMETBASE would be /home/user/AMET_v15
 
 
 Table 2-1 shows the directories contained in the $AMETBASE directory.
@@ -196,7 +196,7 @@ The AMET release includes example datasets of both model and observational data.
 
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into several example projects:
-"metExample_wrf", "metExample_mpas" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+"metExample_wrf", "metExample_mpas", "metExample_mcip" and "aqExample". On the MET side, there is a 1-month WRF simulation with MCIP 
 and 1-month MPAS simulation provided for July 2016. We included the same period 
 in case users wanted to compare the two models. These are model output subsets with only the 
 variables needed for the evaluation scripts. Model outputs are availiable for download via
@@ -212,6 +212,16 @@ The WRF data consist of 31 WRF output files in netCDF format:
 > wrfout\_subset\_2016-07-01\_00:00:00
 > ...
 > wrfout\_subset\_2016-07-31\_00:00:00
+
+The MCIP data consist of 1 GRIDCRO2D, 31 METCRO2D and 31 METCRO3D output files in netCDF format:
+
+> $AMETBASE/model\_data/MET/**metExample_mcip**/
+>
+> GRIDCRO2D
+> ...
+> METCRO2D_160701.nc
+> ...
+> METCRO3D_160701.nc
 
 The MPAS data consist of 31 MPAS output files in netCDF format:
 
