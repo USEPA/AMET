@@ -1677,7 +1677,7 @@ population—for example, $AMETBASE/configure/amet-config.R.
 
 The analysis input files are found in
 $AMETBASE/scripts\_analysis/metExample_wrf. The following is a partial list of
-variables. Not all of these variables are available in every input file.
+variables. Not all of these variables are available in every input file. And, the analysis scripts and configuration files have comments describing these variables and others that may be missed below.
 
 <a id="Table_B-2"></a>
 **Table B‑2. MET analysis input variables**
