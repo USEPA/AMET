@@ -261,9 +261,9 @@ grid resolution.
 
 As with the model data, the observations directory structure is divided between MET and AQ fields. On the MET side, the bulk of the observations come from the Meteorological Assimilation Data Ingest System (MADIS), provided by the National Oceanic and Atmospheric Administration (NOAA). Contact MADIS to obtain a MADIS account for downloading these data (see http://www-sdd.fsl.noaa.gov/MADIS for details). Two other dataset are compatible for the evaluation of shortwave radiation. Users can either select a global Baseline Surface Radiation Network (BSRN; https://bsrn.awi.de/) or a US-centric NOAA-based SURFace RADiation (SURFRAD; https://gml.noaa.gov/grad/surfrad/) network data. There is also an example of a simple text file format for surface meteorology if users have non-standard text data.
 
-The new autoFTP option in AMET uses the MADIS anonymous FTP account; if using that option, please acknowledge the MADIS group in applications that use AMET. Alternatively, users may also manually download all MADIS observations before the model-observation matching step. The autoFTP option is also fully compatible for both surface shortwave radiation datasets. This option ignores data that was already aquired as long as it is located in the AMET directory structure.
+The new autoFTP option in AMET uses the MADIS anonymous FTP account; if using that option, please acknowledge the MADIS group in applications that use AMET. Alternatively, users may also manually download all MADIS observations before the model-observation matching step. The autoFTP option is also fully compatible for both surface shortwave radiation datasets. This option ignores data that was already acquired as long as it is located in the AMET directory structure.
 
-In the AMET directory structure, all of the MADIS data are stored under $AMETBASE/obs/MET. The MADIS observation directory structure is provided in this directory in the release. The AMET example data distribution from CMAS includes standard MET surface observations from MADIS for the model ouput periods (July 2011 and July 2013). To list the contents of the example met observational data directory:
+In the AMET directory structure, all of the MADIS data are stored under $AMETBASE/obs/MET. The MADIS observation directory structure is provided in this directory in the release. The AMET example data distribution from CMAS includes standard MET surface observations from MADIS for the model output periods (July 2011 and July 2013). To list the contents of the example met observational data directory:
 
 ```
 ls $AMETBASE/obs/MET
@@ -474,7 +474,7 @@ AQS data are obtained through the EPA’s Air Quality System
 (AQS), located at
 [**http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html**](http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html).
 Various species of atmospheric gases are available for download through
-the AQS. THe pre-generated files on this site need to be combined into a
+the AQS. The pre-generated files on this site need to be combined into a
 single data file in order to work best with AMET. AMET compatible AQS data
 files are available for download from the CMAS website.
 
@@ -578,7 +578,7 @@ meteorological data.
 
 The instructions provided below assume the use of the MySQL database. If only
 processing AQ data and not employing the use of the database, those portions of
-the instructions that deal with setuping up and interfacing with the database
+the instructions that deal with setup and interfacing with the database
 can be ignored.
 
 <a id="AMET_Setup"></a>
@@ -716,7 +716,7 @@ cd $AMETBASE/scripts_db
 This directory contains two project directories and one input files directory, in
 addition to the dbSetup directory described earlier. The projects are
 
-* metExample_wrf and metExample_mpas: MET examples for the WRF and MPAS models
+* metExample_wrf, metExample_mpas and metExample_mcip: MET examples for the WRF, MPAS models plus MCIP support
 * aqExample: an AQ example for the CMAQ model
 
 In the following subsections, we describe how to run each project.
@@ -725,7 +725,7 @@ In the following subsections, we describe how to run each project.
 6.1 The metExample Projects
 ----------------------
 
-Go to the metExample_wrf project directory. Note these are the same steps for metExample_mpas.
+Go to the metExample_wrf project directory. Note these are the same steps for metExample_mpas and metExample_mcip.
 
 ```
 cd $AMETBASE/scripts_db/metExample_wrf
@@ -743,26 +743,24 @@ After executing the script you will be prompted for MySQL’s “root” passwor
 This C-shell script for surface meteorology will create an empty project tables in the AMET
 database: wrfExample_wrf_surface. It is important to understand that if users specify a database 
 via AMET_DATABASE that is not present on the MySQL server, a new database will automatically
-be created. The wrfExample_wrf_surface table contains the matches between the model outputs 
-andÂ surface observations. After creating the table, the script then excutes the matching process. 
+be created. The wrfExample_wrf_surface table contains the matched pairs of model outputs 
+and surface observations. After creating the table, the script then excutes the matching process. 
 This process consists of retreiving data from the MADIS web site for the model's temporal
 period, unzipping the downloaded data, finding the geographic location of each observation
 site on the model grid and interpolating to those locations, populating the
-appropriate table with the model-obs pairs for each variable, and optionally rezipping
-the data for compressed storage. Finally, the script updates the project_log
-with summary information for the wrfExample project.
+appropriate table with the model-obs pairs for each variable. Finally, the script updates the project_log
+with summary information for the wrfExample project like project creation date, last matching execution, period of record and description of project.
 
 ```
-./matching_bsrn.csh >& log.populate.bsrn
+./matching_radiation.csh >& log.populate.radiation
 ```
 This C-shell script is executed the same as the surface script above. It is used to compare the model
-with Baseline Surface Radiation Network (BSRN) shortwave radiation measurements. The model-observation
-pairs are put in the wrfExample_wrf_surface table if already created. If not, that table is generated and
-the script will automatically download the BSRN observations from the FTP site (BSRN_SERVER) in the 
-matching_bsrn.csh script. Users should contact the BSRN organization and request a access, which will
-follow with a login and password that should be specified (BSRN_LOGIN and BSRN_PASS). These files are
+with Baseline Surface Radiation Network (BSRN) or SURFRAD shortwave radiation measurements. The setting RADIATION_DSET should be set to bsrn or surfrad. BSRN has a lag period of months to a year for data curation, but SURFRAD is real-time. BSRN is global and SURFRAD is US only. When executed, the model-observation
+pairs are inserted in the wrfExample_wrf_surface table. The script will automatically download the BSRN or SURFRAD observations from the FTP site (RAD_SERVER) in the 
+matching_radiation.csh script. Users should contact the BSRN organization and request a access, which will
+follow with a login and password that should be specified (RAD_LOGIN and RAD_PASS). SURFRAD uses anonymous FTP + a users email for their internal tracking. BSRN files are
 monthly text files with 1 minute data. It takes a few minutes of processing to read these file, but
-after, the script runs very fast. This is a new option in AMETv1.4.
+after, the script runs very fast. This is a new option in AMETv1.4. AMETv1.5 adds the SURFRAD capability. These data are hourly like MADIS and seperate files for each site, but autoFTP coordinates this more complex retrieval so this option is advised. 
 
 ```
 ./matching_raob.csh >& log.populate.raob
@@ -772,15 +770,6 @@ for profile observations. Like the surface meteorology, this script will downloa
 and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
 troposphere.
 
-<!----
-The second C-shell file, metFTP.csh, is a wrapper script for calling
-Perl programs to download observational data from MADIS for a specific
-period of time. This allows you to download observational data without
-having the model output. Make sure the variable auto\_ftp is set to 1
-when running this script. Please note that the MADIS data need to be
-downloaded once for a given time period and will subsequently be
-available to all projects.
---->
 
 <a id="AQ_Project"></a>
 6.2 The aqExample Project
