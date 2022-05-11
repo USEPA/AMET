@@ -1517,7 +1517,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - single network;single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>
-7.3 Creating a New Analysis Project
+7.3 Creating a New MET Analysis Project
 -------------------------------
 
 Creating a new analysis project in AMET requires the same basic steps for both
@@ -1542,13 +1542,13 @@ For example, to create a new WRF analysis project called “wrfNC2007”:
 
 ```
 cd $AMETBASE/scripts_analysis
-cp -r wrfExample wrfNC2007
+cp -r metExample_wrf wrfNC2007
 cd wrfNC2007
 ```
 
 Edit each of the C-shell analysis scripts to set the variable
 AMET\_PROJECT to wrfNC2007. The scripts will likely require other changes, like the
-analysis dates and custom titles.
+analysis dates, output options, plot format, etc.
 
 <a id="Adding_New_AQ_Network"></a>
 8. How to Add a New AQ Network to AMET
