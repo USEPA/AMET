@@ -1007,8 +1007,8 @@ specified in the aqProject_post_only.csh and aqProject_pre_and_post.csh scripts.
 | **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. Only applicable if using the database. |
 | **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. Only applicable if using the database. |
 | **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
-| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
-| **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
+| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the standard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
+| **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no time shifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
 | **HOURS\_8HRMAX**          | 17/24; Indicate the number of 8hr averages to use when calculating the maximum 8hr average value in site compare daily. Old method uses 24 values, new method uses 17. |
 | **START\_DATE**            | Start date in YYYYJJJ to begin the processing. By default this is set to 2011182 (July 1, 2011) for the example case. |
 | **END\_DATE**              | End date in YYYYJJJ to begin the processing. By default this is set to 2011213 (August 1, 2011) for the example case. |
@@ -1065,10 +1065,9 @@ project table called aqNC2007.
 ========
 
 The analysis capabilities of AMET consists of performing statistical analyses
-on the model-obs pairs and creating plots of the resulting statistics.
-The basic process is to query the project’s database table(s) using a
-set of SQL criteria; to perform statistical analyses on the returned
-data; and to create plots, tables, and text file outputs. The
+on the model-obs pairs.
+The basic process is to query the project’s database table(s) using SQL criteria; to perform statistical analyses on the returned
+data; and to create plots, tables, and text/R data file outputs. The
 AMET installation contains a series of preprogrammed statistical analysis and
 plotting routines, based on the R language. These scripts are provided
 strictly as a starting point and as illustrative examples. Because all
@@ -1087,16 +1086,16 @@ to analyze the AMET tables and with the output from the analysis (plots
 and data).
 
 Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample_wrf, respectively.
-Within each of these directories there are C-shell
-scripts and a subdirectory called **input_files** containing an input file with
-similar names as the scripts (e.g., run\_timeseries.csh and timeseries.input). These two
+Within each of these directories are C-shell
+wrapper scripts and a subdirectory called **input_files** containing a R configuration input file with
+similar names as the analysis scripts (e.g., run\_timeseries.csh and timeseries.input). These two
 files set up everything that is necessary to configure and run the underlying AMET analysis R script (located in
-$AMETBASE/R_analysis_code). The use of the C-shell interface
+$AMETBASE/R_analysis_code). In AMETv1.5+ the R configuration input file was split into an input and a static.input file (e.g., timeseries.input and timeseries.static.input). This was mostly done to simplify the configuration for a new AMET GUI, but also helps distinquish settings a user can modify with static settings fundamental to the main R script. Also new to AMETv1.5+ is a universal confguration input file (run_info_MET.R) that can be used for all scripts and the GUI. These changes are all backward compatible with older analysis scripts. The use of the C-shell interface
 allows users who are not very familiar with R to perform a set of predefined
 analyses with AMET.
 
 <a id="metExample"></a>
-7.1 metExample_wrf or metExample_mpas
+7.1 metExample_wrf, metExample_mcip or metExample_mpas
 ----------
 
 Use the following command to navigate to the met analysis example project directory:
