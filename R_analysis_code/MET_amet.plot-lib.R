@@ -1248,7 +1248,7 @@
 
  ################################################################
  plotSpatialRaob <-function(statsq, slatlon, sitesq, lev.array, 
-                            col.array, plotopts, plotlab) {
+                            col.array, plotopts, plotlab, runid="NORUNID") {
  ################################################################
  nv<- length(varID)
  nm<- length(metricID)
@@ -1276,7 +1276,7 @@
    }
 
    figure  <- paste(plotopts$figdir,"/","raob.spatial.",metricID[m],".",varID[v],".",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".",plotopts$plotfmt,sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".",plotopts$plotfmt,sep="")
 
       if (plotopts$plotfmt == "pdf"){
      pdf(file= figure, width = 11, height = 8.5)
@@ -1337,35 +1337,35 @@
 
  if(textstats){
    textfile   <- paste(plotopts$figdir,"/","raob.spatial.TEMP.",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".csv",sep="")
    writeLines(paste("Writing spatial statistics csv text file for TEMP:",textfile))
    sitetxtout <-data.frame(slatlon,format(statsq[,1,1:4], digits = 3))
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
                col.names=c(" siteID, siteLat "," siteLon "," TEMP RMSE "," TEMP MAE "," TEMP BIAS "," TEMP CORR "),
                row.names=sitesq)
    textfile   <- paste(plotopts$figdir,"/","raob.spatial.RH.",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".csv",sep="")
    writeLines(paste("Writing spatial statistics csv text file for RH:",textfile))
    sitetxtout <-data.frame(slatlon,format(statsq[,2,1:4], digits = 3))
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
                col.names=c(" siteID, siteLat "," siteLon "," RH RMSE "," RH MAE "," RH BIAS "," RH CORR "),
                row.names=sitesq)
    textfile   <- paste(plotopts$figdir,"/","raob.spatial.WS.",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".csv",sep="")
    writeLines(paste("Writing spatial statistics csv text file for WS:",textfile))
    sitetxtout <-data.frame(slatlon,format(statsq[,3,1:4], digits = 3))
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
                col.names=c(" siteID, siteLat "," siteLon "," WS RMSE "," WS MAE "," WS BIAS "," WS CORR "),
                row.names=sitesq)
    textfile   <- paste(plotopts$figdir,"/","raob.spatial.WD.",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".csv",sep="")
    writeLines(paste("Writing spatial statistics csv text file for WD:",textfile))
    sitetxtout <-data.frame(slatlon,format(statsq[,4,1:3], digits = 3))
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
                col.names=c(" siteID, siteLat "," siteLon "," WD RMSE "," WD MAE "," WD BIAS "),
                row.names=sitesq)
    textfile   <- paste(plotopts$figdir,"/","raob.spatial.WNDVEC.",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".csv",sep="")
    writeLines(paste("Writing spatial statistics csv text file for WNDVEC:",textfile))
    sitetxtout <-data.frame(slatlon,format(statsq[,5,2], digits = 3))
    write.table(sitetxtout,file=textfile,append=F, quote=F, sep=",",
@@ -1393,12 +1393,12 @@
 
  ################################################################
  plotTseriesRaobM <-function(statsq, date.vecm,
-                           plotopts, plotlab, textstats=F) {
+                             plotopts, plotlab, textstats=F, 
+                             runid="NORUNID") {
  ################################################################
  nv<- length(varID)
  nm<- length(metricID)
  ns<- dim(statsq)[1]
-
  if( dim(statsq)[2] > nv ) {
    writeLines("** Importance Notice **")
    writeLines("raob.input is old and does not consider wind vector error")
@@ -1408,9 +1408,9 @@
  for(v in 1:nv) {
 
    figure  <- paste(plotopts$figdir,"/","raob.daily.",varID[v],".",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".",plotopts$plotfmt,sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".",plotopts$plotfmt,sep="")
    textfile<- paste(plotopts$figdir,"/","raob.daily.",varID[v],".",plotlab$datelab,".", 
-                    plotlab$figurelablev,".",plotopts$project,".csv",sep="")
+                    plotlab$figurelablev,".",plotopts$project,".",runid,".csv",sep="")
 
    if (plotopts$plotfmt == "pdf"){
      pdf(file= figure, width = 11, height = 8.5)
@@ -1547,7 +1547,7 @@
 
  ################################################################
  plotProfRaobM <-function(statsq.new, diffsq.new, levels.new, 
-                          site_name, plotopts, plotlab) {
+                          site_name, plotopts, plotlab, runid="NORUNID") {
  ################################################################
 
  # Set correlation of WD to 0
@@ -1564,7 +1564,7 @@
   }
 
   figure <- paste(plotopts$figdir,"/","raob.profileM.",site_name,".",varID[v],".", 
-                  plotlab$datelab,".",plotopts$project,".",plotopts$plotfmt,sep="")
+                  plotlab$datelab,".",plotopts$project,".",runid,".",plotopts$plotfmt,sep="")
 
   if (plotopts$plotfmt == "pdf"){
     pdf(file= figure, width = 15, height = 8.4, pointsize=16)
@@ -1670,7 +1670,7 @@
 
  ################################################################
  plotDistRaobM <-function(obsmod, levels.new, site_name,
-                          plotopts, plotlab) {
+                          plotopts, plotlab, runid="NORUNID") {
  ################################################################
  nz               <- length(levels.new)
  ndiffs           <- dim(obsmod)[3]
@@ -1690,7 +1690,7 @@
   }
 
   figure <- paste(plotopts$figdir,"/","raob.RHdist.",site_name,".",plotlab$datelab,".", 
-                  levels.new[z],"mb.",plotopts$project,".",plotopts$plotfmt,sep="")
+                  levels.new[z],"mb.",plotopts$project,".",runid,".",plotopts$plotfmt,sep="")
   if (plotopts$plotfmt == "pdf"){
     pdf(file= figure, width = 10, height = 12, pointsize=16)
   }
