@@ -218,10 +218,15 @@ The MCIP data consist of 1 GRIDCRO2D, 31 METCRO2D and 31 METCRO3D output files i
 > $AMETBASE/model\_data/MET/**metExample_mcip**/
 >
 > GRIDCRO2D
-> ...
+>
 > METCRO2D_160701.nc
 > ...
+> METCRO2D_160731.nc
+>
 > METCRO3D_160701.nc
+> ...
+> METCRO3D_160731.nc
+
 
 The MPAS data consist of 31 MPAS output files in netCDF format:
 
@@ -254,17 +259,24 @@ grid resolution.
 4.2 Observational Data
 ------------------
 
-As with the model data, the observations directory structure is divided between MET and AQ fields. On the MET side, all of the observations come from the Meteorological Assimilation Data Ingest System (MADIS), provided by the National Oceanic and Atmospheric Administration (NOAA). Contact MADIS to obtain a MADIS account for downloading these data (see http://www-sdd.fsl.noaa.gov/MADIS for details).
+As with the model data, the observations directory structure is divided between MET and AQ fields. On the MET side, the bulk of the observations come from the Meteorological Assimilation Data Ingest System (MADIS), provided by the National Oceanic and Atmospheric Administration (NOAA). Contact MADIS to obtain a MADIS account for downloading these data (see http://www-sdd.fsl.noaa.gov/MADIS for details). Two other dataset are compatible for the evaluation of shortwave radiation. Users can either select a global Baseline Surface Radiation Network (BSRN; https://bsrn.awi.de/) or a US-centric NOAA-based SURFace RADiation (SURFRAD; https://gml.noaa.gov/grad/surfrad/) network data. There is also an example of a simple text file format for surface meteorology if users have non-standard text data.
 
-The new autoFTP option in AMET uses the MADIS anonymous FTP account; if using that option, please acknowledge the MADIS group in applications that use AMET. Alternatively, users may also manually download all MADIS observations before the model-observation matching step.
+The new autoFTP option in AMET uses the MADIS anonymous FTP account; if using that option, please acknowledge the MADIS group in applications that use AMET. Alternatively, users may also manually download all MADIS observations before the model-observation matching step. The autoFTP option is also fully compatible for both surface shortwave radiation datasets. This option ignores data that was already aquired as long as it is located in the AMET directory structure.
 
 In the AMET directory structure, all of the MADIS data are stored under $AMETBASE/obs/MET. The MADIS observation directory structure is provided in this directory in the release. The AMET example data distribution from CMAS includes standard MET surface observations from MADIS for the model ouput periods (July 2011 and July 2013). To list the contents of the example met observational data directory:
 
 ```
 ls $AMETBASE/obs/MET
+point/metar
+point/raob
+point/maritime
+point/sao
+LDAD/mesonet
+bsrn
+surface_text
 ```
 
-Each of the observation files is a netCDF file representing one hour’s worth of surface meteorological data from all available monitoring sites. The netCDF files can be stored in a gzip compressed format to save space, but should be unzipped before use. These files are now directly read during the model-obs matching step instead of using an external utility (e.g.; sfcdump.exe) to extract into text and parsed by Perl.
+Each of the MADIS observation files is a netCDF file representing one hour’s worth of surface and/or upper-air meteorological data from all available observation sites. The netCDF files can be stored in a gzip compressed format to save space, but should be unzipped before use. These files are now directly read during the model-obs matching step instead of using an external utility (e.g.; sfcdump.exe) to extract into text and parsed by Perl. BSRN observation files are monthly and include all global sites. SURFRAD data are daily for individual sites. Surface text example file is hourly for all sites like MADIS. It is advised that users utilize the autoFTP routine that handles the download, decompress and organization of all observational dataset.
 
 On the AQ side, example observational data are available for a number of
 networks including:
