@@ -1179,6 +1179,12 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
 - Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
 
+**wrapper.csh** 
+- A new script in AMETv1.5 that acts as a wrapper for most of the scripts listed above.
+- Uses an wrapper run code (e.g., DB.MN) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot statistics for each month of a defined year.
+- The script lists all availiable options that include monthly, seasonal, regional-monthly and regional-seasonal statistics for the various analysis scripts.
+- The run_info_MET.R configuration allows further refinement so users can build a complete model evaluation protocol and run from a single script execution.
+- The new AMET GUI will also allow have capability from a user interface. 
 
 
 <a id="aqExample"></a>
