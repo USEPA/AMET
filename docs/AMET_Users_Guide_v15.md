@@ -1153,13 +1153,13 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - timeseries.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
-- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
 **run\_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
 - timeseries_rh.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
-- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
 
 **run\_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
@@ -1251,7 +1251,7 @@ variable OUTDIR must be set indicating where the site compare files are located.
 | **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
 | **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code that may be included in future releases of AMET. |
 | **AMET\_PTYPE**                  | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
-| **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species choosen must be one that is measured by the specified network (or networks if multiple networks are choosen).
+| **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species chosen must be one that is measured by the specified network (or networks if multiple networks are chosen).
 | **AMET\_CASTNET**                | y/n; Flag to include the CASTNET weekly data in the analysis |
 | **AMET\_CASTNET\_HOURLY**        | y/n; Flag to include the CASTNET hourly data in the analysis |
 | **AMET\_CASTNET\_DAILY\_O3**     | y/n; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
@@ -1282,7 +1282,7 @@ variable OUTDIR must be set indicating where the site compare files are located.
 | **AMET\_NOAA\_ESRL\_O3**         | y/n; Flag to include the NOAA ESLR ozone data in the analysis |
 | **AMET\_TOAR**                   | y/n; Flag to include the TOAR global network data in the analysis |
 
-Also note that all AQ analysis scripts make use of the Network.input
+Also note that all AQ analysis scripts make use of the Network
 input file. This file contains information about each observational
 network available to the project that is needed by the R scripts. More
 information about this file can be found in [Appendix B](#Appendix_B).
@@ -1514,7 +1514,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 
 **run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries.html))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
-   - single network;single species; multiple simulations
+   - single network; single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>
 7.3 Creating a New MET Analysis Project
@@ -1558,7 +1558,7 @@ Adding support for a new AQ network to AMET is relatively simple, but does requi
 
 **1. Create a properly formatted observation data file for site compare.**
 
-This is generally the first step to setting up a new network for AMET. Format your new network obseration data in a format that site
+This is generally the first step to setting up a new network for AMET. Format your new network observation data in a format that site
 compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. In addition to the data file, you will need to create site list for your new network. Site files are available for download from the CMAS website along with the network data for the existing networks. These two files, the data file and site list file, will be referred to in Step 3. The data file is assumed to have the name "NewAQNet\_data\_$year.csv" and the site file should either be in the tab delimited text format with the name "NewAQNet\_sites.txt" or a comma separated metadata file with the name "NewAQNet\_full\_site\_list.csv". Note that the txt format of the site file is being phased out in favor of the comma separated metadata file. You will also need this site metadata file to populate the site_metadata_table in the database.
 
 **2. Modify the AQ_species_list.input file**
@@ -1573,7 +1573,7 @@ species\_NewAQNet <- paste(\"<br>
 species\_cutoff\_NewAQNet <- ""<br>
 species\_AE6\_NewAQNet <- ""<br>
 
-Once you've setup the species for your new network as above, move to the bottom of the AQ_species_list.input file. There you will see three lists defined containg the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Follow the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
+Once you have setup the species for a new network as above, move to the bottom of the AQ_species_list.input file. In that file, you will find three lists containing the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Follow the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
 
 **3. Add your new network to the AQ_matching.R code**
 
@@ -1608,7 +1608,7 @@ By setting this flag to true, it will tell AMET you want to process your new net
 
 **5. Modify the analysis script files**
 
-The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new newtork is used in the analysis. You will need to modify the other run scripts with the same environment variable.
+The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new network is used in the analysis. You will need to modify the other run scripts with the same environment variable.
 
 setenv AMET_NEWAQNET y
 
