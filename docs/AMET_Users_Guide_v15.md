@@ -24,7 +24,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
 [7. Analysis](#Analysis)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf and metExample_mpas](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf, metExample_mcip and metExample_mpas](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
 [8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
