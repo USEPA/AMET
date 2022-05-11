@@ -805,7 +805,7 @@ consists of calling a series of Fortran helper programs. The two Fortran helper
 programs are $AMETBASE/bin/sitex\_daily.exe and $AMETBASE/bin/sitex_daily_O3.exe;
 the first one matches the AQS network’s data to the nearest grid cell in the CMAQ
 model, and the second one does the same for the other networks. These programs need
-to be downloaded and built (and the path to the excutable specified in the
+to be downloaded and built (and the path to the executable specified in the
 amet-config.R file before running the aqProject.csh script. After each network
 has been matched to the model, the aqExample table is populated with the model-obs
 pairs. In addition to creating and populating the aqExample table, the script
@@ -829,7 +829,7 @@ To create a new project, follow these basic steps:
 1.  Copy the appropriate example project (metExample_wrf) to a new directory name (see below).
 
 2.  Rename these directories after your new project (use the *exact* project name, as
-    many scripts use the project name to navigate directories and organize analyses).
+    the utility scripts use the project name to navigate directories and organize analyses).
 
 3.  Create a new project directory under $AMETBASE/model\_data/MET for
     the model output files. In most cases you will want to link in model outputs from an 
@@ -837,7 +837,7 @@ To create a new project, follow these basic steps:
 
 4.  Configure the C-shell script matching_surface.csh for the new project.
 
-5.  Run the matching_surface.csh (or matching_bsrn.csh, or matching_raob.csh)
+5.  Run the matching_surface.csh (or matching_radiation.csh, or matching_raob.csh)
     script to populate the AMET database.
 
 
@@ -866,12 +866,12 @@ it, as follows:
 cd $AMETBASE/model_data/MET
 mkdir wrfNC2007
 cd wrfNC2007
-ln -s <model data directory> .
+ln -s /model/data/directory/wrfout* $AMETBASE/model_data/MET/wrfNC2007/.
 ```
 
-Here, you would replace “&lt;model data&gt;” with the path to your model
-data file(s). The matching_surface.csh, matching_bsrn.csh and matching_raob.csh 
-will perform the model-obs matching of all model outputs in this new project directory.
+Here, you would replace "/model/data/directory/" with the path to your model
+data file(s). The matching_surface.csh, matching_radiation.csh and matching_raob.csh 
+will perform the model-obs matching of all model outputs in this new project directory. Users can use wildcards like the example above to link all or just specific WRF/MPAS/MCIP outputs into the MET output directory.
 
 Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
 AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
@@ -887,7 +887,7 @@ cd $AMETBASE/scripts\_db/wrfNC2007
 The matching_surface.csh script will create a new MET project in the AMET database if
 it does not exist (a new database will also be created if it does not already exist). Specifically,
 it will create a new row in the AMET project\_log table and wrfNC2007\_surface.
-The matching_bsrn.csh script will put radiation data into the same wrfNC2007\_surface table.
+The matching_radiation.csh script will put radiation data into the same wrfNC2007\_surface table.
 The matching_raob.csh script will put upper-air meteorology data in a wrfNC2007\_raob table.
 Once this script completes, the AMET database will be ready to produce meteorology model 
 performance analysis plots and statistics.
