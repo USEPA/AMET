@@ -40,6 +40,9 @@ AMETv1.5 is an incremental update from version 1.4. It includes important enhanc
        - Added ability to further customize Kelly plots through input options
        - Added function to only use common sites between multiple projects (useful for comparing two different sized domains)
 
+<a id=update_v14_v15></a>
+## What do I need to do to update from v1.4 to v1.5?
+
 <a id=diff_v14_v15></a>
 ## What differences should I expect with v1.5 compared to v1.4?
 
