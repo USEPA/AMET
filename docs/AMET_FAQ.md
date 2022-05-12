@@ -41,6 +41,7 @@ AMETv1.5 is an incremental update from version 1.4. It includes important enhanc
 
 <a id=update_v14_v15></a>
 ## What do I need to do to update from v1.4 to v1.5?
+Obtain and install the AMETv1.5 code from the AMET repository. If intending to use the AMET-AQ side of AMET, also obtain the latest versions of the AMET observation files.
 
 <a id=diff_v14_v15></a>
 ## What differences should I expect with v1.5 compared to v1.4?
