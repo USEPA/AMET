@@ -8,7 +8,7 @@
 
 <a id=why_update_v14_v15></a>
 ## Do I need to update from v1.4 to v1.5?
-AMETv1.5 is an incremental update from version 1.4. It includes important enhancements and new analysis scripts. **If a user intend to use the latest available AMET-AQ observation files, then upgrading to AMETv1.5 is required. Likelwise, if upgrading to AMETv1.5, a user must update to the latest version of the AMET-AQ observation files. Updating both the AMET version and AMET-AQ observation files together will insure all the AQ species matching between CMAQ and the obervations is done correctly.**
+AMETv1.5 is an incremental update from version 1.4. It includes important enhancements and new analysis scripts. **If a user intends to use the latest available AMET-AQ observation files, then upgrading to AMETv1.5 is required. Likelwise, if upgrading to AMETv1.5, a user must update to the latest version of the AMET-AQ observation files. Updating both the AMET version and AMET-AQ observation files together will insure all the AQ species matching between CMAQ and the obervations is done correctly.**
 
 #### AMETv1.5 Updates
 
