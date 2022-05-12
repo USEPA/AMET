@@ -4,7 +4,6 @@
 * [Do I need to update from v1.4 to v1.5?](#why_update_v14_v15)
 * [What do I need to do to update from v1.4 to v1.5?](#update_v14_v15)
 * [What differences should I expect with v1.5 compared to v1.4?](#diff_v14_v15)
-* [Do I need to update from v1.4 to v1.5?](#why_update_v14_v15)
 * [Technical support for AMET](#tech_support)
 
 <a id=why_update_v14_v15></a>
