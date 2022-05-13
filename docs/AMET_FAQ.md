@@ -69,6 +69,9 @@ Obtain and install the AMETv1.5 code from the AMET repository. If intending to u
 
 <a id=diff_v14_v15></a>
 ## What differences should I expect with v1.5 compared to v1.4?
+On the air quality side of AMET, there should be no differences in the analysis scripts between AMET 1.4 and 1.5. There are several new analysis scripts avaiable, and these new scripts have been added to the batch scripting capability in AMET-AQ, so users can expect several new analysis plots when using the AMET-AQ batch scripts. The air quality species processed through AMET have changed between 1.4 and 1.5, with several additional species processed through AMET in 1.5. 
+
+There is also improved consistency in the specification of EC/OC from AQS/CSN over time in the AMET processing, the result of updates to both the AMET code and the air quality observation files provided for use with AMET. See the release notes on the main Github page for more details on the updates made to the specification of EC/OC in AMETv1.5.
 
 <a id=tech_support></a>
 ## Technical support for AMET
