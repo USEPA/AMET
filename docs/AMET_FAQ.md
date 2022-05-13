@@ -60,8 +60,7 @@ AMETv1.5 is an incremental update from version 1.4. It includes important enhanc
 -	Meteorology and Chemistry Interface Processor (MCIP) compatibility
        - R functions were added to read MCIP METCRO2D and METCRO3D files and match with surface, upper-air and radiation measurements
 -	Added new master site metadata file to map dynamically with MADIS observations that includes state, country and full site description
-       - This allows more complex query options (i.e.; climate regions of the US or world, island nations and Continents)
--	       
+       - This allows more complex query options (i.e.; climate regions of the US or world, island nations and Continents)       
 
 <a id=update_v14_v15></a>
 ## What do I need to do to update from v1.4 to v1.5?
