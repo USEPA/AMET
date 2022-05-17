@@ -53,7 +53,7 @@
 #
 #       quickstats      --> A simple function that caculates error, bias, ioa statistics from a given dataset
 #	
-#       ac              --> Anomoly correlation/index of agreement function
+#       ac              --> Anomaly correlation
 #
 #       genvarstats     --> Complete Model Performance Metrics Caculations
 #
@@ -149,7 +149,7 @@
 
 ####################################################################################################################################################################################################################
 ##########################################################################################################
-#				FUNCTION AC (ANOMOLY CORRELATION)
+#      FUNCTION AC (ANOMALY CORRELATION)
  ac<-function(obs,mod){
 ##########################################################################################################
      cm  <-mean(obs,na.rm=TRUE)
