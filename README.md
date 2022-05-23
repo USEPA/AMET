@@ -40,7 +40,7 @@ This AMET Git archive is organized with each official public release stored as a
 To clone code from the AMET Git archive, specify the branch (i.e. version number) and issue the following command from within
 a working directory on your server:
 ```
-git clone -b master https://github.com/USEPA/AMET.git AMET_v14
+git clone -b master https://github.com/USEPA/AMET.git AMET_v15
 ```
 
 The release versions of CMAQ that are currently available on Git Hub include:
