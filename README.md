@@ -23,7 +23,7 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
 -	New analysis script options (https://github.com/USEPA/AMET/blob/develop/docs/AMET_User_Guide_v15.md#aq-analysis-input-files)
        - Increased number of individual projects that can be specified from 10 to 20
        - Kelly plots have been updated better choose default plot ranges
-       - Added ability to further customize Kelly plots through input options
+       - Added ability to further customize Kelly plots through input options (min, max, interval)
        - Added function to only use common sites between multiple projects (useful for comparing data from two different sized domains)
 -	Updated batch scripts to incorporate new analysis scripts
 -	Updated AQ_species_list.input file to:
