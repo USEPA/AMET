@@ -19,14 +19,15 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[5.1 AMET Setup](#AMET_Setup)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[5.2 Basic MySQL Commands](#MySQL_Commands)<br>
 [6. Project Creation and Database Population](#Project_Creation)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf and metExample_mpas Projects](#WRF_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf and metExample_mpas Projects](#MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.2 The aqExample Project](#AQ_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
 [7. Analysis](#Analysis)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf, metExample_mcip and metExample_mpas](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Summary of the AQ Analysis Scripts](#aq_analysis_scripts)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.4 Creating a New Analysis Project](#New_Analysis_Project)<br>
 [8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
 [9. CMAS Support for AMET](#CMAS_Support)<br>
 [References](#References)<br>
@@ -1306,6 +1307,10 @@ You should see files of the form:
 
 > aqExample\_SO4\_scatterplot.pdf
 
+<a id="aq_analysis_scripts"></a>
+7.3 Summary of the AQ Analysis Scripts
+---------
+
 A brief summary of each of the C-shell scripts, with example plots from each script, is given below. To view the html files, you'll need to follow the link, click on "view raw", then save the page as an html file. You'll then be able to view the interactive html plot. 
 
 **run\_boxplot.csh** ([Example Plot](./images/aqExample_PM_TOT_aqExample_boxplot_all.png))
@@ -1517,7 +1522,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - single network; single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>
-7.3 Creating a New MET Analysis Project
+7.4 Creating a New MET Analysis Project
 -------------------------------
 
 Creating a new analysis project in AMET requires the same basic steps for both
