@@ -22,15 +22,15 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
        - New multi-species plotly (interactive) time series plot (AQ_Timeseries_multi_species_plotly.R)
 -	New analysis script options
        - Increased number of individual projects that can be specified from 10 to 20
-       - Kelly plots have been updated better chose plot ranges
+       - Kelly plots have been updated better choose default plot ranges
        - Added ability to further customize Kelly plots through input options
-       - Added function to only use common sites between multiple projects (useful for comparing two different sized domains)
+       - Added function to only use common sites between multiple projects (useful for comparing data from two different sized domains)
 -	Updated batch scripts to incorporate new analysis scripts
--	Updated AQ_species_list.input file:
-       - to properly map species in the updated AMET observation files (specifically related to EC/OC)
-       - to include additional species
-       - to include CAPMON
--	Added option to rename an existing project
+-	Updated AQ_species_list.input file to:
+       - properly map species in the updated AMET observation files (specifically related to EC/OC)
+       - include additional species
+       - include CAPMON
+-	Added option to rename an existing project while retaining existing data
 -	Updated AMET-AQ observation files (see notes in [AMET_Release_Observation_Files_Readme.txt](https://github.com/USEPA/AMET/files/8655699/AMET_Release_Observation_Files_Readme.txt))
 -	Numerous minor bug fixes
 -	Some improvements made to error checking and reporting
