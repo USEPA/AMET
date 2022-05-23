@@ -1839,6 +1839,7 @@ files all\_script.input and AMET\_batch.input.
 | **inc\_counties**        | Option to include county borders on spatial plots:  “**y**” or “**n**”. |
 | **inc\_error**           | Option to include error on interactive plotly time series:  “**y**” or “**n**”. |
 | **inc\_FRM\_adj**        | Include FRM adjustment on stacked bar plots. Most users will set this to  “**n**”. Advanced users that calculated the FRM adjusted values for the CSN network may set this to  “**y**”. Default is  “**n**”. |
+| **inc\_kelly\_stats**    | Include numeric stat values on Kelly plots “**y**” or “**n**”. |
 | **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
 | **inc\_median\_lines**   | Include median lines on box plots: “**y**” or “**n**”. |
 | **inc\_median\_points**  | Include median points on box plots: “**y**” or “**n**”. |
@@ -1849,11 +1850,14 @@ files all\_script.input and AMET\_batch.input.
 | **inc\_whiskers**        | Include whiskers on the box plots: “**y**” or “**n**”. |
 | **map\_leg\_size**       | Map legend size factor. Default is 0.65. |
 | **max\_limit**           | Used in the skill scatter plot script to set the "limit" at which an exceedance occurs. The default is 70, the current standard for MDA8 O3 in the United States. |
+| **mb\_int**               | Set MB interval value on Kelly plots |
 | **mb\_max**               | Set MB scale maximum on Kelly plots |
 | **me\_max**               | Set ME scale maximum on Kelly plots |
 | **me\_min**               | Set ME scale minimum on Kelly plots |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
+| **nmb\_int**              | Set NMB interval value on Kelly plots |
 | **nmb\_max**              | Set NMB scale maximum on Kelly plots |
+| **nme\_int**              | Set NME interval value on Kelly plots |
 | **nme\_max**              | Set NME scale maximum on Kelly plots |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
 | **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation. This can be used to eliminate days when only a small number of sites are available. |
@@ -1868,6 +1872,7 @@ files all\_script.input and AMET\_batch.input.
 | **plot\_symbols**        | Specify, by R symbol number, the order of plot symbols to use. 0-square; 1-circle; 2-triangle point up; 3-plus; 4-cross; 5-diamond; 6-triangle point down; 7-square cross; 8-star; 9-diamond plus; 10-circle plus; 11-triangles up and down; 12-square plus; 13-circle cross; 14-square and triangle down; 15-filled square; 16-filled circle; 17-filled triangle point-up; 18-filled diamond; 19-solid circle; 20-bullet (smaller circle); 21-filled circle blue; 22-filled square blue; 23-filled diamond blue; 24-filled triangle point-up blue; 25- filled triangle point down blue |
 | **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
+| **png\_from\_html**      | Create png file from html file “**y**” or “**n**” |
 | **png\_res**             | Set resolution of output png files in DPI. Default is 300 dpi |
 | **quantile\_max**        | This is used to remove outliers when determining the plot scale to prevent very large scale values. Value between 0 and 1. Default is 0.999.  |
 | **quantile\_min**        | This is used to remove outliers when determining the plot scale to prevent very large scale values. Value between 0 and 1. Default is 0.001.  |
@@ -1875,6 +1880,7 @@ files all\_script.input and AMET\_batch.input.
 | **remove\_mean**         | Remove the observation/model mean statistics calculation, thereby just calculating the difference from the mean value |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
 | **remove\_other**        | Remove “PM other” category from stacked bar plot analysis. |
+| **rmse\_int**            | Set RMSE interval value on Kelly plots |
 | **rmse\_max**            | Set RMSE scale maximum on Kelly plots |
 | **rmse\_min**            | Set RMSE scale minimum on Kelly plots |
 | **rmse\_range\_max**     | **RMS Error** range max limit: “**NULL**” – script defined limit |
