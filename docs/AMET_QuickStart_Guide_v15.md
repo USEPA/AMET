@@ -1,14 +1,14 @@
-# Atmospheric Model Evaluation Tool (AMET) v1.4  
+# Atmospheric Model Evaluation Tool (AMET) v1.5  
 ## Quick Start Guide
 -----
-This guide provides a quick start to getting AMET version 1.4 installed and running on a Linux system.
-Additional details of the steps outlined here are available in the AMET [Installation Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Install_Guide_v14.md) and [User's Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Users_Guide_v14.md).
+This guide provides a quick start to getting AMET version 1.5 installed and running on a Linux system.
+Additional details of the steps outlined here are available in the AMET [Installation Guide](https://github.com/USEPA/AMET/blob/1.5/docs/AMET_Install_Guide_v15.md) and [User's Guide](https://github.com/USEPA/AMET/blob/1.5/docs/AMET_Users_Guide_v15.md).
 
 ## 1.  Install AMET source code and scripts using Git
 
 To clone the AMET installation directory to a Linux server, use the following command:
 
-``git clone -b master https://github.com/USEPA/AMET.git AMET_v14``
+``git clone -b master https://github.com/USEPA/AMET.git AMET_v15``
 
 ## 2.  Download AMET-MET Meteorology Test Case Data
 
@@ -17,14 +17,14 @@ CMAS: Community Modeling and Analysis System
 www.cmascenter.org
 The US EPA has funded the Institute for the Environment to establish a Community Modeling and Analysis System (CMAS). The CMAS is an approach to the development, application, and analysis of environmental models that leverages the community's complementary talents and resources in order to set new standards for quality in science and in the reliability of the application of the models.
 2.	Click the Software pulldown menu on the horizontal menu bar and choose AMET.
-3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4, platform, and compiler for your machine and click submit.
+3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.5, platform, and compiler for your machine and click submit.
 4.	Click "Download Datasets" to download MetExample Meterology datasets from WRF and MPAS.
 
 ## 3.  Download AMET-AQ CMAQ Test Case Data
 
 1.	Download Meterology test model output data by navigating to https://www.cmascenter.org/ and logging into the site using the "Log In" shortcut on the top horizontal menu.
 2.	Click the Software pulldown menu on the horizontal menu bar and choose AMET.
-3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.4, platform, and compiler for your machine and click submit.
+3.	Click DOWNLOAD on the right-hand side of the page and choose AMETv1.5, platform, and compiler for your machine and click submit.
 4.	Click "Download Datasets" to download AQExample datasets from CMAQ.
 
 ## 4. Check/Install Related Software
@@ -50,6 +50,8 @@ Tier 2 software includes scientific software utilities for accessing and storing
 * **[Network Common Data Form (netCDF)](http://www.unidata.ucar.edu/downloads/netcdf/index.jsp)**
 * **[Input/Output Applications Programming Interface (I/O API)](http://www.cmascenter.org/ioapi)**
 * **[MySQL](http://dev.mysql.com/downloads)**
+or
+* **[MariaDB](https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet)**
 * **[R](http://cran.us.r-project.org/index.html)**
 * **[WGRIB](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)**
 * **[Pandoc](https://pandoc.org/)**
@@ -59,7 +61,7 @@ Note that Pandoc is used by several AMET-AQ scripts to create self-contained htm
 After installing MySQL, [initialize a data directory for AMET](https://dev.mysql.com/doc/refman/5.7/en/data-directory-initialization.html) and then [start the server](https://dev.mysql.com/doc/refman/5.7/en/starting-server.html), and [connect to the server](https://dev.mysql.com/doc/mysql-getting-started/en/#mysql-getting-started-connecting), per the MySQL instructions.
 
 Once connected to the server, use the following commands to set up a single AMET user called
-**ametsecure** with full access to the database. In this example replace, "some_pass" with a password of your choice.  You'll use this password in the AMET configuration script to provide access to the database.
+**ametsecure** with full access to the database. In this example replace, "some_pass" with a password of your choice.  You will use this password in the AMET configuration script to provide access to the database.
 
 ```
 mysql> create user 'ametsecure'@'localhost' identified by 'some_pass';
