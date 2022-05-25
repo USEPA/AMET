@@ -51,7 +51,7 @@ This installation guide describes the steps
 involved in the AMET software installation process. This guide describes how to (1) download the AMET scripts and test data, (2) install the AMET source code and scripts, (3) configure AMET, and  (4) install pre-packaged data for testing the AMET installation. Notes are
 provided wherever appropriate pertaining to the installation on a Linux server.
 
-Refer to the AMET User's Guide for instructions on adding new data to the system, and configuring/creating plots.
+Refer to the AMET User Guide for instructions on adding new data to the system, and configuring/creating plots.
 
 <a id=Install2></a>
 ## 2.  Download AMET Software and Test Case Data
@@ -76,11 +76,11 @@ Note that this command assumes that git is installed on the Linux system.
 * Go to http://www.cmascenter.org and log in using your existing CMAS account. If you do not already have an account, you will need to create one.
 * Navigate to the CMAS Software Clearinghouse by selected Download -> Software from the drop-down menu at the top of the CMAS Center home page.
 * Use the Select Software to Download box, select AMET, and click on the “**Submit”** button.
-* Choose “AMET 1.4” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
+* Choose “AMET 1.5” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
 * The following items are available for download:
- * a link to the AMET 1.4 Installation Guide (this document)
- * a link to the AMET 1.4 User’s Guide
- * a link to the AMET 1.4 Quick Start Guide
+ * a link to the AMET 1.5 Installation Guide (this document)
+ * a link to the AMET 1.5 User’s Guide
+ * a link to the AMET 1.5 Quick Start Guide
  * a tarball of CMAQ model test data and air quality observations (**AMETv14_aqExample.tar.gz**)
  * a tarball of WRF model test data and meteorology observations (**AMETv14_metExample.tar.gz**)
 
@@ -140,7 +140,9 @@ Tier 2 software includes scientific software utilities for accessing and storing
 
 Example: (note the mysql directory was linked to the mariadb-VERSION-OS directory name that was obtained when following the above instructions.
 edit /path-to/ to specify the path to your install directory.
+
 cat ~/.my.cnf
+
 ```
 [mysqld]
 [server]
@@ -159,28 +161,27 @@ Note, if you are using a server, you will want to run the mysql database and cli
 Request an interactive queue for 2 hours, and then do the following steps:
 
     **Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files**
-    - /path-to/mysql/scripts/mysql_install_db ~/.my.cnf"
 
-    [client-server]
-    
-    socket=$HOME/mariadb/mysql.sock
+    `/path-to/mysql/scripts/mysql_install_db ~/.my.cnf`
 
-    
-    [mariadb]
-    
-    datadir=$HOME/mariadb
-    
-    EOF
     
 -	**Start MariaDB**
-    - /path-to/mysql/bin/mysqld_safe --defaults-file=~/.my.cnf &
+
+    `/path-to/mysql/bin/mysqld_safe --defaults-file=~/.my.cnf &`
+
 -	**Use the mysql command to connect to the server**
-    - /path-to/mysql/bin/mysql
+
+    ` /path-to/mysql/bin/mysql --defaults-file=~/.my.cnf `
+
 -	**Create an AMET user and grant that user access to**
-    - grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
+
+    `grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';`
+
     - replace 'some_pass' with an appropriate random password
+
 -	**Once done, you can shutdown the running database safely by running**
-    - /path-to/mysql/bin/mysqladmin shutdown
+
+    `/path-to/mysql/bin/mysqladmin shutdown`
 
 The instructions above create an AMET superuser of sorts, in that the ametsecure user has been granted all priviledges. AMET only requires database users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
 
@@ -202,82 +203,88 @@ The easiest way to install R packages, is through the R package manager.  Once R
 
 ```
 > sudo R
-> install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "Fields"))
+> install.packages(c("RMySQL", "date", "maps", "mapdata","plotrix", "fields"))
 ```
 
-If you do not have root access, you can load the packages as follows:
+If you do not have root access or are runnning on a shared system, you can load the packages as follows:
 
 Create a directory for your R packages
 
-> mkdir ~/Rlibs
+` mkdir ~/Rlibs`
 
 Load the R modulefile
 
-> module load r
+`module load r`
 
 Load the gcc compiler
 
-> module load gcc
+`module load gcc`
 
 Set the R library environment variable (R_LIBS) to include your R package directory
 
-> setenv R_LIBS ~/Rlibs
+`setenv R_LIBS ~/Rlibs`
 
 Use the install.packages function to install your packages
 
-> Rscript -e "install.packages('RMySQL', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+`Rscript -e "install.packages('RMySQL', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+Note, you can likely use a cran location nearest to you. (is there a place to search for cran sites nearest a location?)
 
 The R_LIBS environment variable will need to be set every time when logging in to the Campus Cluster if the user’s R package location is to be visible to an R session. The following:
 
+```
 if (! $?R_LIBS) then
   setenv R_LIBS  ~/Rlibs
   else
   echo "R_LIBS variable contains $R_LIBS, please verify this is correct"
 endif
+```
 
 Install additional packages using the same method.
 
-> Rscript -e "install.packages('date', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+`Rscript -e "install.packages('date', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
-> Rscript -e "install.packages('maps', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+`Rscript -e "install.packages('maps', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
-> Rscript -e "install.packages('mapdata', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+`Rscript -e "install.packages('mapdata', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
-> Rscript -e "install.packages('stats', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
-I get the following warning
+`Rscript -e "install.packages('stats', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+Received the following warning
 Warning message:
 package ‘stats’ is a base package, and should not be updated 
+(likely need to take this out)
 
-> Rscript -e "install.packages('plotrix', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+`Rscript -e "install.packages('plotrix', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
-> Rscript -e "install.packages('fields', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+`Rscript -e "install.packages('fields', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
-can be added to a user’s ~/.cshrc file to remove the need to set the R_LIBS environment variable with every login session to the Campus Cluster.
 
-Additional instructions for installing R packages on a campus cluster are available here: https://campuscluster.illinois.edu/resources/docs/user-guide/r/
+Additional instructions for [installing R packages on a campus cluster](https://campuscluster.illinois.edu/resources/docs/user-guide/r/)
 
 Install Wgrib
-Following these instructions: https://rda.ucar.edu/datasets/ds083.2/software/wgrib_install_guide.txt
+[Follow these instructions to install wgrib](https://rda.ucar.edu/datasets/ds083.2/software/wgrib_install_guide.txt)
 #### [WGRIB](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
 
 *Note:* The tarball from the above link does not contain its own directory, so we recommend that you create a **wgrib** directory before untarring.
-mkdir /to_path/WGRIB
+
+`mkdir /to_path/WGRIB`
 
 Download the wgrib.tar file
 
-wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar
+`wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar`
 
 Untar
 
-tar -cvf wgrib.tar
+`tar -cvf wgrib.tar`
 
 Then make sure the gcc compiler is loaded
 
-module load gcc
+`module load gcc`
 
 Then run make
 
-> make
+`make`
 
 You will have a wget executable
 
