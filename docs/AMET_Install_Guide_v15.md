@@ -133,14 +133,33 @@ Tier 2 software includes scientific software utilities for accessing and storing
 
 ### Installation of MariaDB from tarball
 
--	**Download the most recent MariaDB binary distribution from this URL to the user's home directory**
+-	**Download the most recent MariaDB binary distribution from this URL to any directory as non-root user
     - https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
--	**Extract the tar.gz in the users home directory**
-    - tar -zxf mariadb*-x86_64.tar.gz
--	**Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files**
-    - $HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
--	**Create a my.cnf file in $HOME**
-    - /bin/cat << EOF > $HOME/.my.cnf 
+-	**[Follow these instructions to install as non-root user to any directory](https://mariadb.com/kb/en/installing-mariadb-binary-tarballs/#installing-mariadb-as-not-root-in-any-directory)
+    -  ** edit the ~/.my.cnf file to specify the basedir and  to your install directory
+
+Example: (note the mysql directory was linked to the mariadb-VERSION-OS directory name that was obtained when following the above instructions.
+edit /path-to/ to specify the path to your install directory.
+cat ~/.my.cnf
+```
+[mysqld]
+[server]
+basedir=/path-to/mysql
+datadir=/path-to/mysql/data
+socket=/path-to/mysql/mysql.sock
+port=3307
+lc_messages_dir=/path-to/mysql/share/english
+lc_messages = en_US
+[client]
+socket=/path-to/mysql/mysql.sock
+port=3307
+```
+
+Note, if you are using a server, you will want to run the mysql database and client on a compute node, rather than a login node.
+Request an interactive queue for 2 hours, and then do the following steps:
+
+    **Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files**
+    - /path-to/mysql/scripts/mysql_install_db ~/.my.cnf"
 
     [client-server]
     
@@ -154,14 +173,14 @@ Tier 2 software includes scientific software utilities for accessing and storing
     EOF
     
 -	**Start MariaDB**
-    - $HOME/mariadb*x86_64/bin/mysqld_safe --defaults-file=$HOME/.my.cnf &
+    - /path-to/mysql/bin/mysqld_safe --defaults-file=~/.my.cnf &
 -	**Use the mysql command to connect to the server**
-    - $HOME/mariadb*x86_64/bin/mysql
+    - /path-to/mysql/bin/mysql
 -	**Create an AMET user and grant that user access to**
     - grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
     - replace 'some_pass' with an appropriate random password
 -	**Once done, you can shutdown the running database safely by running**
-    - $HOME/mariadb*x86_64/bin/mysqladmin shutdown
+    - /path-to/mysql/bin/mysqladmin shutdown
 
 The instructions above create an AMET superuser of sorts, in that the ametsecure user has been granted all priviledges. AMET only requires database users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
 
@@ -186,10 +205,88 @@ The easiest way to install R packages, is through the R package manager.  Once R
 > install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "Fields"))
 ```
 
+If you do not have root access, you can load the packages as follows:
 
+Create a directory for your R packages
+
+> mkdir ~/Rlibs
+
+Load the R modulefile
+
+> module load r
+
+Load the gcc compiler
+
+> module load gcc
+
+Set the R library environment variable (R_LIBS) to include your R package directory
+
+> setenv R_LIBS ~/Rlibs
+
+Use the install.packages function to install your packages
+
+> Rscript -e "install.packages('RMySQL', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+
+The R_LIBS environment variable will need to be set every time when logging in to the Campus Cluster if the user’s R package location is to be visible to an R session. The following:
+
+if (! $?R_LIBS) then
+  setenv R_LIBS  ~/Rlibs
+  else
+  echo "R_LIBS variable contains $R_LIBS, please verify this is correct"
+endif
+
+Install additional packages using the same method.
+
+> Rscript -e "install.packages('date', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+
+> Rscript -e "install.packages('maps', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+
+> Rscript -e "install.packages('mapdata', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+
+> Rscript -e "install.packages('stats', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+I get the following warning
+Warning message:
+package ‘stats’ is a base package, and should not be updated 
+
+> Rscript -e "install.packages('plotrix', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+
+> Rscript -e "install.packages('fields', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"
+
+can be added to a user’s ~/.cshrc file to remove the need to set the R_LIBS environment variable with every login session to the Campus Cluster.
+
+Additional instructions for installing R packages on a campus cluster are available here: https://campuscluster.illinois.edu/resources/docs/user-guide/r/
+
+Install Wgrib
+Following these instructions: https://rda.ucar.edu/datasets/ds083.2/software/wgrib_install_guide.txt
 #### [WGRIB](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
 
 *Note:* The tarball from the above link does not contain its own directory, so we recommend that you create a **wgrib** directory before untarring.
+mkdir /to_path/WGRIB
+
+Download the wgrib.tar file
+
+wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar
+
+Untar
+
+tar -cvf wgrib.tar
+
+Then make sure the gcc compiler is loaded
+
+module load gcc
+
+Then run make
+
+> make
+
+You will have a wget executable
+
+Add the path to this directory to your .csrhc
+
+Example:
+
+set path = ( $path /to_path/WGRIB )
+
 
 ### Install AMET Source Code and Tier 3 Software
 
