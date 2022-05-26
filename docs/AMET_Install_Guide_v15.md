@@ -420,6 +420,19 @@ wrfout_subset_2016-07-31_00:00:00
 
 ```
 
+The $AMETBASE/MET/metExample_mpas directory contains the following files.
+
+```
+history.subset.2016-07-01.nc
+..
+..
+history.subset.2016-07-27.nc
+history.subset.2016-07-28.nc
+history.subset.2016-07-29.nc
+history.subset.2016-07-30.nc
+history.subset.2016-07-31.nc
+```
+
 Meteorology observational data are installed under **$AMETBASE/obs/MET**.
 
 #### Air quality data
