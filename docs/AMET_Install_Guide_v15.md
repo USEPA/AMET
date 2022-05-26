@@ -402,17 +402,21 @@ Meteorology observational data are installed under **$AMETBASE/obs/MET**.
 #### Air quality data
 (35 GB uncompressed; 30 GB compressed)
 
-Untar the **AMETv13_aqExample.tar.gz** file in the directory **$AMETBASE**. For CMAQ, we have provided an **ACONC** and a **WETDEP** output file from a CMAQ simulation to demonstrate analysis capabilities involving the AERO6 suite of species. The model output files are netCDF outputs from the **combine** postprocessing step. The  temporal range is from July 1 2011 00:00 UTC to July 31 2011 00:00 UTC  with a spatial domain covering the continental U.S at 12-km resolution. This archive also contains surface air quality observations for 2011 and sample AMET analysis plots.
+Download the Air Quality Data from the Google Drive > CMAS Data Warehouse > AMET > v1.5_example. For CMAQ, we have provided an **ACONC** and a **WETDEP** output file from a CMAQ simulation to demonstrate analysis capabilities involving the AERO6 suite of species. The model output files are netCDF outputs from the **combine** postprocessing step. The  temporal range is from July 1 2011 00:00 UTC to July 31 2011 00:00 UTC  with a spatial domain covering the continental U.S at 12-km resolution. This archive also contains surface air quality observations for 2011 and sample AMET analysis plots.
 
-After you untar the tarfiles above, the directory **$AMETBASE/model\_data/AQ/aqExample** will contain the following files.
+After you download the files, the directory **$AMETBASE/model\_data/AQ/aqExample** will contain the following files.
 
-```
--rw-r----- 1 user user 67800289168 Mar 15 11:34 CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.aconc.07
--rw-r----- 1 user user 46561648232 Mar 15 11:48 CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.dep.07
+`ls -lht`
 
 ```
+ 34G Nov 20  2018 COMBINE_ACONC_CMAQv521_AMET_201607.nc
+ 6.5G Nov 20  2018 COMBINE_DEP_CMAQv521_AMET_201607.nc
 
-Air quality observational data for the following networks are installed under **$AMETBASE/obs/AQ**:
+```
+Download the Air Quality Observational data from the Google Drive CMAS Data Warehouse > AMET > v1.5_example > 2000_2020_NAmerican_AQ_Obs_Data
+for 2016, download the AMET_obsdata_2016.tar.gz file and extract to the $AMETBASE/obs/AQ/All_Years directory.
+
+Air quality observational data for the following networks are installed under **$AMETBASE/obs/AQ/All_Years :
 
 *North America*
 * Air Quality System (AQS) network
