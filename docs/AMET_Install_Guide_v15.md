@@ -310,17 +310,18 @@ The AMET top-level installation directory will include the following subdirector
 * **R_db_code** - R scripts for loading data into the MySQL database
 * **scripts_analysis** - AMET analysis scripts
 * **scripts_db** - scripts for populating the AMET database
-* **src** - source code for AMET Tier 3 software
-* **web_interface** - templates for a PHP web interface to AMET
+* **tools_src** - source code for AMET Tier 3 software
+* **AMETJavaGUI** - templates for a Java web interface to AMET
+* **docs** - AMET User Guide and Install Guide
 
-In the **src** directory there are four Fortran programs for extracting and pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
+In the **tools_src** directory there are four Fortran programs for extracting and pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
 
 * **combine** - combine utility relies on a mechanism-specific "Species Definition" file that prescribes how model output variables should be combined to become comparable to different measured or observed gas, particle and deposition species.
 * **bldoverlay** - creates a PAVE overlay file for creating observation overlay plots
 * **sitecmp** - pairs hourly and daily observation and model data for many of the networks compatible with AMET
 * **sitecmp_dailyo3** - calculates daily maximum 1-hour and 8-hour ozone pairs for analysis with AMET
 
-To compile these programs, edit the makefile file that is located in each tool **src** directory.  Specify the compiler and the location of the local I/O API and netCDF installation directories.  Use the following commands to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
+To compile these programs, edit the makefile file that is located in each tool **tools_src** directory.  Specify the compiler and the location of the local I/O API and netCDF installation directories.  Use the following commands to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
 
 ```
 > cd $AMETBASE/tools_src
