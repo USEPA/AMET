@@ -338,6 +338,30 @@ edit the sitecmp_dailyo3 Makefile
 > make |& tee make.log
 ```
 
+Note, the combine script directory contains a script called linkem that needs to be edited to point to your CMAQv5.3.3 REPO directory to obtain the species definition files.
+
+```
+cd $AMETBASE/tools_src/combine/scripts/spec_def_files
+vi linkem.csh
+```
+
+Modify the set src = line to point to the CMAQv5.3.3 Repository.
+
+```
+set src = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/build/CMAQ_REPO_v533/CCTM/src/MECHS
+
+modify to the path for your CMAQ installation directory
+
+set src = /path_to/CMAQ_REPO/CCTM/src/MECHS
+```
+
+Then run the linkem.csh script to create links to the species definition files.
+
+```
+./linkem.csh
+```
+
+
 <a id=Install4></a>
 ## 4. Configure AMET
 
