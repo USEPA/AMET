@@ -398,7 +398,7 @@ In this step, you will review the previously downloaded model outputs and observ
 #### Meteorological data
 (25 GB uncompressed, 16 GB compressed)
 
-The $AMETBASE/MET/metExample_wrf contains 31 days’ worth of **WRF** and the $AMETBASE/MET/metExample_mpas contians **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
+The $AMETBASE/MET/metExample_wrf contains 31 days’ worth of **WRF**, $AMETBASE/MET/metExample_mcip contains 31 days worth of **MCIP**, and the $AMETBASE/MET/metExample_mpas contians **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
 
 The directory **$AMETBASE/model\_data/MET/metExample_wrf** will contain the following files.
 
@@ -418,6 +418,13 @@ wrfout_subset_2016-07-12_00:00:00
 ..
 ..
 wrfout_subset_2016-07-31_00:00:00
+
+```
+
+The directory **$AMETBASE/model\_data/MET/metExample_mcip** will contain the following files.
+
+``
+list of files
 
 ```
 
