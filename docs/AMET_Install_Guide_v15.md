@@ -313,7 +313,7 @@ The AMET top-level installation directory will include the following subdirector
 * **src** - source code for AMET Tier 3 software
 * **web_interface** - templates for a PHP web interface to AMET
 
-In the **src** directory there are three Fortran programs for pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
+In the **src** directory there are four Fortran programs for extracting and pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
 
 * **combine** - combine utility relies on a mechanism-specific "Species Definition" file that prescribes how model output variables should be combined to become comparable to different measured or observed gas, particle and deposition species.
 * **bldoverlay** - creates a PAVE overlay file for creating observation overlay plots
@@ -361,6 +361,8 @@ Then run the linkem.csh script to create links to the species definition files.
 ./linkem.csh
 ```
 
+Verify that the links are all valid, and point to the correct files.
+
 
 <a id=Install4></a>
 ## 4. Configure AMET
@@ -385,39 +387,36 @@ Additional AMET configuration is handled in the database loading and plot creati
 <a id=Install5></a>
 ## 5. Install Test Case Data
 
-The final step in the installation process is to install the test case
-data sets. These include sample model output data and observational
+The final step in the installation process is to install the test case data sets. These include sample model output data and observational
 data.
 
 ### Install sample data
 
-In this step, you will untar the previously downloaded model outputs and observational data
-from Section 2 in the corresponding directories indicated below.
+In this step, you will review the previously downloaded model outputs and observational data downloaded from Section 2 in the corresponding directories indicated below.
 
 #### Meteorological data
 (25 GB uncompressed, 16 GB compressed)
 
-Untar the file **AMETv13_metExample.tar.gz** in the directory **$AMETBASE**. This tarball contains 31 days’ worth of **WRF** and **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
+The $AMETBASE/MET/metExample_wrf contains 31 days’ worth of **WRF** and the $AMETBASE/MET/metExample_mpas contians **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
 
-After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET/metExample** will contain the following files.
+The directory **$AMETBASE/model\_data/MET/metExample_wrf** will contain the following files.
 
 ```
-history.2013-07-01.luf.nc  history.2013-07-17.luf.nc   wrfout.surface.20110702.nc  wrfout.surface.20110718.nc
-history.2013-07-02.luf.nc  history.2013-07-18.luf.nc   wrfout.surface.20110703.nc  wrfout.surface.20110719.nc
-history.2013-07-03.luf.nc  history.2013-07-19.luf.nc   wrfout.surface.20110704.nc  wrfout.surface.20110720.nc
-history.2013-07-04.luf.nc  history.2013-07-20.luf.nc   wrfout.surface.20110705.nc  wrfout.surface.20110721.nc
-history.2013-07-05.luf.nc  history.2013-07-21.luf.nc   wrfout.surface.20110706.nc  wrfout.surface.20110722.nc
-history.2013-07-06.luf.nc  history.2013-07-22.luf.nc   wrfout.surface.20110707.nc  wrfout.surface.20110723.nc
-history.2013-07-07.luf.nc  history.2013-07-23.luf.nc   wrfout.surface.20110708.nc  wrfout.surface.20110724.nc
-history.2013-07-08.luf.nc  history.2013-07-24.luf.nc   wrfout.surface.20110709.nc  wrfout.surface.20110725.nc
-history.2013-07-09.luf.nc  history.2013-07-25.luf.nc   wrfout.surface.20110710.nc  wrfout.surface.20110726.nc
-history.2013-07-10.luf.nc  history.2013-07-26.luf.nc   wrfout.surface.20110711.nc  wrfout.surface.20110727.nc
-history.2013-07-11.luf.nc  history.2013-07-27.luf.nc   wrfout.surface.20110712.nc  wrfout.surface.20110728.nc
-history.2013-07-12.luf.nc  history.2013-07-28.luf.nc   wrfout.surface.20110713.nc  wrfout.surface.20110729.nc
-history.2013-07-13.luf.nc  history.2013-07-29.luf.nc   wrfout.surface.20110714.nc  wrfout.surface.20110730.nc
-history.2013-07-14.luf.nc  history.2013-07-30.luf.nc   wrfout.surface.20110715.nc  wrfout.surface.20110731.nc
-history.2013-07-15.luf.nc  history.2013-07-31.luf.nc   wrfout.surface.20110716.nc
-history.2013-07-16.luf.nc  wrfout.surface.20110701.nc  wrfout.surface.20110717.nc
+wrfout_subset_2016-07-01_00:00:00
+wrfout_subset_2016-07-02_00:00:00
+wrfout_subset_2016-07-03_00:00:00
+wrfout_subset_2016-07-04_00:00:00
+wrfout_subset_2016-07-05_00:00:00
+wrfout_subset_2016-07-06_00:00:00
+wrfout_subset_2016-07-07_00:00:00
+wrfout_subset_2016-07-08_00:00:00
+wrfout_subset_2016-07-09_00:00:00
+wrfout_subset_2016-07-10_00:00:00
+wrfout_subset_2016-07-11_00:00:00
+wrfout_subset_2016-07-12_00:00:00
+..
+..
+wrfout_subset_2016-07-31_00:00:00
 
 ```
 
