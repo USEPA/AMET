@@ -10,29 +10,40 @@
 
  EXEC = sitecmp_dailyo3_v53.exe
 
- FC = mpiifort
+ FC = mpifort
  CC = cc
+ LIB = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/build
 
- LIB = /home/kappel/CMAQ_Code/PROJECTS/CMAQv53r3/lib/x86_64/intel18.0
- include_path = -I $(LIB)/ioapi/lib \
-                -I $(LIB)/ioapi/include_files \
+ include_path = -I $(LIB)/ioapi-3.2/Linux2_x86_64gfort\
+                -I $(LIB)/ioapi-3.2/ioapi/fixed_src \
                 -I $(LIB)/netcdf/include \
                 -I $(LIB)/netcdff/include
 
- WARN = 
- FSTD = -O3 -fno-alias -mp1 -fp-model source -ftz -simd -align all -xHost -vec-guard-write -unroll-aggressive
- DBG  = -O0 -g -check bounds -check uninit -fpe0 -fno-alias -ftrapuv -traceback
+ WARN =
+  ## Intel compiler flags
+     # FSTD = -O3 -fno-alias -mp1 -fp-model source -ftz -simd -align all -xHost -vec-guard-write -unroll-aggressive
+  ## GCC compiler flags
+       FSTD =  -O3 -funroll-loops -finit-character=32 -Wtabs -Wsurprising -march=native -ftree-vectorize  -ftree-loop-if-convert -finline-limit=512
+       DBG  = -O0 -g -check bounds -check uninit -fpe0 -fno-alias -ftrapuv -traceback
 
  ifneq (,$(filter $(debug), TRUE true True T ))
      DEBUG = TRUE
  endif
 
  ifneq (,$(filter $(DEBUG), TRUE true ))
-     f_FLAGS   = -fixed -132 $(DBG) $(include_path)
-     f90_FLAGS = -free $(DBG) $(include_path)
+    ## Intel compiler flags
+       # f_FLAGS   = -fixed -132 $(DBG) $(include_path)
+       # f90_FLAGS = -free $(DBG) $(include_path)
+    ## GCC compiler flags
+         f_FLAGS   = -ffixed-form -ffixed-line-length-132 -funroll-loops -finit-character=32 $(DBG) $(include_path)
+         f90_FLAGS = -ffree-form -ffree-line-length-none -funroll-loops -finit-character=32 $(DBG) $(include_path)
  else
-     f_FLAGS   = -fixed -132 $(FSTD) $(include_path)
-     f90_FLAGS = -free $(FSTD) $(include_path)
+    ## Intel Compiler flags
+       # f_FLAGS   = -fixed -132 $(FSTD) $(include_path)
+       # f90_FLAGS = -free $(FSTD) $(include_path)
+    ## GCC compiler flags
+         f_FLAGS   = -ffixed-form -ffixed-line-length-132 -funroll-loops -finit-character=32 $(FSTD) $(include_path)
+         f90_FLAGS = -ffree-form -ffree-line-length-none -funroll-loops -finit-character=32 $(FSTD) $(include_path)
  endif
 
  F_FLAGS   = $(f_FLAGS)
@@ -40,7 +51,7 @@
  C_FLAGS   = -I.
 
  LINKER     = $(FC)
- LINK_FLAGS = 
+ LINK_FLAGS =  -fopenmp  # if I/O API was built supporting openmp to avoid undefined reference to `GOMP_critical_name_end' link error
 
  CPP = $(FC)
  cpp_flags = 
@@ -51,7 +62,7 @@
      CPP_FLAGS   = $(cpp_flags)
  endif
 
- IOAPI  = -L$(LIB)/ioapi/lib -lioapi
+ IOAPI  = -L$(LIB)/ioapi-3.2/Linux2_x86_64gfort -lioapi
  NETCDF = -L$(LIB)/netcdff/lib -lnetcdff -L$(LIB)/netcdf/lib -lnetcdf
  LIBRARIES = $(IOAPI) $(NETCDF)
 

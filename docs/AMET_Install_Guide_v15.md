@@ -319,22 +319,22 @@ In the **src** directory there are three Fortran programs for pairing model and 
 * **sitecmp** - pairs hourly and daily observation and model data for many of the networks compatible with AMET
 * **sitecmp_dailyo3** - calculates daily maximum 1-hour and 8-hour ozone pairs for analysis with AMET
 
-To compile these programs, edit the makefile file that is located in each tool **src** directory.  Point the makefile to the location of the local I/O API and netCDF installation directories.  Use the following commands to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
+To compile these programs, edit the makefile file that is located in each tool **src** directory.  Specify the compiler and the location of the local I/O API and netCDF installation directories.  Use the following commands to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
 
 ```
 > cd $AMETBASE/tools_src
 cd combine/src
 edit the combine Makefile
-> Make
+> make |& tee make.log
 > cd bldoverlay/src
 edit the bldoverlay Makefile
-> Make
+> make |& tee make.log
 > cd ../sitecmp/scr
 edit the sitecmp Makefile
-> Make
+> make |& make.log
 > cd ../sitecmp_dailyo3/scr
 edit the sitecmp_dailyo3 Makefile
-> Make
+> make |& tee make.log
 ```
 
 <a id=Install4></a>
@@ -346,15 +346,15 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 * `EXEC_sitex_daily_config` - sitecmp_dailyo3 executable directory path
 * `EXEC_sitex_config` - sitecmp executable directory path
 * `obs_data_dir` - observational data directory path; typically $amet_base/obs
-* `mysql_server` - IP Address or name of MySQL server used for AMET
-* `amet_login` - login ID to the AMET MySQL database server
-* `amet_pass`- password for the AMET MySQL database server
+* `mysql_server` - IP Address or name of MySQL/MariaDB server used for AMET
+* `amet_login` - login ID to the AMET MySQL/MariaDB database server
+* `amet_pass`- password for the AMET MySQL/MariaDB database server
 * `maxrec` - the maximum number of records allowed in a single MySQL query
 * `Bldoverlay_exe_config` - bldoverlay executable directory path
 
-*Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
+*Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL/MariaDB user that has read-write access to the database.*
 
-Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **amet_login** and **amet_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
+Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **amet_login** and **amet_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL/MariaDB.
 
 Additional AMET configuration is handled in the database loading and plot creation scripts. See the AMET 1.3 User’s Guide on configuring AMET for additional details.
 
