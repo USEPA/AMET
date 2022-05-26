@@ -345,11 +345,10 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 * `amet_base` - base AMET installation directory path
 * `EXEC_sitex_daily_config` - sitecmp_dailyo3 executable directory path
 * `EXEC_sitex_config` - sitecmp executable directory path
-* `obs_data_dir` - observational data directory path; typically $amet_base/obs
 * `mysql_server` - IP Address or name of MySQL/MariaDB server used for AMET
 * `amet_login` - login ID to the AMET MySQL/MariaDB database server
 * `amet_pass`- password for the AMET MySQL/MariaDB database server
-* `maxrec` - the maximum number of records allowed in a single MySQL query
+* `maxrec` - the maximum number of records allowed in a single MySQL query (optional)
 * `Bldoverlay_exe_config` - bldoverlay executable directory path
 
 *Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL/MariaDB user that has read-write access to the database.*
