@@ -315,6 +315,7 @@ The AMET top-level installation directory will include the following subdirector
 
 In the **src** directory there are three Fortran programs for pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
 
+* **combine** - combine utility relies on a mechanism-specific "Species Definition" file that prescribes how model output variables should be combined to become comparable to different measured or observed gas, particle and deposition species.
 * **bldoverlay** - creates a PAVE overlay file for creating observation overlay plots
 * **sitecmp** - pairs hourly and daily observation and model data for many of the networks compatible with AMET
 * **sitecmp_dailyo3** - calculates daily maximum 1-hour and 8-hour ozone pairs for analysis with AMET
