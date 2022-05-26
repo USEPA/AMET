@@ -148,7 +148,10 @@ Table 2-1 shows the directories contained in the $AMETBASE directory.
 | **R\_db\_code**       | R scripts used for user and database setup.                           |
 | **scripts\_analysis** | Project-specific wrapper scripts and inputs for analysis (contains project-specific subdirectories).|
 | **scripts\_db**       | Project-specific wrapper scripts and inputs for database population (contains project-specific subdirectories). |
-| **src**               | Source code for third-party software.                                 |
+| **tools\_src**        | Source code for third-party software.                                 |
+| **docs**              | User Guide and Installation Guide                                     |
+| **AMETJavaGUI**       | templates for a Java web interface to AMET                            |
+
 
 
 <a id="Configuration"></a>
