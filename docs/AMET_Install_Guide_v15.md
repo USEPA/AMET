@@ -81,8 +81,8 @@ Note that this command assumes that git is installed on the Linux system.
  * a link to the AMET 1.5 Installation Guide (this document)
  * a link to the AMET 1.5 User’s Guide
  * a link to the AMET 1.5 Quick Start Guide
- * a tarball of CMAQ model test data and air quality observations (**AMETv14_aqExample.tar.gz**)
- * a tarball of WRF model test data and meteorology observations (**AMETv14_metExample.tar.gz**)
+ * Download the CMAQ model test data and air quality observation from the Google Drive. Note, the example CMAQ output files contain all of the species needed by AMET-AQ, but are a subset of the full CMAQ output files. The files contain hourly data for the entire month of July 2017. They contain only the species that AMET needs, and only layer one.
+ * Download the WRF and MPAS model test data and meteorology observations from the Google drive. There are 31 files for each set of data, one for each day in July 2016. The example meteorology output files from WRF and MPAS contain all of the species needed by AMET-MET, but are a subset of the full WRF or MPAS output files.
 
 
 <a id=Install3></a>
