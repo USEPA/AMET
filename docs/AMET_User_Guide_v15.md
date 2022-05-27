@@ -298,7 +298,7 @@ The observational datasets
 have been preprocessed and reformatted (in some instances from their original
 sources) for use with AMET. The temporal range is network dependent.
 The monitoring station locations are provided by a series of .csv files
-under the subdirectory $AMETBASE/obs/AQ/site\_files. A brief synopsis of
+under the subdirectory $AMETBASE/obs/AQ/site_meta_files. A brief synopsis of
 each network, along with the steps taken to create these data for AMET,
 is given below.
 
