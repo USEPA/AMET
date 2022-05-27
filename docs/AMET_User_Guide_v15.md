@@ -180,9 +180,9 @@ common variables to change are shown in Table 3-1.
 | **amet\_login**         | Login for the AMET MySQL user. For the purposes of this tutorial, we assume **amet\_login** is set to **ametsecure**. This MySQL user will be created later when you are working through Section 5. To provide additional security, AMET is shipped with permissions that allow this file to be read only by the user. |
 | **amet\_pass**          | Password for **ametsecure**, or your **login** (if you changed it from "**ametsecure**"). |
 | **maxrec**              | Maximum records to retrieve for any MySQL query (-1 for no limit). Be default, **maxrec** is set to -1. |
-| **EXEC_sitex**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
-| **EXEC_sitex_daily**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
-| **bldoverlay\_exe**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_config**          | Full path to the **site_compare** executable. Only required if using the AQ side of AMET. |
+| **EXEC_sitex_daily_config**    | Full path to the **site_compare_daily** executable. Only required if using the AQ side of AMET. |
+| **bldoverlay_exe_config**     | Full path to the **bldoverlay** executable. Only required if using the AQ side of AMET. |
 
 The amet_login and amet_pass variables are MySQL database credentials. The MySQL credentials specified here are always used in the analysis scripts that come with AMET, which require only database read access to function. Therefore, the MySQL user specified here can be limited to read access only. However, these credentials can also be setup to be used by the database loading scripts. For those scripts to work properly, the MySQL user specified must have permission to create databases and tables, in addition to read access. If the setting in the database loading scripts is to read the amet_login and amet_pass variables from the amet-config.R file, those credentials must be for a user with full MySQL permissions.
 
