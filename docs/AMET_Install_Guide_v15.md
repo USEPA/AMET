@@ -175,11 +175,6 @@ Request an interactive queue for 2 hours, and then do the following steps:
 
 -	**Create an AMET user and grant that user access to**
 
-    `grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';`
-
-    - replace 'some_pass' with an appropriate random password
- 
-or
     `grant all privileges on *.* to 'ametsecure'@'localhost' with grant option;`
 
 Output:
