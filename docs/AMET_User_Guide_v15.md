@@ -200,7 +200,7 @@ The AMET release includes example datasets of both model and observational data.
 
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into several example projects:
-"metExample_wrf", "metExample_mpas", "metExample_mcip" and "aqExample". On the MET side, there is a 1-month WRF simulation with MCIP 
+"metExample_wrf", "metExample_mpas", "metExample_mcip" and "aqExample". On the MET side, there is a 1-month WRF simulation, 1-month MCIP output,
 and 1-month MPAS simulation provided for July 2016. We included the same period 
 in case users wanted to compare the two models. These are model output subsets with only the 
 variables needed for the evaluation scripts. Model outputs are availiable for download via
@@ -230,7 +230,6 @@ The MCIP data consist of 1 GRIDCRO2D, 31 METCRO2D and 31 METCRO3D output files i
 > METCRO3D_160701.nc
 > ...
 > METCRO3D_160731.nc
-
 
 The MPAS data consist of 31 MPAS output files in netCDF format:
 
