@@ -739,7 +739,7 @@ MET_matching_surface.R that actually populates the AMET database with the projec
 Verify that the variable AMETBASE is set to the correct AMET project. The example script has detailed instructions on all variables that are passed to R. Modify according to your setup and run the script by typing
 
 ```
-./matching_surface.csh >& log.populate.sfc
+./matching_surface.csh |& tee log.populate.sfc
 ```
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background.
 
@@ -755,18 +755,18 @@ appropriate table with the model-obs pairs for each variable. Finally, the scrip
 with summary information for the wrfExample project like project creation date, last matching execution, period of record and description of project.
 
 ```
-./matching_radiation.csh >& log.populate.radiation
+./matching_radiation.csh |& tee log.populate.radiation
 ```
 This C-shell script is executed the same as the surface script above. It is used to compare the model
 with Baseline Surface Radiation Network (BSRN) or SURFRAD shortwave radiation measurements. The setting RADIATION_DSET should be set to bsrn or surfrad. BSRN has a lag period of months to a year for data curation, but SURFRAD is real-time. BSRN is global and SURFRAD is US only. When executed, the model-observation
 pairs are inserted in the wrfExample_wrf_surface table. The script will automatically download the BSRN or SURFRAD observations from the FTP site (RAD_SERVER) in the 
-matching_radiation.csh script. Users should contact the BSRN organization and request a access, which will
-follow with a login and password that should be specified (RAD_LOGIN and RAD_PASS). SURFRAD uses anonymous FTP + a users email for their internal tracking. BSRN files are
+matching_radiation.csh script. Users should contact the BSRN organization and request access, which will
+follow with a login and password that should be specified (RAD_LOGIN and RAD_PASS) https://bsrn.awi.de/data/data-retrieval-via-ftp/ . SURFRAD uses anonymous FTP + a users email for their internal tracking. BSRN files are
 monthly text files with 1 minute data. It takes a few minutes of processing to read these file, but
 after, the script runs very fast. This is a new option in AMETv1.4. AMETv1.5 adds the SURFRAD capability. These data are hourly like MADIS and seperate files for each site, but autoFTP coordinates this more complex retrieval so this option is advised. 
 
 ```
-./matching_raob.csh >& log.populate.raob
+./matching_raob.csh |& tee log.populate.raob
 ```
 This C-shell is executed like the ones above. It will create a new table wrfExample_wrf_raob specifically
 for profile observations. Like the surface meteorology, this script will download MADIS rawinsonde observations
@@ -795,12 +795,12 @@ the aqProject_post_only.csh and verify that the variable AMETBASE is set to the 
 project.   Run the script by typing
 
 ```
-./aqProject_post_only.csh >& log.populate
+./aqProject_post_only.csh |& tee log.populate
 ```
 
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background. By default, the script is setup to prompt you for the MySQL login/password.
 
-This C-shell script will create the AMET database (if it doesn't already
+This C-shell script will create the AMET database (if it does not already
 exist), three required AQ database tables (i.e. project_units, site_metadata and
 aq_project_log), and one empty project table in the AMET database: aqExample.
 After creating this table, the script then begins the matching process. This
