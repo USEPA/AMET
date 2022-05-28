@@ -1104,7 +1104,7 @@ analyses with AMET.
 Use the following command to navigate to the met analysis example project directory:
 
 ```
-cd $AMETBASE/scripts_analysis/metExamplemcip
+cd $AMETBASE/scripts_analysis/metExample_wrf
 or
 cd $AMETBASE/scripts_analysis/metExample_mpas
 or
