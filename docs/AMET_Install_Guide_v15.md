@@ -262,6 +262,8 @@ package ‘stats’ is a base package, and should not be updated
 
 `Rscript -e "install.packages('fields', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
+`Rscript -e "install.packages('akima', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
 
 Additional instructions for [installing R packages on a campus cluster](https://campuscluster.illinois.edu/resources/docs/user-guide/r/)
 
