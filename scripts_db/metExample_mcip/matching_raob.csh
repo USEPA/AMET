@@ -3,12 +3,12 @@
 #                          USER CONFIGURATION
 
 # Main AMET directory location. Can be defined explicity here or in user setenv for universal use.
-setenv AMETBASE   /home/user/AMET
+setenv AMETBASE   /proj/ie/proj/CMAS/AMET/AMET_v15
 
 # Define Database and Password from argument input
-setenv MYSQL_LOGIN   my_login_id
-setenv AMET_DATABASE user_database
-setenv MYSQL_SERVER  mysql.server.gov
+setenv MYSQL_LOGIN   ametsecure
+setenv AMET_DATABASE amet
+setenv MYSQL_SERVER  localhost
 setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
 # Root directory of MADIS NetCDF obs. Note that this directory should
@@ -38,9 +38,9 @@ setenv FORECAST F
 # looping script is provided as an example in this same directory where you can loop over
 # days for example and pass those specs into this script and run within this loop.
 setenv METTMPDIR $AMETBASE/model_data/MET/$AMET_PROJECT/TMP
-setenv GRIDCRO   $AMETBASE/model_data/MET/$AMET_PROJECT/GRIDCRO2D_20160701.nc4
-setenv METCRO    $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO3D_20160701.nc4
-setenv METDOT    $AMETBASE/model_data/MET/$AMET_PROJECT/METDOT3D_20160701.nc4
+#setenv GRIDCRO   $AMETBASE/model_data/MET/$AMET_PROJECT/GRIDCRO2D_160701.nc
+#setenv METCRO    $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO3D_160701.nc
+#setenv METDOT    $AMETBASE/model_data/MET/$AMET_PROJECT/METDOT3D_160701.nc
 
 # Matching Mode options.
 # Native level matching   : Store full Rawindsonde profile and model profile on their native levels.
