@@ -773,8 +773,8 @@ for profile observations. Like the surface meteorology, this script will downloa
 and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
 troposphere. 
 
-For the metExample_mcip, the matching_raob.csh needs to increment over the number of days.
-Recommend using the loop_over_days.csh script.
+For the metExample_mcip, the `matching_raob.csh` needs to increment over the number of days.
+Recommend using the `loop_over_days.csh` script.
 
 ```
 ./loop_over_days.csh |& tee log.populate.raob
@@ -793,12 +793,12 @@ Here you will see two C-shell scripts and the combine subdirectory.
 The combine subdirectory is not used for this example; 
 it is discussed later in Section 6.4, “Creating a New AQ Project”.
 
-The C-shell files aqProject_post_only.csh and aqProject_pre_and_post.csh are wrapper
+The C-shell files `aqProject_post_only.csh` and `aqProject_pre_and_post.csh` are wrapper
 scripts for calling the R programs that actually create an AMET AQ project 
 (and AMET database if necessary) and populate the AMET database with the project data. 
-For now we will only work with the aqProject_post_only.csh script. More information regarding
-the aqProject_pre_and_post.csh script will be provided in later sections. Start by opening 
-the aqProject_post_only.csh and verify that the variable AMETBASE is set to the correct AMET 
+For now we will only work with the `aqProject_post_only.csh` script. More information regarding
+the `aqProject_pre_and_post.csh` script will be provided in later sections. Start by opening 
+the `aqProject_post_only.csh` and verify that the variable AMETBASE is set to the correct AMET 
 project.   Run the script by typing
 
 ```
@@ -812,16 +812,16 @@ exist), three required AQ database tables (i.e. project_units, site_metadata and
 aq_project_log), and one empty project table in the AMET database: aqExample.
 After creating this table, the script then begins the matching process. This
 consists of calling a series of Fortran helper programs. The two Fortran helper
-programs are $AMETBASE/bin/sitex\_daily.exe and $AMETBASE/bin/sitex_daily_O3.exe;
+programs are `$AMETBASE/bin/sitex_daily.exe` and `$AMETBASE/bin/sitex_daily_O3.exe`;
 the first one matches the AQS network’s data to the nearest grid cell in the CMAQ
 model, and the second one does the same for the other networks. These programs need
 to be downloaded and built (and the path to the executable specified in the
-amet-config.R file before running the aqProject.csh script. After each network
+`amet-config.R` file before running the `aqProject.csh` script. After each network
 has been matched to the model, the aqExample table is populated with the model-obs
 pairs. In addition to creating and populating the aqExample table, the script
-updates the project\_units table with each network for that project. This table
+updates the project_units table with each network for that project. This table
 defines the physical units of the species variables for this network (e.g., ppb vs.
-µg/m<sup>3</sup>). Finally, the script updates the aq\_project\_log with
+µg/m<sup>3</sup>). Finally, the script updates the aq_project_log with
 summary information for the aqExample project.
 
 
@@ -841,7 +841,7 @@ To create a new project, follow these basic steps:
 2.  Rename these directories after your new project (use the *exact* project name, as
     the utility scripts use the project name to navigate directories and organize analyses).
 
-3.  Create a new project directory under $AMETBASE/model\_data/MET for
+3.  Create a new project directory under $AMETBASE/model_data/MET for
     the model output files. In most cases you will want to link in model outputs from an 
     archive or work directory. This also serves to keep model outputs organized.
 
@@ -858,12 +858,13 @@ variable in the database and analysis scripts.*
 For example, to create a new WRF project called “wrfNC2007”,
 use the following commands:
 
-> $ cd $AMETBASE/scripts\_db
->
-> $ cp -r metExample_wrf wrfNC2007
->
-> $ cd wrfNC2007
+```
+cd $AMETBASE/scripts_db
 
+cp -r metExample_wrf wrfNC2007
+
+cd wrfNC2007
+```
 
 ```
 cd $AMETBASE/scripts_db
@@ -883,8 +884,8 @@ Here, you would replace "/model/data/directory/" with the path to your model
 data file(s). The matching_surface.csh, matching_radiation.csh and matching_raob.csh 
 will perform the model-obs matching of all model outputs in this new project directory. Users can use wildcards like the example above to link all or just specific WRF/MPAS/MCIP outputs into the MET output directory.
 
-Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
-AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
+Next, edit the `$AMETBASE/script_db/wrfNC2007/matching_surface.csh` variables
+AMET_PROJECT ("wrfNC2007") and RUN_DESCRIPTION (your description of
 the project).
 
 Finally, run the surface model-obs matching script (or others):
@@ -896,9 +897,9 @@ cd $AMETBASE/scripts\_db/wrfNC2007
 
 The matching_surface.csh script will create a new MET project in the AMET database if
 it does not exist (a new database will also be created if it does not already exist). Specifically,
-it will create a new row in the AMET project\_log table and wrfNC2007\_surface.
-The matching_radiation.csh script will put radiation data into the same wrfNC2007\_surface table.
-The matching_raob.csh script will put upper-air meteorology data in a wrfNC2007\_raob table.
+it will create a new row in the AMET project_log table and wrfNC2007_surface.
+The matching_radiation.csh script will put radiation data into the same wrfNC2007_surface table.
+The matching_raob.csh script will put upper-air meteorology data in a wrfNC2007_raob table.
 Once this script completes, the AMET database will be ready to produce meteorology model 
 performance analysis plots and statistics.
 
@@ -913,7 +914,7 @@ monitor species will be described. In order for AQ database population to work, 
 be a mapping between the model species and the various observational network species.
 This mapping is accomplished through a combination of post-processing the CMAQ model data and
 species formulas in the AQ_species_list.input file, which is located in the
-$AMETBASE/scripts\_db/input_files directory. The model data used in the
+$AMETBASE/scripts_db/input_files directory. The model data used in the
 aqExample project (Section 6.3) have already been post-processed.
 For a new project, the CMAQ data will need to be post-processed before they
 are ingested into the AMET database. This post-processing is accomplished
@@ -937,7 +938,7 @@ To create a new AQ project, follow these basic steps:
 
 2.  Post-process the model data using the Fortran program `Combine`.
 
-3.  Create a new project directory under $AMETBASE/model\_data/AQ for
+3.  Create a new project directory under $AMETBASE/model_data/AQ for
     the input model data and copy or link post-processed model data to this directory.
 
 4.  Configure the C-shell script aqProject_post_only.csh for the new project.
@@ -979,7 +980,7 @@ script. The aqProject.csh script does several things:
 * Populates that database with the model and observational data from the site compare scripts. This step can also be skipped if you do not plan on using the database.
 
 The configuration options for the aqProject.csh script are documented in the script and briefly described below. Upon execution, the script
-calls several R scripts to run the Fortran program `Site Compare` and then populates the AMET database (assumed AMET\_DB = T) with
+calls several R scripts to run the Fortran program `Site Compare` and then populates the AMET database (assumed AMET_DB = T) with
 paired model-observation data. As this script will be used for setting up different AMET-AQ projects, it will likely only need to be
 fully configured once and then reused with little modification for future projects.
 
