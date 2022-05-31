@@ -3,7 +3,7 @@
 ### daily_barplot, radiation, raob, spatial_surface, summary, timeseries, timeseries_rh ###
 
 # Main settings for timeseries #
-project    <- "metExample_wrf"
+project    <- Sys.getenv("AMET_PROJECT")
 project2   <- ""
 project1   <- project
 model      <- project
@@ -20,18 +20,18 @@ queryID    <- pid
 figid_sub  <- runid
 
 # Plot and figure output directory #
-figdir     <- "./"
-savedir    <- "./"
+figdir     <- Sys.getenv("AMET_OUT")
+savedir    <- Sys.getenv("AMET_OUT")
 
 # Maximum records allowed from database #
 maxrec     <- 5000000
 
 # Threshold count for computing statistics
-thresh     <- 24
+thresh     <- 120
 
 # Logical controls #
-savefile   <- F
-textout    <- F
+savefile   <- T
+textout    <- T
 textstats  <- textout
 wantsave   <- savefile
 wdweightws <- T
@@ -41,10 +41,10 @@ diurnal    <- T
 spatial    <- T
 timeseries <- T
 histogram  <- T
-SPATIALM   <- F
+SPATIALM   <- T
 TSERIESM   <- T
-PROFM      <- F
-CURTAINM   <- T
+PROFM      <- T
+CURTAINM   <- F
 PROFN      <- F
 CURTAINN   <- F
 
@@ -57,36 +57,35 @@ checksave   <- F
 t.test.flag <- F
 
 # Specific query for daily barplot #
-querystr   <-"AND d.ob_date >=  20160701 AND d.ob_date < 20160201 ORDER BY d.ob_date"
+querystr   <-"AND ob_date BETWEEN 20180101 AND 20180106 ORDER BY ob_date"
+querystr   <-"AND d.ob_date >=  20180101 AND d.ob_date < 20180201 ORDER BY d.ob_date"
 
 # Specific query for summary plots #
-query_str  <-"AND ob_date BETWEEN 20160701 AND 20160731"
+#query_str  <-"AND ob_date BETWEEN 20160101 AND 20160106"
 
 # Fine-tune query extra specs #
 extra      <- ""
 extra2     <- ""
 
 # Date-based specs #
-date <- c(20160701,20160731)
+date <- c(as.numeric(paste(Sys.getenv("AMET_YEAR"),"0101",sep="")),as.numeric(paste(Sys.getenv("AMET_YEAR"),"1231",sep="")))
 hs   <- "00"
 he   <- "23"
 ds   <- "01"
 de   <- "31"
-ms   <- "07"
-me   <- "07"
-ys   <- "2016"
-ye   <- "2016"
+ms   <- "01"
+me   <- "12"
+ys   <- Sys.getenv("AMET_YEAR")
+ye   <- Sys.getenv("AMET_YEAR")
 dates<-list(y=as.numeric(ys),m=as.numeric(ms),d=as.numeric(ds),h=as.numeric(hs))
 datee<-list(y=as.numeric(ye),m=as.numeric(me),d=as.numeric(de),h=as.numeric(he))
 
 # Spatial statistics plotting bounds (latSouth, latNorth, longWest, longEast) #
-lats      <- 23
-latn      <- 55
-lonw      <- -135
-lone      <- -60
-lats      <- NA
-bounds    <- c(lats,latn,lonw,lone)
-
+lats    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LAT")," ")))[1]
+latn    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LAT")," ")))[2]
+lonw    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LON")," ")))[1]
+lone    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LON")," ")))[2]
+bounds  <-c(lats,latn,lonw,lone)
 
 # Plot settings #
 plotsize  <- 1

@@ -85,6 +85,10 @@
  source (ametRinput)
  source (ametRstatic)
 
+ # New runid setting for plot labels. If not set, empty for old plot names.
+ if(!exists("runid"))                          { runid <- "NORUNID"  }
+ if(runid == "")                               { runid <- "NORUNID"  }
+
  ## MySQL list for connection and date range list
  mysql      <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
                    passwd=amet_pass,maxrec=maxrec)
@@ -193,7 +197,8 @@
      statsq[s,5,2]<- mean(sqrt( (modu-obsu)^2 + (modv-obsv)^2  ))
 
   }
-  tmp<- plotSpatialRaob(statsq, slatlon, sitesq, lev.array, col.array, plotopts, plotlab)
+  tmp<- plotSpatialRaob(statsq, slatlon, sitesq, lev.array, 
+                        col.array, plotopts, plotlab, runid=runid)
   ############################################################################
   # New in Version 1.3: Text file with set SITES=(....) string to use in
   # site specific profile statistics and curtain plots. All sites in lat-lon box.
@@ -214,9 +219,7 @@
  # Timeseries of Domain STATISTICS for all sites for specified pressure layer range,
  # given time range and lat-lon bounds. Done for T, RH, WS and WD
  if(TSERIESM){
-
   writeLines("  *****   TIMESERIES STATS FOR MODEL-RAOB DATA   *****")
-
   # Temperature statsq array is: [day,metric,variable] 
   # metric is    RMSE, MAE, BIAS, CORR, COUNT
   # variable is  T, RH, WS, WD
@@ -299,7 +302,7 @@
   ## Need a AMET bug fix. When AMET_PLAYER for spatial stats is low, spatial.thresh
   ## is not met and all values are NA. Fix: statement when all time series stats are NA
   ## that user runs timeseries alone with deeper PLAYER or lower the spatial.thresh
-  tmp<- plotTseriesRaobM(statsq, date.vecm, plotopts, plotlab, textstats)
+  tmp<- plotTseriesRaobM(statsq, date.vecm, plotopts, plotlab, textstats, runid=runid)
 
  }
  ##########################################################################################
@@ -458,8 +461,8 @@
     }
    
     writeLines(paste("Plotting T, RH, WS and WD statistics profiles for site:",statid[s]))
-    tmp<- plotProfRaobM(statsq.new, diffsq.new, levels.new, statid[s], plotopts, plotlab)
-    tmp<- plotDistRaobM(obsmodrh.new, levels.new, statid[s], plotopts, plotlab)
+    tmp<- plotProfRaobM(statsq.new, diffsq.new, levels.new, statid[s], plotopts, plotlab, runid=runid)
+    tmp<- plotDistRaobM(obsmodrh.new, levels.new, statid[s], plotopts, plotlab, runid=runid)
     
    }
  }

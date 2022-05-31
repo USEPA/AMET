@@ -1,5 +1,5 @@
 # Atmospheric Model Evaluation Tool (AMET)
-## Version 1.5 User’s Guide
+## Version 1.5 User Guide
 
 -------
 
@@ -19,14 +19,15 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[5.1 AMET Setup](#AMET_Setup)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[5.2 Basic MySQL Commands](#MySQL_Commands)<br>
 [6. Project Creation and Database Population](#Project_Creation)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf and metExample_mpas Projects](#WRF_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[6.1 The metExample_wrf and metExample_mpas Projects](#MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.2 The aqExample Project](#AQ_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
 [7. Analysis](#Analysis)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf and metExample_mpas](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf, metExample_mcip and metExample_mpas](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Creating a New Analysis Project](#New_Analysis_Project)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.3 Summary of the AQ Analysis Scripts](#aq_analysis_scripts)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.4 Creating a New Analysis Project](#New_Analysis_Project)<br>
 [8. Adding a New AQ Network to AMET](#Adding_New_AQ_Network)<br>
 [9. CMAS Support for AMET](#CMAS_Support)<br>
 [References](#References)<br>
@@ -61,14 +62,14 @@ The basic structure of AMET consists of two *fields* and two *processes*.
 
 -   The two processes (actions) are **database population** and **analysis**. Database population refers to the underlying structure of AMET; after the observations and model data are paired in space and time, the pairs are inserted into a database (MySQL). Analysis refers to the statistical evaluation of these pairings and their subsequent plotting.
 
-Practically, a user may be interested in using only one of the fields (either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.4 are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement was removed from AMETv1.3 and beyond in an effort to streamline the tool.
+Practically, a user may be interested in using only one of the fields (either MET or AQ), or may be interested in using both fields. That decision is based on the scope of the study. The two main software components of AMETv1.4+ are **MySQL** (an open-source database software system) and **R** (a free software environment for statistical computing and graphics). The previous versions of AMET also utilized **Perl** (an open-source cross-platform programming language), but the **Perl** requirement was removed from AMETv1.3 and beyond in an effort to streamline the tool.
 
 
 <a id="AMET_Project"></a>
 1.2 Concept of an AMET “Project”
 ----------------------------
 
-A central organizing structure for AMET applications is a project. A project groups a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with all of the AMET database tables that correspond to that simulation, the scripts necessary to populate that database, and the scripts required to analyze that project. For example, you might have one project for a 2016 12-km continental U.S. simulation, and another project for a 2016 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample_wrf) provided with the installation and then renaming it to the new project’s name. For the MET component the example directory will work for both WRF and MPAS.
+A central organizing structure for AMET applications is a project. A project organizes a particular model simulation (specific model, physics, spatial domain, grid scale, etc.) with AMET database tables that correspond to that simulation, the scripts necessary to populate that database, the scripts required to analyze that project and statistical analysis outputs. For example, you might have one project for a 2016 12-km continental U.S. simulation, and another project for a 2016 4-km Eastern U.S. simulation. A project can be for either MET or AQ, not for both. It is essential that you both uniquely and concisely name each project. It is recommended that you follow the directory structure when creating new projects, by copying one of the example directories (aqExample, metExample_wrf/mpas/mcip) provided with the installation and then renaming it to the new project’s name.
 
 <a id="Users_Guide"></a>
 1.3 Organization of This User’s Guide
@@ -90,12 +91,12 @@ The contents of the remaining sections of this User's Guide are listed below.
     are also shown for illustrative SQL queries.
 
 -   [Section 6](#Project_Creation) gives instructions on how to populate the AMET MySQL database, with
-    specific instructions for each of the WRF and CMAQ models, and also on how to
-    create a new MET project and a new AQ project for subsequent analyses.
+    specific instructions for WRF and CMAQ models, and also on how to
+    create new MET and AQ projects for subsequent analyses.
 
--   [Section 7 ](#Analysis) includes instructions on how to perform model evaluation for each of the
-    WRF and CMAQ models, and includes an overview of the functionality of all the MET
-    and AQ evaluation scripts provided.
+-   [Section 7 ](#Analysis) includes instructions on how to perform model evaluation for
+    WRF and CMAQ models, and includes an overview of the functionality of all availiable MET
+    and AQ evaluation scripts.
 
 ***<span style="font-variant:small-caps;">Important note</span>:*** *The set of
 analyses/evaluation scripts provided in this release are strictly for illustration
@@ -123,13 +124,13 @@ system. For information on the installation process, please see the [Atmospheric
 
 In this guide, the top level of the AMET directory structure is referred to
 as “AMETBASE”. This environment variable is actually set in many of the
-scripts discussed below. For example, if you were to run the AMET version 1.4b installation Git command in the directory /opt:
+scripts discussed below. For example, if you were to run the AMET (example for version 1.5) installation Git command in user's home directory /home/user:
 
 ```
-git clone -b 1.4b https://github.com/USEPA/AMET.git AMET_v14b
+git clone -b 1.5 https://github.com/USEPA/AMET.git AMET_v15
 
 ```
-The setting of AMETBASE would be /opt/AMET_v14b
+The setting of AMETBASE would be /home/user/AMET_v15
 
 
 Table 2-1 shows the directories contained in the $AMETBASE directory.
@@ -196,7 +197,7 @@ The AMET release includes example datasets of both model and observational data.
 
 For the model data, we have included both meteorological and air quality
 data. We have organized the data into several example projects:
-"metExample_wrf", "metExample_mpas" and "aqExample". On the MET side, there is a 1-month WRF simulation 
+"metExample_wrf", "metExample_mpas", "metExample_mcip" and "aqExample". On the MET side, there is a 1-month WRF simulation with MCIP 
 and 1-month MPAS simulation provided for July 2016. We included the same period 
 in case users wanted to compare the two models. These are model output subsets with only the 
 variables needed for the evaluation scripts. Model outputs are availiable for download via
@@ -212,6 +213,21 @@ The WRF data consist of 31 WRF output files in netCDF format:
 > wrfout\_subset\_2016-07-01\_00:00:00
 > ...
 > wrfout\_subset\_2016-07-31\_00:00:00
+
+The MCIP data consist of 1 GRIDCRO2D, 31 METCRO2D and 31 METCRO3D output files in netCDF format:
+
+> $AMETBASE/model\_data/MET/**metExample_mcip**/
+>
+> GRIDCRO2D
+>
+> METCRO2D_160701.nc
+> ...
+> METCRO2D_160731.nc
+>
+> METCRO3D_160701.nc
+> ...
+> METCRO3D_160731.nc
+
 
 The MPAS data consist of 31 MPAS output files in netCDF format:
 
@@ -244,17 +260,24 @@ grid resolution.
 4.2 Observational Data
 ------------------
 
-As with the model data, the observations directory structure is divided between MET and AQ fields. On the MET side, all of the observations come from the Meteorological Assimilation Data Ingest System (MADIS), provided by the National Oceanic and Atmospheric Administration (NOAA). Contact MADIS to obtain a MADIS account for downloading these data (see http://www-sdd.fsl.noaa.gov/MADIS for details).
+As with the model data, the observations directory structure is divided between MET and AQ fields. On the MET side, the bulk of the observations come from the Meteorological Assimilation Data Ingest System (MADIS), provided by the National Oceanic and Atmospheric Administration (NOAA). Contact MADIS to obtain a MADIS account for downloading these data (see http://www-sdd.fsl.noaa.gov/MADIS for details). Two other dataset are compatible for the evaluation of shortwave radiation. Users can either select a global Baseline Surface Radiation Network (BSRN; https://bsrn.awi.de/) or a US-centric NOAA-based SURFace RADiation (SURFRAD; https://gml.noaa.gov/grad/surfrad/) network data. There is also an example of a simple text file format for surface meteorology if users have non-standard text data.
 
-The new autoFTP option in AMET uses the MADIS anonymous FTP account; if using that option, please acknowledge the MADIS group in applications that use AMET. Alternatively, users may also manually download all MADIS observations before the model-observation matching step.
+The new autoFTP option in AMET uses the MADIS anonymous FTP account; if using that option, please acknowledge the MADIS group in applications that use AMET. Alternatively, users may also manually download all MADIS observations before the model-observation matching step. The autoFTP option is also fully compatible for both surface shortwave radiation datasets. This option ignores data that was already acquired as long as it is located in the AMET directory structure.
 
-In the AMET directory structure, all of the MADIS data are stored under $AMETBASE/obs/MET. The MADIS observation directory structure is provided in this directory in the release. The AMET example data distribution from CMAS includes standard MET surface observations from MADIS for the model ouput periods (July 2011 and July 2013). To list the contents of the example met observational data directory:
+In the AMET directory structure, all of the MADIS data are stored under $AMETBASE/obs/MET. The MADIS observation directory structure is provided in this directory in the release. The AMET example data distribution from CMAS includes standard MET surface observations from MADIS for the model output periods (July 2011 and July 2013). To list the contents of the example met observational data directory:
 
 ```
 ls $AMETBASE/obs/MET
+point/metar
+point/raob
+point/maritime
+point/sao
+LDAD/mesonet
+bsrn
+surface_text
 ```
 
-Each of the observation files is a netCDF file representing one hour’s worth of surface meteorological data from all available monitoring sites. The netCDF files can be stored in a gzip compressed format to save space, but should be unzipped before use. These files are now directly read during the model-obs matching step instead of using an external utility (e.g.; sfcdump.exe) to extract into text and parsed by Perl.
+Each of the MADIS observation files is a netCDF file representing one hour’s worth of surface and/or upper-air meteorological data from all available observation sites. The netCDF files can be stored in a gzip compressed format to save space, but should be unzipped before use. These files are now directly read during the model-obs matching step instead of using an external utility (e.g.; sfcdump.exe) to extract into text and parsed by Perl. BSRN observation files are monthly and include all global sites. SURFRAD data are daily for individual sites. Surface text example file is hourly for all sites like MADIS. It is advised that users utilize the autoFTP routine that handles the download, decompress and organization of all observational dataset.
 
 On the AQ side, example observational data are available for a number of
 networks including:
@@ -452,7 +475,7 @@ AQS data are obtained through the EPA’s Air Quality System
 (AQS), located at
 [**http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html**](http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html).
 Various species of atmospheric gases are available for download through
-the AQS. THe pre-generated files on this site need to be combined into a
+the AQS. The pre-generated files on this site need to be combined into a
 single data file in order to work best with AMET. AMET compatible AQS data
 files are available for download from the CMAS website.
 
@@ -556,7 +579,7 @@ meteorological data.
 
 The instructions provided below assume the use of the MySQL database. If only
 processing AQ data and not employing the use of the database, those portions of
-the instructions that deal with setuping up and interfacing with the database
+the instructions that deal with setup and interfacing with the database
 can be ignored.
 
 <a id="AMET_Setup"></a>
@@ -694,7 +717,7 @@ cd $AMETBASE/scripts_db
 This directory contains two project directories and one input files directory, in
 addition to the dbSetup directory described earlier. The projects are
 
-* metExample_wrf and metExample_mpas: MET examples for the WRF and MPAS models
+* metExample_wrf, metExample_mpas and metExample_mcip: MET examples for the WRF, MPAS models plus MCIP support
 * aqExample: an AQ example for the CMAQ model
 
 In the following subsections, we describe how to run each project.
@@ -703,7 +726,7 @@ In the following subsections, we describe how to run each project.
 6.1 The metExample Projects
 ----------------------
 
-Go to the metExample_wrf project directory. Note these are the same steps for metExample_mpas.
+Go to the metExample_wrf project directory. Note these are the same steps for metExample_mpas and metExample_mcip.
 
 ```
 cd $AMETBASE/scripts_db/metExample_wrf
@@ -721,26 +744,24 @@ After executing the script you will be prompted for MySQL’s “root” passwor
 This C-shell script for surface meteorology will create an empty project tables in the AMET
 database: wrfExample_wrf_surface. It is important to understand that if users specify a database 
 via AMET_DATABASE that is not present on the MySQL server, a new database will automatically
-be created. The wrfExample_wrf_surface table contains the matches between the model outputs 
-andÂ surface observations. After creating the table, the script then excutes the matching process. 
+be created. The wrfExample_wrf_surface table contains the matched pairs of model outputs 
+and surface observations. After creating the table, the script then excutes the matching process. 
 This process consists of retreiving data from the MADIS web site for the model's temporal
 period, unzipping the downloaded data, finding the geographic location of each observation
 site on the model grid and interpolating to those locations, populating the
-appropriate table with the model-obs pairs for each variable, and optionally rezipping
-the data for compressed storage. Finally, the script updates the project_log
-with summary information for the wrfExample project.
+appropriate table with the model-obs pairs for each variable. Finally, the script updates the project_log
+with summary information for the wrfExample project like project creation date, last matching execution, period of record and description of project.
 
 ```
-./matching_bsrn.csh >& log.populate.bsrn
+./matching_radiation.csh >& log.populate.radiation
 ```
 This C-shell script is executed the same as the surface script above. It is used to compare the model
-with Baseline Surface Radiation Network (BSRN) shortwave radiation measurements. The model-observation
-pairs are put in the wrfExample_wrf_surface table if already created. If not, that table is generated and
-the script will automatically download the BSRN observations from the FTP site (BSRN_SERVER) in the 
-matching_bsrn.csh script. Users should contact the BSRN organization and request a access, which will
-follow with a login and password that should be specified (BSRN_LOGIN and BSRN_PASS). These files are
+with Baseline Surface Radiation Network (BSRN) or SURFRAD shortwave radiation measurements. The setting RADIATION_DSET should be set to bsrn or surfrad. BSRN has a lag period of months to a year for data curation, but SURFRAD is real-time. BSRN is global and SURFRAD is US only. When executed, the model-observation
+pairs are inserted in the wrfExample_wrf_surface table. The script will automatically download the BSRN or SURFRAD observations from the FTP site (RAD_SERVER) in the 
+matching_radiation.csh script. Users should contact the BSRN organization and request a access, which will
+follow with a login and password that should be specified (RAD_LOGIN and RAD_PASS). SURFRAD uses anonymous FTP + a users email for their internal tracking. BSRN files are
 monthly text files with 1 minute data. It takes a few minutes of processing to read these file, but
-after, the script runs very fast. This is a new option in AMETv1.4.
+after, the script runs very fast. This is a new option in AMETv1.4. AMETv1.5 adds the SURFRAD capability. These data are hourly like MADIS and seperate files for each site, but autoFTP coordinates this more complex retrieval so this option is advised. 
 
 ```
 ./matching_raob.csh >& log.populate.raob
@@ -750,15 +771,6 @@ for profile observations. Like the surface meteorology, this script will downloa
 and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
 troposphere.
 
-<!----
-The second C-shell file, metFTP.csh, is a wrapper script for calling
-Perl programs to download observational data from MADIS for a specific
-period of time. This allows you to download observational data without
-having the model output. Make sure the variable auto\_ftp is set to 1
-when running this script. Please note that the MADIS data need to be
-downloaded once for a given time period and will subsequently be
-available to all projects.
---->
 
 <a id="AQ_Project"></a>
 6.2 The aqExample Project
@@ -794,7 +806,7 @@ consists of calling a series of Fortran helper programs. The two Fortran helper
 programs are $AMETBASE/bin/sitex\_daily.exe and $AMETBASE/bin/sitex_daily_O3.exe;
 the first one matches the AQS network’s data to the nearest grid cell in the CMAQ
 model, and the second one does the same for the other networks. These programs need
-to be downloaded and built (and the path to the excutable specified in the
+to be downloaded and built (and the path to the executable specified in the
 amet-config.R file before running the aqProject.csh script. After each network
 has been matched to the model, the aqExample table is populated with the model-obs
 pairs. In addition to creating and populating the aqExample table, the script
@@ -818,7 +830,7 @@ To create a new project, follow these basic steps:
 1.  Copy the appropriate example project (metExample_wrf) to a new directory name (see below).
 
 2.  Rename these directories after your new project (use the *exact* project name, as
-    many scripts use the project name to navigate directories and organize analyses).
+    the utility scripts use the project name to navigate directories and organize analyses).
 
 3.  Create a new project directory under $AMETBASE/model\_data/MET for
     the model output files. In most cases you will want to link in model outputs from an 
@@ -826,7 +838,7 @@ To create a new project, follow these basic steps:
 
 4.  Configure the C-shell script matching_surface.csh for the new project.
 
-5.  Run the matching_surface.csh (or matching_bsrn.csh, or matching_raob.csh)
+5.  Run the matching_surface.csh (or matching_radiation.csh, or matching_raob.csh)
     script to populate the AMET database.
 
 
@@ -855,12 +867,12 @@ it, as follows:
 cd $AMETBASE/model_data/MET
 mkdir wrfNC2007
 cd wrfNC2007
-ln -s <model data directory> .
+ln -s /model/data/directory/wrfout* $AMETBASE/model_data/MET/wrfNC2007/.
 ```
 
-Here, you would replace “&lt;model data&gt;” with the path to your model
-data file(s). The matching_surface.csh, matching_bsrn.csh and matching_raob.csh 
-will perform the model-obs matching of all model outputs in this new project directory.
+Here, you would replace "/model/data/directory/" with the path to your model
+data file(s). The matching_surface.csh, matching_radiation.csh and matching_raob.csh 
+will perform the model-obs matching of all model outputs in this new project directory. Users can use wildcards like the example above to link all or just specific WRF/MPAS/MCIP outputs into the MET output directory.
 
 Next, edit the $AMETBASE/script\_db/wrfNC2007/matching_surface.csh variables
 AMET\_PROJECT ("wrfNC2007") and RUN\_DESCRIPTION (your description of
@@ -876,7 +888,7 @@ cd $AMETBASE/scripts\_db/wrfNC2007
 The matching_surface.csh script will create a new MET project in the AMET database if
 it does not exist (a new database will also be created if it does not already exist). Specifically,
 it will create a new row in the AMET project\_log table and wrfNC2007\_surface.
-The matching_bsrn.csh script will put radiation data into the same wrfNC2007\_surface table.
+The matching_radiation.csh script will put radiation data into the same wrfNC2007\_surface table.
 The matching_raob.csh script will put upper-air meteorology data in a wrfNC2007\_raob table.
 Once this script completes, the AMET database will be ready to produce meteorology model 
 performance analysis plots and statistics.
@@ -996,8 +1008,8 @@ specified in the aqProject_post_only.csh and aqProject_pre_and_post.csh scripts.
 | **REMAKE\_PROJECT**        | T/F; Flag to remake project table. Setting to T will re-create an existing project, deleting any data that has been previously loaded but retaining the project table for future use, so use with caution. Only applicable if using the database. |
 | **DELETE\_PROJECT**        | T/F; Flag to delete project table. Setting to T will delete an existing project, deleting any data that has been previously loaded and the table entirely, so use with caution. Only applicable if using the database. |
 | **INC\_AERO6\_SPECIES**    | T/F; Flag to indicated whether or not to include CMAQ AERO6 species (e.g. Fe, Si, Mg, etc.). Typically set to T for CMAQ simulations that utilized the AERO6 module. |
-| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the stardard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
-| **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no timeshifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
+| **INC\_CUTOFF**            | T/F; Flag to process species using the sharp PM2.5 cutoff in addition to the standard I and J mode calculation of PM2.5 (these species must be calculated using combine). By default this flag is set to F and is considered an advanced user option. |
+| **TIME\_SHIFT**            | T/F; Flag to indicate by how much to time shift the data in site compare. Typically this flag will be set to 1 if the ACONC files have been time shifted. Otherwise, this flag is set to 0. For the example data, no time shifting of the ACONC files was applied, therefore this flag is set to 0 by default for the example case. |
 | **HOURS\_8HRMAX**          | 17/24; Indicate the number of 8hr averages to use when calculating the maximum 8hr average value in site compare daily. Old method uses 24 values, new method uses 17. |
 | **START\_DATE**            | Start date in YYYYJJJ to begin the processing. By default this is set to 2011182 (July 1, 2011) for the example case. |
 | **END\_DATE**              | End date in YYYYJJJ to begin the processing. By default this is set to 2011213 (August 1, 2011) for the example case. |
@@ -1054,10 +1066,9 @@ project table called aqNC2007.
 ========
 
 The analysis capabilities of AMET consists of performing statistical analyses
-on the model-obs pairs and creating plots of the resulting statistics.
-The basic process is to query the project’s database table(s) using a
-set of SQL criteria; to perform statistical analyses on the returned
-data; and to create plots, tables, and text file outputs. The
+on the model-obs pairs.
+The basic process is to query the project’s database table(s) using SQL criteria; to perform statistical analyses on the returned
+data; and to create plots, tables, and text/R data file outputs. The
 AMET installation contains a series of preprogrammed statistical analysis and
 plotting routines, based on the R language. These scripts are provided
 strictly as a starting point and as illustrative examples. Because all
@@ -1076,32 +1087,34 @@ to analyze the AMET tables and with the output from the analysis (plots
 and data).
 
 Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample_wrf, respectively.
-Within each of these directories there are C-shell
-scripts and a subdirectory called **input_files** containing an input file with
-similar names as the scripts (e.g., run\_timeseries.csh and timeseries.input). These two
+Within each of these directories are C-shell
+wrapper scripts and a subdirectory called **input_files** containing a R configuration input file with
+similar names as the analysis scripts (e.g., run\_timeseries.csh and timeseries.input). These two
 files set up everything that is necessary to configure and run the underlying AMET analysis R script (located in
-$AMETBASE/R_analysis_code). The use of the C-shell interface
+$AMETBASE/R_analysis_code). In AMETv1.5+ the R configuration input file was split into an input and a static.input file (e.g., timeseries.input and timeseries.static.input). This was mostly done to simplify the configuration for a new AMET GUI, but also helps distinquish settings a user can modify with static settings fundamental to the main R script. Also new to AMETv1.5+ is a universal confguration input file (run_info_MET.R) that can be used for all scripts and the GUI. These changes are all backward compatible with older analysis scripts. The use of the C-shell interface
 allows users who are not very familiar with R to perform a set of predefined
 analyses with AMET.
 
 <a id="metExample"></a>
-7.1 metExample_wrf or metExample_mpas
+7.1 metExample_wrf, metExample_mcip or metExample_mpas
 ----------
 
 Use the following command to navigate to the met analysis example project directory:
 
 ```
-cd $AMETBASE/scripts_analysis/metExample_wrf
+cd $AMETBASE/scripts_analysis/metExamplemcip
 or
 cd $AMETBASE/scripts_analysis/metExample_mpas
+or
+cd $AMETBASE/scripts_analysis/metExample_mcip
 ```
 
 This directory contains a series of C-shell scripts and their accompanying
-input files (./input_files/ directory). There are detailed comments in the analysis scripts describing the main configuration options in the script. Other configuration options are set in the files under the ./input_files directory; the settings in these scripts are for fine tuning the AMET plots and typically do not need modification. Some of these other settings include color scales, text output options, and Quality Control limits. The settings for the met analysis scripts are all detailed in [Appendix B](#Appendix_B) [Table B-2](#Table_B-2).
+input files (./input_files/ directory). There are detailed comments in the analysis scripts describing the main configuration options in the script. Other configuration options are set in the files under the ./input_files directory; the settings in these scripts are for fine tuning the AMET plots and typically do not need modification, especially the static files. Some of these other settings include color scales, text output options, and Quality Control limits. The settings for the met analysis scripts are all detailed in [Appendix B](#Appendix_B) [Table B-2](#Table_B-2).
 
-The run\_spatial\_surface.csh script is used here as an example of how to run the analysis scripts. This particular script creates a series of maps comparing the surface monitors to the model for a specificed period (date start/end). Each plot provides color-coded model performance metrics (RMSE, MAE, Bias, Correlation/Index of Agreement) at each of the monitor locations.
+The run\_spatial\_surface.csh script is used here as an example of how to run the analysis scripts. This particular script creates a series of maps comparing the surface observations to models for a specificed period (date start/end). Each plot provides color-coded model performance metrics (RMSE, MAE, BIAS and Anomaly Correlation) at each of the monitor locations.
 
-Edit the run\_spatial\_surface.csh file and change the AMETBASE variable to the root AMET installation directory on your system. Set the location of the amet-config.R file; the default location is in the $AMETBASE/configure directory.  As noted previously in this guide, the settings in this file could be secured by limiting the read access to only the user. Alternatively this file can be "hidden" by saving it to $HOME/.amet-config.R. The corresponding input file for this example is input_files/spatial\_surface.input and will likely not need to be changed. Most of the primary configuration settings for the AMET analysis scripts are in the .csh run script. Other AMET installation and database settings to check in the run\_spatial\_surface.csh script are the AMET_DATABASE, MYSQL_SERVER, and AMET_PROJECT variables.  Analysis configuration settings in the script include:
+Edit the run\_spatial\_surface.csh file and change the AMETBASE variable to the root AMET installation directory on your system. Set the location of the amet-config.R file; the default location is in the $AMETBASE/configure directory.  As noted previously in this guide, the settings in this file could be secured by limiting the read access to only the user. Alternatively this file can be "hidden" by saving it to $HOME/.amet-config.R. The corresponding input file for this example is input_files/spatial\_surface.input and will likely not need to be changed unless extra query specifications are needed or plot symbol size needs adjustment. Most of the primary configuration settings for the AMET analysis scripts are in the .csh run script. Other AMET installation and database settings to check in the run\_spatial\_surface.csh script are the AMET_DATABASE, MYSQL_SERVER, and AMET_PROJECT variables.  Analysis configuration settings in the script include:
 * AMET_OUT: directory where the plots and text output will be written
 * AMET_PTYPE: output plot format (pdf is recommended, but png is an option)
 * AMET_DATES and AMET_DATEE: start and end dates for the AMET analysis (format: YYYYDDMM HH)
@@ -1120,6 +1133,8 @@ The plots from this script will be written to the $AMETBASE/output/metExample_wr
 ```
 cd $AMETBASE/output/metExample_wrf/spatial_surface
 or
+cd $AMETBASE/output/metExample_mcip/spatial_surface
+or
 cd $AMETBASE/output/metExample_mpas/spatial_surface
 ```
 
@@ -1127,22 +1142,25 @@ You should see a whole series of plots of the form:
 
 > wrfExample_wrf.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
 
-A brief summary of each of the C-shell scripts, with example plots from each script, is given below.
+A brief summary of each of the C-shell scripts that drive the main R analyses, with example plots from each script, is given below.
 
 **run\_spatial_surface.csh** ([Example Spatial Plot](./images/metExample_mpas.rmse.T.20160701-20160801.pdf))
 - spatial_surface.input
+- spatial_surface.static.input
 - Creates maps of statistics at each observation site
 - Creates a csv file of the site specific statistics ([Example csv](./images/wrf_conus12_oaqps.rmse.T.20160101-20160131.pdf))
 
 **run\_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
 - timeseries.input
+- timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
-- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
 **run\_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
 - timeseries_rh.input
+- timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
-- Creates a text file and R data file of the time series ([Example of text ouput](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
 
 **run\_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
@@ -1154,13 +1172,15 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
 - Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
 
-**run\_plot\_srad.csh** (Example plots: [Diurnal](./images/srad.diurnal.psu.20160701-20160801.pdf), [Spatial](./images/srad.spatial.late-afternoon.20160701-20160801.pdf), [Timeseries](./images/srad.timeseries.psu.20160701-20160801.pdf), [Histogram](./images/srad.histogram.psu.20160701-20160801.pdf))
-- plot_srad.input
+**run\_plot\_radiation.csh** (Example plots: [Diurnal](./images/srad.diurnal.psu.20160701-20160801.pdf), [Spatial](./images/srad.spatial.late-afternoon.20160701-20160801.pdf), [Timeseries](./images/srad.timeseries.psu.20160701-20160801.pdf), [Histogram](./images/srad.histogram.psu.20160701-20160801.pdf))
+- plot_radiation.input (note that pre-AMETv1.5 named this script "plot_srad" rather than "plot_radiation")
+- plot_radiation.static.input
 - Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
 - Creates a csv file for  ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
 
 **run\_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
 - raob.input
+- raob.static.input
 - Creates a number of plots. Not all are shown above. See script for full details.
 - Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.csv))
 
@@ -1169,6 +1189,12 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 - Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
 - Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
 
+**wrapper.csh** 
+- A new script in AMETv1.5 that acts as a wrapper for most of the scripts listed above (spatial, daily barplot, summary, raob and radiation).
+- Uses an wrapper run code (e.g., DB.MN) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot (DB) statistics for each month (MN) of a defined year.
+- The script lists all availiable options that include monthly, seasonal, regional-monthly and regional-seasonal statistics for the various analysis scripts.
+- The run_info_MET.R configuration allows further refinement so users can build a complete model evaluation protocol and run from a single script execution.
+- The new AMET GUI will also allow have capability from a user interface. 
 
 
 <a id="aqExample"></a>
@@ -1226,7 +1252,7 @@ variable OUTDIR must be set indicating where the site compare files are located.
 | **AMET\_EDATE**                  | End date in the form YYYYMMDD to which to end the analysis.|
 | **AMET\_PID**                    | Process ID. This can be set to anything. By default it is simply set to 1. The PID is important when using the when AMET web interface code that may be included in future releases of AMET. |
 | **AMET\_PTYPE**                  | pdf/png/both; Indicate whether the output should be in PDF format, PNG format, or both. |
-| **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species choosen must be one that is measured by the specified network (or networks if multiple networks are choosen).
+| **AMET\AQSPECIES**               | AQ species to analyze (e.g. O3, PM25, SO4, etc.). The species chosen must be one that is measured by the specified network (or networks if multiple networks are chosen).
 | **AMET\_CASTNET**                | y/n; Flag to include the CASTNET weekly data in the analysis |
 | **AMET\_CASTNET\_HOURLY**        | y/n; Flag to include the CASTNET hourly data in the analysis |
 | **AMET\_CASTNET\_DAILY\_O3**     | y/n; Flag to include the CASTNET daily O3 (e.g. MDA8 O3) data in the analysis |
@@ -1257,7 +1283,7 @@ variable OUTDIR must be set indicating where the site compare files are located.
 | **AMET\_NOAA\_ESRL\_O3**         | y/n; Flag to include the NOAA ESLR ozone data in the analysis |
 | **AMET\_TOAR**                   | y/n; Flag to include the TOAR global network data in the analysis |
 
-Also note that all AQ analysis scripts make use of the Network.input
+Also note that all AQ analysis scripts make use of the Network
 input file. This file contains information about each observational
 network available to the project that is needed by the R scripts. More
 information about this file can be found in [Appendix B](#Appendix_B).
@@ -1280,6 +1306,10 @@ cd $AMETBASE/output/aqExample/scatterplot
 You should see files of the form:
 
 > aqExample\_SO4\_scatterplot.pdf
+
+<a id="aq_analysis_scripts"></a>
+7.3 Summary of the AQ Analysis Scripts
+---------
 
 A brief summary of each of the C-shell scripts, with example plots from each script, is given below. To view the html files, you'll need to follow the link, click on "view raw", then save the page as an html file. You'll then be able to view the interactive html plot. 
 
@@ -1489,10 +1519,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 
 **run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries.html))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
-   - single network;single species; multiple simulations
+   - single network; single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>
-7.3 Creating a New Analysis Project
+7.4 Creating a New MET Analysis Project
 -------------------------------
 
 Creating a new analysis project in AMET requires the same basic steps for both
@@ -1517,13 +1547,13 @@ For example, to create a new WRF analysis project called “wrfNC2007”:
 
 ```
 cd $AMETBASE/scripts_analysis
-cp -r wrfExample wrfNC2007
+cp -r metExample_wrf wrfNC2007
 cd wrfNC2007
 ```
 
 Edit each of the C-shell analysis scripts to set the variable
 AMET\_PROJECT to wrfNC2007. The scripts will likely require other changes, like the
-analysis dates and custom titles.
+analysis dates, output options, plot format, etc.
 
 <a id="Adding_New_AQ_Network"></a>
 8. How to Add a New AQ Network to AMET
@@ -1533,7 +1563,7 @@ Adding support for a new AQ network to AMET is relatively simple, but does requi
 
 **1. Create a properly formatted observation data file for site compare.**
 
-This is generally the first step to setting up a new network for AMET. Format your new network obseration data in a format that site
+This is generally the first step to setting up a new network for AMET. Format your new network observation data in a format that site
 compare can read. Use one of the existing network observation data files as a template for creating your new data file. The most versatile data format is that for the SEARCH hourly data, as it contains both a start date/time and end date/time, which allows for maximum flexibility in pairing the observation data with the model data. In addition to the data file, you will need to create site list for your new network. Site files are available for download from the CMAS website along with the network data for the existing networks. These two files, the data file and site list file, will be referred to in Step 3. The data file is assumed to have the name "NewAQNet\_data\_$year.csv" and the site file should either be in the tab delimited text format with the name "NewAQNet\_sites.txt" or a comma separated metadata file with the name "NewAQNet\_full\_site\_list.csv". Note that the txt format of the site file is being phased out in favor of the comma separated metadata file. You will also need this site metadata file to populate the site_metadata_table in the database.
 
 **2. Modify the AQ_species_list.input file**
@@ -1548,7 +1578,7 @@ species\_NewAQNet <- paste(\"<br>
 species\_cutoff\_NewAQNet <- ""<br>
 species\_AE6\_NewAQNet <- ""<br>
 
-Once you've setup the species for your new network as above, move to the bottom of the AQ_species_list.input file. There you will see three lists defined containg the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Follow the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
+Once you have setup the species for a new network as above, move to the bottom of the AQ_species_list.input file. In that file, you will find three lists containing the species definition names for all the exising networks in AMET. You will need to add your new network to each of those lists, using the names above (i.e. species\_NewAQNet, species\_cutoff\_NewAQNet, and species\_AE6\_NewAQNet). Follow the formatting of the existing networks. Once you've done that, you can save your modified AQ_species_list.input file and move on to step 3.
 
 **3. Add your new network to the AQ_matching.R code**
 
@@ -1583,7 +1613,7 @@ By setting this flag to true, it will tell AMET you want to process your new net
 
 **5. Modify the analysis script files**
 
-The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new newtork is used in the analysis. You will need to modify the other run scripts with the same environment variable.
+The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new network is used in the analysis. You will need to modify the other run scripts with the same environment variable.
 
 setenv AMET_NEWAQNET y
 
@@ -1652,7 +1682,7 @@ population—for example, $AMETBASE/configure/amet-config.R.
 
 The analysis input files are found in
 $AMETBASE/scripts\_analysis/metExample_wrf. The following is a partial list of
-variables. Not all of these variables are available in every input file.
+variables. Not all of these variables are available in every input file. And, the analysis scripts and configuration files have comments describing these variables and others that may be missed below.
 
 <a id="Table_B-2"></a>
 **Table B‑2. MET analysis input variables**
@@ -1666,12 +1696,14 @@ variables. Not all of these variables are available in every input file.
 | **colpT**                | Color specifications for model evaluation metrics involving 2‑m temperature.                                                                                                                |
 | **colpWS**               | Color specifications for model evaluation metrics involving 10‑m wind.                                                                                                                      |
 | **convert**              | ImageMagick command. Used to crop margins of images. This variable has been deprecated.                                                                                                     |
+| **CURTAINM**             | Produce RAOB-based curtain plots (profile-time) on mandatory pressure levels for temperature, relative humidity and wind speed.
+| **CURTAINN**             | Produce RAOB-based curtain plots (profile-time) on native pressure levels.
 | **date**                 | Either one date used as both starting and ending date (default from **csh** script), or a vector containing starting and ending dates. Format: YYYYMMDD |
 | **datee**                | In **met\_aq\_coupled.input**, used to select ending date of analysis. Default uses value from **csh** script. In **summary.input**, used in the plot header to show the ending date used in the analysis. Does not change dates used in analysis. Format: YYYYMMDD |
 | **dates**                | In **met\_aq\_coupled.input**, used to select starting date of analysis. Default uses value from **csh** script. In **summary.input**, used in the plot header to show the starting date used in the analysis. Does not change dates used in analysis. Format: YYYYMMDD |                                                                                 |
-| **De**                   | Ending day of time series analysis. Default uses value from **csh** script.                                                                                                                 |
-| **Diurnal**              | Flag to partition and plot statistics as a function of time of day.                                                                                                                         |
-| **Ds**                   | Starting day of time series analysis. Default uses value from **csh** script.                                                                                                               |
+| **de**                   | Ending day of time series analysis. Default uses value from **csh** script.                                                                                                                 |
+| **diurnal**              | Flag to partition and plot statistics as a function of time of day.                                                                                                                         |
+| **ds**                   | Starting day of time series analysis. Default uses value from **csh** script.                                                                                                               |
 | **extra**                | Additional SQL criterion to use in database query.                                                                                                                                          |
 | **extra2**               | Additional SQL criterion to use in database query. This is for the second site in time series plot.                                                                                         |
 | **figdir**               | Directory where figures will be output. Default value comes from the **csh** script.                                                                                                        |
@@ -1715,12 +1747,11 @@ variables. Not all of these variables are available in every input file.
 | **pid**                  | A separate identification that is attached to the output. Can be used to distinguish between different output subsets for the same project. Default value is input from the **csh** script. |
 | **player**               | Logical to plot layer statistics.                                                                                                                                                           |
 | **plotfmt**              | File type of output. Default is taken from the **csh** script. Acceptable Values: **png**, **pdf**, **jpg**, or **eps**  |
-| **plotSingleProfile**    | Logical (T or F) for generating hourly model-obs wind vector and potential temperature profile plots                                                                                        |
 | **plotSiteMap**          | Logical (T or F) for generating a site location plot that can aid in identifying site IDs and locations.                                                                                    |
 | **plotsize**             | Scale factor to increase or decrease the size of plots. **1** = 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**)   |
-| **processprof**          | Logical to generate profile comparisons.                                                                                                                                                    |
-| **prof**                 | Logical (**T** or **F**) for plotting raob-model profile comparison.                                                                                                                        |
 | **proflim**              | Lower and upper limit of profile plot.                                                                                                                                                      |
+| **PROFM**                | Produce upper-air profile statistics from mandatory level data for specified sites, lat-lon bounds, state, country, region, etc.
+| **PROFN**                | Produce single-time comparison of model profiles of temperature and relative humidity with the RAOB profile on their native levels.
 | **project**              | AMET project name to be used in analysis. Default value is taken from **csh** run script.                                                                                                   |
 | **pwidth**               | Width of plot.                                                                                                                                                                              |
 | **qcQ**                  | Quality control limits of moisture data. (*Note:* All data outside of this range are not considered.)                                                                                       |
@@ -1734,6 +1765,7 @@ variables. Not all of these variables are available in every input file.
 | **saveid**               | Name of R data file.                                                                                                                                                                        |
 | **scex**                 | Scale factor for statistics text size.                                                                                                                                                      |
 | **shadeplot**            | Flag to plot shaded statistics plot in addition to point statistics plot.                                                                                                                   |
+| **SPATIALM**             | Produce upper-air spatial statistics for defined layer and lat-lon bounds.
 | **sres**                 | Resolution of shaded plot in degrees.                                                                                                                                                       |
 | **statid**               | In **timeseries\_plot**, the site ID to be used in the analysis. Default value is taken from the **csh** script. In **summary\_plot**, the station label to be used in labeling the plot.  |
 | **symb**                 | Symbol shape to be used in plots. See R documentation for shape numbers.                                                                                                                    |
@@ -1745,6 +1777,7 @@ variables. Not all of these variables are available in every input file.
 | **textstats**            | Logical to write text file of statistics.                                                                                                                                                   |
 | **thresh**               | Used in spatial surface to identify the minimum number of data points required at a particular site to compute the statistics.                                                              |
 | **time.of.day.utc**      | Range of time (UTC) to isolate met and AQ data (e.g., compare average temperature and average PM for hours between 6 and 12 UTC).                                                           |
+| **TSERIESM**             | Produce upper-air statistics timeseries plots and text output for specified layer, sites, lat-lon bounds, state, country, region, etc.
 | **tserieslen**           | Length in days of time series if real-time mode is activated.                                                                                                                               |
 | **uniquepnum**           | Unique plot number (random).                                                                                                                                                                |
 | **wantfigs**             | Flag to generate figures.                                                                                                                                                                   |
@@ -1769,7 +1802,7 @@ files all\_script.input and AMET\_batch.input.
 | **abs\_rang\_min**       | Specify the minimum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **abs\_range\_max**      | Specify the maximum value for the absolute value axis on spatial plots. **NULL**” – script defined limit |
 | **add\_query**           | Additional query syntax to add to the MySQL query. |
-| **aggregate\_data**      | Flag (y/n) to indicate whether or not to aggregate data from sites with multiple Parameter Occurrance Codes (POCs). If set to Y, data with different POCs from the same site will be averaged and compared to the model grid-cell value as a single data point. If set to N, the data will be treated as unique observations and each POC data point will be paired to the same model grid-cell value.    |
+| **aggregate\_data**      | Flag (y/n) to indicate whether or not to aggregate data from sites with multiple Parameter Occurrence Codes (POCs). If set to Y, data with different POCs from the same site will be averaged and compared to the model grid-cell value as a single data point. If set to N, the data will be treated as unique observations and each POC data point will be paired to the same model grid-cell value.    |
 | **all\_valid**           | Option to include only and all valid samples from the NADP (NTN) network:  “**y**” or “**n**”. Valid samples are based on the valid flag provided in the NADP obs file |
 | **all\_valid\_amon**     | Option to include only and all valid samples from the NADP AMON network:  “**y**” or “**n**”. Valid samples are based on the valid and replicates flags in the NTN obs file |
 | **aq\_database**         | AQ MySQL database. Most likely “**amet**”. |
@@ -1806,6 +1839,7 @@ files all\_script.input and AMET\_batch.input.
 | **inc\_counties**        | Option to include county borders on spatial plots:  “**y**” or “**n**”. |
 | **inc\_error**           | Option to include error on interactive plotly time series:  “**y**” or “**n**”. |
 | **inc\_FRM\_adj**        | Include FRM adjustment on stacked bar plots. Most users will set this to  “**n**”. Advanced users that calculated the FRM adjusted values for the CSN network may set this to  “**y**”. Default is  “**n**”. |
+| **inc\_kelly\_stats**    | Include numeric stat values on Kelly plots “**y**” or “**n**”. |
 | **inc\_legend**          | Include the legend on the time series plots: “**y**” or “**n**”. |
 | **inc\_median\_lines**   | Include median lines on box plots: “**y**” or “**n**”. |
 | **inc\_median\_points**  | Include median points on box plots: “**y**” or “**n**”. |
@@ -1816,11 +1850,14 @@ files all\_script.input and AMET\_batch.input.
 | **inc\_whiskers**        | Include whiskers on the box plots: “**y**” or “**n**”. |
 | **map\_leg\_size**       | Map legend size factor. Default is 0.65. |
 | **max\_limit**           | Used in the skill scatter plot script to set the "limit" at which an exceedance occurs. The default is 70, the current standard for MDA8 O3 in the United States. |
+| **mb\_int**               | Set MB interval value on Kelly plots |
 | **mb\_max**               | Set MB scale maximum on Kelly plots |
 | **me\_max**               | Set ME scale maximum on Kelly plots |
 | **me\_min**               | Set ME scale minimum on Kelly plots |
 | **median**               | Statistical averaging method to use for stacked barplot: **TRUE** – median, **FALSE** – mean |
+| **nmb\_int**              | Set NMB interval value on Kelly plots |
 | **nmb\_max**              | Set NMB scale maximum on Kelly plots |
+| **nme\_int**              | Set NME interval value on Kelly plots |
 | **nme\_max**              | Set NME scale maximum on Kelly plots |
 | **num\_ints**            | The number of color intervals to use for spatial plots. The script will ultimately determine the number of intervals, but **num\_ints** can be set to increase or decrease the number of intervals. |
 | **num\_obs\_limit**      | Specifies the minimum number of model/obs pairs per unit time (e.g day) required to do any site calculation. This can be used to eliminate days when only a small number of sites are available. |
@@ -1835,6 +1872,7 @@ files all\_script.input and AMET\_batch.input.
 | **plot\_symbols**        | Specify, by R symbol number, the order of plot symbols to use. 0-square; 1-circle; 2-triangle point up; 3-plus; 4-cross; 5-diamond; 6-triangle point down; 7-square cross; 8-star; 9-diamond plus; 10-circle plus; 11-triangles up and down; 12-square plus; 13-circle cross; 14-square and triangle down; 15-filled square; 16-filled circle; 17-filled triangle point-up; 18-filled diamond; 19-solid circle; 20-bullet (smaller circle); 21-filled circle blue; 22-filled square blue; 23-filled diamond blue; 24-filled triangle point-up blue; 25- filled triangle point down blue |
 | **plotfmt**              | Plot format, output type: “**PDF**” – pdf format, “**PNG**” – png format, “**BOTH**” – both pdf and png formats
 | **plotsize**             | Scale factor to increase or decrease the size of a 541 x 700 pixel (**png**) or 8.5 x 11 inch (**pdf**) plot. |
+| **png\_from\_html**      | Create png file from html file “**y**” or “**n**” |
 | **png\_res**             | Set resolution of output png files in DPI. Default is 300 dpi |
 | **quantile\_max**        | This is used to remove outliers when determining the plot scale to prevent very large scale values. Value between 0 and 1. Default is 0.999.  |
 | **quantile\_min**        | This is used to remove outliers when determining the plot scale to prevent very large scale values. Value between 0 and 1. Default is 0.001.  |
@@ -1842,6 +1880,7 @@ files all\_script.input and AMET\_batch.input.
 | **remove\_mean**         | Remove the observation/model mean statistics calculation, thereby just calculating the difference from the mean value |
 | **remove\_negatives**    | Remove negative values: “**y**” or “**n**”. default = “**y**”. |
 | **remove\_other**        | Remove “PM other” category from stacked bar plot analysis. |
+| **rmse\_int**            | Set RMSE interval value on Kelly plots |
 | **rmse\_max**            | Set RMSE scale maximum on Kelly plots |
 | **rmse\_min**            | Set RMSE scale minimum on Kelly plots |
 | **rmse\_range\_max**     | **RMS Error** range max limit: “**NULL**” – script defined limit |
