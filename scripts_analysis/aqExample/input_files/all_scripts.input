@@ -108,11 +108,7 @@ common_sites	<- "n"
 #####################################
 
 ### Monitoring Sites to Include ###
-site_id	<- "All"
-
-### Create individual time plots by site (y/n).
-### If set to y, the site variable will default to NULL
-by_site	<- "n"
+site<-"All"
 
 ### State to Include ###
 state	<- "All"
