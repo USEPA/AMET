@@ -121,11 +121,10 @@ state	<- "All"
 rpo	<- "None"
 
 ### Priciple Component Analysis (PCA) Region ###
-pca	<- "None"
+pca 	<- "None"
 
 ### Climate Region ###
 clim_reg <- "None"
-
 
 ### Merge statid and POC into a single site id name ###
 merge_statid_POC <-"y"
@@ -138,6 +137,9 @@ aggregate_data	<- "n"
 ############################
 ### Various Option Flags ###
 ############################
+
+### Time average flag (n=none; hour=h; day=d; month=m; season=s; annual=a; entire period=e; year/month=ym)
+averaging	<- "n"
 
 ### Flag to Include or Remove Zero Precipitation Observations ###
 zeroprecip	<- "n"
