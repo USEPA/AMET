@@ -1095,12 +1095,12 @@ physics or chemistry, spatial domain, scale, etc.) with the scripts used
 to analyze the AMET tables and with the output from the analysis (plots
 and data).
 
-Example air quality and met analysis scripts are located in $AMETBASE/scripts/analysis/aqExample and $AMETBASE/scripts/analysis/metExample_wrf, respectively.
+Example air quality and met analysis scripts are located in `$AMETBASE/scripts_analysis/aqExample` and `$AMETBASE/scripts_analysis/metExample_wrf`, respectively.
 Within each of these directories are C-shell
 wrapper scripts and a subdirectory called **input_files** containing a R configuration input file with
-similar names as the analysis scripts (e.g., run\_timeseries.csh and timeseries.input). These two
+similar names as the analysis scripts (e.g., `run_timeseries.csh` and `input_files/timeseries.input`). These two
 files set up everything that is necessary to configure and run the underlying AMET analysis R script (located in
-$AMETBASE/R_analysis_code). In AMETv1.5+ the R configuration input file was split into an input and a static.input file (e.g., timeseries.input and timeseries.static.input). This was mostly done to simplify the configuration for a new AMET GUI, but also helps distinquish settings a user can modify with static settings fundamental to the main R script. Also new to AMETv1.5+ is a universal confguration input file (run_info_MET.R) that can be used for all scripts and the GUI. These changes are all backward compatible with older analysis scripts. The use of the C-shell interface
+`$AMETBASE/R_analysis_code`). In AMETv1.5+ the R configuration input file was split into an input and a static.input file (e.g., timeseries.input and timeseries.static.input). This was mostly done to simplify the configuration for a new AMET GUI, but also helps distinquish settings a user can modify with static settings fundamental to the main R script. Also new to AMETv1.5+ is a universal confguration input file (`input_files/run_info_MET.R`) that can be used for all scripts and the GUI. These changes are all backward compatible with older analysis scripts. The use of the C-shell interface
 allows users who are not very familiar with R to perform a set of predefined
 analyses with AMET.
 
