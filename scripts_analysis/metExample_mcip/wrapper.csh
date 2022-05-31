@@ -30,7 +30,6 @@
   setenv AMET_YEAR 2018
   setenv THRESHOLD 120
 
-  setenv AMETBASE      /work/MOD3DEV/AMET
 
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
@@ -40,8 +39,8 @@
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   mysql.server.gov
+  setenv AMET_DATABASE  amet
+  setenv MYSQL_SERVER   localhost
 
   #  AMET project id or simulation id
   setenv AMET_PROJECT   metExample_mcip 

@@ -19,9 +19,9 @@
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE1  user_database
-  setenv AMET_DATABASE2  user_database
-  setenv MYSQL_SERVER   mysql.server.gov
+  setenv AMET_DATABASE1  amet
+  setenv AMET_DATABASE2  amet
+  setenv MYSQL_SERVER   localhost
 
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. If left unset, it's ignored.

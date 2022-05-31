@@ -14,13 +14,13 @@
  # External executables (NCO and R) required for precip evaluation
  # NCO programs to create NetCDF file with model and prism precip.
  # See: http://nco.sourceforge.net/
- set ncks     = /usr/local/apps/nco-4.6.6/intel-17.0/bin/ncks
- set ncrename = /usr/local/apps/nco-4.6.6/intel-17.0/bin/ncrename
- set ncatted  = /usr/local/apps/nco-4.6.6/intel-17.0/bin/ncatted
+ set ncks     = ncks
+ set ncrename = ncrename
+ set ncatted  = ncatted
 
  # Set Main R directories, function library and R script
- setenv R_LIBS   /usr/local/apps/R-3.4.0/intel-17.0/lib64/R/library
- setenv R_HOME   /usr/local/apps/R-3.4.0/intel-17.0/lib64/R
+ setenv R_LIBS   /nas/longleaf/home/lizadams/Rlibs
+ setenv R_HOME   /nas/longleaf/apps/r/4.1.3/lib64/R
  setenv R_SCRIPT $AMETBASE/R_analysis_code/MET_prism_precip.R
  ##########################################################################
 
@@ -52,8 +52,8 @@
  setenv PRISM_PREFIX PRISM_ppt_provisional_4kmD2_
  setenv PRISM_PREFIX PRISM_ppt_stable_4kmM3_
 
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism_daily
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism
+ setenv PRISM_DIR   /proj/ie/proj/CMAS/AMET/AMET_v15/obs/MET/prism_daily
+ setenv PRISM_DIR   /proj/ie/proj/CMAS/AMET/AMET_v15/obs/MET/prism
 
  # Note that this script only works for continous simulations where rainc and rainnc are the accumulated
  # precip over the month and not reset each day. Users have to match the model start and end day with time
@@ -62,8 +62,8 @@
  # start files date stamp with formats of wrfout_d01_2016-12-01_00:00:00 (WRF) and history.2016-12-01.nc(MPAS).
  # Model settings are either wrf or mpas and used only for the output file generation
  set model    = wrf
- setenv MODEL_START     /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/sens1/wrfout/OAQPS_2016/wrfout_subset_2016-07-01_00:00:00
- setenv MODEL_END       /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/sens1/wrfout/OAQPS_2016/wrfout_subset_2016-07-31_00:00:00
+ setenv MODEL_START     /proj/ie/proj/CMAS/AMET/AMET_v15/model_data/MET/metExample_wrf/wrfout_subset_2016-07-01_00:00:00
+ setenv MODEL_END       /proj/ie/proj/CMAS/AMET/AMET_v15/model_data/MET/metExample_wrf/wrfout_subset_2016-07-31_00:00:00
 
  setenv START_TINDEX    1
  setenv END_TINDEX      24

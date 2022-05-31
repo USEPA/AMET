@@ -22,9 +22,9 @@
   # MySQL database server connection and AMET databases. AMET_DATABASE1 is for 
   # AMET_PROJECT1 below and the same for DATABASE2 and PROJECT2. This allows
   # comparison of runs that may reside in different databases
-  setenv AMET_DATABASE1  user_database
-  setenv AMET_DATABASE2  user_database
-  setenv MYSQL_SERVER    mysql.server.gov
+  setenv AMET_DATABASE1  amet
+  setenv AMET_DATABASE2  amet
+  setenv MYSQL_SERVER    localhost
   
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. Project2 should be left blank for single project.
