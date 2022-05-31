@@ -169,6 +169,9 @@ rpo	<- "None"
 ### Priciple Component Analysis (PCA) Region ###
 pca	<- "None"
 
+### Climate Region ###
+clim_reg <- "None"
+
 ### Merge statid and POC into a single site id name ###
 merge_statid_POC <-"y"
 

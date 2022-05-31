@@ -50,7 +50,7 @@
  setenv REMAKE_PROJECT    F     #> T/F; Remake an existing AMET project. Note that all existing data will be deleted
  setenv DELETE_PROJECT    F     #> T/F; Delete an existing AMET project. This will delete all data in the existing
                                 #>      AMET table and remove the table from the database
-  setenv RENAME_PROJECT    F    #> T/F; Rename an existing AMET project. This will retain all existing data
+ setenv RENAME_PROJECT    F     #> T/F; Rename an existing AMET project. This will retain all existing data
                                 #>      Must also specify new project name using the environment variable NEW_AMET_PROJECT_NAME
 # setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
 
