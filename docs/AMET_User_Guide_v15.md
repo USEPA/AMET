@@ -1119,11 +1119,11 @@ cd $AMETBASE/scripts_analysis/metExample_mcip
 ```
 
 This directory contains a series of C-shell scripts and their accompanying
-input files (./input_files/ directory). There are detailed comments in the analysis scripts describing the main configuration options in the script. Other configuration options are set in the files under the ./input_files directory; the settings in these scripts are for fine tuning the AMET plots and typically do not need modification, especially the static files. Some of these other settings include color scales, text output options, and Quality Control limits. The settings for the met analysis scripts are all detailed in [Appendix B](#Appendix_B) [Table B-2](#Table_B-2).
+input files (`./input_files/` directory). There are detailed comments in the analysis scripts describing the main configuration options in the script. Other configuration options are set in the files under the `./input_files` directory; the settings in these scripts are for fine tuning the AMET plots and typically do not need modification, especially the static files. Some of these other settings include color scales, text output options, and Quality Control limits. The settings for the met analysis scripts are all detailed in [Appendix B](#Appendix_B) [Table B-2](#Table_B-2).
 
-The run\_spatial\_surface.csh script is used here as an example of how to run the analysis scripts. This particular script creates a series of maps comparing the surface observations to models for a specificed period (date start/end). Each plot provides color-coded model performance metrics (RMSE, MAE, BIAS and Anomaly Correlation) at each of the monitor locations.
+The `run_spatial_surface.csh` script is used here as an example of how to run the analysis scripts. This particular script creates a series of maps comparing the surface observations to models for a specificed period (date start/end). Each plot provides color-coded model performance metrics (RMSE, MAE, BIAS and Anomaly Correlation) at each of the monitor locations.
 
-Edit the run\_spatial\_surface.csh file and change the AMETBASE variable to the root AMET installation directory on your system. Set the location of the amet-config.R file; the default location is in the $AMETBASE/configure directory.  As noted previously in this guide, the settings in this file could be secured by limiting the read access to only the user. Alternatively this file can be "hidden" by saving it to $HOME/.amet-config.R. The corresponding input file for this example is input_files/spatial\_surface.input and will likely not need to be changed unless extra query specifications are needed or plot symbol size needs adjustment. Most of the primary configuration settings for the AMET analysis scripts are in the .csh run script. Other AMET installation and database settings to check in the run\_spatial\_surface.csh script are the AMET_DATABASE, MYSQL_SERVER, and AMET_PROJECT variables.  Analysis configuration settings in the script include:
+Edit the `run_spatial_surface.csh` file and change the AMETBASE variable to the root AMET installation directory on your system. Set the location of the amet-config.R file; the default location is in the $AMETBASE/configure directory.  As noted previously in this guide, the settings in this file could be secured by limiting the read access to only the user. Alternatively this file can be "hidden" by saving it to `$HOME/.amet-config.R`. The corresponding input file for this example is `input_files/spatial_surface.input` and will likely not need to be changed unless extra query specifications are needed or plot symbol size needs adjustment. Most of the primary configuration settings for the AMET analysis scripts are in the .csh run script. Other AMET installation and database settings to check in the run\_spatial\_surface.csh script are the AMET_DATABASE, MYSQL_SERVER, and AMET_PROJECT variables.  Analysis configuration settings in the script include:
 * AMET_OUT: directory where the plots and text output will be written
 * AMET_PTYPE: output plot format (pdf is recommended, but png is an option)
 * AMET_DATES and AMET_DATEE: start and end dates for the AMET analysis (format: YYYYDDMM HH)
@@ -1141,59 +1141,67 @@ The plots from this script will be written to the $AMETBASE/output/metExample_wr
 
 ```
 cd $AMETBASE/output/metExample_wrf/spatial_surface
+```
+
 or
+
+```
 cd $AMETBASE/output/metExample_mcip/spatial_surface
+```
+
 or
+
+```
 cd $AMETBASE/output/metExample_mpas/spatial_surface
 ```
 
 You should see a whole series of plots of the form:
 
-> wrfExample_wrf.&lt;stats&gt;.&lt;variable&gt;.2011-07-01\_00.2011-07-31\_23.pdf
+> metExample_wrf.&lt;stats&gt;.&lt;variable&gt;.20160701-20160801.pdf
 
 A brief summary of each of the C-shell scripts that drive the main R analyses, with example plots from each script, is given below.
 
-**run\_spatial_surface.csh** ([Example Spatial Plot](./images/metExample_mpas.rmse.T.20160701-20160801.pdf))
+**run_spatial_surface.csh** ([Example Spatial Plot](./images/metExample_mpas.rmse.T.20160701-20160801.pdf))
 - spatial_surface.input
 - spatial_surface.static.input
 - Creates maps of statistics at each observation site
 - Creates a csv file of the site specific statistics ([Example csv](./images/wrf_conus12_oaqps.rmse.T.20160101-20160131.pdf))
 
-**run\_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
+**run_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
 - timeseries.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
 - Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
-**run\_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
+**run_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
 - timeseries_rh.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
 - Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
 
-**run\_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
+**run_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
 - Creates two plots for each met variable. A diurnal statistics plot and summary plot with panels that include scatter plot, stats table, statistics as a function of the observation range.
 - Creates a csv file of both dirunal and overall statistics ([Example csv](./images/stats.metExample_wrf.JULY2016.csv))
 
-**run\_daily\_barplot.csh** ([Example Daily Plot](./images/metExample_wrf.JUL2016.T.daily_barplot_RMSE.pdf))
+**run_daily_barplot.csh** ([Example Daily Plot](./images/metExample_wrf.JUL2016.T.daily_barplot_RMSE.pdf))
 - daily_barplot.input
 - Creates a barplot of daily statistics values over the range of dates specified by user. One plot for each met variable and statistic.
 - Creates a csv file of daily statistics ([Example csv](./images/metExample_wrf.JUL2016.T.daily_stats.csv))
 
-**run\_plot\_radiation.csh** (Example plots: [Diurnal](./images/srad.diurnal.psu.20160701-20160801.pdf), [Spatial](./images/srad.spatial.late-afternoon.20160701-20160801.pdf), [Timeseries](./images/srad.timeseries.psu.20160701-20160801.pdf), [Histogram](./images/srad.histogram.psu.20160701-20160801.pdf))
+**run_plot_radiation.csh** (Example plots: [Diurnal](./images/srad.diurnal.psu.20160701-20160801.pdf), [Spatial](./images/srad.spatial.late-afternoon.20160701-20160801.pdf), [Timeseries](./images/srad.timeseries.psu.20160701-20160801.pdf), [Histogram](./images/srad.histogram.psu.20160701-20160801.pdf))
 - plot_radiation.input (note that pre-AMETv1.5 named this script "plot_srad" rather than "plot_radiation")
 - plot_radiation.static.input
 - Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
 - Creates a csv file for  ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
 
-**run\_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
+**run_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
 - raob.input
 - raob.static.input
 - Creates a number of plots. Not all are shown above. See script for full details.
 - Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.csv))
 
-**run\_prism\_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
+**run_prism_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
 - Creates a NetCDF file in the model output format.
 - Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
 - Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
@@ -1202,7 +1210,7 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - A new script in AMETv1.5 that acts as a wrapper for most of the scripts listed above (spatial, daily barplot, summary, raob and radiation).
 - Uses an wrapper run code (e.g., DB.MN) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot (DB) statistics for each month (MN) of a defined year.
 - The script lists all availiable options that include monthly, seasonal, regional-monthly and regional-seasonal statistics for the various analysis scripts.
-- The run_info_MET.R configuration allows further refinement so users can build a complete model evaluation protocol and run from a single script execution.
+- The `run_info_MET.R` configuration allows further refinement so users can build a complete model evaluation protocol and run from a single script execution.
 - The new AMET GUI will also allow have capability from a user interface. 
 
 
@@ -1217,27 +1225,27 @@ cd $AMETBASE/scripts_analysis/aqExample
 ```
 
 The directory includes a set of C-shell scripts and their accompanying
-input files in the subdirectory **input\_files**. The example below provides details on running one of the scripts
+input files in the subdirectory **input_files**. The example below provides details on running one of the scripts
 in the example project.
 
-The run\_scatterplot.csh script creates a scatterplot for one species
+The `run_scatterplot.csh` script creates a scatterplot for one species
 from one or more monitoring networks. It compares the observed values to
 the corresponding model values. As not all of the AQ monitoring networks monitor all species, users
 need to know which network(s) to select for particular model species. See [Section 4.2](#Observational_Data) and [Appendix B](#Appendix_B) for more
 details on the various species that are monitored (or available) from
 each AQ network.
 
-Edit the run\_scatterplot.csh file to run an example AQ analysis. Below is a table describing
-the option available in the run\_scatterplot.csh script. Note that for this example the
+Edit the `run_scatterplot.csh` file to run an example AQ analysis. Below is a table describing
+the option available in the `run_scatterplot.csh` script. Note that for this example the
 default script has SO4 as the selected species and the IMPROVE and
 CASTNET networks as the observational data to use for the SO4 evaluation. The corresponding input file, scatterplot.input, will likely not
 need to be changed for this example.
 
-Each script requires an input file, located in the subdirectory **input\_files**.
+Each script requires an input file, located in the subdirectory `input_files`.
 The input file contains all the options available for each script, and allows
 the user to customize scripts to their liking. Unlike previous version of AMET 
 where each script had its own individual input file, for AMETv1.4b and beyond, 
-all scripts by default will use the **all_scripts.input** file, which contains 
+all scripts by default will use the `all_scripts.input` file, which contains 
 all the options available for all the analysis scripts. This eliminates the need 
 to edit each individual input file. 
 
@@ -1250,7 +1258,7 @@ below in table 7-2.<a id="Table_7-2"></a>
 | **AMETBASE**                     | Base directory where AMET is installed. |
 | **AMET\_DATABASE**               | MySQL database containing your project. |
 | **AMET\_PROJECT**                | Name of the AMET project to analyze. |
-| **AMET\_OUT**                    | Location to which to write output files (e.g. plots). By default this is set to $AMETBASE/output/$AMET_PROJECT/$analysis_script_type. |
+| **AMET\_OUT**                    | Location to which to write output files (e.g. plots). By default this is set to `$AMETBASE/output/$AMET_PROJECT/$analysis_script_type`. |
 | **AMET\_DB**                     | Flag to indicate whether or not to get data from the MySQL database. If T, data
 will be retrieved from the database. If F, the site compare files will be read directly. If AMET_DB=F, the environment
 variable OUTDIR must be set indicating where the site compare files are located. |
@@ -1577,7 +1585,7 @@ compare can read. Use one of the existing network observation data files as a te
 
 **2. Modify the AQ_species_list.input file**
 
-The AQ_species_list.input file, located in the input_files subdirectory in the scripts_db directory off the AMET base code directory, is used to setup the observation species to model species mapping. This is a R formatted input script. Again, the best method for setting up a new network is to follow the formatting of an existing network. Start by choosing a name for your new AQ network that does already exist in AMET. The name should be short, but descriptive of your network. In the example below the new network is called NewAQNet. There are three "categories" of species that can be setup with AMET. There is a standard set of species which are always computed, and then there are two optional sets of species call "cutoff" and "AE6". For most users, the "cutoff" and "AE" species can simply be left empty, as in the example below. The example below creates a new network with three species, SO4, NO3 and PM_TOT. Any number of addition species could be added using the same formatting and sequential numbering as below. 
+The `AQ_species_list.input file`, located in the `input_files` subdirectory in the scripts_db directory off the AMET base code directory, is used to setup the observation species to model species mapping. This is a R formatted input script. Again, the best method for setting up a new network is to follow the formatting of an existing network. Start by choosing a name for your new AQ network that does already exist in AMET. The name should be short, but descriptive of your network. In the example below the new network is called NewAQNet. There are three "categories" of species that can be setup with AMET. There is a standard set of species which are always computed, and then there are two optional sets of species call "cutoff" and "AE6". For most users, the "cutoff" and "AE" species can simply be left empty, as in the example below. The example below creates a new network with three species, SO4, NO3 and PM_TOT. Any number of addition species could be added using the same formatting and sequential numbering as below. 
 
 species\_NewAQNet <- paste(\"<br>
   setenv AERO\_1 \"SO4f\_val,ug/m3,ASO4IJ,,SO4\"                         # sulfate<br>
