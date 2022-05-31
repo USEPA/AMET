@@ -771,7 +771,14 @@ after, the script runs very fast. This is a new option in AMETv1.4. AMETv1.5 add
 This C-shell is executed like the ones above. It will create a new table wrfExample_wrf_raob specifically
 for profile observations. Like the surface meteorology, this script will download MADIS rawinsonde observations
 and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
-troposphere.
+troposphere. 
+
+For the metExample_mcip, the matching_raob.csh needs to increment over the number of days.
+Recommend using the loop_over_days.csh script.
+
+```
+./loop_over_days.csh |& tee log.populate.raob
+```
 
 
 <a id="AQ_Project"></a>
