@@ -15,7 +15,7 @@
 #       PURPOSE: Run Site Compare and then put the       #
 #                output into the MYSQL database for AMET #
 #                                                        #
-#	LAST UPDATE by Wyat Appel: Feb 2022              #
+#                                                        #
 ##------------------------------------------------------##
 
 amet_base <- Sys.getenv('AMETBASE')
@@ -41,6 +41,7 @@ if ((AMET_DB == "y") || (AMET_DB == "Y") || (AMET_DB == "t") || (AMET_DB == "T")
       stop("Must set AMET_DATABASE environment variable")
    }
 }
+#print("Got Here")
 EXEC_sitex	 <- Sys.getenv('EXEC_sitecmp')
 if ((!exists("EXEC_sitex")) || (EXEC_sitex == "") || (EXEC_sitex == "Config_file")) { EXEC_sitex <- EXEC_sitex_config }
 
@@ -118,6 +119,8 @@ aganet_flag	       <- Sys.getenv('AGANET')		      # Flag to include Europe AGANE
 admn_flag	       <- Sys.getenv('ADMN')		      # Flag to include Europe ADMN data in analysis
 namn_flag	       <- Sys.getenv('NAMN')		      # Flag to include Europe NAMN data in analysis
 toar_flag	       <- Sys.getenv('TOAR')
+
+#project_id <- gsub("[.]","_",project_id)
 
 ### Check if using old definition names in run script ###
 if (castnet_daily_o3_flag == "") {
@@ -458,9 +461,6 @@ if ((nadp_flag == "y") || (nadp_flag == "Y") || (nadp_flag == "t") || (nadp_flag
    network       <- "NADP"
    site_file     <- paste(obs_data_dir,site_file_directory,"/NADP",site_file_name,sep="")
    ob_file       <- paste(obs_data_dir,"/",year,"/NADP_data_",year,".csv",sep="")
-   if (year < 2000) {
-      ob_file       <- paste(obs_data_dir,"/All_Years/NADP_NTN_data_all.csv",sep="")
-   }
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -478,7 +478,7 @@ if ((mdn_flag == "y") || (mdn_flag == "Y") || (mdn_flag == "t") || (mdn_flag == 
    table_type    <- "NADP"
    network       <- "MDN"
    site_file     <- paste(obs_data_dir,site_file_directory,"/MDN",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/All_Years/MDN_data_",year,".csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/MDN_data_",year,".csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
@@ -487,7 +487,7 @@ if ((amon_flag == "y") || (amon_flag == "Y") || (amon_flag == "t") || (amon_flag
    table_type    <- "CASTNET"
    network       <- "AMON"
    site_file     <- paste(obs_data_dir,site_file_directory,"/AMON",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/All_Years/AMON_data.csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/AMON_data.csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
