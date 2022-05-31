@@ -1618,11 +1618,11 @@ Once you've modified the AQ_matching.R code as above, you can save your modified
 
 **4. Modify the aqProject.csh script**
 
-As mentioned in step 1, you'll need to add the site_metadata table to the database in order for database queries for your new network to function properly. Follow the format of an existing network metadata file to create your new file. Once you've created your new file, place it in the $AMETBASE/obs/AQ/site\_metadata\_files directory. Next move to the $AMETBASE/scripts\_db/input\_files directory. Here you will modify the sites\_meta.input file and add your new metadata file to the list of existing files. It does not matter where in the list you place your new file, just be sure to update the file numbering according. Once you've done that, you'll next need to modify and re-run the project creation script (default name is aqProject.csh in the $AMETBASE/script_db/aqExample directory). 
+As mentioned in step 1, you will need to add the site_metadata table to the database in order for database queries for your new network to function properly. Follow the format of an existing network metadata file to create your new file. Once you have created your new file, place it in the `$AMETBASE/obs/AQ/site_metadata_files` directory. Next move to the `$AMETBASE/scripts_db/input_files` directory. Here you will modify the sites\_meta.input file and add your new metadata file to the list of existing files. It does not matter where in the list you place your new file, just be sure to update the file numbering according. Once you have done that, you will next need to modify and re-run the project creation script (default name is `aqProject.csh` in the `$AMETBASE/script_db/aqExample directory`). 
 
-If you are adding a new network to an existing project (i.e. database is already created and setup), then all you need to do is re-run the loading of the site_metadata (no new tables need to be created). This can be accomplished using the flag RELOAD_METADATA in the aqProject.csh script. Setting that flag to T will reload the site metadata for all networks, regardless of whether or not the site_metadata table already exists and is populated (existing data are simply overwritten with the same data). To add your new network site metadata, set the flag to T. The next time you execute the run script, the site metadata table will be repopulated, this time including your new network. You only need to do this once. So, after you've run the script and added your new network metadata, you should set the RELOAD_METADATA flag to F. 
+If you are adding a new network to an existing project (i.e. database is already created and setup), then all you need to do is re-run the loading of the site_metadata (no new tables need to be created). This can be accomplished using the flag RELOAD_METADATA in the `aqProject.csh` script. Setting that flag to T will reload the site metadata for all networks, regardless of whether or not the site_metadata table already exists and is populated (existing data are simply overwritten with the same data). To add your new network site metadata, set the flag to T. The next time you execute the run script, the site metadata table will be repopulated, this time including your new network. You only need to do this once. So, after you have run the script and added your new network metadata, you should set the RELOAD_METADATA flag to F. 
 
-The next step is to further modify the aqProject.csh script. Open the aqProject.csh script and move to the section containing the flags for the networks to include in the analysis. Here you will add your network to the list of network to process using the same formatting as an existing network per the example below.
+The next step is to further modify the `aqProject.csh` script. Open the `aqProject.csh` script and move to the section containing the flags for the networks to include in the analysis. Here you will add your network to the list of network to process using the same formatting as an existing network per the example below.
 
 setenv NEWAQNET T
 
@@ -1630,11 +1630,11 @@ By setting this flag to true, it will tell AMET you want to process your new net
 
 **5. Modify the analysis script files**
 
-The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in $AMETBASE/scripts\_analysis/aqExample and the input files in $AMETBASE/scripts\_analysis/aqExample/input\files/. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new network is used in the analysis. You will need to modify the other run scripts with the same environment variable.
+The final step to adding your new network to AMET is to modify the analysis scripts to include your new network. This is accomplished by modifying the run scripts in `$AMETBASE/scripts_analysis/aqExample` and the input files in `$AMETBASE/scripts_analysis/aqExample/input_files/`. Begin by opening one of the run scripts, for example the run\_boxplot.csh script. In the run script, under the section titled with "Observation Network to plot", you will need to add a new environment variable for your new network. This will be used to set whether or not your new network is used in the analysis. You will need to modify the other run scripts with the same environment variable.
 
 setenv AMET_NEWAQNET y
 
-Once you've done that, the last step is to modify the Network.input file in the input_files subdirectory. Move to the input_files subdirectory and open the Network.input file. In there you will see a section called "Network selection flags from run script". Here, you will need to add your new network as per the example below.
+Once you have done that, the last step is to modify the Network.input file in the input_files subdirectory. Move to the input_files subdirectory and open the Network.input file. In there you will see a section called "Network selection flags from run script". Here, you will need to add your new network as per the example below.
 
 inc_newaqnet <- Sys.getenv("AMET_NEWAQNET")
 
@@ -1645,9 +1645,9 @@ if (inc_newaqnet == "y") {<br>
    network_label <- c(network_label,"NewAQNet")<br>
 }<br>
 
-Once you've done that, you can save your modified version of the Network.input file.
+Once you have done that, you can save your modified version of the Network.input file.
 
-After you've completed all the steps above, you should be ready to process your new network with AMET. The modifications above will allow you to run site compare to create paired model/ob data files and add those data to the database, and also allow you to run analysis scripts using your new network.
+After you have completed all the steps above, you should be ready to process your new network with AMET. The modifications above will allow you to run site compare to create paired model/ob data files and add those data to the database, and also allow you to run analysis scripts using your new network.
 
 <a id="CMAS_Support"></a>
 9. CMAS Support for AMET
