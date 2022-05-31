@@ -311,3 +311,4 @@ stat_file	<- ""
 ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
 source(ametNetworkInput) # Network related input
 
+if (by_site != 'y') { site <- site_id }
