@@ -1,8 +1,9 @@
 #!/bin/csh -f
 #> symlink the v5.3.3 Species Definition files
+# edit the /path_to/ to specify the location of your install of CMAQ
 
  set CMD = '/bin/ln -s'
- set src = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/build/CMAQ_REPO_v533/CCTM/src/MECHS
+ set src = /path_to/CMAQv5.3.3/build/CMAQ_REPO_v533/CCTM/src/MECHS
 
  $CMD $src/cb6mp_ae6_aq/SpecDef_Dep_cb6mp_ae6_aq.txt
  $CMD $src/cb6mp_ae6_aq/SpecDef_cb6mp_ae6_aq.txt
