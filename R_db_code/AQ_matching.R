@@ -15,6 +15,7 @@
 #       PURPOSE: Run Site Compare and then put the       #
 #                output into the MYSQL database for AMET #
 #                                                        #
+#       LAST UPDATE: 06/2022 by K. Wyat Appel		 #
 #                                                        #
 ##------------------------------------------------------##
 
@@ -34,24 +35,26 @@ if (!exists("AMET_DB")) {
    print("AMET_DB flag not set. Defaulting to T. Set AMET_DB flag in run script.")
    AMET_DB <- "T"
 }
-print(AMET_DB)
 if ((AMET_DB == "y") || (AMET_DB == "Y") || (AMET_DB == "t") || (AMET_DB == "T")) {
    dbase <-Sys.getenv('AMET_DATABASE')
    if (!exists("dbase")) {
       stop("Must set AMET_DATABASE environment variable")
    }
 }
-#print("Got Here")
 EXEC_sitex	 <- Sys.getenv('EXEC_sitecmp')
-if ((!exists("EXEC_sitex")) || (EXEC_sitex == "") || (EXEC_sitex == "Config_file")) { EXEC_sitex <- EXEC_sitex_config }
+if ((!exists("EXEC_sitex")) || (EXEC_sitex == "")) { 
+   stop("Path to site compare executable (EXEC_sitecmp) not set! This path must be set in the run script if running site compare to do the model-obs matching.")
+}
 
 EXEC_sitex_daily <- Sys.getenv('EXEC_sitecmp_dailyo3')
-if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "") || (EXEC_sitex_daily == "Config_file")) { EXEC_sitex_daily <- EXEC_sitex_daily_config }
+if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "") { 
+   stop("Path to site compare daily executable (EXEC_sitecmp_dailyo3) not set! This path must be set in the run script if running site compare daily to do the model-obs matching.")
+}
 
 num_avg_hours <- Sys.getenv('HOURS_8HRMAX')
 if (!exists("num_avg_hours")) {
-   print("Number of 8hr max averaging hours not set. Defaulting to 24. To set the averaging hours, specify HOURS_8HRMAX (setenv HOURS_8HRMAX) as either 17 or 24 in the AMET run script.")
-   num_avg_hours <- 24
+   print("Number of 8hr max averaging hours not set. Defaulting to 17. To set the averaging hours, specify HOURS_8HRMAX (setenv HOURS_8HRMAX) as either 17 or 24 in the AMET run script.")
+   num_avg_hours <- 17 
 }
 
 args              <- commandArgs(2)
@@ -288,7 +291,6 @@ run_sitex <- function(network) {
    j <- 1
    m3_files=""
    M3_FILE <- Sys.getenv('CONC_FILE_1')
-   print(network)
    if ((network == "NADP") || (network == "CAPMoN") || (network == "MDN") || (network == "CASTNET_Drydep") || (network == "CASTNET_Drydep_O3") || (network == "EMEP_Dep")) {
       M3_FILE <- Sys.getenv('DEP_FILE_1')
    }
