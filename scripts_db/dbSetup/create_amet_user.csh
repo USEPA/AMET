@@ -7,8 +7,8 @@
 ###############################################################
 
 ## setup:
-## Top AMET directory tree
-#setenv AMETBASE /proj/ie/proj/CMAS/AMET/AMET_v14b
+## Top AMET directory tree. Can be defined explicity here or in user setenv for universal use.
+#setenv AMETBASE 
 
 ## AMET login info. Uncomment to specify AMET login/pass via script instead of via prompt/qsub command line. ###
 ### Entering 'config_file' will obtain the login/pass from the amet-config.R file instead. ###

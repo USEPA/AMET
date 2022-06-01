@@ -3,7 +3,7 @@
 #                          USER CONFIGURATION
 
 # Main AMET directory location. Can be defined explicity here or in user setenv for universal use.
-setenv AMETBASE   /proj/ie/proj/CMAS/AMET/AMET_v15
+#setenv AMETBASE   
 
 # Define Database and Password from argument input
 setenv MYSQL_LOGIN   ametsecure

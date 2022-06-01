@@ -10,7 +10,7 @@ echo 'begday=',$begday
 set endday       = 20160731
 echo 'endday=',$endday
 
-setenv METTMPDIRX /proj/ie/proj/CMAS/AMET/AMET_v15/model_data/MET/metExample_mcip/TMP
+setenv METTMPDIRX $AMETBASE/model_data/MET/metExample_mcip/TMP
 
 #############################################################
 set sfcscript   = $AMETBASE/scripts_db/metExample_mcip/matching_surface.csh

@@ -36,8 +36,8 @@ set    mysql_password="config_file"
 setenv AMET_PROJECT 	"aqExample"
 setenv MODEL_TYPE 	"CMAQ"
 setenv RUN_DESCRIPTION 	"AQ example project; July 2016"
-setenv USER_NAME 	`whoami`
-setenv EMAIL_ADDR 	"someone@somewhere.org"
+setenv USER_NAME 	`lizadams`
+setenv EMAIL_ADDR 	"lizadams@email.unc.edu"
 
 ### AQ observation data directory and input files ###
 setenv AMET_OBS 	$AMETBASE/obs/AQ
