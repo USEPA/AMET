@@ -7,8 +7,16 @@
 #start_date	<- 20110701
 #end_date	<- 20110714
 
-start_date 	<- gsub('-','',Sys.getenv("AMET_SDATE"))
-end_date   	<- gsub('-','',Sys.getenv("AMET_EDATE"))
+start_date      <- gsub('-','',Sys.getenv("START_DATE_H"))
+end_date        <- gsub('-','',Sys.getenv("END_DATE_H"))
+
+start_year <- substr(start_date,1,4)
+end_year <- substr(end_date,1,4)
+start_month <- substr(start_date,5,6)
+end_month <- substr(end_date,5,6)
+
+if(start_year == end_year) { year_label <- start_year }
+if(start_month == end_month) { month_label <- start_month }
 
 date_query <- paste("d.ob_dates between ",start_date," and ",end_date," and d.ob_datee between ",start_date," and ",end_date,sep="")
 
