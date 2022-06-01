@@ -64,7 +64,7 @@
   ### AE6 (CMAQv5.0) Species
   ### Na,Cl,Al,Si,Ti,Ca,Mg,K,Mn,Soil,Other,Ca_dep,Ca_conc,Mg_dep,Mg_conc,K_dep,K_conc
 
-  setenv AMET_AQSPECIES PM25_TOT
+  setenv AMET_AQSPECIES O3 
 
   ### Observation Network to plot -- One only
   ### Uncomment to set to 'T' and process that nework,
@@ -81,8 +81,8 @@
   #  setenv AMET_CASTNET_Drydep T
   #  setenv AMET_NADP           T
   #  setenv AMET_AIRMON         T
-    setenv AMET_AQS_Hourly     T
-  #  setenv AMET_AQS_Daily_O3   T
+  #  setenv AMET_AQS_Hourly     T
+    setenv AMET_AQS_Daily_O3   T
   #  setenv AMET_AQS_Daily       T
   #  setenv AMET_SEARCH         T
   #  setenv AMET_SEARCH_Daily   T
