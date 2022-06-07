@@ -63,7 +63,7 @@
   ######################################################################
 
   ## Set the input file for this R script
-  setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
+  setenv AMETRINPUT  $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/run_info_MET.R
   setenv AMETRINPUT  $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries_rh.input
   setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT1/input_files/timeseries.static.input
   
