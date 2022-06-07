@@ -26,7 +26,7 @@
 
  # Project/Model ID name
 
- setenv AMET_PROJECT metExample_mpas
+ setenv AMET_PROJECT metExample_wrf
 
  # New NetCDF file that will contain model (MODEL_PRECIP_MM) and prism precip (PRISM_PRECIP_MM).
  # This file is created using NCO (NetCDF Operator executables) ncks, ncatted and ncrename.
@@ -62,8 +62,8 @@
  # start files date stamp with formats of wrfout_d01_2016-12-01_00:00:00 (WRF) and history.2016-12-01.nc(MPAS).
  # Model settings are either wrf or mpas and used only for the output file generation
  set model    = wrf
- setenv MODEL_START     /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/sens1/wrfout/OAQPS_2016/wrfout_subset_2016-07-01_00:00:00
- setenv MODEL_END       /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/sens1/wrfout/OAQPS_2016/wrfout_subset_2016-07-31_00:00:00
+ setenv MODEL_START     $AMETBASE/model_data/MET/$AMET_PROJECT/wrfout_subset_2016-07-01_00:00:00
+ setenv MODEL_END       $AMETBASE/model_data/MET/$AMET_PROJECT/wrfout_subset_2016-07-31_00:00:00
 
  setenv START_TINDEX    1
  setenv END_TINDEX      24

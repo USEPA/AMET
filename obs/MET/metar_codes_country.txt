@@ -9,7 +9,7 @@ DA	Algeria
 DB	Benin
 DF	Burkina Faso
 DG	Ghana
-DI	Côte d'Ivoire
+DI	Cte d'Ivoire
 DN	Nigeria
 DR	Niger
 DT	Tunisia
@@ -187,13 +187,13 @@ SY	Guyana
 TA	Antigua and Barbuda
 TB	Barbados
 TD	Dominica
-TF	Guadeloupe, Martinique, Saint Barthélemy, Saint Martin
+TF	Guadeloupe, Martinique, Saint Barthlemy, Saint Martin
 TG	Grenada
 TI	U.S. Virgin Islands
 TJ	Puerto Rico
 TK	Saint Kitts and Nevis
 TL	Saint Lucia
-TN	Caribbean Netherlands, Aruba, Curaçao, Sint Maarten
+TN	Caribbean Netherlands, Aruba, Curaao, Sint Maarten
 TQ	Anguilla
 TR	Montserrat
 TT	Trinidad and Tobago
