@@ -1662,7 +1662,8 @@ Appendix B
 <a id="Appendix_C"></a>
 Appendix C
 ==========
-([Statisical metric reference document](./modelperformancestatisticsdefinitions_AMET.pdf))
+[Statisical metric reference document](./modelperformancestatisticsdefinitions_AMET.pdf)
+
 
 
 ### R Configuration File (amet-config.R)
