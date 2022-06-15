@@ -2,15 +2,14 @@
 #############################################################
 # Main run config setttings: date start/end, WRF exe, RunID,
 #                            relevant dirs
-set begday       = 20201018
-set endday       = 20201029
+setenv AMETBASE   /home/user/AMET
 
-setenv METTMPDIRX /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/12us/mcip/EPA_MCIP/TMP
+set begday       = 20160701
+set endday       = 20160731
 
 #############################################################
-set sfcscript   = /home/grc/AMET_v13/scripts_db/mcip_12us1/matching_surface.csh
-set bsrnscript   = /home/grc/AMET_v13/scripts_db/mcip_12us1/matching_bsrn.csh
-set raobscript   = /home/grc/AMET_v13/scripts_db/mcip_12us1/matching_raob.csh
+set sfcscript   = $AMETBASE/scripts_db/metExample_mcip/matching_surface.csh
+set raobscript  = $AMETBASE/scripts_db/metExample_mcip/matching_raob.csh
 #############################################################
 
 
@@ -25,20 +24,23 @@ while ( $date <= $endday )
   setenv MMS   `echo $date |cut -b5-6`
   setenv DDS   `echo $date |cut -b7-8`
 
-  setenv GRIDCROX /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/12us/mcip/EPA_MCIP/GRIDCRO2D
-  setenv METCRO2DX  /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/12us/mcip/EPA_MCIP/METCRO2D_${date}.nc4
-  setenv METCRO3DX  /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/12us/mcip/EPA_MCIP/METCRO3D_${date}.nc4
-  setenv METDOT3DX  /work/MOD3DEV/grc/NRT_WRF_CMAQ/model_outputs/12us/mcip/EPA_MCIP/METDOT3D_${date}.nc4
+  setenv METTMPDIRX $AMETBASE/model_data/MET/metExample_mcip/TMP
+  setenv GRIDCROX   $AMETBASE/model_data/MET/metExample_mcip/GRIDCRO2D
+  setenv METCRO2DX  $AMETBASE/model_data/MET/metExample_mcip/METCRO2D_${YYS}${MMS}${DDS}.nc
+  setenv METCRO3DX  $AMETBASE/model_data/MET/metExample_mcip/METCRO3D_${YYS}${MMS}${DDS}.nc
+  setenv METDOT3DX  $AMETBASE/model_data/MET/metExample_mcip/METDOT3D_${YYS}${MMS}${DDS}.nc
 
   echo $date
 
-  echo "Running AMET radiation matching"
-   $bsrnscript
-  echo "Running AMET surface matching"
-   $sfcscript
-  echo "Running AMET raob matching"
-   $raobscript
-  
+  echo "Running AMET upper-air met matching"
+  $raobscript
+ 
+  ## SURFACE MET disabled below. To enable daily surface met matching the $sfcscript needs
+  ## this line modified for correct METOUTPUT setting passed into the script:
+  ##  setenv METOUTPUT ${METCRO2DX}
+  #echo "Running AMET surface met matching"
+  #$sfcscript
+ 
  ###########################################################
  # Advance day +1
  set date = `date -d "$date 1 days" '+%Y%m%d' `

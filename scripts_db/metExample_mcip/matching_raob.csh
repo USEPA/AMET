@@ -35,12 +35,24 @@ setenv FORECAST F
 # A temporary directory is created. The MCIP files are linked into this temp directory
 # using these generic names using extra RAOB specific scripting towards the end of this
 # csh wrapper. This works for one set of MCIP. If one has mutiple sets of MCIP a wrapper
-# looping script is provided as an example in this same directory where you can loop over
-# days for example and pass those specs into this script and run within this loop.
+# looping script is provided loop_over_days.csh pass those specs into this script.
+# Logic below checks to see if this script should run just one or via looper. 
 setenv METTMPDIR $AMETBASE/model_data/MET/$AMET_PROJECT/TMP
-setenv GRIDCRO   $AMETBASE/model_data/MET/$AMET_PROJECT/GRIDCRO2D_20160701.nc4
-setenv METCRO    $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO3D_20160701.nc4
-setenv METDOT    $AMETBASE/model_data/MET/$AMET_PROJECT/METDOT3D_20160701.nc4
+
+# Single Day Example
+setenv GRIDCRO   $AMETBASE/model_data/MET/$AMET_PROJECT/GRIDCRO2D
+setenv METCRO    $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO3D_160701.nc
+setenv METDOT    $AMETBASE/model_data/MET/$AMET_PROJECT/METDOT3D_160701.nc
+
+# Logic to check for case where MCIP files are being passed by loop_over_day.csh wrapper
+if ( ! $?METCRO3DX || ! $?METDOT3DX || ! $?GRIDCRO) then
+   echo "Script not set in daily run mode. Will run matching for a single day. "
+else
+   echo "METCRO3D and METDOT3D files are being passed into script via loop_over_days.csh"
+   setenv GRIDCRO   $GRIDCROX
+   setenv METCRO    $METCRO3DX
+   setenv METDOT    $METDOT3DX
+endif
 
 # Matching Mode options.
 # Native level matching   : Store full Rawindsonde profile and model profile on their native levels.
