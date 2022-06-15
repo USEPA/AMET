@@ -10,5 +10,5 @@ The following documents are available for the AMET v1.5 release:
 
 - [Installation Guide](AMET_Install_Guide_v15.md): Detailed technical information on downloading, installing, configuring and testing AMET.
 
-- [User Guide](AMET_Users_Guide_v15.md): Description of overall directory structure, overview of observed data and model outputs required by the software, instructions on creating and populating the AMET MySQL database and instructions on using the various AMET scripts to perform model evaluation.
+- [User Guide](AMET_User_Guide_v15.md): Description of overall directory structure, overview of observed data and model outputs required by the software, instructions on creating and populating the AMET MySQL database and instructions on using the various AMET scripts to perform model evaluation.
 
