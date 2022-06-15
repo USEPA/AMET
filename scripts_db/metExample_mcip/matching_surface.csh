@@ -36,9 +36,13 @@ setenv FORECAST F
 # no time information, so a single file is used for all METCRO2D files.
  setenv METOUTPUT $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO2D
 
- # Uncomment to run this script via loop_over_days.csh wrapper example.
- #setenv METOUTPUT ${METCRO2DX}
-
+# Logic to check for case where MCIP files are being passed by loop_over_day.csh wrapper
+if ( ! $?METCRO2DX ) then
+   echo "Script not set in daily run mode. Will run matching based on METOUTPUT above. "
+else
+   echo "METCRO2D file is being passed into script via loop_over_days.csh"
+   setenv METOUTPUT  $METCRO2DX
+endif
 
 # MADIS dataset to match with MPAS, WRF or MCIP
 # Options: metar, maritime, sao, mesonet, or text for non-MADIS obs input
@@ -58,7 +62,6 @@ setenv MAXDTMIN 10
 # output that may have already been matched. Typical values are 2 and 1, so initial time is skipped
 # in the first model output, but not for all the following outputs.
 setenv SKIPIND "1 1"
-
 
 # If T, the master stations table in database will be updated with any new observation site metadata. May be wise to 
 # turn on from time to time as new sites around the world are added to the MADIS database. 
