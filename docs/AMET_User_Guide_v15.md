@@ -33,6 +33,7 @@
 [References](#References)<br>
 [Appendix A: Overview Flow Diagram](#Appendix_A)<br>
 [Appendix B: Configuration and Input Files](#Appendix_B)<br>
+[Appendix C: Statistics/Metrics Formula Reference Document](#Appendix_C)<br>
 
 
 ## Tables
@@ -1658,6 +1659,12 @@ Appendix B
 ==========
 **Configuration and Input Files**
 
+<a id="Appendix_C"></a>
+Appendix C
+==========
+([Statisical metric reference document](./modelperformancestatisticsdefinitions_AMET.pdf))
+
+
 ### R Configuration File (amet-config.R)
 
 This is the configuration file for all R scripts used in database
@@ -1929,3 +1936,4 @@ SO4f_val, ug/m3, ASO4IJ, ug/m3, SO4
 where SO4f_val is the name given to SO4 in the IMPROVE observation file, ASO4IJ is the name given to fine SO4 in the CMAQ combine file, and SO4 is the column name used to identify SO4 in the `site compare` output .csv file. Note that the units only need to be specified for either the observation or model species if they are the same (typically they are), but can be specified for both species.
 
 The **AQ_species_list.input** is setup to work with the default AQ networks in AMET. However, it can be modified to work with additional networks, or the species for existing networks can be modified if desired. Just follow the existing entries in the file to add additional species. Note that the species are numbered sequentially, and therefore when adding or removing species be careful to correctly number the remaining species.
+
