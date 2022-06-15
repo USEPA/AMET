@@ -206,14 +206,17 @@ inc_corr		<- 'n'
 inc_nmb			<- 'n'
 inc_nme			<- 'n'
 obs_per_day_limit	<- 0
-avg_func		<-"mean"
+avg_func		<- "mean"
+avg_func_name		<- as.character(avg_func)
 line_width		<- "1"
 
 ###########################
 #### Kelly Plot Options ###
 ###########################
 inc_kelly_stats <- "n"
+nmb_int         <- NULL
 nmb_max         <- NULL
+nme_int         <- NULL
 nme_min         <- NULL
 nme_max         <- NULL
 mb_max          <- NULL
@@ -221,12 +224,6 @@ me_min          <- NULL
 me_max          <- NULL
 rmse_min        <- NULL
 rmse_max        <- NULL
-cor_min         <- NULL
-cor_max         <- NULL
-mb_int          <- NULL
-nmb_int         <- NULL
-nme_int         <- NULL
-cor_int         <- NULL
 
 ############################
 ### Spatial Plot Options ###
