@@ -36,6 +36,10 @@ setenv FORECAST F
 # no time information, so a single file is used for all METCRO2D files.
  setenv METOUTPUT $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO2D
 
+ # Uncomment to run this script via loop_over_days.csh wrapper example.
+ #setenv METOUTPUT ${METCRO2DX}
+
+
 # MADIS dataset to match with MPAS, WRF or MCIP
 # Options: metar, maritime, sao, mesonet, or text for non-MADIS obs input
 # Note: user must have these files downloaded in a MADIS defined directory structure.
