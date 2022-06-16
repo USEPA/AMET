@@ -34,7 +34,7 @@
  # $AMETBASE/output/$AMET_PROJECT/prism/
  # The NetCDF file is easily viewed and plotted in almost all NetCDF capable vis software
  # For MPAS Verdi is suggested since its grid is unstructured.
- setenv OUTFILE metExample_mpas.precip.jul2016.nc
+ setenv OUTFILE metExample_wrf.precip.jul2016.nc
 
  # PRISM data information. Prefix examples from a 2013 and 2016 download are below.
  # There are near-real time provisional and later released final/stable versions of the
@@ -52,8 +52,8 @@
  setenv PRISM_PREFIX PRISM_ppt_provisional_4kmD2_
  setenv PRISM_PREFIX PRISM_ppt_stable_4kmM3_
 
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism_daily
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism
+ setenv PRISM_DIR   $AMETBASE/obs/MET/prism_daily
+ setenv PRISM_DIR   $AMETBASE/obs/MET/prism
 
  # Note that this script only works for continous simulations where rainc and rainnc are the accumulated
  # precip over the month and not reset each day. Users have to match the model start and end day with time
