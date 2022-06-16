@@ -51,8 +51,8 @@
  setenv PRISM_PREFIX PRISM_ppt_provisional_4kmD2_
  setenv PRISM_PREFIX PRISM_ppt_stable_4kmM3_
 
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism_daily
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism
+ setenv PRISM_DIR   $AMETBASE/obs/MET/prism_daily
+ setenv PRISM_DIR   $AMETBASE/obs/MET/prism
 
  # Note that this script only works for continous simulations where rainc and rainnc are the accumulated
  # precip over the month and not reset each day. Users have to match the model start and end day with time
