@@ -11,9 +11,9 @@ setenv AMET_DATABASE amet
 setenv MYSQL_SERVER  localhost
 setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
-# Root directory of BSRN/SURFRAD obs (same as MADIS). Note that this directory should
-# contain a subdirectory "bsrn" where this radiation obs dataset (unzipped)
-# BSRN/SURFRAD directory configuration: $MADISBASE/bsrn 
+# Root directory of MADIS NetCDF obs. Note that this directory should
+# contain subdirectories like this in the standard
+# MADIS directory configuration: $AMETBASE/point/metar/netcdf
 setenv MADISBASE $AMETBASE/obs/MET
 
 # A unique AMETPROJECT name for the simulation to evaluated. 
@@ -35,6 +35,7 @@ setenv FORECAST F
 # same directory. AMET will look for a GRIDCRO2D file name GRIDCRO2D for grid information only,
 # no time information, so a single file is used for all METCRO2D files.
  setenv METOUTPUT $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO2D
+
 
 # Radiation dataset to match with MPAS, WRF or MCIP -- Only shortwave radiation enabled
 # Options: "bsrn" or "srad"

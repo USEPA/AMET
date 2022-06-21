@@ -51,8 +51,8 @@
  setenv PRISM_PREFIX PRISM_ppt_provisional_4kmD2_
  setenv PRISM_PREFIX PRISM_ppt_stable_4kmM3_
 
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism_daily
- setenv PRISM_DIR   /work/MOD3DEV/grc/obs/MET/prism
+ setenv PRISM_DIR   $AMETBASE/obs/MET/prism_daily
+ setenv PRISM_DIR   $AMETBASE/obs/MET/prism
 
  # Note that this script only works for continous simulations where rainc and rainnc are the accumulated
  # precip over the month and not reset each day. Users have to match the model start and end day with time
@@ -61,8 +61,8 @@
  # start files date stamp with formats of wrfout_d01_2016-12-01_00:00:00 (WRF) and history.2016-12-01.nc(MPAS).
  # Model settings are either wrf or mpas and used only for the output file generation
  set model    = mpas
- setenv MODEL_START     /work/MOD3DEV/grc/MPAS/OUTPUTS/46-12km/2016/eval-bin/history.subset.2016-07-01.nc
- setenv MODEL_END       /work/MOD3DEV/grc/MPAS/OUTPUTS/46-12km/2016/eval-bin/history.subset.2016-07-31.nc
+ setenv MODEL_START     $AMETBASE/model_data/MET/$AMET_PROJECT/history.subset.2016-07-01.nc
+ setenv MODEL_END       $AMETBASE/model_data/MET/$AMET_PROJECT/history.subset.2016-07-31.nc
 
  setenv START_TINDEX    1
  setenv END_TINDEX      24

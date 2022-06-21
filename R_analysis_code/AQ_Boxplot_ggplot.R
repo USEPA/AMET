@@ -6,7 +6,7 @@ header <- "
 ### using ggplot2. Individual observation/model pairs are provided 
 ### through a MYSQL query. The script then plots these values as a box plot.
 ###
-### Last updated by Wyat Appel: Dec 2021
+### Last updated by Wyat Appel: June 2022
 #######################################################################
 "
 
@@ -28,7 +28,6 @@ network<-network_names[[1]]
 level_names_bias <- NULL
 
 filename_pdf		<- paste(run_name1,species,pid,"boxplot_ggplot.pdf",sep="_")
-filename_pdf_new        <- paste(run_name1,species,pid,"boxplot_ggplot_new.pdf",sep="_")
 filename_bias_pdf	<- paste(run_name1,species,pid,"boxplot_bias_ggplot.pdf",sep="_")
 filename_png            <- paste(run_name1,species,pid,"boxplot_ggplot.png",sep="_")
 filename_bias_png       <- paste(run_name1,species,pid,"boxplot_bias_ggplot.png",sep="_")
@@ -36,7 +35,6 @@ filename_txt            <- paste(run_name1,species,pid,"boxplot_ggplot.csv",sep=
 
 ## Create a full path to file
 filename_pdf            <- paste(figdir,filename_pdf,sep="/")
-filename_pdf_new        <- paste(figdir,filename_pdf_new,sep="/")
 filename_pdf_bias       <- paste(figdir,filename_bias_pdf,sep="/")
 filename_png            <- paste(figdir,filename_png,sep="/")
 filename_png_bias       <- paste(figdir,filename_bias_png,sep="/")

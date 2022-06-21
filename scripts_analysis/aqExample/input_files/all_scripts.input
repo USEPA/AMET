@@ -206,7 +206,8 @@ inc_corr		<- 'n'
 inc_nmb			<- 'n'
 inc_nme			<- 'n'
 obs_per_day_limit	<- 0
-avg_func		<-"mean"
+avg_func		<- "mean"
+avg_func_name		<- as.character(avg_func)
 line_width		<- "1"
 
 ###########################

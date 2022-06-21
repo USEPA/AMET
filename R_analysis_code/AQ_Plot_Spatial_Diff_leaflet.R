@@ -261,17 +261,17 @@ title <- NULL
       run_name_elements <-unlist(strsplit(run_name2,"_"))
       run_name_title2 <- run_name_elements[1]
       for (l in 2:length(run_name_elements)) { run_name_title2 <- paste(run_name_title2,run_name_elements[l],sep="<br>") }
-      title[1] <- paste(species," (",units,") <br> Bias (",avg_func,")",sep="") 
+      title[1] <- paste(species," (",units,") <br> Bias (",avg_func_name,")",sep="") 
       map_title[1] <- paste(run_name1,species,"Bias",dates,sep=" ")
-      title[2] <- paste(species," (",units,") <br> Bias (",avg_func,")",sep="")
+      title[2] <- paste(species," (",units,") <br> Bias (",avg_func_name,")",sep="")
       map_title[2] <- paste(run_name2,species,"Bias",dates,sep=" ")
-      title[5] <- paste(species," (",units,") <br> Bias Diff (",avg_func,")",sep="")
+      title[5] <- paste(species," (",units,") <br> Bias Diff (",avg_func_name,")",sep="")
       map_title[5] <- paste(run_name1,"-",run_name2,species,"Bias Diff",dates,sep=" ")
-      title[3] <- paste(species," (",units,") <br> Error (",avg_func,")",sep="")
+      title[3] <- paste(species," (",units,") <br> Error (",avg_func_name,")",sep="")
       map_title[3] <- paste(run_name1,species,"Error",dates,sep=" ")
-      title[4] <- paste(species," (",units,") <br> Error (",avg_func,")",sep="")
+      title[4] <- paste(species," (",units,") <br> Error (",avg_func_name,")",sep="")
       map_title[4] <- paste(run_name2,species,"Error",dates,sep=" ")
-      title[6] <- paste(species," (",units,") <br> Error Diff (",avg_func,")",sep="")
+      title[6] <- paste(species," (",units,") <br> Error Diff (",avg_func_name,")",sep="")
       map_title[6] <- paste(run_name1,"-",run_name2,species,"Error Diff",dates,sep=" ")
    }
    else { 

@@ -26,7 +26,7 @@
 
  # Project/Model ID name
 
- setenv AMET_PROJECT metExample_mpas
+ setenv AMET_PROJECT metExample_wrf
 
  # New NetCDF file that will contain model (MODEL_PRECIP_MM) and prism precip (PRISM_PRECIP_MM).
  # This file is created using NCO (NetCDF Operator executables) ncks, ncatted and ncrename.
@@ -34,7 +34,7 @@
  # $AMETBASE/output/$AMET_PROJECT/prism/
  # The NetCDF file is easily viewed and plotted in almost all NetCDF capable vis software
  # For MPAS Verdi is suggested since its grid is unstructured.
- setenv OUTFILE metExample_mpas.precip.jul2016.nc
+ setenv OUTFILE metExample_wrf.precip.jul2016.nc
 
  # PRISM data information. Prefix examples from a 2013 and 2016 download are below.
  # There are near-real time provisional and later released final/stable versions of the
@@ -62,8 +62,9 @@
  # start files date stamp with formats of wrfout_d01_2016-12-01_00:00:00 (WRF) and history.2016-12-01.nc(MPAS).
  # Model settings are either wrf or mpas and used only for the output file generation
  set model    = wrf
- setenv MODEL_START     $AMETBASE/model_data/MET/metExample_wrf/wrfout_subset_2016-07-01_00:00:00
- setenv MODEL_END       $AMETBASE/model_data/MET/metExample_wrf/wrfout_subset_2016-07-31_00:00:00
+
+ setenv MODEL_START     $AMETBASE/model_data/MET/$AMET_PROJECT/wrfout_subset_2016-07-01_00:00:00
+ setenv MODEL_END       $AMETBASE/model_data/MET/$AMET_PROJECT/wrfout_subset_2016-07-31_00:00:00
 
  setenv START_TINDEX    1
  setenv END_TINDEX      24
