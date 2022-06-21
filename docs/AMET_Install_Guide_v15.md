@@ -51,7 +51,7 @@ This installation guide describes the steps
 involved in the AMET software installation process. This guide describes how to (1) download the AMET scripts and test data, (2) install the AMET source code and scripts, (3) configure AMET, and  (4) install pre-packaged data for testing the AMET installation. Notes are
 provided wherever appropriate pertaining to the installation on a Linux server.
 
-Refer to the AMET User's Guide for instructions on adding new data to the system, and configuring/creating plots.
+Refer to the AMET User Guide for instructions on adding new data to the system, and configuring/creating plots.
 
 <a id=Install2></a>
 ## 2.  Download AMET Software and Test Case Data
@@ -76,13 +76,13 @@ Note that this command assumes that git is installed on the Linux system.
 * Go to http://www.cmascenter.org and log in using your existing CMAS account. If you do not already have an account, you will need to create one.
 * Navigate to the CMAS Software Clearinghouse by selected Download -> Software from the drop-down menu at the top of the CMAS Center home page.
 * Use the Select Software to Download box, select AMET, and click on the “**Submit”** button.
-* Choose “AMET 1.4” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
+* Choose “AMET 1.5” as the product, “Linux PC” as the operating system, and “GNU compilers” as the choice of compiler, and then click on the “**Submit”** button.
 * The following items are available for download:
- * a link to the AMET 1.4 Installation Guide (this document)
- * a link to the AMET 1.4 User’s Guide
- * a link to the AMET 1.4 Quick Start Guide
- * a tarball of CMAQ model test data and air quality observations (**AMETv14_aqExample.tar.gz**)
- * a tarball of WRF model test data and meteorology observations (**AMETv14_metExample.tar.gz**)
+ * a link to the AMET 1.5 Installation Guide (this document)
+ * a link to the AMET 1.5 User’s Guide
+ * a link to the AMET 1.5 Quick Start Guide
+ * Download the CMAQ model test data and air quality observation from the Google Drive. Note, the example CMAQ output files contain all of the species needed by AMET-AQ, but are a subset of the full CMAQ output files. The files contain hourly data for the entire month of July 2017. They contain only the species that AMET needs, and only layer one.
+ * Download the WRF and MPAS model test data and meteorology observations from the Google drive. There are 31 files for each set of data, one for each day in July 2016. The example meteorology output files from WRF and MPAS contain all of the species needed by AMET-MET, but are a subset of the full WRF or MPAS output files.
 
 
 <a id=Install3></a>
@@ -133,35 +133,58 @@ Tier 2 software includes scientific software utilities for accessing and storing
 
 ### Installation of MariaDB from tarball
 
--	**Download the most recent MariaDB binary distribution from this URL to the user's home directory**
+-	**Download the most recent MariaDB binary distribution from this URL to any directory as non-root user
     - https://mariadb.org/download/?t=mariadb&p=mariadb&r=10.6.7&os=Linux&cpu=x86_64&pkg=tar_gz&i=systemd&m=gigenet
--	**Extract the tar.gz in the users home directory**
-    - tar -zxf mariadb*-x86_64.tar.gz
--	**Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files**
-    - $HOME/mariadb*-x86_64/scripts/mysql_install_db --datadir="$HOME/mariadb"
--	**Create a my.cnf file in $HOME**
-    - /bin/cat << EOF > $HOME/.my.cnf 
+-	**[Follow these instructions to install as non-root user to any directory](https://mariadb.com/kb/en/installing-mariadb-binary-tarballs/#installing-mariadb-as-not-root-in-any-directory)
+    -  ** edit the ~/.my.cnf file to specify the basedir and  to your install directory
 
-    [client-server]
-    
-    socket=$HOME/mariadb/mysql.sock
+Example: (note the mysql directory was linked to the mariadb-VERSION-OS directory name that was obtained when following the above instructions.
+edit /path-to/ to specify the path to your install directory.
 
-    
-    [mariadb]
-    
-    datadir=$HOME/mariadb
-    
-    EOF
+cat ~/.my.cnf
+
+```
+[mysqld]
+[server]
+basedir=/path-to/mysql
+datadir=/path-to/mysql/data
+socket=/path-to/mysql/mysql.sock
+port=3307
+lc_messages_dir=/path-to/mysql/share/english
+lc_messages = en_US
+[client]
+socket=/path-to/mysql/mysql.sock
+port=3307
+```
+
+Note, if you are using a server, you will want to run the mysql database and client on a compute node, rather than a login node.
+Request an interactive queue for 2 hours, and then do the following steps:
+
+    **Run the mysql_install_db script to instantiate a directory to hold the MariaDB database files**
+
+    `/path-to/mysql/scripts/mysql_install_db ~/.my.cnf`
+
     
 -	**Start MariaDB**
-    - $HOME/mariadb*x86_64/bin/mysqld_safe --defaults-file=$HOME/.my.cnf &
+
+    `/path-to/mysql/bin/mysqld_safe --defaults-file=~/.my.cnf &`
+
 -	**Use the mysql command to connect to the server**
-    - $HOME/mariadb*x86_64/bin/mysql
+
+    ` /path-to/mysql/bin/mysql --defaults-file=~/.my.cnf `
+
 -	**Create an AMET user and grant that user access to**
-    - grant all privileges on *.* to 'ametsecure'@'localhost' identified by 'some_pass';
-    - replace 'some_pass' with an appropriate random password
+
+    `grant all privileges on *.* to 'ametsecure'@'localhost' with grant option;`
+
+Output:
+
+Query OK, 0 rows affected (0.002 sec)
+
+
 -	**Once done, you can shutdown the running database safely by running**
-    - $HOME/mariadb*x86_64/bin/mysqladmin shutdown
+
+    `/path-to/mysql/bin/mysqladmin shutdown`
 
 The instructions above create an AMET superuser of sorts, in that the ametsecure user has been granted all priviledges. AMET only requires database users to have SELECT, INSERT, UPDATE, DELETE, ALTER, and DROP ON priviledges to function fully. So, additional AMET users could be created with just those select priviledges. More information on how to create and configure MySQL/MariaDB users can be found on the MySQL/MariaDB websites.
 
@@ -183,13 +206,101 @@ The easiest way to install R packages, is through the R package manager.  Once R
 
 ```
 > sudo R
-> install.packages(c("RMySQL", "date", "maps", "mapdata","stats","plotrix", "Fields"))
+> install.packages(c("RMySQL", "date", "maps", "mapdata","plotrix", "fields"))
 ```
 
+If you do not have root access or are runnning on a shared system, you can load the packages as follows:
 
+Create a directory for your R packages
+
+` mkdir ~/Rlibs`
+
+Load the R modulefile
+
+`module load r`
+
+Load the gcc compiler
+
+`module load gcc`
+
+Set the R library environment variable (R_LIBS) to include your R package directory
+
+`setenv R_LIBS ~/Rlibs`
+
+Use the install.packages function to install your packages
+
+`Rscript -e "install.packages('RMySQL', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+Note, you can likely use a cran location nearest to you. (is there a place to search for cran sites nearest a location?)
+
+The R_LIBS environment variable will need to be set every time when logging in to the Campus Cluster if the user’s R package location is to be visible to an R session. The following:
+
+```
+if (! $?R_LIBS) then
+  setenv R_LIBS  ~/Rlibs
+  else
+  echo "R_LIBS variable contains $R_LIBS, please verify this is correct"
+endif
+```
+
+Install additional packages using the same method.
+
+`Rscript -e "install.packages('date', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('maps', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('mapdata', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('stats', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+Received the following warning
+Warning message:
+package ‘stats’ is a base package, and should not be updated 
+(likely need to take this out)
+
+`Rscript -e "install.packages('plotrix', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('fields', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('akima', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('leaflet', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+
+Additional instructions for [installing R packages on a campus cluster](https://campuscluster.illinois.edu/resources/docs/user-guide/r/)
+
+Install Wgrib
+[Follow these instructions to install wgrib](https://rda.ucar.edu/datasets/ds083.2/software/wgrib_install_guide.txt)
 #### [WGRIB](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html)
 
 *Note:* The tarball from the above link does not contain its own directory, so we recommend that you create a **wgrib** directory before untarring.
+
+`mkdir /to_path/WGRIB`
+
+Download the wgrib.tar file
+
+`wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar`
+
+Untar
+
+`tar -cvf wgrib.tar`
+
+Then make sure the gcc compiler is loaded
+
+`module load gcc`
+
+Then run make
+
+`make`
+
+You will have a wget executable
+
+Add the path to this directory to your .csrhc
+
+Example:
+
+set path = ( $path /to_path/WGRIB )
+
 
 ### Install AMET Source Code and Tier 3 Software
 
@@ -206,32 +317,60 @@ The AMET top-level installation directory will include the following subdirector
 * **R_db_code** - R scripts for loading data into the MySQL database
 * **scripts_analysis** - AMET analysis scripts
 * **scripts_db** - scripts for populating the AMET database
-* **src** - source code for AMET Tier 3 software
-* **web_interface** - templates for a PHP web interface to AMET
+* **tools_src** - source code for AMET Tier 3 software
+* **AMETJavaGUI** - templates for a Java web interface to AMET
+* **docs** - AMET User Guide and Install Guide
 
-In the **src** directory there are three Fortran programs for pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
+In the **tools_src** directory there are four Fortran programs for extracting and pairing model and observed data. Before using the AMET database and analysis scripts, these programs must be compiled using Fortran Makefiles that are included in the source code directories. The executables for these programs must be available for the AMET database scripts (scripts_db), as they are used to pair the model and observations before the data are loaded into the AMET database.
 
+* **combine** - combine utility relies on a mechanism-specific "Species Definition" file that prescribes how model output variables should be combined to become comparable to different measured or observed gas, particle and deposition species.
 * **bldoverlay** - creates a PAVE overlay file for creating observation overlay plots
 * **sitecmp** - pairs hourly and daily observation and model data for many of the networks compatible with AMET
 * **sitecmp_dailyo3** - calculates daily maximum 1-hour and 8-hour ozone pairs for analysis with AMET
 
-To compile these programs, edit the makefile file that is located in each tool **src** directory.  Point the makefile to the location of the local I/O API and netCDF installation directories.  Use the following commands to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
+To compile these programs, edit the makefile file that is located in each tool **tools_src** directory.  Specify the compiler and the location of the local I/O API and netCDF installation directories.  Use the following commands to apply the settings in the config.amet script before running `make` to build the Tier 3 programs.
 
 ```
 > cd $AMETBASE/tools_src
 cd combine/src
 edit the combine Makefile
-> Make
+> make |& tee make.log
 > cd bldoverlay/src
 edit the bldoverlay Makefile
-> Make
+> make |& tee make.log
 > cd ../sitecmp/scr
 edit the sitecmp Makefile
-> Make
+> make |& make.log
 > cd ../sitecmp_dailyo3/scr
 edit the sitecmp_dailyo3 Makefile
-> Make
+> make |& tee make.log
 ```
+
+Note, the combine script directory contains a script called linkem that needs to be edited to point to your CMAQv5.3.3 REPO directory to obtain the species definition files.
+
+```
+cd $AMETBASE/tools_src/combine/scripts/spec_def_files
+vi linkem.csh
+```
+
+Modify the set src = line to point to the CMAQv5.3.3 Repository.
+
+```
+set src = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/build/CMAQ_REPO_v533/CCTM/src/MECHS
+
+modify to the path for your CMAQ installation directory
+
+set src = /path_to/CMAQ_REPO/CCTM/src/MECHS
+```
+
+Then run the linkem.csh script to create links to the species definition files.
+
+```
+./linkem.csh
+```
+
+Verify that the links are all valid, and point to the correct files.
+
 
 <a id=Install4></a>
 ## 4. Configure AMET
@@ -241,56 +380,72 @@ AMET uses a centralized R script to set up the AMET environment for loading data
 * `amet_base` - base AMET installation directory path
 * `EXEC_sitex_daily_config` - sitecmp_dailyo3 executable directory path
 * `EXEC_sitex_config` - sitecmp executable directory path
-* `obs_data_dir` - observational data directory path; typically $amet_base/obs
-* `mysql_server` - IP Address or name of MySQL server used for AMET
-* `amet_login` - login ID to the AMET MySQL database server
-* `amet_pass`- password for the AMET MySQL database server
-* `maxrec` - the maximum number of records allowed in a single MySQL query
+* `mysql_server` - IP Address or name of MySQL/MariaDB server used for AMET
+* `amet_login` - login ID to the AMET MySQL/MariaDB database server
+* `amet_pass`- password for the AMET MySQL/MariaDB database server
+* `maxrec` - the maximum number of records allowed in a single MySQL query (optional)
 * `Bldoverlay_exe_config` - bldoverlay executable directory path
 
-*Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL user that has read-write access to the database.*
+*Note: the amet_login and amet_pass settings in the amet-config.R script must be for a MySQL/MariaDB user that has read-write access to the database.*
 
-Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **amet_login** and **amet_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL.
+Following from the example above, if you created a user called *ametsecure* with the password *some_pass*, set **amet_login** and **amet_pass** in amet-config.R to use these settings. Otherwise, set these variable to login and password that you selected when setting up MySQL/MariaDB.
 
 Additional AMET configuration is handled in the database loading and plot creation scripts. See the AMET 1.3 User’s Guide on configuring AMET for additional details.
 
 <a id=Install5></a>
 ## 5. Install Test Case Data
 
-The final step in the installation process is to install the test case
-data sets. These include sample model output data and observational
+The final step in the installation process is to install the test case data sets. These include sample model output data and observational
 data.
 
 ### Install sample data
 
-In this step, you will untar the previously downloaded model outputs and observational data
-from Section 2 in the corresponding directories indicated below.
+In this step, you will review the previously downloaded model outputs and observational data downloaded from Section 2 in the corresponding directories indicated below.
 
 #### Meteorological data
 (25 GB uncompressed, 16 GB compressed)
 
-Untar the file **AMETv13_metExample.tar.gz** in the directory **$AMETBASE**. This tarball contains 31 days’ worth of **WRF** and **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
+The $AMETBASE/MET/metExample_wrf contains 31 days’ worth of **WRF**, $AMETBASE/MET/metExample_mcip contains 31 days worth of **MCIP**, and the $AMETBASE/MET/metExample_mpas contians **MPAS** outputs in netCDF format, hourly point METAR data from MADIS, and example AMET analysis plots. The temporal range is July 1 2011 0:00 UTC to July 31 2011 23:00 UTC for WRF and July 1 2013 0:00 UTC to July 31 2013 23:00 UTC for MPAS. The spatial domain covers the continental U.S. at 12-km resolution.
 
-After you untar the tarfiles above, the directory **$AMETBASE/model\_data/MET/metExample** will contain the following files.
+The directory **$AMETBASE/model\_data/MET/metExample_wrf** will contain the following files.
 
 ```
-history.2013-07-01.luf.nc  history.2013-07-17.luf.nc   wrfout.surface.20110702.nc  wrfout.surface.20110718.nc
-history.2013-07-02.luf.nc  history.2013-07-18.luf.nc   wrfout.surface.20110703.nc  wrfout.surface.20110719.nc
-history.2013-07-03.luf.nc  history.2013-07-19.luf.nc   wrfout.surface.20110704.nc  wrfout.surface.20110720.nc
-history.2013-07-04.luf.nc  history.2013-07-20.luf.nc   wrfout.surface.20110705.nc  wrfout.surface.20110721.nc
-history.2013-07-05.luf.nc  history.2013-07-21.luf.nc   wrfout.surface.20110706.nc  wrfout.surface.20110722.nc
-history.2013-07-06.luf.nc  history.2013-07-22.luf.nc   wrfout.surface.20110707.nc  wrfout.surface.20110723.nc
-history.2013-07-07.luf.nc  history.2013-07-23.luf.nc   wrfout.surface.20110708.nc  wrfout.surface.20110724.nc
-history.2013-07-08.luf.nc  history.2013-07-24.luf.nc   wrfout.surface.20110709.nc  wrfout.surface.20110725.nc
-history.2013-07-09.luf.nc  history.2013-07-25.luf.nc   wrfout.surface.20110710.nc  wrfout.surface.20110726.nc
-history.2013-07-10.luf.nc  history.2013-07-26.luf.nc   wrfout.surface.20110711.nc  wrfout.surface.20110727.nc
-history.2013-07-11.luf.nc  history.2013-07-27.luf.nc   wrfout.surface.20110712.nc  wrfout.surface.20110728.nc
-history.2013-07-12.luf.nc  history.2013-07-28.luf.nc   wrfout.surface.20110713.nc  wrfout.surface.20110729.nc
-history.2013-07-13.luf.nc  history.2013-07-29.luf.nc   wrfout.surface.20110714.nc  wrfout.surface.20110730.nc
-history.2013-07-14.luf.nc  history.2013-07-30.luf.nc   wrfout.surface.20110715.nc  wrfout.surface.20110731.nc
-history.2013-07-15.luf.nc  history.2013-07-31.luf.nc   wrfout.surface.20110716.nc
-history.2013-07-16.luf.nc  wrfout.surface.20110701.nc  wrfout.surface.20110717.nc
+wrfout_subset_2016-07-01_00:00:00
+wrfout_subset_2016-07-02_00:00:00
+wrfout_subset_2016-07-03_00:00:00
+wrfout_subset_2016-07-04_00:00:00
+wrfout_subset_2016-07-05_00:00:00
+wrfout_subset_2016-07-06_00:00:00
+wrfout_subset_2016-07-07_00:00:00
+wrfout_subset_2016-07-08_00:00:00
+wrfout_subset_2016-07-09_00:00:00
+wrfout_subset_2016-07-10_00:00:00
+wrfout_subset_2016-07-11_00:00:00
+wrfout_subset_2016-07-12_00:00:00
+..
+..
+wrfout_subset_2016-07-31_00:00:00
 
+```
+
+The directory **$AMETBASE/model\_data/MET/metExample_mcip** will contain the following files.
+
+``
+list of files
+
+```
+
+The $AMETBASE/MET/metExample_mpas directory contains the following files.
+
+```
+history.subset.2016-07-01.nc
+..
+..
+history.subset.2016-07-27.nc
+history.subset.2016-07-28.nc
+history.subset.2016-07-29.nc
+history.subset.2016-07-30.nc
+history.subset.2016-07-31.nc
 ```
 
 Meteorology observational data are installed under **$AMETBASE/obs/MET**.
@@ -298,17 +453,21 @@ Meteorology observational data are installed under **$AMETBASE/obs/MET**.
 #### Air quality data
 (35 GB uncompressed; 30 GB compressed)
 
-Untar the **AMETv13_aqExample.tar.gz** file in the directory **$AMETBASE**. For CMAQ, we have provided an **ACONC** and a **WETDEP** output file from a CMAQ simulation to demonstrate analysis capabilities involving the AERO6 suite of species. The model output files are netCDF outputs from the **combine** postprocessing step. The  temporal range is from July 1 2011 00:00 UTC to July 31 2011 00:00 UTC  with a spatial domain covering the continental U.S at 12-km resolution. This archive also contains surface air quality observations for 2011 and sample AMET analysis plots.
+Download the Air Quality Data from the Google Drive > CMAS Data Warehouse > AMET > v1.5_example. For CMAQ, we have provided an **ACONC** and a **WETDEP** output file from a CMAQ simulation to demonstrate analysis capabilities involving the AERO6 suite of species. The model output files are netCDF outputs from the **combine** postprocessing step. The  temporal range is from July 1 2011 00:00 UTC to July 31 2011 00:00 UTC  with a spatial domain covering the continental U.S at 12-km resolution. This archive also contains surface air quality observations for 2011 and sample AMET analysis plots.
 
-After you untar the tarfiles above, the directory **$AMETBASE/model\_data/AQ/aqExample** will contain the following files.
+After you download the files, the directory **$AMETBASE/model\_data/AQ/aqExample** will contain the following files.
 
-```
--rw-r----- 1 user user 67800289168 Mar 15 11:34 CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.aconc.07
--rw-r----- 1 user user 46561648232 Mar 15 11:48 CCTM_CMAQv52_Sep15_cb6_Hemi_New_LTGNO_combine.dep.07
+`ls -lht`
 
 ```
+ 34G Nov 20  2018 COMBINE_ACONC_CMAQv521_AMET_201607.nc
+ 6.5G Nov 20  2018 COMBINE_DEP_CMAQv521_AMET_201607.nc
 
-Air quality observational data for the following networks are installed under **$AMETBASE/obs/AQ**:
+```
+Download the Air Quality Observational data from the Google Drive CMAS Data Warehouse > AMET > v1.5_example > 2000_2020_NAmerican_AQ_Obs_Data
+for 2016, download the AMET_obsdata_2016.tar.gz file and extract to the $AMETBASE/obs/AQ/All_Years directory.
+
+Air quality observational data for the following networks are installed under **$AMETBASE/obs/AQ/All_Years :
 
 *North America*
 * Air Quality System (AQS) network

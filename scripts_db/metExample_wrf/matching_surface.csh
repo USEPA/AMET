@@ -3,12 +3,12 @@
 #                          USER CONFIGURATION
 
 # Main AMET directory location. Can be defined explicity here or in user setenv for universal use.
-setenv AMETBASE   /home/user/AMET
+#setenv AMETBASE   
 
 # Define Database and Password from argument input
-setenv MYSQL_LOGIN   my_login_id
-setenv AMET_DATABASE user_database
-setenv MYSQL_SERVER  mysql.server.gov
+setenv MYSQL_LOGIN   ametsecure
+setenv AMET_DATABASE amet
+setenv MYSQL_SERVER  localhost
 setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
 # Root directory of MADIS NetCDF obs. Note that this directory should

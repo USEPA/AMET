@@ -18,7 +18,6 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  setenv AMETBASE       /home/AMETv14
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
@@ -66,9 +65,9 @@
 
   ### North America Networks ###
 
-    setenv AMET_CSN            T
+  #  setenv AMET_CSN            T
     setenv AMET_IMPROVE        T
-    setenv AMET_CASTNET        T
+   #  setenv AMET_CASTNET        T
   #  setenv AMET_CASTNET_Hourly T
   #  setenv AMET_CASTNET_Drydep T
   #  setenv AMET_NADP           T

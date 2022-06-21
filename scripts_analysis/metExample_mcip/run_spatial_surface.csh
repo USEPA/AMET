@@ -24,8 +24,8 @@
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  user_database
-  setenv MYSQL_SERVER   mysql.server.gov 
+  setenv AMET_DATABASE  amet
+  setenv MYSQL_SERVER   localhost
 
   # AMET project id or simulation id
   setenv AMET_PROJECT metExample_mcip

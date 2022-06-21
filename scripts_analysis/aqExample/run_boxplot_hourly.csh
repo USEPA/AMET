@@ -21,7 +21,6 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  setenv AMETBASE       /home/AMETv14
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
@@ -33,7 +32,7 @@
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ### Set the project name to be used for model-to-model comparisons ###
-  setenv AMET_PROJECT2  aqExample
+  setenv AMET_PROJECT2
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
@@ -65,7 +64,7 @@
   ### AE6 (CMAQv5.0) Species
   ### Na,Cl,Al,Si,Ti,Ca,Mg,K,Mn,Soil,Other,Ca_dep,Ca_conc,Mg_dep,Mg_conc,K_dep,K_conc
 
-  setenv AMET_AQSPECIES O3
+  setenv AMET_AQSPECIES O3 
 
   ### Observation Network to plot -- One only
   ### Uncomment to set to 'T' and process that nework,
@@ -83,8 +82,8 @@
   #  setenv AMET_NADP           T
   #  setenv AMET_AIRMON         T
   #  setenv AMET_AQS_Hourly     T
-  #  setenv AMET_AQS_Daily_O3   T
-    setenv AMET_AQS_Daily       T
+    setenv AMET_AQS_Daily_O3   T
+  #  setenv AMET_AQS_Daily       T
   #  setenv AMET_SEARCH         T
   #  setenv AMET_SEARCH_Daily   T
   #  setenv AMET_NAPS_Hourly    T

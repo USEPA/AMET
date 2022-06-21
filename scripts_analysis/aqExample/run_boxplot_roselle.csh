@@ -19,7 +19,6 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  setenv AMETBASE       /home/AMETv14
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
@@ -31,7 +30,7 @@
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ### Set the project name to be used for model-to-model comparisons ###
-  setenv AMET_PROJECT2  aqExample
+  setenv AMET_PROJECT2 
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
@@ -73,7 +72,7 @@
   ### North America Networks ###
 
   #  setenv AMET_CSN            T
-  #  setenv AMET_IMPROVE        T
+     setenv AMET_IMPROVE        T
   #  setenv AMET_CASTNET        T
   #  setenv AMET_CASTNET_Hourly T
   #  setenv AMET_CASTNET_Drydep T
@@ -81,7 +80,7 @@
   #  setenv AMET_AIRMON         T
   #  setenv AMET_AQS_Hourly     T
   #  setenv AMET_AQS_Daily_O3   T
-    setenv AMET_AQS_Daily       T
+  #  setenv AMET_AQS_Daily       T
   #  setenv AMET_SEARCH         T
   #  setenv AMET_SEARCH_Daily   T
   #  setenv AMET_NAPS_Hourly    T

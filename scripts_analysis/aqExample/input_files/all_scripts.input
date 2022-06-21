@@ -309,4 +309,3 @@ stat_file	<- ""
 ##################################
 ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
 source(ametNetworkInput) # Network related input
-
