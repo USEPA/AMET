@@ -489,7 +489,7 @@ if ((amon_flag == "y") || (amon_flag == "Y") || (amon_flag == "t") || (amon_flag
    table_type    <- "CASTNET"
    network       <- "AMON"
    site_file     <- paste(obs_data_dir,site_file_directory,"/AMON",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/AMON_data.csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AMON_data.csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
