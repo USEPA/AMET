@@ -430,7 +430,7 @@ wrfout_subset_2016-07-31_00:00:00
 
 The directory **$AMETBASE/model\_data/MET/metExample_mcip** will contain the following files.
 
-``
+```
 list of files
 
 ```
