@@ -84,7 +84,7 @@
 #> for combine.  If you are not using a CMAQ5.3 reposiotry you can
 #> modify the location of the executables and spec_def files later
 #> in the script.
- set CMAQ_HOME = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/CMAQ_REPO_v533
+ set CMAQ_HOME = /path/CMAQv53_repo
 
 #> Base directory where AMET code resides
 #setenv AMETBASE	/home/AMETv15
