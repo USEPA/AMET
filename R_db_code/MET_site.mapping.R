@@ -154,7 +154,6 @@
       if(use.metafile){
         sm<-which(sitelist[sitenum] == mastermeta[,1])[1]
         if(is.na(sm)) { next }
-        writeLines(paste("DEBUG ------",sm))
         if(sum(sm)>0) {
           elevs              <-ifelse(is.na(mastermeta[sm,2]),'NULL',round(as.numeric(mastermeta[sm,2])))
           site_locname[inds] <-ifelse(is.na(mastermeta[sm,3]) || nchar(trimws(mastermeta[sm,3]))==0,"99",mastermeta[sm,3])
@@ -178,7 +177,6 @@
     writeLines(paste("*** DATABASE ACTION ***: Updating stations table in AMET database:",mysqldbase))
     system(paste("rm -f ",tmpquery_file))
   }
-  #stop("DEBUG stop")
   writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 
   writeLines(paste("Num sites excluded because outside of MPAS domain:",nsites_outside_domain))
   writeLines(paste("Finished: Mapping observation sites to MPAS grid. Number of sites mapped:",sitenum))
