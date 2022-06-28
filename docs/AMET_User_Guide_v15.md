@@ -790,20 +790,15 @@ Go to the AQ example project directory:
 
 > $ cd $AMETBASE/scripts\_db/aqExample
 
-Here you will see two C-shell scripts and the combine subdirectory. 
-The combine subdirectory is not used for this example; 
-it is discussed later in Section 6.4, “Creating a New AQ Project”.
-
-The C-shell files `aqProject_post_only.csh` and `aqProject_pre_and_post.csh` are wrapper
-scripts for calling the R programs that actually create an AMET AQ project 
+The C-shell file `aqProject_pre_and_post.csh` is a wrapper
+script for calling the R programs that actually create an AMET AQ project 
 (and AMET database if necessary) and populate the AMET database with the project data. 
-For now we will only work with the `aqProject_post_only.csh` script. More information regarding
-the `aqProject_pre_and_post.csh` script will be provided in later sections. Start by opening 
-the `aqProject_post_only.csh` and verify that the variable AMETBASE is set to the correct AMET 
+
+Start by opening the `aqProject_pre_and_post.csh` and verify that the variable AMETBASE is set to the correct AMET 
 project.   Run the script by typing
 
 ```
-./aqProject_post_only.csh |& tee log.populate
+./aqProject_pre_and_post.csh |& tee log.populate.aqExample
 ```
 
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background. By default, the script is setup to prompt you for the MySQL login/password.
