@@ -47,7 +47,7 @@ if ((!exists("EXEC_sitex")) || (EXEC_sitex == "")) {
 }
 
 EXEC_sitex_daily <- Sys.getenv('EXEC_sitecmp_dailyo3')
-if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "") { 
+if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "")) { 
    stop("Path to site compare daily executable (EXEC_sitecmp_dailyo3) not set! This path must be set in the run script if running site compare daily to do the model-obs matching.")
 }
 
