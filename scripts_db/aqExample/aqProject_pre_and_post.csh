@@ -46,13 +46,13 @@
 #> AMET options
  setenv CREATE_PROJECT    T     #> T/F; Create AMET project?
  setenv LOAD_SITEX        T     #> T/F; Load site compare output for each selected network into AMET?
- setenv UPDATE_PROJECT    F     #> T/F; Update the project info for an existing project (all data are retained)
+ setenv UPDATE_PROJECT    T     #> T/F; Update the project info for an existing project (all data are retained)
  setenv REMAKE_PROJECT    F     #> T/F; Remake an existing AMET project. Note that all existing data will be deleted
  setenv DELETE_PROJECT    F     #> T/F; Delete an existing AMET project. This will delete all data in the existing
                                 #>      AMET table and remove the table from the database
  setenv RENAME_PROJECT    F     #> T/F; Rename an existing AMET project. This will retain all existing data
                                 #>      Must also specify new project name using the environment variable NEW_AMET_PROJECT_NAME
-# setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
+				# setenv NEW_AMET_PROJECT_NAME  "new_project_name"
 
 #> Plotting options
  setenv AMET_DB           T     #> T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
@@ -71,8 +71,9 @@
 # ==================================================================================
 
 #> Configure the system environment
-  setenv compiler     intel                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
-  setenv compilerVrsn 18.0.1                     #> Compiler version
+  setenv compiler     gcc                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
+  setenv compilerVrsn 9.1.0                     #> Compiler version
+  setenv compilerString ${compiler}_${compilerVrsn}
  # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on EPA system
  # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on EPA system
 
@@ -83,10 +84,10 @@
 #> for combine.  If you are not using a CMAQ5.3 reposiotry you can
 #> modify the location of the executables and spec_def files later
 #> in the script.
- set CMAQ_HOME = /path/CMAQv53_repo
+ set CMAQ_HOME = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/CMAQ_REPO_v533
 
 #> Base directory where AMET code resides
- setenv AMETBASE	/home/AMETv15
+#setenv AMETBASE	/home/AMETv15
 
 #> Source CMAQ config files to setup environment
  if (${Source_Configs} == 'T') then
@@ -114,20 +115,21 @@
  setenv END_DATE_H    "2016-07-31"              #> End day. Should be in format "YYYY-MM-DD".
 
 #> Set General Parameters for Configuring the Simulation
- set VRSN      = v53               #> Code Version
+ set VRSN      = v533               #> Code Version
  set PROC      = mpi               #> serial or mpi
  set MECH      = cb6r3_ae7_aq      #> Mechanism ID
- set APPL      = SE53BENCH         #> Application Name (e.g. Gridname)
+ set APPL      = aqExample         #> Application Name (e.g. Gridname)
                                                       
 #> Define RUNID as any combination of parameters above or others. By default,
 #> this information will be collected into this one string, $RUNID, for easy
 #> referencing in output binaries and log files as well as in other scripts.
- setenv RUNID  ${VRSN}_${compilerString}_${APPL}
+#setenv RUNID  ${VRSN}_${compilerString}_${APPL}
+setenv RUNID ${APPL}
 
 #> Name and location of daily MET output. Required files = METCRO2D, METCRO3D
 #> This script assumes MET files are dated with the following naming convention:
 #> ${METCRO2D_NAME}_${YY}${MM}${DD}.nc, ${METCRO3D_NAME}_${YY}${MM}${DD}.nc
- setenv METDIR  /path/SE53BENCH/multi_day/cctm_input/met/mcip  #> Location of MET ouput.
+ setenv METDIR  $AMETBASE/model_data/MET/metExample_mcip  #> Location of MET ouput.
  set METCRO2D_NAME = METCRO2D                   #> METCRO2D file name (without date and file extension).
  set METCRO3D_NAME = METCRO3D                   #> METCRO3D file name (without date and file extension).
 
@@ -482,8 +484,8 @@ endif #End RUN_HR2DAY
  
 #> Base directory where AMET code resides (likely do not need to change any of this)
  setenv MYSQL_CONFIG    ${AMETBASE}/configure/amet-config.R
- set amet_login = "config_file"
- set amet_pass = "config_file"
+ set amet_login = ametsecure
+ set amet_pass = ametpwd
 
 #> No need to change this.
  setenv AMET_OBS	 $OBS_DATA_DIR
