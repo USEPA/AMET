@@ -36,6 +36,7 @@ if(!exists("trend_line")) { trend_line <- "n" }
 
 #################################
 
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 title <- get_title(run_names,species,network_names,dates,custom_title)
 
 sinfo 		<- NULL

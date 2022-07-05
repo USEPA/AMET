@@ -35,7 +35,7 @@
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
  
   ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/kellyplot_multisim
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/kellyplot_season
   
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"             
@@ -104,7 +104,7 @@
   # setenv AMET_TOAR		T
 
   ### Log File for R script
-  setenv AMET_LOG kellyplot_multisim.log
+  setenv AMET_LOG kellyplot_season.log
 
 ##--------------------------------------------------------------------------##
 ##                Most users will not need to change below here
@@ -120,7 +120,7 @@
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Kellyplot_multisim.R $AMET_LOG 
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Kellyplot_season.R $AMET_LOG 
   setenv AMET_R_STATUS $status
   
   if($AMET_R_STATUS == 0) then		
