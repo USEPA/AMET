@@ -47,7 +47,7 @@ if ((!exists("EXEC_sitex")) || (EXEC_sitex == "")) {
 }
 
 EXEC_sitex_daily <- Sys.getenv('EXEC_sitecmp_dailyo3')
-if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "") { 
+if ((!exists("EXEC_sitex_daily")) || (EXEC_sitex_daily == "")) { 
    stop("Path to site compare daily executable (EXEC_sitecmp_dailyo3) not set! This path must be set in the run script if running site compare daily to do the model-obs matching.")
 }
 
@@ -489,7 +489,7 @@ if ((amon_flag == "y") || (amon_flag == "Y") || (amon_flag == "t") || (amon_flag
    table_type    <- "CASTNET"
    network       <- "AMON"
    site_file     <- paste(obs_data_dir,site_file_directory,"/AMON",site_file_name,sep="")
-   ob_file       <- paste(obs_data_dir,"/AMON_data.csv",sep="")
+   ob_file       <- paste(obs_data_dir,"/",year,"/AMON_data.csv",sep="")
    EXEC          <- EXEC_sitex
    run_sitex(network)
 }
