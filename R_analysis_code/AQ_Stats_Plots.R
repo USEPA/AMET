@@ -26,6 +26,8 @@ if(!require(mapdata)){stop("Required Package mapdata was not loaded")}
 if(!exists("quantile_min")) { quantile_min <- 0.001 }
 if(!exists("quantile_max")) { quantile_max <- 0.950 }
 
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
+
 ################################################
 ## Set output names and remove existing files ##
 ################################################
@@ -444,7 +446,6 @@ labels_all <- c("leg_labels_nmb","leg_labels_nmb","leg_labels_nme","leg_labels_n
 #########################
 ## plot text options   ##
 #########################
-if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 stat_names	<- c("NMB (%)","FB (%)", "NME (%)", " FE (%)", paste(" RMSE (",units,")",sep=""), paste(" MB (",units,")",sep=""), paste(" ME (",units,")",sep=""), "Correlation")
 units_all	<- c("%","%","%","%",units,units,units,"none")
 #########################
