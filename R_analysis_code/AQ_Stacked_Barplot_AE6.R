@@ -77,7 +77,8 @@ merge_statid_POC <- "n"	# Do not merge statid and POC. Need them separate from C
 remove_negatives <- "n"	# Do not remove negatives. This will be handled in another fuction
 criteria <- paste(" WHERE d.SO4_ob is not NULL and d.network='",network,"' ",query,sep="")          # Set part of the MYSQL query
 #species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NCOM","NaCl","OTHER","OTHER_REM")
-species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NaCl","NCOM","OTHER","OTHER_REM")
+species <- c("SO4","NO3","NH4","PM_TOT","PM_FRM","EC","OC","TC","soil","NaCl","NCOM","OTHER","OTHER_REM") }
+if (network == 'CSN') { species <- c("SO4","NO3","NH4","PM_TOT","EC","OC","TC","soil","NaCl","NCOM","OTHER","OTHER_REM") }
 #############################################
 ### Read sitex file or query the database ###
 #############################################
@@ -139,11 +140,11 @@ if (network == 'CSN') {
    blank_ob   <- 0.4
    blank_ob2  <- 0.4
 }
-if (network == 'IMPROVE') {
+if (network != 'CSN') {
    aqdat_all.df$PM_FRM_ob <- aqdat_all.df$PM_TOT_ob
    aqdat_all.df$PM_FRM_mod <- aqdat_all.df$PM_TOT_mod
 }
-if ((network == 'IMPROVE') && (num_runs > 1)) {
+if ((network != 'CSN') && (num_runs > 1)) {
    aqdat_all2.df$PM_FRM_ob <- aqdat_all2.df$PM_TOT_ob
    aqdat_all2.df$PM_FRM_mod <- aqdat_all2.df$PM_TOT_mod
 }
@@ -264,8 +265,8 @@ if (num_runs > 1) {
    NCOM_mod_percent     <- round(medians.df$NCOM_mod/(medians_tot_mod)*100,1)
    other_rem_mod_percent<- round(other_mod/(medians_tot_mod)*100,1)
    blank_mod_percent    <- round(blank_mod/(medians_tot_mod)*100,1)
- 
-   if (inc_FRM_adj == 'y') {
+
+   if ((inc_FRM_adj == 'y') && (network == 'CSN')) { 
       FRM_adj_mod_percent	<- round(FRM_adj_median/(medians_tot_mod)*100,1)
    }
 
@@ -282,7 +283,7 @@ if (num_runs > 1) {
        water_ob2            <- 0
 #       NCOM_ob2             <- 0.8*medians2.df$OC_ob
        other_mod2             <- medians2.df$PM_TOT_mod-(medians2.df$SO4_mod+medians2.df$NO3_mod+medians2.df$NH4_mod+medians2.df$EC_mod+medians2.df$OC_mod+medians2.df$NaCl_mod+medians2.df$soil_mod+medians2.df$NCOM_mod)
-       if (inc_FRM_adj == 'y') {
+       if ((inc_FRM_adj == 'y') && (network == 'CSN')) {
           other_mod2 <- other_mod2 - FRM_adj_median
        }
        if (other_mod2 < 0) {
@@ -322,7 +323,7 @@ if (num_runs > 1) {
       other_rem_mod_percent2	<- round(other_mod2/(medians_tot_mod2)*100,1)
       blank_mod_percent2        <- round(blank_mod2/(medians_tot_mod2)*100,1)
 
-      if (inc_FRM_adj == 'y') {
+      if ((inc_FRM_adj == 'y') && (network == 'CSN')) {
          FRM_adj_mod_percent2       <- round(FRM_adj_median2/(medians_tot_mod2)*100,1)
       }
 
