@@ -82,7 +82,7 @@ for (j in 1:total_networks) {	# For each simulation being plotted
       else {
          query_result    <- query_dbase(run_name,network,species,orderby=c("ob_dates","ob_hour"))
          aqdat_query.df  <- query_result[[1]]
-         aqdat_query.df  <- query_result[[2]]
+         data_exists	 <- query_result[[2]]
          if (data_exists == "y") { units <- query_result[[3]] }
          model_name      <- query_result[[4]]
       }
