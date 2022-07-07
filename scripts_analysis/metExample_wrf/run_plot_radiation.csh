@@ -47,8 +47,6 @@
   # spatial plots will only cover the area below.
   setenv AMET_BOUNDS_LAT "24 55"
   setenv AMET_BOUNDS_LON "-135 -60"
-  setenv AMET_BOUNDS_LAT "-85 85"
-  setenv AMET_BOUNDS_LON "-180 180"
 
   # **** PDF format only since there are so many utilities to convert PFD to other formats ***
   #-----------------------------------------------------------------------------------------------------------------------
