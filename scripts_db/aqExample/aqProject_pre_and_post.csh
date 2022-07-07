@@ -84,7 +84,7 @@
 #> for combine.  If you are not using a CMAQ5.3 reposiotry you can
 #> modify the location of the executables and spec_def files later
 #> in the script.
- set CMAQ_HOME = /path/CMAQv53_repo
+ set CMAQ_HOME = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/build/openmpi_gcc/CMAQ_v533
 
 #> Base directory where AMET code resides
 #setenv AMETBASE	/home/AMETv15
@@ -484,8 +484,8 @@ endif #End RUN_HR2DAY
  
 #> Base directory where AMET code resides (likely do not need to change any of this)
  setenv MYSQL_CONFIG    ${AMETBASE}/configure/amet-config.R
- set amet_login = ametsecure
- set amet_pass = ametpwd
+ set amet_login = "config_file"
+ set amet_pass = "config_file"
 
 #> No need to change this.
  setenv AMET_OBS	 $OBS_DATA_DIR
