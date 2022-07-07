@@ -162,7 +162,7 @@
        extra <- extra_window
        writeLines(paste("RUNNING SPATIAL SURFACE MONTHLY-->",
                         yyyymmdd_start," to ",yyyymmdd_end,sep=""))
-       source (paste(ametR,"/MET_spatial_surface.R",sep=""))
+       try(source (paste(ametR,"/MET_spatial_surface.R",sep="")), silent=T)
        if.good.mode <-T
      }
      #######################################
@@ -185,7 +185,7 @@
            writeLines(paste("RUNNING DAILY STATS by MONTH-->",yyyymmdd_start,
                             " to ",yyyymmdd_endp1,sep=""))
          }
-         source (paste(ametR,"/MET_daily_barplot.R",sep=""))
+         try(source (paste(ametR,"/MET_daily_barplot.R",sep="")), silent=T)
          if.good.mode <-T
        }
      }
@@ -215,7 +215,7 @@
          queryID    <- pid
          figid_sub  <- runid
          query_str  <- querystr
-         source (paste(ametR,"/MET_summary.R",sep=""))
+         try(source (paste(ametR,"/MET_summary.R",sep="")), silent=T)
          if.good.mode<-T
        }
      }
@@ -250,7 +250,7 @@
            extra  <- ""
            runid     <- "MONTHLY"
          }
-         source (paste(ametR,"/MET_raob.R",sep=""))
+         try(source (paste(ametR,"/MET_raob.R",sep="")), silent=T)
          if.good.mode <-T
        }
      }
@@ -269,7 +269,7 @@
        date<-c(yyyymmdd_start,yyyymmdd_end)
        writeLines(paste("RUNNING SW Radiation STATS by MONTH-->",yyyymmdd_start,
                         " to ",yyyymmdd_end,sep=""))
-       source (paste(ametR,"/MET_plot_radiation.R",sep=""))
+       try(source (paste(ametR,"/MET_plot_radiation.R",sep="")), silent=T)
        if.good.mode <-T
      }
      #######################################
@@ -314,7 +314,7 @@
        writeLines(paste("RUNNING SPATIAL SURFACE SEASONAL-->",
                         year_start0000,seas[ii]," to < ",
                         year_end0000,seae[ii],sep=""))
-       source (paste(ametR,"/MET_spatial_surface.R",sep=""))
+       try(source (paste(ametR,"/MET_spatial_surface.R",sep="")), silent=T)
        if.good.mode <-T
      }
      #######################################
@@ -341,7 +341,7 @@
                             year_start0000,seas[ii]," to < ",
                             year_end0000,seae[ii],sep=""))
          }
-         source (paste(ametR,"/MET_daily_barplot.R",sep=""))
+         try(source (paste(ametR,"/MET_daily_barplot.R",sep="")), silent=T)
          if.good.mode <-T
        }
      }
@@ -373,7 +373,7 @@
          queryID    <- pid
          figid_sub  <- runid
          query_str  <- querystr
-         source (paste(ametR,"/MET_summary.R",sep=""))
+         try(source (paste(ametR,"/MET_summary.R",sep="")), silent=T)
          if.good.mode<-T
        }
      }
@@ -414,7 +414,7 @@
            extra     <- ""
            runid     <- "SEASONAL"
          }
-         source (paste(ametR,"/MET_raob.R",sep=""))
+         try(source (paste(ametR,"/MET_raob.R",sep="")), silent=T)
          if.good.mode <-T
        }
      }
@@ -438,7 +438,7 @@
        writeLines(paste("RUNNING SW Radiation STATS SEASONALLY-->",
                         year_start0000,seas[ii]," to < ",
                         year_end0000,seae[ii],sep=""))
-       source (paste(ametR,"/MET_plot_radiation.R",sep=""))
+       try(source (paste(ametR,"/MET_plot_radiation.R",sep="")), silent=T)
        if.good.mode <-T
      }
      #######################################
@@ -465,5 +465,3 @@
    writeLines(paste("Upper-air Statistics       UA.RM, UA.RS"))
  }
 
-
-quit(save='no')
