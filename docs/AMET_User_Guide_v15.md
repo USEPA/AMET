@@ -1202,9 +1202,11 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - Creates a number of plots. Not all are shown above. See script for full details.
 - Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.csv))
 
-**run_prism_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
-- Creates a NetCDF file in the model output format.
-- Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
+**run_prism_comp.csh** ([NetCDF example](./images/metExample_wrf.prism-wrf.monthly.201607.nc), [Text Stats](./images/metExample_wrf.prism.monthly.2016-07-01.txt), [Leaflets HTML Plot](./images/metExample_wrf.prism.leaf.monthly.2016-07-01.html))
+- Creates a NetCDF file in the model output format of PRISM and model total precip + a text file with grid average statistics.
+- Uses R prism package to automatically download PRISM for daily, monthly or annual periods.
+- Looping capability in run script allows loop over days, months or years for much easier control for long model runs.
+- Leaflet HTML plotting if new automated download of PRISM raster format (BIL) is used as recommended. 
 - Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
 
 **wrapper.csh** 
