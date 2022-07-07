@@ -43,8 +43,8 @@
  extra      <-Sys.getenv("AMET_EXTRA1")
  extra2     <-Sys.getenv("AMET_EXTRA2")
  wdweightws <-T
- savefile   <-F
- textout    <-F
+ savefile   <-T
+ textout    <-T
 
  figdir     <-Sys.getenv("AMET_OUT")
 
