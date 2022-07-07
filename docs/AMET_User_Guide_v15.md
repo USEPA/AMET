@@ -1209,7 +1209,7 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 
 **wrapper.csh** 
 - A new script in AMETv1.5 that acts as a wrapper for most of the scripts listed above (spatial, daily barplot, summary, raob and radiation).
-- Uses an wrapper run code (e.g., DB.MN) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot (DB) statistics for each month (MN) of a defined year.
+- Uses an wrapper run code (e.g., DB.RM) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot (DB) statistics for each US Climate Region & Month of a defined year (RM). Example script only does July 2016 for each region. SM.RM is another option activated in example script for summary statistics (SM) for each region and month (RM). Notes in script provide all options.
 - The script lists all availiable options that include monthly, seasonal, regional-monthly and regional-seasonal statistics for the various analysis scripts.
 - The `run_info_MET.R` configuration allows further refinement so users can build a complete model evaluation protocol and run from a single script execution.
 - The new AMET GUI will also allow have capability from a user interface. 
