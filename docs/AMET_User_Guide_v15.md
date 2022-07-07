@@ -1168,11 +1168,11 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - Creates maps of statistics at each observation site
 - Creates a csv file of the site specific statistics ([Example csv](./images/wrf_conus12_oaqps.rmse.T.20160101-20160131.pdf))
 
-**run_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
+**run_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.time_series.pdf))
 - timeseries.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
-- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.time_series.txt))
 
 **run_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.KRDU.20160701-20160801.time_series_RH.pdf))
 - timeseries_rh.input
