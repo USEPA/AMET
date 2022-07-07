@@ -447,7 +447,7 @@
   }
  #################################
  ######################################################################### 
- #system(paste("rm",tmpRinput)) 
+ system(paste("rm",tmpRinput)) 
  if(!if.good.mode){
    writeLines(paste("ERROR---> Wrapper mode ",wrapperrunid[1],".",wrapperrunid[2]," not implemented or wrong.",sep=""))
    writeLines("Current mode option codes:")
