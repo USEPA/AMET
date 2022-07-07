@@ -25,12 +25,6 @@
   #    needs a change. Regional example is also coded for easy loop of the analyses over months/seasons
   #    and Climate Regions defined by a collection of states.
 
-
-  setenv WRAPPER_RUNID DB.MN   # Daily bar(DB) Monthly(MN)  
-  setenv AMET_YEAR 2018
-  setenv THRESHOLD 120
-
-
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
   # These are the only required for meteorological analysis. AQ requires more.
@@ -70,21 +64,23 @@
   # Daily surface-base statistics
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
   # DB.MN, DB.SE, DB.RM or DB.RS
-  setenv WRAPPER_RUNID DB.RS
-  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper_dev.R 
+  setenv AMET_YEAR 2016
+  setenv THRESHOLD 120
+  setenv WRAPPER_RUNID DB.RM
+  R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Summary (all & diurnal) of surface-base statistics
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
   # SM.MN, SM.SE, SM.RM or SM.RS
-  setenv WRAPPER_RUNID SM.SE
-  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper_dev.R 
+  setenv WRAPPER_RUNID SM.RM
+  R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Site-specific statistic provided in spatial maps of domain & text output
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
   # SP.MN, SP.SE
   setenv WRAPPER_RUNID SP.MN
   setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/spatial_surface.static.input  
-  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper_dev.R 
+  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Upper-air analysis including spatial stats (only monthly and seasonal), time series stats and profile stats
   # See master run_info_MET.R config file (find RAOB) for more detailed settings like layers, etc.
@@ -92,14 +88,14 @@
   # UA.MN, UA.SE, UA.RM and UA.RS
   setenv WRAPPER_RUNID UA.RS
   setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/raob.static.input
-  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper_dev.R 
+  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Shortwave radiation analysis (seasonal and monthly only)
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
   # SW.MN, SW.SE
   setenv WRAPPER_RUNID SW.MN
   setenv AMETRSTATIC $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/plot_radiation.static.input  
-  R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper_dev.R 
+  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
 
 exit(1)  

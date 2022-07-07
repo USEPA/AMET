@@ -24,7 +24,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[6.3 Creating a New MET Project](#New_MET_Project)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[6.4 Creating a New AQ Project](#New_AQ_Project)<br>
 [7. Analysis](#Analysis)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample_wrf, metExample_mcip and metExample_mpas](#metExample)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[7.1 metExample (WRF, MPAS or MCIP)](#metExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.2 aqExample](#aqExample)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.3 Summary of the AQ Analysis Scripts](#aq_analysis_scripts)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[7.4 Creating a New Analysis Project](#New_Analysis_Project)<br>
@@ -41,7 +41,6 @@
 [Table 2‑1. Directories under $AMETBASE](#Table_2-1)<br>
 [Table 3‑1. Most common variables that need to be changed in amet-config.R](#Table_3-1)<br>
 [Table 6‑3. aqProject.csh script options](#Table_6-3)<br>
-[Table 7‑1. MET analysis scripts](#Table_7-1)<br>
 [Table 7‑2. AQ analysis script options](#Table_7-2)<br>
 [Table B‑1. amet-config.R](#Table_B-1)<br>
 [Table B‑2. MET analysis input variables](#Table_B-2)<br>
@@ -1164,17 +1163,17 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - Creates maps of statistics at each observation site
 - Creates a csv file of the site specific statistics ([Example csv](./images/wrf_conus12_oaqps.rmse.T.20160101-20160131.pdf))
 
-**run_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.pdf))
+**run_timeseries.csh** ([Example Timeseries Plot](./images/metExample_wrf.KRDU.20160701-20160801.time_series.pdf))
 - timeseries.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
-- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.time_series.txt))
 
-**run_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
+**run_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.KRDU.20160701-20160801.time_series_RH.pdf))
 - timeseries_rh.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
-- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.time_series_RH.txt))
 
 **run_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
@@ -1192,20 +1191,22 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
 - Creates a csv file for  ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
 
-**run_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
+**run_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.pdf), [Profile](./images/raob.profileM.GROUP_AVG.TEMP.20160701-20160731.metExample_wrf.RAOBANAL.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.pdf))
 - raob.input
 - raob.static.input
 - Creates a number of plots. Not all are shown above. See script for full details.
-- Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.csv))
+- Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.csv))
 
-**run_prism_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
-- Creates a NetCDF file in the model output format.
-- Output has PRISM observed precipitation and WRF/MPAS precipitation for daily or monthly totals.
+**run_prism_comp.csh** ([NetCDF example](./images/metExample_wrf.prism-wrf.monthly.201607.nc), [Text Stats](./images/metExample_wrf.prism.monthly.2016-07-01.txt), [Leaflets HTML Plot](./images/metExample_wrf.prism.leaf.monthly.2016-07-01.html))
+- Creates a NetCDF file in the model output format of PRISM and model total precip + a text file with grid average statistics.
+- Uses R prism package to automatically download PRISM for daily, monthly or annual periods.
+- Looping capability in run script allows loop over days, months or years for much easier control for long model runs.
+- Leaflet HTML plotting if new automated download of PRISM raster format (BIL) is used as recommended. 
 - Users have the flexibility to use Verdi, Ncview, IDV or other software to plot as desired or read via NetCDF modules and do external analysis on the data.
 
 **wrapper.csh** 
 - A new script in AMETv1.5 that acts as a wrapper for most of the scripts listed above (spatial, daily barplot, summary, raob and radiation).
-- Uses an wrapper run code (e.g., DB.MN) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot (DB) statistics for each month (MN) of a defined year.
+- Uses an wrapper run code (e.g., DB.RM) that drives an analysis script and analysis mode. DB.MN for example runs the daily barplot (DB) statistics for each US Climate Region & Month of a defined year (RM). Example script only does July 2016 for each region. SM.RM is another option activated in example script for summary statistics (SM) for each region and month (RM). Notes in script provide all options.
 - The script lists all availiable options that include monthly, seasonal, regional-monthly and regional-seasonal statistics for the various analysis scripts.
 - The `run_info_MET.R` configuration allows further refinement so users can build a complete model evaluation protocol and run from a single script execution.
 - The new AMET GUI will also allow have capability from a user interface. 

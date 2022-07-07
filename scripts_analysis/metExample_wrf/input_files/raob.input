@@ -22,6 +22,11 @@
  PROFN     <-as.logical(Sys.getenv("RAOB_PROFILEN"))
  CURTAINN  <-as.logical(Sys.getenv("RAOB_CURTAINN"))
 
+###################
+# Extra plot label 
+ runid     <-"RAOBANAL"
+###################
+
 #########################################################################
 # Sample size thresholds for statistics
 #########################################################################

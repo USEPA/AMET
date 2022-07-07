@@ -1,0 +1,5 @@
+Period and start day: monthly   2016-07-01
+Grid Mean Error -- Bias (mm): -1.899
+Grid Mean Absolute Error (mm): 27.753
+Grid Correlation: 0.812
+Note that model and obs gridpoint are set to missing for all no-precip obs cells.
