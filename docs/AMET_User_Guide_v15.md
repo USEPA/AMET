@@ -41,7 +41,6 @@
 [Table 2‑1. Directories under $AMETBASE](#Table_2-1)<br>
 [Table 3‑1. Most common variables that need to be changed in amet-config.R](#Table_3-1)<br>
 [Table 6‑3. aqProject.csh script options](#Table_6-3)<br>
-[Table 7‑1. MET analysis scripts](#Table_7-1)<br>
 [Table 7‑2. AQ analysis script options](#Table_7-2)<br>
 [Table B‑1. amet-config.R](#Table_B-1)<br>
 [Table B‑2. MET analysis input variables](#Table_B-2)<br>
