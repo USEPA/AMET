@@ -389,7 +389,7 @@
   legend(date.vec[1],maxy,leglab,col=tscols,lty=1,lwd=2,cex=0.90,xjust=.20)
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC   ",ss$ioa,seps,ss2$ioa)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -439,7 +439,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC   ",ss$ioa,seps,ss2$ioa)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -488,7 +488,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC   ",ss$ioa,seps,ss2$ioa)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -536,7 +536,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "IOA ",ss$ioa,seps,ss2$ioa)
+                  "AC   ",ss$ioa,seps,ss2$ioa)
   text(date.vec[length(date.vec)],90,"      East",col=gray(.1), pos=3,cex=1.2)
   text(date.vec[length(date.vec)],180,"      South",col=gray(.1), pos=3,cex=1.2)
   text(date.vec[length(date.vec)],270,"      West",col=gray(.1), pos=3,cex=1.2)
