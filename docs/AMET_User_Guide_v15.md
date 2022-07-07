@@ -1196,11 +1196,11 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - Creates several shortwave radiation evaluations plots. Spatial, diurnal, histogram and timeseries.
 - Creates a csv file for  ([Example csv](./images/srad.diurnal.psu.20160701-20160801.csv))
 
-**run_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Profile](./images/raob.profileM.KMHX.TEMP.20160701-20160801.metExample_wrf.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.pdf), [Curtain](./images/raob.curtainM.KMFL.MOD-OBS.RH.20160701-20160801.metExample_wrf.pdf))
+**run_raob.csh** (Example plots: [Spatial](./images/raob.spatial.RMSE.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.pdf), [Profile](./images/raob.profileM.GROUP_AVG.TEMP.20160701-20160731.metExample_wrf.RAOBANAL.pdf), [Daily](./images/raob.daily.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.pdf))
 - raob.input
 - raob.static.input
 - Creates a number of plots. Not all are shown above. See script for full details.
-- Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160801.1000-100mb.metExample_wrf.csv))
+- Creates a csv file for daily and spatial statistics ([Example csv](./images/raob.daily.TEMP.20160701-20160731.1000-100mb.metExample_wrf.RAOBANAL.csv))
 
 **run_prism_comp.csh** ([NetCDF example file](./images/wrf_prism_precip.july2016.nc))
 - Creates a NetCDF file in the model output format.
