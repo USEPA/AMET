@@ -1175,11 +1175,11 @@ A brief summary of each of the C-shell scripts that drive the main R analyses, w
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, wind speed and direction.
 - Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.txt))
 
-**run_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.RH.KRDU.20160701-20160801.pdf))
+**run_timeseries_rh.csh** ([Example Timeseries RH Plot](./images/metExample_wrf.KRDU.20160701-20160801.time_series_RH.pdf))
 - timeseries_rh.input
 - timeseries.static.input
 - Creates a 4 panel timeseries of model and observed temperature, mixing ratio, relative humidity and surface pressure.
-- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.RH.KRDU.20160701-20160801.txt))
+- Creates a text file and R data file of the time series ([Example of text output](./images/metExample_wrf.KRDU.20160701-20160801.time_series_RH.txt))
 
 **run_summary.csh** ([AMET Plot](./images/metExample_wrf.JULY2016.T.ametplot.png)  [Diurnal Plot](./images/metExample_wrf.JULY2016.T.diurnal.png))
 - summary.input
