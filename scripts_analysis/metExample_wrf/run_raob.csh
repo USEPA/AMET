@@ -40,14 +40,18 @@
   # spatial.setSITES.all.txt file is produced in output directory. This file
   # has set SITES string that can be used below.
   setenv RAOB_SPATIAL   T 
+
   # Sounding timeseries statistics for defined pressure layer (AMET_PLAYER below T/F)
   # AMET_BOUNDS_LAT and AMET_BOUNDS_LON are used to choose sites for timeseries stats.
   setenv RAOB_TSERIES   T 
+
   # Profile statistics for all mandatory levels (T/F). 
   # NOTE: Site grouping is allowed. Done for all availiable pressure levels.
   setenv RAOB_PROFILEM  T 
+
   # Curtain plot of model, raob and difference on mandatory pressure levels (T/F).
   # NOTE: No site grouping allowed. Script ignores this setting and plots each site.
+  # NOTE: SITES below has to be set to RAOB site ID(s) and not ALL for CURTAIN plotting.
   setenv RAOB_CURTAINM  F 
 
   # NATIVE PRESSURE LEVEL ANALYSIS OPTIONS
@@ -56,6 +60,7 @@
   # NOTE: No site grouping allowed. Script ignores this setting and plots each site.
   # NOTE: Pressure level range defined by AMET_PLIM below.
   setenv RAOB_PROFILEN  F 
+
   # Curtain plot of model with obs profile overlaid using dots (T/F).
   # NOTE: No site grouping allowed. Script ignores this setting and plots each site.
   # NOTE: Pressure level range defined by AMET_PLIM below.
@@ -102,6 +107,7 @@
   setenv AMET_EXTRA "AND (s.state!='UT' AND s.state!='NV' AND s.state!='CO' AND s.state!='NM' AND s.state!='AZ')"
   setenv AMET_EXTRA "AND (s.country LIKE '%Mexico%' OR s.country LIKE '%Canada%')"
   setenv AMET_EXTRA "AND (s.country NOT LIKE '%United States%')"
+  setenv AMET_EXTRA ""
 
   # Do you want a CVS files with Spatial and Daily Statistics?
   setenv AMET_TEXTSTATS T
