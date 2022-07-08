@@ -198,11 +198,16 @@ for (j in 1:total_networks) {							# Loop through for each network
                   mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  			# Store site bias for simulation 1 in an array
                   mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  			# Store site bias for simulation 2 in an array
                   bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))	# Compute diff in site mean bias between two simulations
-                  mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
-                  mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
-                  mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
-                  mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
-                  error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
+                  mod_error_1   <- abs(mod_mean1-ob_mean1)
+                  mod_error_2   <- abs(mod_mean2-ob_mean2)
+                  mod_error_1_all <- c(mod_error_1_all, mod_error_1)                       # Store site bias for simulation 1 in an array
+                  mod_error_2_all <- c(mod_error_2_all, mod_error_2)                       # Store site bias for simulation 2 in an array
+                  error_diff      <- c(error_diff, (abs(mod_error_1)-abs(mod_error_2)))     # Compute diff in site mean bias between two simulations
+#                  mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
+#                  mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
+#                  mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
+#                  mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
+#                  error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
                }
             }
          }
@@ -294,12 +299,9 @@ for (i in 1:6) {
 #  xyz <- data.frame(x=expand.grid(x.proj.12,y.proj.12)[,1]*1000,y=expand.grid(x.proj.12,y.proj.12)[,2]*1000,z=matrix(o3.mod.array[,,i]))
 #  o3.mod.raster <- rasterFromXYZ(xyz,crs="+proj=lcc +lat_1=33 +lat_2=45 +lat_0=40 +lon_0=-97 +a=6370000 +b=6370000")
 
-   if ((i != 2) && (i != 4)) {
-     data.df <- data.frame(site.id=all_sites,latitude=all_lats,longitude=all_lons,o3.obs=plot_data[[i]])
-     range_max <- max(quantile(abs(plot_data[[i]]),probs=quantile_max),na.rm=T)
-     data.seq <- pretty(c(-range_max,range_max),n=20)
-  }
-      
+   data.df <- data.frame(site.id=all_sites,latitude=all_lats,longitude=all_lons,o3.obs=plot_data[[i]])
+   range_max <- max(quantile(abs(plot_data[[i]]),probs=quantile_max),na.rm=T)
+   data.seq <- pretty(c(-range_max,range_max),n=20)
    if ((length(diff_range_min) != 0) || (length(diff_range_max) != 0)) {
       data.seq <- pretty(c(diff_range_min,diff_range_max),n=20)
    }
@@ -307,7 +309,21 @@ for (i in 1:6) {
    max.data <- max(data.seq)
    n.bins <- length(data.seq)
    binpal2 <- colorBin(my.diff.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
-
+ 
+   if ((i == 3) || (i == 4)) {
+     data.df <- data.frame(site.id=all_sites,latitude=all_lats,longitude=all_lons,o3.obs=plot_data[[i]])
+     range_min <- min(quantile(abs(plot_data[[i]]),probs=quantile_min),na.rm=T)
+     range_max <- max(quantile(abs(plot_data[[i]]),probs=quantile_max),na.rm=T)
+     data.seq <- pretty(c(range_min,range_max),n=20)
+     if ((length(diff_range_min) != 0) || (length(diff_range_max) != 0)) {
+      data.seq <- pretty(c(diff_range_min,diff_range_max),n=20)
+     }
+     min.data <- min(data.seq)
+     max.data <- max(data.seq)
+     n.bins <- length(data.seq)
+     binpal2 <- colorBin(my.colors(10), c(min.data,max.data), n.bins-1 , pretty = FALSE)
+   }
+      
   for (j in 1:length(network_names)) {
      if(i == 1) { 
         plot_val <- sinfo_data[[j]]$Bias_1
