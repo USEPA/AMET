@@ -206,9 +206,14 @@ inc_corr		<- 'n'
 inc_nmb			<- 'n'
 inc_nme			<- 'n'
 obs_per_day_limit	<- 0
-avg_func		<- "mean"
-avg_func_name		<- as.character(avg_func)
 line_width		<- "1"
+
+##################################
+### Averaging Function Options ###
+##################################
+# mean, median, or sum
+avg_func                <- mean
+avg_func_name           <- "mean"
 
 ###########################
 #### Kelly Plot Options ###
@@ -219,9 +224,13 @@ nmb_max         <- NULL
 nme_int         <- NULL
 nme_min         <- NULL
 nme_max         <- NULL
+mb_int		<- NULL
 mb_max          <- NULL
 me_min          <- NULL
 me_max          <- NULL
+cor_ing		<- NULL
+cor_min		<- NULL
+cor_max		<- NULL
 rmse_min        <- NULL
 rmse_max        <- NULL
 
@@ -289,8 +298,7 @@ density_zlim	<- NULL
 num_dens_bins	<- NULL
 
 ### Skill plot criteria line ###
-O3_max_limit	<- 70
-PM_max_limit	<- 25
+max_limit	<- 70
 
 ##################################
 ### Stacked Bar Charts Options ###
@@ -309,3 +317,4 @@ stat_file	<- ""
 ##################################
 ametNetworkInput <- Sys.getenv("AMET_NET_INPUT")
 source(ametNetworkInput) # Network related input
+
