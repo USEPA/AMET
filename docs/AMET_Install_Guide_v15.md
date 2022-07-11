@@ -199,7 +199,10 @@ After you have installed the basic R software, AMET also requires the following 
 * stats
 * plotrix
 * fields
+* akima
 * leaflet
+* prism
+* rgdal
 * htmlwidgets
 * dygraphs
 
@@ -207,7 +210,7 @@ The easiest way to install R packages, is through the R package manager.  Once R
 
 ```
 > sudo R
-> install.packages(c("RMySQL", "date", "maps", "mapdata","plotrix", "fields", "prism", "rgdal"))
+> install.packages(c("RMySQL", "date", "maps", "mapdata","plotrix", "fields","akima","leaflet","prism", "rgdal","dygraphs"))
 ```
 
 If you do not have root access or are runnning on a shared system, you can load the packages as follows:
