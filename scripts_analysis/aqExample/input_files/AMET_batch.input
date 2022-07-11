@@ -283,7 +283,7 @@ mb_int          <- NULL
 mb_max          <- NULL
 me_min          <- NULL
 me_max          <- NULL
-cor_ing         <- NULL
+cor_int         <- NULL
 cor_min         <- NULL
 cor_max         <- NULL
 rmse_min        <- NULL
