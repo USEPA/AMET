@@ -213,16 +213,20 @@ for (j in 1:total_networks) {							# Loop through for each network
                   sites        <- c(sites, unique(sub_good.df$stat_id))			# Add current site to site list	
                   lats         <- c(lats, unique(sub_good.df$lat))				# Add current lat to lat list
                   lons         <- c(lons, unique(sub_good.df$lon))				# Add current lon to lon list
-                  mod_bias_1     <- mean(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1)  	# Compute the site mean bias for simulation 1
-                  mod_bias_2     <- mean(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2)  	# Compute the site mean bias for simulation 2
-                  mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)  			# Store site bias for simulation 1 in an array
-                  mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)  			# Store site bias for simulation 2 in an array
-                  bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))	# Compute diff in site mean bias between two simulations
-                  mod_error_1    <- mean(abs(sub_good.df$Mod_Value_1-sub_good.df$Ob_Value_1))	# Compute the site mean error for simulation 1
-                  mod_error_2    <- mean(abs(sub_good.df$Mod_Value_2-sub_good.df$Ob_Value_2))	# Compute the site mean error for simulation 2
-                  mod_error_1_all    <- c(mod_error_1_all, mod_error_1)				# Store site mean error for simulation 1 in an array
-                  mod_error_2_all    <- c(mod_error_2_all, mod_error_2)				# Store site mean error for simulation 2 in an array
-                  error_diff     <- c(error_diff, (mod_error_1-mod_error_2))	# Compute difference in site mean error between two simulations
+                  mod_mean1    <- avg_func(sub_good.df$Mod_Value_1)
+                  ob_mean1     <- avg_func(sub_good.df$Ob_Value_1)
+                  mod_mean2    <- avg_func(sub_good.df$Mod_Value_2)
+                  ob_mean2     <- avg_func(sub_good.df$Ob_Value_2)
+                  mod_bias_1   <- mod_mean1-ob_mean1
+                  mod_bias_2   <- mod_mean2-ob_mean2
+                  mod_bias_1_all <- c(mod_bias_1_all, mod_bias_1)                       # Store site bias for simulation 1 in an array
+                  mod_bias_2_all <- c(mod_bias_2_all, mod_bias_2)                       # Store site bias for simulation 2 in an array
+                  bias_diff      <- c(bias_diff, (abs(mod_bias_1)-abs(mod_bias_2)))     # Compute diff in site mean bias between two simulations
+                  mod_error_1   <- abs(mod_mean1-ob_mean1)
+                  mod_error_2   <- abs(mod_mean2-ob_mean2)
+                  mod_error_1_all <- c(mod_error_1_all, mod_error_1)                       # Store site bias for simulation 1 in an array
+                  mod_error_2_all <- c(mod_error_2_all, mod_error_2)                       # Store site bias for simulation 2 in an array
+                  error_diff      <- c(error_diff, (abs(mod_error_1)-abs(mod_error_2)))     # Compute diff in site mean bias between two simulations
                }
             }
          }

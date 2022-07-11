@@ -19,7 +19,7 @@
   # These are the main controlling variables for the R script
   
   ###  AMET base directory, database, project and configure file location
-  setenv AMETBASE       /home/AMETv14
+  setenv AMETBASE       /home/AMETv15
   setenv AMET_DATABASE 	amet
   setenv AMET_PROJECT	aqExample	
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R  
@@ -129,13 +129,13 @@
   echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region_NMB.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region_NME.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region_MB.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region_ME.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region_RMSE.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region_Corr.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_region.csv 
+		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region_NMB.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region_NME.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region_MB.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region_ME.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region_RMSE.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region_Corr.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_region.csv 
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

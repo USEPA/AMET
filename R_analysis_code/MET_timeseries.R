@@ -79,7 +79,7 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
- source (ametRstatic)
+ try(source (ametRstatic),silent=T)
 
  # Compatibility check for new variables in case of old config files
  if(!exists("extra2") ) { extra2 <- extra	}
