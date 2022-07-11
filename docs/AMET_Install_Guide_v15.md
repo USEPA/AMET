@@ -201,6 +201,7 @@ After you have installed the basic R software, AMET also requires the following 
 * fields
 * leaflet
 * htmlwidgets
+* dygraphs
 
 The easiest way to install R packages, is through the R package manager.  Once R is installed, use the following commands to install these packages (note that the ">" denotes the Linux command prompt):
 
@@ -269,6 +270,8 @@ package ‘stats’ is a base package, and should not be updated
 `Rscript -e "install.packages('prism', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
 `Rscript -e "install.packages('rgdal', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('dygraphs', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
 
 Additional instructions for [installing R packages on a campus cluster](https://campuscluster.illinois.edu/resources/docs/user-guide/r/)
