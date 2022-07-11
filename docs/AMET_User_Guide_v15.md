@@ -1464,9 +1464,8 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines
    - multiple network; multiple species; multiple simulations
 
-**run\_spectral\_analysis.csh** ([Example Plot](./images/aqExample_SO4_aqExample_taylor.png))
-   - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
-   - single network; single species; multiple simulations
+**run\_spectral\_analysis.csh** ([Example Plot](./images/aqExample_O3_1_spectrum.png))
+    
 
 **run\_stacked\_barplot.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot.png))
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Does not include soil, so is compatible with simulations using CMAQ aerosol modules prior to AERO6.
@@ -1534,6 +1533,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 
 **run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries.html))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
+   - single network; single species; multiple simulations
+
+**run\_temporal.csh** ([Example Plot](./images/aqExample_SO4_1_taylor.png)
+   - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
    - single network; single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>
