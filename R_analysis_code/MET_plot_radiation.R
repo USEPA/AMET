@@ -81,7 +81,7 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
- source (ametRstatic)
+ try(source (ametRstatic),silent=T)
 
  ametdbase1   <- Sys.getenv("AMET_DATABASE")
  ametdbase2   <- Sys.getenv("AMET_DATABASE2")
