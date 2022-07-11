@@ -60,13 +60,25 @@ all_diff        <- NULL
 bounds          <- NULL						# Set map bounds to NULL
 sub_title       <- NULL						# Set sub title to NULL
 lev_lab         <- NULL
-spch<-c(16,17,15,18)
-spch2<-c(1,2,0,5)
-symbols<-c("CIRCLE","TRIANGLE","SQUARE","DIAMOND")
+legend_names	<- NULL
+legend_chars	<- NULL
+plot.symbols<-as.integer(plot_symbols)
+pick.symbol.name.fun<-function(x){
+   master.symbol.df<-data.frame(plot.symbols=c(16,17,15,18,8,11,4),names=c("CIRCLE","TRIANGLE","SQUARE","DIAMOND","BURST","STAR","X"))
+   as.character(master.symbol.df$names[x==master.symbol.df$plot.symbols])
+}
+pick.symbol2.fun<-function(x){
+   master.symbol2.df<-data.frame(plot.symbols=c(16,17,15,18,8,11,4),plot.symbols2=c(1,2,0,5,8,11,4))
+   as.integer(master.symbol2.df$plot.symbols2[x==master.symbol2.df$plot.symbols])
+}
+symbols<-apply(matrix(plot.symbols),1,pick.symbol.name.fun)
+spch2 <- apply(matrix(plot.symbols),1,pick.symbol2.fun)
+spch<-plot.symbols
 ########################################
 
 remove_negatives <- 'n'      # Set remove negatives to false. Negatives are needed in the coverage calculation and will be removed automatically by Average
 total_networks <- length(network_names)
+k <- 1
 for (j in 1:total_networks) {							# Loop through for each network
    Mod_Obs_Diff   <- NULL							# Set model/ob difference to NULL
    network        <- network_names[[j]]						# Determine network name from loop value
@@ -106,6 +118,8 @@ for (j in 1:total_networks) {							# Loop through for each network
          ####################################
          ## Compute Averages for Each Site ##
          ####################################
+         legend_names <<- c(legend_names,network_label[j])
+         legend_chars <<- c(legend_chars,spch[k])
          averaging <- "a"
          aqdat_in.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
          aqdat.df <- Average(aqdat_in.df)
@@ -132,7 +146,8 @@ for (j in 1:total_networks) {							# Loop through for each network
          all_mod  <- c(all_mod,(aqdat_merged.df$Mod_Value.x/aqdat_merged.df$Mod_Value.y)*100)
          all_diff <- c(all_diff,aqdat_merged.df$Mod_Obs_Diff)
          ##################################################
-         sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the symbol name used for that network
+#         sub_title<-paste(sub_title,symbols[j],"=",network_label[j],"; ",sep="")      # Set subtitle based on network matched with the symbol name used for that network
+         k <- k+1
       }
    }
 }
