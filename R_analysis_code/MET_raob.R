@@ -83,7 +83,7 @@
  source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
  source (mysqlloginconfig)
  source (ametRinput)
- source (ametRstatic)
+ try(source (ametRstatic),silent=T)
 
  # New runid setting for plot labels. If not set, empty for old plot names.
  if(!exists("runid"))                          { runid <- "NORUNID"  }
