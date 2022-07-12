@@ -74,7 +74,8 @@ custom_units		<-""
 ######################
 ###  Title Options ###
 ######################
-custom_title<-Sys.getenv("AMET_TITLE")
+custom_title	<- Sys.getenv("AMET_TITLE")
+custom_title2	<- Sys.getenv("AMET_TITLE2")
 
 ######################
 ###  Output dir    ###

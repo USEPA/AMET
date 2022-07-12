@@ -14,7 +14,7 @@ header <- "
 ###
 ### Original concept and some code developed by Jim Kelly of EPA.  
 ###
-### Last updated by Wyat Appel: March 2022
+### Last updated by Wyat Appel: July 2022
 ###########################################################################################
 "
 
@@ -127,7 +127,7 @@ for (s in 1:length(run_names)) {
          stats_all.df$Mean_Err <- NA
          stats_all.df$RMSE <- NA
          stats_all.df$Correlation <- NA
-         print(paste("Query returned no data for the",season_names[r]," season. Replacing with NAs.",sep=""))
+         print(paste("Query returned no data for the ",season_names[r]," season. Replacing with NAs.",sep=""))
       }
       {
          if (k == 1) {
@@ -171,7 +171,6 @@ for (i in 1:6) {
       nmb.val <- ceiling(max(abs(data.tmp$value),na.rm=T))
       nmb.max <- signif(nmb.val,1)
       nmb.min <- signif(min(abs(data.tmp$value),na.rm=T),1)
-#      int <- signif(ceiling((2*nmb.max)/10),1)
       int <- ceiling((2*nmb.max)/10)
       nmb.max <- 5*int
       if (int <= 0) { int <- 1 }
@@ -190,17 +189,10 @@ for (i in 1:6) {
       nme.val <- max(abs(data.tmp$value),na.rm=T)
       nme.max <- ceiling(max(data.tmp$value,na.rm=T))
       nme.min <- floor(min(data.tmp$value,na.rm=T))
-#      int <- ceiling((nme.max-nme.min)/9)
       nme.range <- nme.max-nme.min
       if (nme.range < 1) { int <- ceiling(100*(signif((nme.range)/9,2)))/100 }
       if (nme.range >= 1) { int <- ceiling(10*(signif((nme.range)/9,2)))/10 }
       if (nme.range > 100) { int <- signif((nme.range)/9,1) }
-
-      print(nme.val)
-      print(nme.max)
-      print(nme.min)
-      print(int)
-#      nme.max <- nme.max+int
       nme.max <- nme.min+(9*int)
       if (int < 1) { int <- 1 }
       if (length(nme_max) != 0) { nme.max <- nme_max }
@@ -253,7 +245,7 @@ for (i in 1:6) {
       write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
    if (stat_in == "RMSE") {
-            rmse.max  <- (max(data.tmp$value,na.rm=T))
+      rmse.max  <- (max(data.tmp$value,na.rm=T))
       rmse.min  <- (min(data.tmp$value,na.rm=T))
       {
          if (rmse.max < 1) { rmse.max <- ceiling(rmse.max*10)/10 }
@@ -268,6 +260,7 @@ for (i in 1:6) {
       if (length(rmse_min) != 0) { rmse.min <- rmse_min }
       if (length(rmse_max) != 0) { rmse.max <- rmse_max }
       rmse.range <- rmse.max-rmse.min
+      if (rmse.range == 0) { rmse.range = 0.1 }
       int <- signif((rmse.range/9),2)
       rmse.max <- rmse.min+(9*int)
       data.tmp <- binval(dt=data.tmp,mn=rmse.min,mx=rmse.max,sp=int)
@@ -282,15 +275,16 @@ for (i in 1:6) {
       if (length(cor_min) != 0) { cor.min <- cor_min }
       if (length(cor_max) != 0) { cor.max <- cor_max }
       cor.range <- cor.max-cor.min
+      if (cor.range == 0) { cor.range <- 0.1 }
       int <- signif((cor.range/8),1)
       if (length(cor_int) != 0) { int <- cor_int }
+      cor.max  <- cor.min+(9*int)
       data.tmp <- binval(dt=data.tmp,mn=cor.min,mx=cor.max,sp=int)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlGnBu'))
       alp <- 0.9   
       write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
-   print(col.rng)
    if (!exists("inc_kelly_stats")) { inc_kelly_stats <- "n" }
    data.tmp$round_value <- signif(data.tmp$value,2)
    plt <- ggplot() +

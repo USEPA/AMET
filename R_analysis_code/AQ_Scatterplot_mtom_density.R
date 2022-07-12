@@ -31,6 +31,7 @@ networks_title <- network_label[1]
 n <- 2 
 while (n <= length(network_names)) {
    networks_title <- paste(networks_title,network_label[n],sep=", ")
+   n <- n+1
 }
 
 ### Set file names and titles ###

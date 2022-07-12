@@ -110,7 +110,7 @@
   echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "CSV file   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_rawdata.csv
+		echo "CSV file   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

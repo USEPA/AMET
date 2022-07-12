@@ -34,7 +34,7 @@ num_runs <- 1
 ### Set filenames and titles ###
 filename_pdf     <- paste(run_name1,pid,"stacked_barplot_AE6_ggplot.pdf",sep="_")
 filename_png     <- paste(run_name1,pid,"stacked_barplot_AE6_ggplot.png",sep="_")
-filename_txt	 <- paste(run_name1,pid,"stacked_barplot_AE6_data.csv",sep="_")
+filename_txt	 <- paste(run_name1,pid,"stacked_barplot_AE6_ggplot_data.csv",sep="_")
 
 ## Create a full path to file
 filename_pdf  <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename
@@ -206,6 +206,9 @@ for (j in 1:length(run_names)) {
       }
    }
 }
+
+write.table(data_out.df,file=filename_txt,append=F,row.names=F,sep=",")      # Write raw data to csv file
+
 data_out.df$species <- factor(data_out.df$species, levels=c("SO4","NO3","NH4","EC","OC","Al","Ca","Fe","K","Mg","Mn","Si","Ti","Na","Cl","NCOM","OTHR"))
 bar_colors <- c("red","yellow","orange","grey20","black","lightblue","blue","firebrick","yellow4","green4","blue4","gray50","orange","purple","lightseagreen","pink","gray70")
 axis.max <- axis.max+(0.05*j)*axis.max	# Make room at the top for simulations legend
