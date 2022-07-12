@@ -137,6 +137,7 @@
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
 		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries_mtom.$AMET_PTYPE
+                echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries_mtom_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

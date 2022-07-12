@@ -155,15 +155,14 @@ for (j in 1:length(run_names)) {
    data_ts.df   <- data_ts.df[-c(2,3,4,5,38)]
 #   names(data_ts.df)[1] <- "stat_id"
    names(data_ts.df)[1] <- "ob_dates"
-   print(names(data_ts.df))
    num_dates <- length(unique(data_ts.df$ob_dates))
-   data_ts_obs.df <- data_ts.df[-c(3,5,7,8,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37)]
+   data_ts_obs.df <- data_ts.df[-c(3,5,7,8,9,11,13,15,17,19,21,23,25,27,29,31,33,34,36)]
    names(data_ts_obs.df)[-1] <- gsub("_ob","",names(data_ts_obs.df)[-1])
    data_ts_melted_obs.df <- melt(data_ts_obs.df,id=c("ob_dates"))
    names(data_ts_melted_obs.df)[2] <- "species"
    data_ts_melted_obs.df$cat <- network
 
-   data_ts_mod.df <- data_ts.df[-c(2,4,6,8,9,10,12,14,16,18,20,22,24,26,28,30,32,34,36)]
+   data_ts_mod.df <- data_ts.df[-c(2,4,6,8,9,10,12,14,16,18,20,22,24,26,28,30,32,34,35)]
    names(data_ts_mod.df)[-1] <- gsub("_mod","",names(data_ts_mod.df)[-1])
    data_ts_melted_mod.df <- melt(data_ts_mod.df,id=c("ob_dates"))
    names(data_ts_melted_mod.df)[2] <- "species"

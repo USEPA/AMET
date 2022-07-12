@@ -96,7 +96,7 @@
   # setenv AMET_TOAR            T
 
   ###  Plot Type, options are "pdf", "png", or "both"
-  setenv AMET_PTYPE png 
+  setenv AMET_PTYPE both 
 
   ### Log File for R script
   setenv AMET_LOG stacked_barplot_soil.log
@@ -123,7 +123,8 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots -- --------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_soil.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_soil.$AMET_PTYPE
+                echo "Data File ------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_soil_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

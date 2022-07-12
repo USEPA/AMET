@@ -34,7 +34,7 @@
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ### Set the project name to be used for model-to-model comparisons ###
-  setenv AMET_PROJECT2  aqExample
+  # setenv AMET_PROJECT2  aqExample
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
@@ -69,8 +69,8 @@
 
   ### North America Networks ###
 
-  #  setenv AMET_CSN            T
-    setenv AMET_IMPROVE        T
+    setenv AMET_CSN            T
+  #  setenv AMET_IMPROVE        T
   #  setenv AMET_CASTNET        T
   #  setenv AMET_CASTNET_Hourly T
   #  setenv AMET_CASTNET_Drydep T
@@ -105,7 +105,7 @@
 #  setenv AMET_PTYPE html
 
   # Log File for R script
-  setenv AMET_LOG stacked_barplot_AE6.log
+  setenv AMET_LOG stacked_barplot_AE6_ts.log
 
 
 ##--------------------------------------------------------------------------##

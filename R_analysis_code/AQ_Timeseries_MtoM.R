@@ -40,7 +40,7 @@ sub.title       <- ""
 
 filename_pdf <- paste(run_name1,species,pid,"timeseries_mtom.pdf",sep="_")              # Set output file name
 filename_png <- paste(run_name1,species,pid,"timeseries_mtom.png",sep="_")
-filename_txt <- paste(run_name1,species,pid,"timeseries_mtom.csv",sep="_")
+filename_txt <- paste(run_name1,species,pid,"timeseries_mtom_data.csv",sep="_")
 
 ## Create a full path to file
 filename_pdf    <- paste(figdir,filename_pdf,sep="/")           # Filename for diff spatial plot

@@ -30,7 +30,7 @@
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ### Set the project name to be used for model-to-model comparisons ###
-  setenv AMET_PROJECT2  aqExample
+  #setenv AMET_PROJECT2  aqExample
 
   ### IF AMET_DB = F, set location of site compare output files using the environment variable OUTDIR
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
@@ -132,6 +132,7 @@ setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scrip
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
 		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries_dygraph.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries_dygraph_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

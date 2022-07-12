@@ -6,7 +6,7 @@ header <- "
 ### using ggplot2. Individual observation/model pairs are provided 
 ### through a MYSQL query. The script then plots these values as a box plot.
 ###
-### Last updated by Wyat Appel: June 2022
+### Last updated by Wyat Appel: Dec 2021
 #######################################################################
 "
 
@@ -31,14 +31,14 @@ filename_pdf		<- paste(run_name1,species,pid,"boxplot_ggplot.pdf",sep="_")
 filename_bias_pdf	<- paste(run_name1,species,pid,"boxplot_bias_ggplot.pdf",sep="_")
 filename_png            <- paste(run_name1,species,pid,"boxplot_ggplot.png",sep="_")
 filename_bias_png       <- paste(run_name1,species,pid,"boxplot_bias_ggplot.png",sep="_")
-filename_txt            <- paste(run_name1,species,pid,"boxplot_ggplot.csv",sep="_")
+filename_txt            <- paste(run_name1,species,pid,"boxplot_ggplot_data.csv",sep="_")
 
 ## Create a full path to file
 filename_pdf            <- paste(figdir,filename_pdf,sep="/")
-filename_pdf_bias       <- paste(figdir,filename_bias_pdf,sep="/")
+filename_bias_pdf       <- paste(figdir,filename_bias_pdf,sep="/")
 filename_png            <- paste(figdir,filename_png,sep="/")
-filename_png_bias       <- paste(figdir,filename_bias_png,sep="/")
-filename_txt             <- paste(figdir,filename_txt,sep="/")
+filename_bias_png       <- paste(figdir,filename_bias_png,sep="/")
+filename_txt            <- paste(figdir,filename_txt,sep="/")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 title <- get_title(run_names,species,network_label,dates,custom_title,clim_reg)
@@ -234,14 +234,14 @@ sp<-ggplot(aqdat_out_bias.df,aes(x=bin,y=Value,fill=Sim)) + geom_boxplot(positio
 
 #sp
 #dev.off()
-if (overlap_boxes != "y") { ggsave(filename_pdf_bias,plot=sp,height=9,width=9) }
+if (overlap_boxes != "y") { ggsave(filename_bias_pdf,plot=sp,height=9,width=9) }
 
 if ((ametptype == "png") || (ametptype == "both")) {
-   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_pdf_bias," png:",filename_png_bias,sep="")
+   convert_command<-paste("convert -flatten -density ",png_res,"x",png_res," ",filename_bias_pdf," png:",filename_bias_png,sep="")
    system(convert_command)
 
    if (ametptype == "png") {
-      remove_command <- paste("rm ",filename_pdf_bias,sep="")
+      remove_command <- paste("rm ",filename_bias_pdf,sep="")
       system(remove_command)
    }
 }

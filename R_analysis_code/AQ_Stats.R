@@ -31,6 +31,8 @@ filename_zip    <- paste(run_name1,pid,"stats.zip",sep="_")
 filename_zip    <- paste(figdir,filename_zip,sep="/")
 #################################################
 
+if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
+
 ### Retrieve units label from database table ###
 network <- network_names[1]
 species_in <- species
@@ -115,7 +117,7 @@ for (k in 1:total_networks) {
          write.table("",file=filename_txt,append=T,row.names=F,sep=",")
          write.table(network,file=filename_txt,append=T,row.names=F,sep=",")                       # Write header for raw data file
          write.table(aqdat_query.df,file=filename_txt,append=T,row.names=F,sep=",")
-      } 
+      }
       #######################
       #################################################################
       ### Check to see if there is any data from the database query ###
@@ -127,22 +129,19 @@ for (k in 1:total_networks) {
             total_species <- (total_species-1)
          }
          ##################################################################
-
+         
          ### If there are data, continue ###
          else {
-            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],State=aqdat_query.df$state)
+            aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),stat_id_noPOC=I(aqdat_query.df$stat_id_noPOC),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=aqdat_query.df[[ob_col_name]],Mod_Value=aqdat_query.df[[mod_col_name]],State=aqdat_query.df$state)
             if (use_avg_stats == "y") {
                aqdat.df <- Average(aqdat.df)
             }
-   
             ### Create properly formated dataframe to be used with DomainStats function and compute stats for entire domain ###
-            data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
+            data_all.df <- data.frame(network=I(aqdat.df$Network),stat_id=I(aqdat.df$Stat_ID),stat_id_noPOC=I(aqdat.df$stat_id_noPOC),lat=aqdat.df$lat,lon=aqdat.df$lon,ob_val=aqdat.df$Obs_Value,mod_val=aqdat.df$Mod_Value)
             stats_all.df <-try(DomainStats(data_all.df))	# Compute stats using DomainStats function for entire domain
             ##################################
-
             ### Write output to comma delimited file ###
             header <- c(paste("Run Name = ",run_name1,sep=""),paste("Evaluation Dates = ",dates,sep=""),paste("State = ",state,sep=""),paste("Site Name = ",site,sep=""))
-
             ### Compute site stats using SitesStats function ###
             sites_stats.df <- try(SitesStats(data_all.df))
 

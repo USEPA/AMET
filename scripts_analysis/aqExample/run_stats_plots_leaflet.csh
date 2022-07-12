@@ -118,7 +118,11 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_statsplot_<METRIC>.html"
+                echo "-----------------------------------------------------------------------------------------"
+                echo "Plots -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_stats_plot_<METRIC>.$AMET_PTYPE"
+                echo "Data File -------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_stats_data.csv"
+                echo "Data File -------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_sites_stats.csv"
+                echo "Data File -------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_stats.csv"
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

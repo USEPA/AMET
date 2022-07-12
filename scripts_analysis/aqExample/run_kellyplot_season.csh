@@ -127,13 +127,13 @@
   echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_NMB.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_NME.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_MB.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_ME.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_RMSE.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_Kellyplot_Corr.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${PID}_stats_data.csv 
+		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_NMB.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_NME.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_MB.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_ME.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_RMSE.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_Corr.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_stats_data.csv 
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

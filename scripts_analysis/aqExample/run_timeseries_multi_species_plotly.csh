@@ -34,7 +34,7 @@
   #setenv OUTDIR2  $AMETBASE/output/$AMET_PROJECT2/sitex_output
 
   ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_multi_species
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/timeseries_multi_species_plotly
 
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"
@@ -111,7 +111,7 @@
 #  setenv AMET_NAMN y
 
   # Log File for R script
-  setenv AMET_LOG timeseries_multi_species.log
+  setenv AMET_LOG timeseries_multi_species_plotly.log
   
 ##--------------------------------------------------------------------------##
 ##                Most users will not need to change below here
@@ -128,14 +128,15 @@ setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scrip
   endif
 
   # R-script execution command
-  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Timeseries_multi_species.R $AMET_LOG
+  R CMD BATCH --no-save --slave $AMETBASE/R_analysis_code/AQ_Timeseries_multi_species_plotly.R $AMET_LOG
   setenv AMET_R_STATUS $status
   
   if($AMET_R_STATUS == 0) then
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_multispec_${AMET_PID}_timeseries.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_timeseries_multi_species.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_timeseries_multi_species_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

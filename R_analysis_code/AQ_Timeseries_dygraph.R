@@ -47,7 +47,7 @@ sub.title	<- ""
 
 filename_html   <- paste(run_name1,species,pid,"timeseries_dygraph.html",sep="_")              # Set output file name
 filename_html   <- paste(figdir,filename_html,sep="/")
-filename_txt	<- paste(run_name1,species,pid,"timeseries_dygraph.csv",sep="_")
+filename_txt	<- paste(run_name1,species,pid,"timeseries_dygraph_data.csv",sep="_")
 filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
 
 
@@ -299,18 +299,15 @@ if (j > 1) {
 if (length(y_axis_max) > 0) { ymax <- y_axis_max }
 if (length(y_axis_min) > 0) { ymin <- y_axis_min }
 
-filename_html   <- paste(run_name1,species,pid,"timeseries.html",sep="_")              # Set output file name
-filename_html   <- paste(figdir,filename_html,sep="/")
-
 #Use dygraph to make interactive html plot. (https://rstudio.github.io/dygraphs/ has examples of other features to try out.)
 if (j < 2) {
    plot.ts <- dygraph(ts.combine, main=main.title, xlab=x_label, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
      dyAxis("y", valueRange = c(ymin,ymax)) %>%
-     dySeries("..1",label=,network,strokeWidth=3) %>%
-     dySeries("..2",label=,run_name1,strokeWidth=2) %>%
-     dySeries("..3",label=,"Model - Obs Bias",strokeWidth=2) %>%
-     dySeries("..4",label=,"RMSE",strokeWidth=2) %>%
-     dySeries("..5",label=,"Reference",strokeWidth=3) %>%
+     dySeries("obs.ts",label=,network,strokeWidth=3) %>%
+     dySeries("mod.ts",label=,run_name1,strokeWidth=2) %>%
+     dySeries("bias.ts",label=,"Model - Obs Bias",strokeWidth=2) %>%
+     dySeries("rmse.ts",label=,"RMSE",strokeWidth=2) %>%
+     dySeries("zero.ref.ts",label=,"Reference",strokeWidth=3) %>%
      dyOptions(colors=c("blue","green",bias_color,rmse_color,"grey")) %>%
      dyRangeSelector(height=20,dateWindow = c(start.date, end.date))%>%
      dyLegend(width=800)
@@ -319,14 +316,14 @@ if (j < 2) {
 if (j > 1) {
    plot.ts <- dygraph(ts.combine, main=main.title, xlab=x_label, ylab=paste(species[1]," (",units[[1]],")",sep="")) %>%
      dyAxis("y", valueRange = c(ymin,ymax)) %>%
-     dySeries("..1",label=,network,strokeWidth=3) %>%
-     dySeries("..2",label=,run_name1,strokeWidth=2) %>%
-     dySeries("..3",label=,"Model - Obs Bias (Sim1)",strokeWidth=2) %>%
-     dySeries("..4",label=,"RMSE (Sim1)",strokeWidth=2) %>%
-     dySeries("..5",label=,run_name2,strokeWidth=2,strokePattern="dashed") %>%
-     dySeries("..6",label=,"Model - Obs Bias (Sim2)",strokeWidth=2,strokePattern="dashed") %>%
-     dySeries("..7",label=,"RMSE (Sim2)",strokeWidth=2,strokePattern="dashed") %>%
-     dySeries("..8",label=,"Reference",strokeWidth=3) %>%
+     dySeries("obs.ts",label=,network,strokeWidth=3) %>%
+     dySeries("mod.ts",label=,run_name1,strokeWidth=2) %>%
+     dySeries("bias.ts",label=,"Model - Obs Bias (Sim1)",strokeWidth=2) %>%
+     dySeries("rmse.ts",label=,"RMSE (Sim1)",strokeWidth=2) %>%
+     dySeries("mod2.ts",label=,run_name2,strokeWidth=2,strokePattern="dashed") %>%
+     dySeries("bias2.ts",label=,"Model - Obs Bias (Sim2)",strokeWidth=2,strokePattern="dashed") %>%
+     dySeries("rmse2.ts",label=,"RMSE (Sim2)",strokeWidth=2,strokePattern="dashed") %>%
+     dySeries("zero.ref.ts",label=,"Reference",strokeWidth=3) %>%
      dyOptions(colors=c("blue","green",bias_color,rmse_color,"green",bias_color,rmse_color,"grey")) %>%
      dyRangeSelector(height=20,dateWindow = c(start.date, end.date))%>%
      dyLegend(width=800)

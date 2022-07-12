@@ -124,7 +124,8 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots -- --------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_skill_scatterplot.$AMET_PTYPE
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_skill_scatterplot.$AMET_PTYPE
+		echo "Data File ------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_skill_scatterplot.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else
