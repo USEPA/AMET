@@ -38,9 +38,9 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 }
 sub.title       <- ""
 
-filename_pdf <- paste(run_name1,species,pid,"timeseries.pdf",sep="_")
-filename_png <- paste(run_name1,species,pid,"timeseries.png",sep="_")
-filename_txt <- paste(run_name1,species,pid,"timeseries.csv",sep="_")
+filename_pdf <- paste(run_name1,species,pid,"timeseries_multi_networks.pdf",sep="_")
+filename_png <- paste(run_name1,species,pid,"timeseries_multi_networks.png",sep="_")
+filename_txt <- paste(run_name1,species,pid,"timeseries_multi_networks_data.csv",sep="_")
 
 ## Create a full path to file
 filename_pdf    <- paste(figdir,filename_pdf,sep="/")           # Filename for timeseries pdf plot

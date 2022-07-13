@@ -23,8 +23,9 @@
 #	get_title							#
 #	GetURL								#
 #									#
-#	Last UpDate:	Feb 2022					#
-#	Contributors:	Wyat Appel, Robert Gilliam			#
+#	Last UpDate:	May 2022					#
+#	Contributors:	Wyat Appel, Robert Gilliam, Kristen Foley,	#
+#                       James Kelly (USEPA/ORD)				#
 #						 			#
 #   Orginally developed by and for EPA		  			#
 #-----------------------------------------------------------------------#
@@ -93,7 +94,11 @@ if(!exists("run_name1")) {
    if ((exists("run_name15")) && (nchar(run_name15) > 0)) { run_names <- c(run_names,run_name15) }
    if ((exists("run_name16")) && (nchar(run_name16) > 0)) { run_names <- c(run_names,run_name16) }
    if ((exists("run_name17")) && (nchar(run_name17) > 0)) { run_names <- c(run_names,run_name17) }
+   if ((exists("run_name18")) && (nchar(run_name18) > 0)) { run_names <- c(run_names,run_name18) }
+   if ((exists("run_name19")) && (nchar(run_name19) > 0)) { run_names <- c(run_names,run_name19) }
+   if ((exists("run_name20")) && (nchar(run_name20) > 0)) { run_names <- c(run_names,run_name20) }
 }
+num_runs <- length(run_names)
 #########################################################
 
 

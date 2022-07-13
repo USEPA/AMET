@@ -39,7 +39,7 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 sub.title	<- ""
 
 
-filename_txt <- paste(run_name1,species,pid,"timeseries.csv",sep="_")
+filename_txt <- paste(run_name1,species,pid,"timeseries_data.csv",sep="_")
 
 ## Create a full path to file
 filename_txt	<- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot

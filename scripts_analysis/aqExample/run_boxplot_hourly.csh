@@ -21,7 +21,7 @@
   # These are the main controlling variables for the R script
   
   ###  Top of AMET directory
-  setenv AMETBASE       /home/AMETv15
+  setenv AMETBASE       /home/AMETv15 
   setenv AMET_DATABASE  amet
   setenv AMET_PROJECT   aqExample
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R
@@ -84,7 +84,7 @@
   #  setenv AMET_AIRMON         T
     setenv AMET_AQS_Hourly     T
   #  setenv AMET_AQS_Daily_O3   T
-  #  setenv AMET_AQS_Daily      T
+  #  setenv AMET_AQS_Daily       T
   #  setenv AMET_SEARCH         T
   #  setenv AMET_SEARCH_Daily   T
   #  setenv AMET_NAPS_Hourly    T
@@ -131,8 +131,7 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_hourly.$AMET_PTYPE
-                echo "Data File  ------>" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_hourly_data.csv
+		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_hourlyboxplot.$AMET_PTYPE
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

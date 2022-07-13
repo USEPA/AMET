@@ -51,7 +51,7 @@
   ###  Custom title (if not set will autogenerate title based on variables 
   ###  and plot type)
   setenv AMET_TITLE "Difference spatial plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
-
+  setenv AMET_TITLE2 "Ratio spatial plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
   ###  Plot Type, options are "pdf","png", or "both"
   setenv AMET_PTYPE both             
@@ -128,7 +128,10 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatial_plot_<TYPE>.$AMET_PTYPE"
+		echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_mtom_diff_avg.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_mtom_diff_min.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_mtom_diff_max.$AMET_PTYPE"
+                echo "Plots -- ---------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_spatialplot_mtom_diff_perc.$AMET_PTYPE"
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

@@ -138,6 +138,7 @@ setenv AMETRINPUT $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/all_scrip
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
 		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries.$AMET_PTYPE
+                echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_timeseries_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

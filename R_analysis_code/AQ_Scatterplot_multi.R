@@ -23,9 +23,9 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 title <- get_title(run_names,species,network_names,dates,custom_title)
 
-filename_pdf <- paste(run_name1,species,pid,"scatterplot.pdf",sep="_")             # Set PDF filename
-filename_png <- paste(run_name1,species,pid,"scatterplot.png",sep="_")             # Set PNG filename
-filename_txt <- paste(run_name1,species,pid,"scatterplot.csv",sep="_")       # Set output file name
+filename_pdf <- paste(run_name1,species,pid,"scatterplot_multi.pdf",sep="_")             # Set PDF filename
+filename_png <- paste(run_name1,species,pid,"scatterplot_multi.png",sep="_")             # Set PNG filename
+filename_txt <- paste(run_name1,species,pid,"scatterplot_multi.csv",sep="_")       # Set output file name
 
 ## Create a full path to file
 filename_pdf <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename
