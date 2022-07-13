@@ -22,8 +22,8 @@
   # These are the main controlling variables for the R script
   
   ###  AMET base directory, database, project and configure file location
-  setenv AMETBASE       /home/AMETv15 
-  setenv AMET_DATABASE 	amet
+  setenv AMETBASE       /home/AMETv15
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT	aqExample	
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R  
 
@@ -132,7 +132,10 @@
   echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot.$AMET_PTYPE
+		echo "Plot ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot.$AMET_PTYPE
+                echo "Plot ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_bias.$AMET_PTYPE
+                echo "Plot ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_nmb.$AMET_PTYPE
+                echo "Data File ----->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_boxplot_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

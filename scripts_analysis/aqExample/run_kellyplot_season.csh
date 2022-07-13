@@ -18,7 +18,7 @@
   
   ###  AMET base directory, database, project and configure file location
   setenv AMETBASE       /home/AMETv15
-  setenv AMET_DATABASE 	amet
+  setenv AMET_DATABASE  amet
   setenv AMET_PROJECT	aqExample	
   setenv MYSQL_CONFIG   $AMETBASE/configure/amet-config.R  
 
@@ -48,7 +48,7 @@
 
   ###  Custom title (if not set will autogenerate title based on variables 
   ###  and plot type)
-  setenv AMET_TITLE "Boxplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
+  setenv AMET_TITLE "Kellyplot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
 
   ###  Plot Type, options are "pdf" or "png"
@@ -127,13 +127,13 @@
   echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_NMB.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_NME.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_MB.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_ME.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_RMSE.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_Kellyplot_Corr.$AMET_PTYPE
-                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_stats_data.csv 
+		echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_NMB.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_NME.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_MB.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_ME.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_RMSE.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_Corr.$AMET_PTYPE
+                echo "Plot   ---------->" $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_Kellyplot_season_data.csv 
 		echo "-----------------------------------------------------------------------------------------"
 		exit(0)
   else

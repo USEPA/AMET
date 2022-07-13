@@ -53,8 +53,8 @@
   setenv AMET_TITLE "Difference spatial plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
   setenv AMET_TITLE2 "Ratio spatial plot $AMET_PROJECT $AMET_SDATE - $AMET_EDATE"
 
-  ###  Plot Type, options are "pdf","png", or "both"
-  setenv AMET_PTYPE both             
+  ###  Plot Type, option is "html"
+  setenv AMET_PTYPE html            
 
   ### Species to Plot ###
   ### Acceptable Species Names: SO4,NO3,NH4,HNO3,TNO3,PM_TOT,PM25_TOT,PM_FRM,PM25_FRM,EC,OC,TC,O3,O3_1hrmax,O3_8hrmax

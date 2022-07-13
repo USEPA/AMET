@@ -30,7 +30,7 @@ level_names_nmb  <- NULL
 filename_html		<- paste(run_name1,species,pid,"boxplot.html",sep="_")
 filename_bias_html	<- paste(run_name1,species,pid,"boxplot_bias.html",sep="_")
 filename_nmb_html       <- paste(run_name1,species,pid,"boxplot_nmb.html",sep="_")
-filename_txt            <- paste(run_name1,species,pid,"boxplot.csv",sep="_")
+filename_txt            <- paste(run_name1,species,pid,"boxplot_data.csv",sep="_")
 
 ## Create a full path to file
 filename_html            <- paste(figdir,filename_html,sep="/")

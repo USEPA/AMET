@@ -43,7 +43,7 @@ filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_RMSE",sep="_")
 filename_mb     <- paste(run_name1,species,pid,"Kellyplot_MB",sep="_")
 filename_me     <- paste(run_name1,species,pid,"Kellyplot_ME",sep="_")
 filename_corr   <- paste(run_name1,species,pid,"Kellyplot_Corr",sep="_")
-filename_txt    <- paste(run_name1,species,pid,"stats_data.csv",sep="_")      # Set output file name
+filename_txt    <- paste(run_name1,species,pid,"Kellyplot_data.csv",sep="_")      # Set output file name
 filename_zip    <- paste(run_name1,species,pid,"Kellyplot.zip",sep="_")
 
 ## Create a full path to file
@@ -178,7 +178,7 @@ for (i in 1:6) {
       col.rng  <- rev(brewer.pal(nlab,'RdBu'))
       col.rng[ceiling(nlab/2)] <- 'grey70'
       alp <- 1
-
+      write.table(data.tmp,file=filename_txt,row.names=F,append=F,sep=",")
    }
    if (stat_in == "NME") {
       nme.val <- max(abs(data.tmp$value),na.rm=T)
@@ -194,6 +194,7 @@ for (i in 1:6) {
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
       alp <- 1
+      write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
    if (stat_in == "MB") {
       mb.max <- max(abs(quantile(data.tmp$value,quantile_max,na.rm=T)),abs(quantile(data.tmp$value,quantile_min,na.rm=T)),na.rm=T)
@@ -209,6 +210,7 @@ for (i in 1:6) {
       col.rng  <- rev(brewer.pal(nlab,'RdBu'))
       col.rng[ceiling(nlab/2)] <- 'grey70'
       alp <- 1
+      write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
    if (stat_in == "ME") {
       me.max    <- ceiling(max(data.tmp$value,na.rm=T))
@@ -231,6 +233,7 @@ for (i in 1:6) {
       nlab      <- data.tmp[,length(levels(fac))]
       col.rng   <- rev(brewer.pal(nlab,'YlOrBr'))
       alp <- 1
+      write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
    if (stat_in == "RMSE") {
       rmse.max  <- ceiling(max(data.tmp$value,na.rm=T))
@@ -253,12 +256,14 @@ for (i in 1:6) {
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlOrBr'))
       alp <- 0.9
+      write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
    if (stat_in == "COR") {
       data.tmp <- binval(dt=data.tmp,mn=0,mx=0.9,sp=0.1)
       nlab     <- data.tmp[,length(levels(fac))]
       col.rng  <- rev(brewer.pal(nlab,'YlGnBu'))
       alp <- 0.9   
+      write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
    }
 
 #   pdf(file=paste(filename[i],".pdf",sep=""),width=8,height=8)

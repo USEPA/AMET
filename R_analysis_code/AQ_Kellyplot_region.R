@@ -43,7 +43,7 @@ filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_region_RMSE",sep="_")
 filename_mb     <- paste(run_name1,species,pid,"Kellyplot_region_MB",sep="_")
 filename_me     <- paste(run_name1,species,pid,"Kellyplot_region_ME",sep="_")
 filename_corr   <- paste(run_name1,species,pid,"Kellyplot_region_Corr",sep="_")
-filename_txt    <- paste(run_name1,species,pid,"Kellyplot_stats_data_region.csv",sep="_")      # Set output file name
+filename_txt    <- paste(run_name1,species,pid,"Kellyplot_region_data.csv",sep="_")      # Set output file name
 filename_zip    <- paste(run_name1,species,pid,"Kellyplot_region.zip",sep="_")
 
 ## Create a full path to file
