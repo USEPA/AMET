@@ -28,7 +28,7 @@ species <- species[1]
 
 filename_pdf <- paste(run_name1,species,pid,"scatterplot_single.pdf",sep="_")             # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot_single.png",sep="_")             # Set PNG filename
-filename_txt <- paste(run_name1,species,pid,"scatterplot_single.csv",sep="_")       # Set output file name
+filename_txt <- paste(run_name1,species,pid,"scatterplot_single_data.csv",sep="_")       # Set output file name
 
 
 ## Create a full path to file
