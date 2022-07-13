@@ -130,7 +130,7 @@
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
 		echo "Plots -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_scatterplot_ggplot.$AMET_PTYPE"
-		echo "Text  -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_scatterplot_ggplot.csv"
+		echo "Data File -------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_scatterplot_ggplot_data.csv"
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else

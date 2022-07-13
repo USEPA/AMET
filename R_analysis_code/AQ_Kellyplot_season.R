@@ -43,7 +43,7 @@ filename_rmse   <- paste(run_name1,species,pid,"Kellyplot_season_RMSE",sep="_")
 filename_mb     <- paste(run_name1,species,pid,"Kellyplot_season_MB",sep="_")
 filename_me     <- paste(run_name1,species,pid,"Kellyplot_season_ME",sep="_")
 filename_corr   <- paste(run_name1,species,pid,"Kellyplot_season_Corr",sep="_")
-filename_txt    <- paste(run_name1,species,pid,"Kellyplot_stats_data_season.csv",sep="_")      # Set output file name
+filename_txt    <- paste(run_name1,species,pid,"Kellyplot_season_data.csv",sep="_")      # Set output file name
 filename_zip    <- paste(run_name1,species,pid,"Kellyplot_season.zip",sep="_")
 
 ## Create a full path to file

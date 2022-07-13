@@ -23,7 +23,7 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")	# R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 filename_html <- paste(run_name1,species,pid,"scatterplot_multi.html",sep="_")             # Set PDF filename
-filename_txt  <- paste(run_name1,species,pid,"scatterplot_multi.csv",sep="_")       # Set output file name
+filename_txt  <- paste(run_name1,species,pid,"scatterplot_multi_data.csv",sep="_")       # Set output file name
 
 
 ## Create a full path to file

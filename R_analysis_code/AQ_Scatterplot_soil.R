@@ -28,7 +28,7 @@ if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 filename_pdf <- paste(run_name1,species,pid,"scatterplot_soil.pdf",sep="_")             # Set PDF filename
 filename_png <- paste(run_name1,species,pid,"scatterplot_soil.png",sep="_")             # Set PNG filename
-filename_txt <- paste(run_name1,species,pid,"scatterplot_soil.csv",sep="_")       # Set output file name
+filename_txt <- paste(run_name1,species,pid,"scatterplot_soil_data.csv",sep="_")       # Set output file name
 
 
 ## Create a full path to file

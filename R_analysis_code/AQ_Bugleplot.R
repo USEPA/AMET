@@ -29,10 +29,10 @@ network  <- network_names[1]
 ################################################
 
 ### Set file names and titles ###
-filename_error_pdf	<- paste(run_name1,species,pid,"bugle_plot_error.pdf",sep="_")
-filename_bias_pdf 	<- paste(run_name1,species,pid,"bugle_plot_bias.pdf",sep="_")
-filename_error_png 	<- paste(run_name1,species,pid,"bugle_plot_error.png",sep="_")
-filename_bias_png 	<- paste(run_name1,species,pid,"bugle_plot_bias.png",sep="_")
+filename_error_pdf	<- paste(run_name1,species,pid,"bugleplot_error.pdf",sep="_")
+filename_bias_pdf 	<- paste(run_name1,species,pid,"bugleplot_bias.pdf",sep="_")
+filename_error_png 	<- paste(run_name1,species,pid,"bugleplot_error.png",sep="_")
+filename_bias_png 	<- paste(run_name1,species,pid,"bugleplot_bias.png",sep="_")
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 {

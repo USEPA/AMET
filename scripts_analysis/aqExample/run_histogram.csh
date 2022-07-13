@@ -133,7 +133,7 @@
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
 		echo "Plots -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_histogram.$AMET_PTYPE"
-		echo "Text  -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_histogram.csv"
+		echo "Plots -----------------------> $AMET_OUT/${AMET_PROJECT}_${AMET_AQSPECIES}_${AMET_PID}_histogram_bias.csv"
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else
