@@ -305,7 +305,7 @@ max_limit	<- 70
 ### Stacked Bar Charts Options ###
 ##################################
 inc_FRM_adj	<- 'y'
-use_median	<- 'y'
+use_median	<- 'n'
 remove_other 	<- 'n'
 
 ##################################

@@ -39,6 +39,7 @@ filename_txt <- paste(figdir,filename_txt,sep="/")      # Set output file name
 
 ### Set initial NULL vectors ###
 plot_vals <- NULL
+column_names <- NULL
 ################################
 for (j in 1:length(network_names)) {	# Loop through each network
    mean_obs      <- NULL
@@ -128,11 +129,16 @@ for (j in 1:length(network_names)) {	# Loop through each network
       xlabel <- "Normalized Median Bias (%)"					# Set x-axis label as NMdnB
       ylabel <- "Normalized Median Error (%)"					# Set y-axis label as NMdnE
    }
+   column_names <- c(column_names,species[j],xlabel,ylabel)
+   print(column_names)
 }
 
 ####################################
 
 plot_chars <- seq(from=1,to=30,by=1)
+
+write.table(paste(network_names,collapse=","),file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
+write.table(plot_vals,file=filename_txt,append=T,col.names=column_names,row.names=F,sep=",")
 
 ###########################################################
 ########## MAKE SOCCERPLOT: DOMAIN / All SPECIES ##########

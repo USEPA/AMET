@@ -132,7 +132,7 @@
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
 		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_AE6.$AMET_PTYPE
-                echo "Data File ------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_AE6.csv
+                echo "Data File ------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_AE6_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else
