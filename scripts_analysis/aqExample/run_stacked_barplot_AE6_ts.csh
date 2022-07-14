@@ -102,7 +102,7 @@
   # setenv AMET_TOAR            T
 
   #  Plot Type, options are "html"
-#  setenv AMET_PTYPE html
+  setenv AMET_PTYPE both 
 
   # Log File for R script
   setenv AMET_LOG stacked_barplot_AE6_ts.log

@@ -27,9 +27,9 @@ num_runs <- 1
 ################################################
 
 ### Set filenames and titles ###
-filename_pdf    <- paste(run_name1,pid,"stacked_barplot_soil_multi.pdf",sep="_")
-filename_png    <- paste(run_name1,pid,"stacked_barplot_soil_multi.png",sep="_")
-filename_txt    <- paste(run_name1,pid,"stacked_barplot_soil_multi_data.csv",sep="_")
+filename_pdf    <- paste(run_name1,pid,"stacked_barplot_soil_multi_network.pdf",sep="_")
+filename_png    <- paste(run_name1,pid,"stacked_barplot_soil_multi_network.png",sep="_")
+filename_txt    <- paste(run_name1,pid,"stacked_barplot_soil_multi_network_data.csv",sep="_")
 
 ## Create a full path to file
 filename_pdf <- paste(figdir,filename_pdf,sep="/")      # Set PDF filename

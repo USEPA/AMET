@@ -33,7 +33,7 @@
   #setenv OUTDIR  $AMETBASE/output/$AMET_PROJECT/sitex_output
 
   ###  Directory where figures and text output will be directed
-  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot_soil_multi
+  setenv AMET_OUT       $AMETBASE/output/$AMET_PROJECT/stacked_barplot_soil_multi_network
   
   ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
   setenv AMET_SDATE "2016-07-01"
@@ -97,7 +97,7 @@
   setenv AMET_PTYPE both 
 
   ### Log File for R script
-  setenv AMET_LOG stacked_barplot_soil_multi.log
+  setenv AMET_LOG stacked_barplot_soil_multi_network.log
 
 
 ##--------------------------------------------------------------------------##
@@ -121,8 +121,8 @@
 		echo
 		echo "Statistics information"
 		echo "-----------------------------------------------------------------------------------------"
-		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_PM2.5_stacked_barplot_soil_multi.$AMET_PTYPE
-		echo "Data File ------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_PM2.5_stacked_barplot_soil_multi_data.csv
+		echo "Plots ----------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_soil_multi_network.$AMET_PTYPE
+		echo "Data File ------------------->" $AMET_OUT/${AMET_PROJECT}_${AMET_PID}_stacked_barplot_soil_multi_network_data.csv
 		echo "-----------------------------------------------------------------------------------------"
 		exit 0
   else
