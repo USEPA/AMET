@@ -1471,7 +1471,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Does not include soil, so is compatible with simulations using CMAQ aerosol modules prior to AERO6.
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
 
-**run\_stacked\_barplot\_AE6.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6.png))
+**run\_stacked\_barplot\_AE6.csh** ([Example Plot](./images/aqExample_1_stacked_barplot_AE6.png))
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes
    - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
    
