@@ -1,4 +1,4 @@
-AMET aqProject Pre- and Post- Analysis Script Guide v1.4
+AMET aqProject Pre- and Post- Analysis Script Guide v1.5
 ========
 
 ## Contents
@@ -148,9 +148,9 @@ For a 2-week simulation that spans two months, e.g. 6/15/2011 - 7/15/2011, evalu
 *Notes*
 
 Prior to running this post-processing run script, the user is encouraged to build their own executables for the combine, sitecmp and sitecmp_dailyo3 executables using the following steps:
-1. Clone the 5.2 branch of the USEPA CMAQ GitHub repository: 
+1. Clone the 5.3.3 branch of the USEPA CMAQ GitHub repository: 
   ```
-  gitclone -b 5.2 https://github.com/USEPA/CMAQ.git CMAQ52_repo
+  gitclone -b 5.3.3 https://github.com/USEPA/CMAQ.git CMAQ533_repo
   ```
 2. Edit and run bldit_project.csh to create a CMAQ “Project” space:
    ```
@@ -170,7 +170,7 @@ Prior to running this post-processing run script, the user is encouraged to buil
    Compiler options are intel, gcc, pgi  
    If you don’t choose a version number, the default for the system you’re on will be used (e.g. on atmos: intel 17.0)  
 
-* CMAQ_HOME should be set to the project directory used in the bldit_project.csh script in step 2.  If you are not using a CMAQ5.2 repository you can comment out the line for CMAQ_HOME in section 3 and modify the location of the executables and the spec_def files in sections 4 and 5.
+* CMAQ_HOME should be set to the project directory used in the bldit_project.csh script in step 2.  If you are not using a CMAQ5.3.3 repository you can comment out the line for CMAQ_HOME in section 3 and modify the location of the executables and the spec_def files in sections 4 and 5.
 * OBS_DATA_DIR should be set to the location of the observation data from the different routine networks of interest.  These observation files need to be formatted to be compatible with the sitecmp and sitecmp_dailyo3 utilities.  The pre-formatted files are already available on atmos under the directory /work/MOD3EVAL/aq_obs/routine, but can also be downloaded from the  [CMAS Center Data Clearinghouse](https://www.cmascenter.org/download/data.cfm) under the heading "2000-2015 North American Air Quality Observation Data".
 * AMETBASE should be set to the location of the AMETv1.3 code base.  These files are already available on atmos under the directory /work/MOD3EVAL/amet.  They can also be cloned directly from GitHub using the command  `gitclone -b 1.3 https://github.com/USEPA/AMET.git AMET13_repo` 
 
@@ -183,7 +183,7 @@ Prior to running this post-processing run script, the user is encouraged to buil
 ```
 This section sets the location of the combine executable and the species definition files for concentration and deposition species.  If ${CMAQ_HOME}, ${compiler}, and ${compilerVrsn} have been set in section 3 then these paths are automatically set and no additional changes are needed in this section.  
 
-The combine Fortran utility combines fields from a set of IOAPI or wrfout files into a single output file. The SPEC_CONC and SPEC_DEP species definition files are used to specify how the concentrations of raw output species from CMAQ should be aggregated or transformed into variables of interest. For example, the concentrations of NO and NO2 from CMAQ can be added together to yield the concentration of NOx. Examples of possible post-processing expressions are shown in the sample species definition files released with CMAQv5.2 under the [CCTM/src/MECHS](https://github.com/USEPA/CMAQ/tree/5.2/CCTM/src/MECHS) folder. Because each chemical mechanism being used in CMAQ differs in the number and kind of species it treats, the sample species definition files provided have been labeled according to the mechanism each corresponds to, i.e. "SpecDef\_${MECH}.txt" for concentration species and "SpecDef\_Dep\_${MECH}.txt" for deposition species.
+The combine Fortran utility combines fields from a set of IOAPI or wrfout files into a single output file. The SPEC_CONC and SPEC_DEP species definition files are used to specify how the concentrations of raw output species from CMAQ should be aggregated or transformed into variables of interest. For example, the concentrations of NO and NO2 from CMAQ can be added together to yield the concentration of NOx. Examples of possible post-processing expressions are shown in the sample species definition files released with CMAQv5.3.3 under the [CCTM/src/MECHS](https://github.com/USEPA/CMAQ/tree/5.2/CCTM/src/MECHS) folder. Because each chemical mechanism being used in CMAQ differs in the number and kind of species it treats, the sample species definition files provided have been labeled according to the mechanism each corresponds to, i.e. "SpecDef\_${MECH}.txt" for concentration species and "SpecDef\_Dep\_${MECH}.txt" for deposition species.
 
 *Notes*
 * All the species listed in the species definition files need to be output when CMAQ is being run. One option is to set the ACONC output to be all species.  
