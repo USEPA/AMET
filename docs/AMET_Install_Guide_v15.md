@@ -177,6 +177,9 @@ Request an interactive queue for 2 hours, and then do the following steps:
 
     `grant all privileges on *.* to 'ametsecure'@'localhost' with grant option;`
 
+-       **Grant your linux username access to MariaDB**
+     `grant all privileges on *.* to 'your_username'@'localhost' with grant option;`
+
 Output:
 
 Query OK, 0 rows affected (0.002 sec)
