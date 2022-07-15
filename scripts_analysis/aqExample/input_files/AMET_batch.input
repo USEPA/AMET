@@ -7,8 +7,8 @@
 #start_date	<- 20110701
 #end_date	<- 20110714
 
-start_date      <- gsub('-','',Sys.getenv("AMET_SDATE"))
-end_date        <- gsub('-','',Sys.getenv("AMET_EDATE"))
+start_date      <- gsub('-','',Sys.getenv("START_DATE_H"))
+end_date        <- gsub('-','',Sys.getenv("END_DATE_H"))
 
 start_year <- substr(start_date,1,4)
 end_year <- substr(end_date,1,4)
