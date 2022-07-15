@@ -789,20 +789,15 @@ Go to the AQ example project directory:
 
 > $ cd $AMETBASE/scripts\_db/aqExample
 
-Here you will see two C-shell scripts and the combine subdirectory. 
-The combine subdirectory is not used for this example; 
-it is discussed later in Section 6.4, “Creating a New AQ Project”.
-
-The C-shell files `aqProject_post_only.csh` and `aqProject_pre_and_post.csh` are wrapper
-scripts for calling the R programs that actually create an AMET AQ project 
+The C-shell file `aqProject_pre_and_post.csh` is a wrapper
+script for calling the R programs that actually create an AMET AQ project 
 (and AMET database if necessary) and populate the AMET database with the project data. 
-For now we will only work with the `aqProject_post_only.csh` script. More information regarding
-the `aqProject_pre_and_post.csh` script will be provided in later sections. Start by opening 
-the `aqProject_post_only.csh` and verify that the variable AMETBASE is set to the correct AMET 
+
+Start by opening the `aqProject_pre_and_post.csh` and verify that the variable AMETBASE is set to the correct AMET 
 project.   Run the script by typing
 
 ```
-./aqProject_post_only.csh |& tee log.populate
+./aqProject_pre_and_post.csh |& tee log.populate.aqExample
 ```
 
 After executing the script you will be prompted for MySQL’s “root” password. The script can be configured to not prompt for a password by adding the variable `password` to the script and setting it to the MySQL "root" pass. This non-interactive option is useful for batch processing or for enabling the script to run in the background. By default, the script is setup to prompt you for the MySQL login/password.
@@ -1469,9 +1464,8 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a soccerplot for one or more species over one or more networks. Criteria and goal lines are plotted in such a way as to form a “soccer goal” on the plot area. Two statistics are then plotted: Bias \[**NMB** (normalized mean), **FB** (fractional), or **NMdnB** (normalized median)\] on the x-axis and Error \[**NME** (normalized mean), **FE**(fractional), or **NMdnE**(normalized median)\] on the y-axis. The better the performance of the model, the closer the plotted points will fall within the “goal” lines
    - multiple network; multiple species; multiple simulations
 
-**run\_spectral\_analysis.csh** ([Example Plot](./images/aqExample_SO4_aqExample_taylor.png))
-   - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
-   - single network; single species; multiple simulations
+**run\_spectral\_analysis.csh** ([Example Plot](./images/aqExample_O3_1_spectrum.png))
+    
 
 **run\_stacked\_barplot.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot.png))
    - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Does not include soil, so is compatible with simulations using CMAQ aerosol modules prior to AERO6.
@@ -1539,6 +1533,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
 
 **run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries.html))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
+   - single network; single species; multiple simulations
+
+**run\_temporal.csh** ([Example Plot](./images/aqExample_SO4_1_taylor.png)
+   - Creates four plots: a CDF plot; a Q-Q plot; a Taylor diagram; and a periodogram
    - single network; single species; multiple simulations
 
 <a id="New_Analysis_Project"></a>

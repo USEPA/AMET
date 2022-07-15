@@ -52,7 +52,7 @@
                                 #>      AMET table and remove the table from the database
  setenv RENAME_PROJECT    F     #> T/F; Rename an existing AMET project. This will retain all existing data
                                 #>      Must also specify new project name using the environment variable NEW_AMET_PROJECT_NAME
-# setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
+				# setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
 
 #> Plotting options
  setenv AMET_DB           T     #> T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
@@ -73,6 +73,7 @@
 #> Configure the system environment
   setenv compiler     intel                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
   setenv compilerVrsn 18.0.1                     #> Compiler version
+  setenv compilerString ${compiler}_${compilerVrsn}
  # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on EPA system
  # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on EPA system
 
@@ -114,15 +115,16 @@
  setenv END_DATE_H    "2016-07-31"              #> End day. Should be in format "YYYY-MM-DD".
 
 #> Set General Parameters for Configuring the Simulation
- set VRSN      = v53               #> Code Version
+ set VRSN      = v533               #> Code Version
  set PROC      = mpi               #> serial or mpi
  set MECH      = cb6r3_ae7_aq      #> Mechanism ID
- set APPL      = SE53BENCH         #> Application Name (e.g. Gridname)
+ set APPL      = aqExample         #> Application Name (e.g. Gridname)
                                                       
 #> Define RUNID as any combination of parameters above or others. By default,
 #> this information will be collected into this one string, $RUNID, for easy
 #> referencing in output binaries and log files as well as in other scripts.
- setenv RUNID  ${VRSN}_${compilerString}_${APPL}
+#setenv RUNID  ${VRSN}_${compilerString}_${APPL}
+setenv RUNID ${APPL}
 
 #> Name and location of daily MET output. Required files = METCRO2D, METCRO3D
 #> This script assumes MET files are dated with the following naming convention:

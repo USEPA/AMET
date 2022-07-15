@@ -199,14 +199,18 @@ After you have installed the basic R software, AMET also requires the following 
 * stats
 * plotrix
 * fields
+* akima
 * leaflet
+* prism
+* rgdal
 * htmlwidgets
+* dygraphs
 
 The easiest way to install R packages, is through the R package manager.  Once R is installed, use the following commands to install these packages (note that the ">" denotes the Linux command prompt):
 
 ```
 > sudo R
-> install.packages(c("RMySQL", "date", "maps", "mapdata","plotrix", "fields"))
+> install.packages(c("RMySQL", "date", "maps", "mapdata","plotrix", "fields","akima","leaflet","prism", "rgdal","dygraphs"))
 ```
 
 If you do not have root access or are runnning on a shared system, you can load the packages as follows:
@@ -265,6 +269,12 @@ package ‘stats’ is a base package, and should not be updated
 `Rscript -e "install.packages('akima', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
 `Rscript -e "install.packages('leaflet', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('prism', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('rgdal', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
+
+`Rscript -e "install.packages('dygraphs', '~/Rlibs', 'http://ftp.ussg.iu.edu/CRAN')"`
 
 
 Additional instructions for [installing R packages on a campus cluster](https://campuscluster.illinois.edu/resources/docs/user-guide/r/)
@@ -430,7 +440,7 @@ wrfout_subset_2016-07-31_00:00:00
 
 The directory **$AMETBASE/model\_data/MET/metExample_mcip** will contain the following files.
 
-``
+```
 list of files
 
 ```
