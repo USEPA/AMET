@@ -15,12 +15,9 @@
 #
 # Initial version:  Wyat Appel - Jul, 2017
 #
-# Revised version:  Wyat Appel - Sep, 2018
+# Revised version:  Wyat Appel - Jul, 2022
 # -----------------------------------------------------------------------
 #
-
-### Location of the R executable ###
-setenv R_EXEC_LOC /share/linux86_64/bin
 
 ### T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
 setenv AMET_DB	T
@@ -29,12 +26,14 @@ setenv AMET_DB	T
 #setenv OUTDIR	$AMETBASE/output/$AMET_PROJECT/sitex_output
 
 ### Set the location of the base AMET installation, database name and project name ###
-setenv AMETBASE		/home/AMETv15
-setenv AMET_DATABASE 	amet 
+setenv AMETBASE		/work/MOD3EVAL/wtt/AMETv15
+setenv AMET_DATABASE 	amad_amet 
 setenv AMET_PROJECT	aqExample
 setenv MYSQL_CONFIG	$AMETBASE/configure/amet-config.R
 
 ###  Start and End Dates of plot (YYYY-MM-DD) -- must match available dates in db or site compare files
+### Note that the date environment variable name in this script is different than the other AMET run scripts
+### to mathcn the enviroment name used in the AMET pre_and_post_analysis.csh script
 setenv AMET_SDATE "2016-07-01"
 setenv AMET_EDATE "2016-07-31"
 
@@ -57,13 +56,17 @@ setenv AMETRINPUT 	$AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/AMET_bat
 ### Plot Type, options are "pdf","png","both" ###
 setenv AMET_PTYPE both
 
+### Do not edit. Setting date environment variables to match what is needed for the AMET batch scripts ###
+setenv START_DATE_H $AMET_SDATE
+setenv END_DATE_H $AMET_EDATE
+
 ##################################################################################################
 ### Run AMET batch scripts to create stats and plots.  Output to /project/amet_aq/Unit_Testing ###
 ##################################################################################################
-$R_EXEC_LOC/R CMD BATCH $AMET_RUN_DIR/Run_Spatial_Plots_All_Batch.R
-$R_EXEC_LOC/R CMD BATCH $AMET_RUN_DIR/Run_Stacked_Barplot_All_Batch.R
-$R_EXEC_LOC/R CMD BATCH $AMET_RUN_DIR/Run_Time_Plots_All_Batch.R
-$R_EXEC_LOC/R CMD BATCH $AMET_RUN_DIR/Run_Scatter_Plots_All_Batch.R
-$R_EXEC_LOC/R CMD BATCH $AMET_RUN_DIR/Run_Misc_Plots_Batch.R
+R CMD BATCH $AMET_RUN_DIR/Run_Spatial_Plots_All_Batch.R
+R CMD BATCH $AMET_RUN_DIR/Run_Stacked_Barplot_All_Batch.R
+R CMD BATCH $AMET_RUN_DIR/Run_Time_Plots_All_Batch.R
+R CMD BATCH $AMET_RUN_DIR/Run_Scatter_Plots_All_Batch.R
+R CMD BATCH $AMET_RUN_DIR/Run_Misc_Plots_Batch.R
 
 exit()
