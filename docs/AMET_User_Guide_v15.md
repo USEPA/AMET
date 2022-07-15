@@ -1372,9 +1372,9 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a kellyplot of model performance color coded by simulation and season (winter, spring, summer, and fall)
    - single network; single species; multiple simulations allowed;
 
-**run\_monthly\_stat\_plot.csh** ([Example Plot](./images/aqExample_SO4_aqExample_monthly_stat_plot.png))
-   - Creates a monthly average time series of obs/mod concentration, bias, RMSE, NMB, NME and correlation
-   - single network; single species; multi simulation
+**run\_monthly\_stat\_plot.csh** ([Example Plot])
+   - Creates a monthly average time series of obs/mod concentration, bias, RMSE, NMB, NME and correlation.
+   - single network; single species; multi simulation; full year data required
 
 **run\_plot\_spatial.csh** ([Example Plot](./images/aqExample_SO4_1_spatialplot_diff.png))
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
@@ -1488,16 +1488,16 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - CSN or IMPROVE; species predefined; multiple simulations
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
-   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. This script **requires** a full year of data to create a plot.
-   - CSN, IMPROVE or SEARCH; species predefined; single simulation
+   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. 
+   - CSN, IMPROVE or SEARCH; species predefined; single simulation; full year data required
 
 **run\_stacked\_barplot\_panel\_AE6\_multi.csh**
-   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions for multiple simulations. This script **requires** a full year of data to create a plot.
-   - CSN, IMPROVE or SEARCH; species predefined; multiple simulations
+   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, soil, NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions for multiple simulations.
+   - CSN, IMPROVE or SEARCH; species predefined; multiple simulations; full year data required
 
 **run\_stacked\_barplot\_panel\_AE6.csh**
-   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. This script **requires** a full year of data to create a plot.
-   - CSN, IMPROVE or SEARCH; species predefined; single simulation
+   - Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total PM<sub>2.5</sub> that each species constitutes. Specifically designed to plot data for an entire year (separated by season) for four different geographic regions. 
+   - CSN, IMPROVE or SEARCH; species predefined; single simulation; full year data required
 
 **run\_stacked\_barplot\_soil.csh** ([Example Plot](./images/aqExample_1_stacked_barplot_soil.png))
    - Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes
