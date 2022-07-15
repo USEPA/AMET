@@ -46,13 +46,13 @@
 #> AMET options
  setenv CREATE_PROJECT    T     #> T/F; Create AMET project?
  setenv LOAD_SITEX        T     #> T/F; Load site compare output for each selected network into AMET?
- setenv UPDATE_PROJECT    T     #> T/F; Update the project info for an existing project (all data are retained)
+ setenv UPDATE_PROJECT    F     #> T/F; Update the project info for an existing project (all data are retained)
  setenv REMAKE_PROJECT    F     #> T/F; Remake an existing AMET project. Note that all existing data will be deleted
  setenv DELETE_PROJECT    F     #> T/F; Delete an existing AMET project. This will delete all data in the existing
                                 #>      AMET table and remove the table from the database
  setenv RENAME_PROJECT    F     #> T/F; Rename an existing AMET project. This will retain all existing data
                                 #>      Must also specify new project name using the environment variable NEW_AMET_PROJECT_NAME
-				# setenv NEW_AMET_PROJECT_NAME  "new_project_name"
+				# setenv NEW_AMET_PROJECT_NAME  "Your_New_Project_Name"
 
 #> Plotting options
  setenv AMET_DB           T     #> T/F; Set to T if the model/obs pairs are loaded in the AMET database (i.e. by setting LOAD_SITEX = T)
@@ -71,8 +71,8 @@
 # ==================================================================================
 
 #> Configure the system environment
-  setenv compiler     gcc                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
-  setenv compilerVrsn 9.1.0                     #> Compiler version
+  setenv compiler     intel                      #> Compiler used to compile combine, sitecmp, sitecmp_dailyo3
+  setenv compilerVrsn 18.0.1                     #> Compiler version
   setenv compilerString ${compiler}_${compilerVrsn}
  # source /work/MOD3DEV/cmaq_common/cmaq_env.csh  #> Set up compilation and runtime environments on EPA system
  # source /work/MOD3DEV/cmaq_common/R_env.csh     #> Set up R environment on EPA system
@@ -84,10 +84,10 @@
 #> for combine.  If you are not using a CMAQ5.3 reposiotry you can
 #> modify the location of the executables and spec_def files later
 #> in the script.
- set CMAQ_HOME = /proj/ie/proj/CMAS/CMAQ/CMAQv5.3.3/build/openmpi_gcc/CMAQ_v533
+ set CMAQ_HOME = /path/CMAQv53_repo
 
 #> Base directory where AMET code resides
-#setenv AMETBASE	/home/AMETv15
+ setenv AMETBASE	/home/AMETv15
 
 #> Source CMAQ config files to setup environment
  if (${Source_Configs} == 'T') then
@@ -129,7 +129,7 @@ setenv RUNID ${APPL}
 #> Name and location of daily MET output. Required files = METCRO2D, METCRO3D
 #> This script assumes MET files are dated with the following naming convention:
 #> ${METCRO2D_NAME}_${YY}${MM}${DD}.nc, ${METCRO3D_NAME}_${YY}${MM}${DD}.nc
- setenv METDIR  $AMETBASE/model_data/MET/metExample_mcip  #> Location of MET ouput.
+ setenv METDIR  /path/SE53BENCH/multi_day/cctm_input/met/mcip  #> Location of MET ouput.
  set METCRO2D_NAME = METCRO2D                   #> METCRO2D file name (without date and file extension).
  set METCRO3D_NAME = METCRO3D                   #> METCRO3D file name (without date and file extension).
 
