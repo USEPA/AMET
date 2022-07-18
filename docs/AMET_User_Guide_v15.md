@@ -1380,7 +1380,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
 
-**run\_plot\_spatial_leaflet.csh** ([Example Leaflet HTML](./aqExample_SO4_1_spatialplot_diff.html))([Example Leaflet Plot - Screenshot](./aqExample_SO4_1_spatialplot_diff.html.png))
+**run\_plot\_spatial_leaflet.csh** ([Example Leaflet HTML](./aqExample_SO4_1_spatialplot_diff.html))([Example Leaflet Plot - Screenshot](./images/aqExample_SO4_1_spatialplot_diff.html.png))
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; single simulation
 
