@@ -287,18 +287,15 @@ if (inc_median_lines == 'y') {
 }
 #########################################################################
 
-{
-   if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
-      raw_data.df <- data.frame(Median_Obs=median.spec1,Median_Mod=median.spec2,Median_Mod2=median.spec3)
-   }
-   if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
-      raw_data.df <- data.frame(Median_Obs=median.spec1,Median_Mod=median.spec2,Median_Mod2=median.spec3,Median_Mod3=median.spec4)
-   }
-   else {
-      raw_data.df <- data.frame(Median_Obs=median.spec1,Median_Mod=median.spec2)
-   }
+
+raw_data.df <- data.frame(Hour_LST=seq(0,23,by=1),Obs_q1=q1.spec1,Obs_median=median.spec1,Obs_q3=q3.spec1,Mod_q1=q1.spec2,Mod_median=median.spec2,Mod_q3=q3.spec2)
+if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
+   raw_data.df <- data.frame(Hour_LST=seq(0,23,by=1),Obs_q1=q1.spec1,Obs_median=median.spec1,Obs_q3=q3.spec1,Mod_q1=q1.spec2,Mod_median=median.spec2,Mod_q3=q3.spec2,Mod2_q1=q1.spec3,Mod2_median=median.spec3,Mod2_q3=q3.spec3)
 }
-write.table(raw_data.df,file=filename_txt,append=T,row.names=F,sep=",")                     # Write raw data to csv file
+if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
+   raw_data.df <- data.frame(Hour_LST=seq(0,23,by=1),Obs_q1=q1.spec1,Obs_median=median.spec1,Obs_q3=q3.spec1,Mod_q1=q1.spec2,Mod_median=median.spec2,Mod_q3=q3.spec2,Mod2_q1=q1.spec3,Mod2_median=median.spec3,Mod2_q3=q3.spec3,Mod3_q1=q1.spec4,Mod3_median=median.spec4,Mod3_q3=q3.spec4)
+}
+write.table(raw_data.df,file=filename_txt,append=F,col.names=T,row.names=F,sep=",")                     # Write raw data to csv file
 
 ### Put legend on the plot ###
 legend("topleft", legend_names, fill=legend_fill, lty=legend_type, col=legend_colors, merge=F, cex=.9, bty="n")
