@@ -1344,7 +1344,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates side-by-side boxplots to create a diurnal average curve. Hourly data only
    - single network; hourly species only; multi simulation
    
- **run\_boxplot\_plotly.csh** ([Example Plot](./images/aqExample_SO4_1_boxplot.html))
+ **run\_boxplot\_plotly.csh** ([Example HTML](./images/aqExample_SO4_1_boxplot.html))(([Example Plot - static image](./images/aqExample_SO4_1_boxplot.html.png))
    - Creates a interactive box plot of model-obs quartiles using the plotly R package
    - single network; single species; multi simulation
 
@@ -1380,7 +1380,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
 
-**run\_plot\_spatial_leaflet.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_diff.html))
+**run\_plot\_spatial_leaflet.csh** ([Example Leaflet HTML](./aqExample_SO4_1_spatialplot_diff.html))([Example Leaflet Plot - Screenshot](./aqExample_SO4_1_spatialplot_diff.html.png))
    - Plots the observed value, model value, and difference between the model and obs for each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; single simulation
 
@@ -1388,7 +1388,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; multi simulations required
 
-**run\_plot\_spatial\_diff_leaflet.csh** ([Example Plot](./images/aqExample_SO4_aqExample_spatialplot_bias_diff.html))
+**run\_plot\_spatial\_diff_leaflet.csh** ([Example Leaflet HTML](./images/aqExample_SO4_1_spatialplot_bias_diff.html))([Example Leaflet Plot - Screenshot](./images/aqExample_SO4_1_spatialplot_bias_diff.html.png))
    - Plots the difference in bias and error between two model simulations each site. Multiple values for a site are averaged to a single value for plotting purposes. Uses R leaflet package to allow map zooming
    - multiple networks; single species; multi simulations required
 
@@ -1412,7 +1412,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a single model vs. obs scatterplot. This script will plot a single species from up to three networks on a single plot. Summary statistics are also included on the plot. Uses the ggplot2 R package
    - multiple networks; single species; multiple simulations
    
-**run\_scatterplot\_plotly.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot.html))
+**run\_scatterplot\_plotly.csh** ([Example Leaflet HTML](./images/aqExample_SO4_1_scatterplot.html))([Example Leaflet Plot - Screenshot](./images/aqExample_SO4_1_scatterplot.html.png))
    - Creates a single interactive model vs. obs scatterplot. This script will plot a single species from up to three networks on a single plot. Summary statistics are also included on the plot. Uses the plotly R package
    - multiple networks; single species; multiple simulations
 
@@ -1420,7 +1420,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a multi-panel scatterplot of bias and RMSE, where the values are binned by the observed or modeled concentration. This script will plot a single species for a single network
    - single networks; single species; multiple simulations
    
-**run\_scatterplot\_bins\_plotly.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot_bins.html))
+**run\_scatterplot\_bins\_plotly.csh** ([Example Leaflet HTML](./images/aqExample_SO4_1_scatterplot_bins.html))([Example Leaflet Plot - Screenshot](./images/aqExample_SO4_1_scatterplot_bins.html.png))
    - Creates an interactive multi-panel scatterplot of bias and RMSE, where the values are binned by the observed or modeled concentration. This script will plot a single species for a single network. Uses the R plotly package
    - single networks; single species; multiple simulations
 
@@ -1440,7 +1440,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a single model vs. obs scatterplot, designed specifically for plotting many simulations on a single plot. This script will plot a single species from a single network for up to six different simulations. Summary statistics are also included on the plot
    - single networks; single species; multiple simulations
    
-**run\_scatterplot\_multi\_plotly.csh** ([Example Plot](./images/aqExample_SO4_aqExample_scatterplot_multi.html))
+**run\_scatterplot\_multi\_plotly.csh** ([Example Leaflet HTML](./images/aqExample_SO4_1_scatterplot_multi.html))([Example Leaflet Plot - Screenshot](./images/aqExample_SO4_1_scatterplot_multi.html.png))
    - Creates a single interactive model vs. obs scatterplot, designed specifically for plotting many simulations on a single plot. This script will plot a single species from a single network for up to six different simulations. Summary statistics are also included on the plot. Uses the plotly R package
    - single networks; single species; multiple simulations
 
@@ -1479,7 +1479,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a single stacked bar plot. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the ggplot2 R package
    - CSN or IMPROVE; species predefined; multiple simulations
 
-**run\_stacked\_barplot\_AE6\_plotly.csh** ([Example Plot](./images/aqExample_aqExample_stacked_barplot_AE6.html))
+**run\_stacked\_barplot\_AE6\_plotly.csh** ([Example Leaflet HTML](./images/aqExample_1_stacked_barplot_AE6.html))([Example Leaflet Plot - Screenshot](./images/aqExample_1_stacked_barplot_AE6.html.png))
    - Creates a single interactive stacked bar plot. Data are averaged (mean or median) for SO<sub>4</sub>, NO<sub>3</sub>, NH<sub>4</sub>, EC, OC, individual trace elements (e.g. Si, Fe), NCOM and PM<sub>2.5</sub> other for the model and observed values. Averages are then plotted on a stacked bar plot. Uses the plotly R package
    - CSN or IMPROVE; species predefined; multiple simulations
    
@@ -1511,7 +1511,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included
    - multiple networks; single species; single simulation
    
-**run\_stats\_plots\_leaflet.csh** ([Example Plot](./images/aqExample_SO4_aqExample_stats_plot_NMB.html))
+**run\_stats\_plots\_leaflet.csh** ([Example Leaflet HTML](aqExample_SO4_1_stats_plot_NMB.html))([Example Leaflet Plot - Screenshot](./images/aqExample_SO4_1_stats_plot_NMB.html.png))
    - Generates a series of interactive spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included. uses the R leaflet package to create interactive html files with zoom capability
    - multiple networks; single species; single simulation
 
@@ -1519,7 +1519,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model
    - single network;single species; multiple simulations
    
-**run\_timeseries\_dygraph.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries_dygraph.html))
+**run\_timeseries\_dygraph.csh** ([Example Leaflet HTML](./images/aqExample_O3_8hrmax_1_timeseries_dygraph.html))([Example Leaflet Plot - Screenshot](./images/aqExample_O3_8hrmax_1_timeseries_dygraph.html.png))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R dygraph package to allow time-series zooming
    - single network;single species; multiple simulations
 
@@ -1535,7 +1535,7 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a time series plot for up to two networks. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model
    - multiple networks;single species; multiple simulations
 
-**run\_timeseries\_plotly.csh** ([Example Plot](./images/aqExample_O3_8hrmax_aqExample_timeseries.html))
+**run\_timeseries\_plotly.csh** ([Example Leaflet HTML](./images/aqExample_O3_8hrmax_1_timeseries.html)) ([Example Leaflet Plot - Screenshot](./images/aqExample_O3_8hrmax_1_timeseries.html.png))
    - Creates an interactive time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias and error between the obs and model. Uses R plotly package to allow time-series zooming
    - single network; single species; multiple simulations
 
