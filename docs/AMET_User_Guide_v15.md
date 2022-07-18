@@ -1396,6 +1396,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Plots the absolute difference between two model simulations at observation sites, regardless if valid observations exist or not. Multiple values for a site are averaged to a single value for plotting purposes.
    - multiple networks; single species; multiple simulations required
 
+**run\_plot\_spatial\_mtom\_species.csh** ([Example Plot](./images/aqExample_SO4_1_spatialplot_mtom_species_diff_avg.png))
+   - Plots the min, max, average, and ratio between two model species for a single simulation at observation sites, regardless if valid observations exist or not. Multiple values for a site are averaged to a single value for plotting purposes. Most useful to plot the ratio difference between two species. This script does not directly utilize any observation data.
+   - multiple networks; two species required; single simulation
+
 **run\_plot\_spatial\_ratio.csh** ([Example Plot](./images/aqExample_SO4_1_spatialplot_ratio_diff.png))
    - Plots the model/obs ratio for each site. Multiple values for a site are averaged to a single value for plotting purposes
    - multiple networks; single species; single simulation
@@ -1428,13 +1432,17 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a single model vs. obs scatterplot with shading to represent the density of points
    - multiple networks; single species; single simulation
    
-**run\_scatterplot\_density\_ggplot.csh** ([Example Plot](./images/aqExample_O3_8hrmax_1_scatterplot_density_ggplot.png))
+**run\_scatterplot\_density\_ggplot.csh** ([Example Plot](./images/aqExample_O3_8hrmax_1_scatterplot_mtom_density.png))
    - Creates a single model vs. obs scatterplot with shading to represent the density of points. Uses the ggplot2 R package
    - multiple networks; single species; single simulation
 
 **run\_scatterplot\_mtom.csh** ([Example Plot](./images/aqExample_SO4_1_scatterplot_mtom_density.png))
    - Creates a single model-to-model scatterplot. *Note*: The model points correspond to network’s site locations only
    - multiple networks; single species; multiple simulations
+
+**run\_scatterplot\_mtom\_denisty.csh** ([Example Plot](./images/aqExample_SO4_1_scatterplot_mtom_density.png))
+   - Creates a single model-to-model scatterplot with shanding to represent the density of points. *Note*: The model points correspond to network’s site locations only
+   - multiple networks; single species; multiple simulations required
 
 **run\_scatterplot\_multi.csh** ([Example Plot](./images/aqExample_SO4_1_scatterplot_multi.png))
    - Creates a single model vs. obs scatterplot, designed specifically for plotting many simulations on a single plot. This script will plot a single species from a single network for up to six different simulations. Summary statistics are also included on the plot
@@ -1507,6 +1515,10 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Data are averaged (mean or median) for the soil species (e.g. Si, Fe, Ti, Mg, etc.) for the model and observed values. Averages are then plotted on a stacked bar plot, along with the percent of the total soil concentration that each species constitutes
    - CSN and IMPROVE networks; species predefined; multiple simulations
 
+**run\_stats.csh** ([Example File](./images/aqExample_stats.csv))
+   - Generates CSV files with domain- and site-specific statistics. Also provides a raw data query CSV file. No images are created with this script.
+   - multiple networks; single species; single simulation
+
 **run\_stats\_plots.csh** ([Example Plot](./images/aqExample_SO4_1_stats_plot_MB.png))
    - Generates a series of spatial plots of **NMB, NME, FB, FE**, and **Correlation**. CSV files with additional domain- and site-specific statistics are also included
    - multiple networks; single species; single simulation
@@ -1527,8 +1539,12 @@ A brief summary of each of the C-shell scripts, with example plots from each scr
    - Creates a model to model time series plot. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the and model
    - single network;single species; multiple simulations
 
-**run\_timeseries\_multi_species.csh** ([Example Plot](./images/aqExample_1_timeseries_multi_species.png))
+**run\_timeseries\_multi\_species.csh** ([Example Plot](./images/aqExample_1_timeseries_multi_species.png))
    - Creates a time series plot for multiple species. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model
+   - single network;multiple species; multiple simulations
+
+**run\_timeseries\_multi\_species\_plotly.csh** ([Example Plot](./images/aqExample_1_timeseries_multi_species_plotly.png))
+   - Creates a interactive (html) time series plot for multiple species. With multiple sites; the sites are time averaged to create a single plot. Also plots the bias between the obs and model
    - single network;multiple species; multiple simulations
 
 **run\_timeseries\_multi_networks.csh** ([Example Plot](./images/aqExample_SO4_1_timeseries_multi_networks.png))
