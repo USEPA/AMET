@@ -51,6 +51,9 @@ AMETv1.5 is an incremental update from version 1.4. It includes important enhanc
 -	Option to use Qv and T in MPAS RH calculations (if Qv is available) instead of direct RH (matches WRF method for more direct comparisons)
 -	AutoFTP expanded for new SURFRAD radiation option and will check the MADIS real-time observation directory if file is not present in the archive directory for near-real-time or forecast modeling cases
 -	General update of checks for more robust operation in the case of odd inputs or missing data
+-	QC settings of allowable observed variable range and maximum model-observation difference configurable via R input files
+-	Latitude/Longitude bounds of spatial analysis set to observation site range if not specified
+-	Additional text ouput options for analysis scripts
 
 #### New MET Features v1.5
 
