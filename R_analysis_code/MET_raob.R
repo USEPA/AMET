@@ -41,8 +41,8 @@
 #           plots. (need to make backward compatible if old             #
 #           raob.input is used)                                         #
 #         - New split config input file where "more" static settings    #
-#           are split into a timeseries.static.input and key configs    #
-#           remain in the timeseries.input. Backward compatible.        #
+#           are split into a raob.static.input and key configs    #
+#           remain in the raob.input. Backward compatible.        #
 #         - Added auto lat-lon bounds if set to NA or missing.          #
 #         - Mod config file so lat-lon is used in site grouping queries #
 #         - Other streamline updates.                                   #

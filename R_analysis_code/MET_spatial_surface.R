@@ -55,9 +55,9 @@
 #                  
 #  Version 1.5, Apr 19, 2022, Robert Gilliam                            
 #  Updates: - New split config input file where "more" static settings  
-#             are split into a timeseries.static.input and key configs  
-#             remain in the timeseries.input. Backward compatible.
-#           - More robust threshold setting control for GUI and backward compat.
+#             are split into a spatial_surface.static.input and key configs  
+#             remain in the spatial_surface.input. Backward compatible.
+#           - More robust threshold setting control for GUI and backward compatibility.
 #
 #############################################################################################################
   options(warn=-1)

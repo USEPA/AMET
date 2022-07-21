@@ -41,8 +41,8 @@
 #               - Added considerations for forecast model eval          #             
 # Version 1.5, Apr 25, 2022, Robert Gilliam                             #
 #  Updates: - New split config input file where "more" static settings  # 
-#             are split into a timeseries.static.input and key configs  #  
-#             remain in the timeseries.input. Backward compatible.      #
+#             are split into a plot_radiation.static.input and key configs  #  
+#             remain in the plot_radiation.input. Backward compatible.      #
 #           - Added auto lat-lon bounds to range of obs sites if missed #
 #                                                                       #
 #########################################################################
