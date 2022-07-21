@@ -106,7 +106,10 @@
   projectdate    <- as.POSIXlt(Sys.time(), "GMT")
 
   mastermeta_file<- paste(amet_base,"/obs/MET/mastermeta.Rdata",sep="")
-
+  # This logic is added so AMET skips the use of Mastermeta file in case of Mesonet sites
+  if(madis_dset == "mesonet") {
+    mastermeta_file<- "JunkFileToForceSkipOfMastermeta"
+  }
   # MySQL connection information and command to send temporary query file to database.
   # This method is dramatically quicker than sending single queries for each of the
   # thousands of sites in the site loop. 
