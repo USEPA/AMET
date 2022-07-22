@@ -505,8 +505,10 @@ files are available for download from the CMAS website.
 
 *Daily AQS species used with AMET:*
 
->PM25; PMIJ (ug/m3)<br>
-> PM10; PM10 (ug/m3)<br>
+> PM25; ATOTIJ (ug/m3)<br>
+> PM25_88101; ATOTIJ (ug/m3)<br>
+> PM25_88502; ATOTIJ (ug/m3)<br>
+> PM10; ATOTIJK (ug/m3)<br>
 > Isoprene; ISOP (ppb)<br>
 > Ethylene;ETH (ppb)<br>
 > Ethane; ETHA (ppb)<br>
