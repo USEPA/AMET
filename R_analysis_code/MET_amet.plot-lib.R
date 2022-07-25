@@ -1874,7 +1874,9 @@
   variables="TEMP-RH"
 
   tmpa        <-unlist(strsplit(raob$date,split=" "))
+  tmpb        <-unlist(strsplit(tmpa[2],split=":"))
   datestamp   <-paste(tmpa[1],tmpa[2],sep="_")
+  datestamp   <-paste(tmpa[1],"_",tmpb[1],".",tmpb[2],".",tmpb[3],sep="")
 
   theta_raob  <- raob$t * (1000/raob$p_trh)^0.286
   theta_model <- model$t *(1000/model$p_trh)^0.286

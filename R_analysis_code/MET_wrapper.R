@@ -447,7 +447,46 @@
   }
  #################################
  ######################################################################### 
- system(paste("rm",tmpRinput)) 
+ ######################################################################### 
+ #################################
+ # PROFILE NATIVE LEVEL LOOP
+ if(wrapperrunid[1] == "UA" || wrapperrunid[2] == "NP")   {
+     #######################################
+     # Upper-air STATS by SEASON wrapperrunid=UA.NP
+     # Force Spatial, Timeseries and Profile Stats as wrapper protocol.
+     # No site specific options so curtainM off & all Native level options.
+     SPATIALM  <-FALSE
+     TSERIESM  <-FALSE
+     PROFM     <-FALSE
+     CURTAINM  <-FALSE
+     PROFN     <-TRUE
+     CURTAINN  <-FALSE
+       datesx    <-ISOdatetime(year=ys,month=ms,day=ds,hour=0,min=0,sec=0, tz="GMT")
+       dateex    <-ISOdatetime(year=ye,month=me,day=de,hour=0,min=0,sec=0, tz="GMT")
+       datecx    <- datesx
+       count     <-1
+       while(datecx <= dateex){
+         if(count > 31) {
+           writeLines(paste("Batch RAOB profile comparisons are limited to only month..."))
+           break
+         }
+         dateca  <-unlist(strsplit(as.character(datecx), "-", fixed = TRUE))
+         ys      <-dateca[1]
+         ms      <-dateca[2]
+         ds      <-dateca[3]
+         hs      <-"00"
+         source (paste(ametR,"/MET_raob.R",sep=""))
+         hs      <-"12"
+         source (paste(ametR,"/MET_raob.R",sep=""))
+         datecx   <-datecx+(60*60*24)
+         count   <- count+1
+       }
+       if.good.mode <-T
+     #######################################
+ }
+ #################################
+ ######################################################################### 
+
  if(!if.good.mode){
    writeLines(paste("ERROR---> Wrapper mode ",wrapperrunid[1],".",wrapperrunid[2]," not implemented or wrong.",sep=""))
    writeLines("Current mode option codes:")
@@ -463,5 +502,8 @@
    writeLines(paste("Daily Surface Statistics   DB.RM, DB.RS"))
    writeLines(paste("Summary Surface Statistics SM.RM, SM.RS"))
    writeLines(paste("Upper-air Statistics       UA.RM, UA.RS"))
+
+   writeLines(paste("                                       "))
+   writeLines(paste("Vertical Model-ROAB Profiles UA.NP"))
  }
 
