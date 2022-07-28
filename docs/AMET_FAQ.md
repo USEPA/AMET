@@ -64,8 +64,8 @@ AMETv1.5 is an incremental update from version 1.4. It includes important enhanc
        - R functions were added to read MCIP METCRO2D and METCRO3D files and match with surface, upper-air and radiation measurements
 -	Added new master site metadata file to map dynamically with MADIS observations that includes state, country and full site description
        - This allows more complex query options (i.e.; climate regions of the US or world, island nations and Continents)       
--	PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data as text data is no longer distributed. Precipitaton statistics are output in text file and HTML-based Leaflet visulization of precipitation is produced.
--	Wind vector statistics are added to wind speed and direction statistics for daily surface, spatial surface and upper-air analyses. 
+-	PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data as text data is no longer distributed. A HTML-based Leaflet visulization of precipitation is produced. Precipitaton statistics are computed and output in a text file. 
+-	Wind vector statistics are added to wind speed and direction statistics for daily surface, spatial surface and upper-air analyses
  
 
 
