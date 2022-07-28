@@ -66,6 +66,7 @@ AMETv1.5 is an incremental update from version 1.4. It includes important enhanc
        - This allows more complex query options (i.e.; climate regions of the US or world, island nations and Continents)       
 -	PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data as text data is no longer distributed. A HTML-based Leaflet visulization of precipitation is produced. Precipitaton statistics are computed and output in a text file. 
 -	Wind vector statistics are added to wind speed and direction statistics for daily surface, spatial surface and upper-air analyses
+-	"Wrapper" analysis script developed that can drive spatial, summary, daily, upper-air and radiation analysis for monthly, seasonal, annual, regional subsets of data. Allows users to run any or all of these detailed analysises using a single highly configurable script (e.g., for model evaluation protocol)
  
 
 
