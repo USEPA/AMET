@@ -12,7 +12,7 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
 ## AMETv1.5
 
 -	Support added for CAPMON 
--	New analysis scripts [(See the AMET User Guide for more details.)](docs/AMET_User_Guide_v15.md#aq-analysis-input-files)
+-	New AQ analysis scripts [(See the AMET User Guide for more details.)](docs/AMET_User_Guide_v15.md#aq-analysis-input-files)
        - New version of Kellyplot to plot multiple simulations by NOAA climate region (AQ_Kellyplot_region.R)
        - New version of Kellyplot to plot multiple simulations by season (AQ_Kellyplot_season.R)
        - Removed one of the existing version of the Kellyplot as it was reduntant with the new Kellyplots that were added (AQ_Kellyplot_multisim.R) 
@@ -41,6 +41,7 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
        - Meteorology and Chemistry Interface Processor (MCIP) compatibility
        - Added new master site metadata file to map dynamically with MADIS observations that includes state, country and full site description
        - PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data because old text data distribtuion is no longer provided. A HTML-based Leaflet visulization of precipitation is produced. Precipitaton statistics are computed and output in a text file.
+       - "Wrapper" analysis script developed that can drive spatial, summary, daily, upper-air and radiation analysis for monthly, seasonal, annual, regional subsets of data. Allows users to run any or all of these detailed analysises using a single highly configurable script (e.g., for model evaluation protocol)
        - Wind vector statistics are added to wind speed and direction statistics for daily surface, spatial surface and upper-air analyses
 -	Numerous minor bug fixes and error checks in both AQ and MET codes for more robust operation
 
