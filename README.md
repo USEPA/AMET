@@ -40,7 +40,7 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
        - All WRF projections work in model-to-observation matching routine (e.g.; lambert, polar stereo., mercator and lat-lon)
        - Meteorology and Chemistry Interface Processor (MCIP) compatibility
        - Added new master site metadata file to map dynamically with MADIS observations that includes state, country and full site description
-       - PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data because old text data distribtuion is no longer provided. Precipitaton statistics are output in text file and HTML-based Leaflet visulization of precipitation
+       - PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data because old text data distribtuion is no longer provided. A HTML-based Leaflet visulization of precipitation is produced. Precipitaton statistics are computed and output in a text file.
        - Wind vector statistics are added to wind speed and direction statistics for daily surface, spatial surface and upper-air analyses
 -	Numerous minor bug fixes and error checks in both AQ and MET codes for more robust operation
 
