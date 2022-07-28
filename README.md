@@ -54,7 +54,7 @@ a working directory on your server:
 git clone -b master https://github.com/USEPA/AMET.git AMET_v15
 ```
 
-Earlier release versions of CMAQ that are currently available on Git Hub include:
+Earlier release versions of AMET that are currently available on Git Hub include:
 
 * [v1.2 (July 2013)](https://github.com/USEPA/AMET/tree/1.2)
 * [v1.3 (July 2017)](https://github.com/USEPA/AMET/tree/1.3)
