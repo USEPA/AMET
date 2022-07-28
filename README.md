@@ -32,8 +32,18 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
        - include CAPMON
 -	Added option to rename an existing AQ project while retaining existing data
 -	Updated AQ observation files (see notes in [AMET_Release_Observation_Files_Readme.txt](https://github.com/USEPA/AMET/files/8655699/AMET_Release_Observation_Files_Readme.txt))
--	Numerous minor bug fixes
--	Some improvements made to error checking and reporting
+-	See [AMETv5.1 FAQ](docs/AMET_FAQ.md) for all MET bug fixes and updates. Key updates are listed below.
+       - Added forecast and model initialization hours as database fields for the case of WRF or MPAS model forecast evaluations
+       - NOAA SURface RADition (SURFRAD) Network option for real or near-real-time modeling (BSRN has a curation delay of months) + autoFTP of those data
+       - QC settings of allowable observed variable range and maximum model-observation difference configurable via R input files
+       - Compatibility with limited area MPAS grids
+       - All WRF projections work in model-to-observation matching routine (e.g.; lambert, polar stereo., mercator and lat-lon)
+       - Meteorology and Chemistry Interface Processor (MCIP) compatibility
+       - Added new master site metadata file to map dynamically with MADIS observations that includes state, country and full site description
+       - PRISM precipitation evaluation updated to leverage R "prism" package to automatically aquire daily, monthly and annual raster data because old text data distribtuion is no longer provided. Precipitaton statistics are output in text file and HTML-based Leaflet visulization of precipitation
+       - Wind vector statistics are added to wind speed and direction statistics for daily surface, spatial surface and upper-air analyses
+-	Numerous minor bug fixes and error checks in both AQ and MET codes for more robust operation
+
 
 ## Getting the AMET Repository
 This AMET Git archive is organized with each official public release stored as a branch on the main USEPA/AMET repository.
@@ -43,7 +53,7 @@ a working directory on your server:
 git clone -b master https://github.com/USEPA/AMET.git AMET_v15
 ```
 
-The release versions of CMAQ that are currently available on Git Hub include:
+Earlier release versions of CMAQ that are currently available on Git Hub include:
 
 * [v1.2 (July 2013)](https://github.com/USEPA/AMET/tree/1.2)
 * [v1.3 (July 2017)](https://github.com/USEPA/AMET/tree/1.3)
