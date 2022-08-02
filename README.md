@@ -32,8 +32,8 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
        - include CAPMON
 -	Added option to rename an existing AQ project while retaining existing data
 -	Updated AQ observation files (see notes in [AMET_Release_Observation_Files_Readme.txt](https://github.com/USEPA/AMET/files/8655699/AMET_Release_Observation_Files_Readme.txt))
-       - AMETv1.5 requires these updated observation files
-       - Similarly, the updated observation files require AMETv1.5
+       - AMETv1.5 requires the use of these updated observation files
+       - Similarly, the updated observation files require the use of AMETv1.5
 -	See [AMETv1.5 FAQ](docs/AMET_FAQ.md) for all MET bug fixes and updates. Key updates are listed below.
        - Added forecast and model initialization hours as database fields for the case of WRF or MPAS model forecast evaluations
        - NOAA SURface RADition (SURFRAD) Network option for real or near-real-time modeling (BSRN has a curation delay of months) + autoFTP of those data
