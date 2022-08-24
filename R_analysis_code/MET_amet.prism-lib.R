@@ -231,8 +231,9 @@ mpas_precip <-function(model_output,tindex=1,rainc_var="rainc",rainnc_var="rainn
     lon_mpas<- lon_mpas * (180/pi)
     carea   <-sqrt(ncvar_get(m1,varid="areaCell"))/1000
     rain    <-ncvar_get(m1,varid=rainc_var,c(1,tindex),c(-1,1)) + ncvar_get(m1,varid=rainnc_var,c(1,tindex),c(-1,1))
-    landmask<-ncvar_get(m1,varid="xland")
-    landmask<-landmask[,1]
+    landmask<-ncvar_get(m1,varid="xland", start=c(1,1), count=c(-1,1))
+    #landmask<-ncvar_get(m1,varid="xland")
+    #landmask<-landmask[,1]
     lm.na   <-ifelse(landmask == 0, 1, 1)
     lm.na   <-ifelse(landmask == 2, NA, 1)
     ncells  <-dim(lat_mpas)
