@@ -1,2 +1,0 @@
-ametjavagui.AirQualityForm
-ametjavagui.ComboItem

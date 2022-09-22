@@ -1,2 +1,0 @@
-writeLines(paste("testing empty R file"))
-
