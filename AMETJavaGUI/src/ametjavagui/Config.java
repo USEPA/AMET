@@ -58,11 +58,11 @@ public class Config {
         
     //DB Info, do not include completed in public release 
     public String username = "AMET_App";
-    public String password = "DalewthIgjamNiemNetnefAjbotwij";
+    public String password = "**************";
     
     public String conn = "jdbc:mariadb://amet.ib:3306?&useSSL=true";
-    public String lConn = "jdbc:mariadb://amet.ib:3306?&useSSL=true&trustStore=/home/mmorto01/keystore.jks&trustStorePassword=PiewlobrUrfAwakKiogMorutZefdym";
-    public String wConn = "jdbc:mariadb://amet.ib:3306?&useSSL=true&trustStore=C:/Users/mmorto01/OneDrive - Environmental Protection Agency (EPA)/Profile/Documents/configure/keystore.jks&trustStorePassword=PiewlobrUrfAwakKiogMorutZefdym";
+    public String lConn = "jdbc:mariadb://amet.ib:3306?&useSSL=true&trustStore=/home/mmorto01/keystore.jks&trustStorePassword=****************";
+    public String wConn = "jdbc:mariadb://amet.ib:3306?&useSSL=true&trustStore=C:/Users/mmorto01/OneDrive - Environmental Protection Agency (EPA)/Profile/Documents/configure/keystore.jks&trustStorePassword=********************";
 }
 
 
