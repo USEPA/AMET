@@ -20,19 +20,21 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
        - New model-to-model desity scatter plot (AQ_Scatterplot_mtom_density.R)
        - New species plotly (interactive) time series plot (AQ_Timeseries_species_plotly.R)
        - New multi-species plotly (interactive) time series plot (AQ_Timeseries_multi_species_plotly.R)
--	New AQ analysis script options (docs/AMET_User_Guide_v15.md#aq-analysis-input-files)
+-	New AQ analysis script options [(See the AMET User Guide for more details.)](docs/AMET_User_Guide_v15.md#aq-analysis-input-files)
        - Increased number of individual projects that can be specified from 10 to 20
-       - Kelly plots have been updated better choose default plot ranges
-       - Added ability to further customize Kelly plots through input options (min, max, interval)
+       - Kelly plots have been updated to better choose default plot ranges
+       - Added ability to further customize Kelly plots through input options (min, max, interval, etc.)
        - Added function to only use common sites between multiple projects (useful for comparing data from two different sized domains)
 -	Updated AQ batch scripts to incorporate new analysis scripts
 -	Updated AQ_species_list.input file to:
        - properly map species in the updated AMET observation files (specifically related to EC/OC)
-       - include additional species
+       - include additional species (e.g., 88101 and 88502 PM2.5)
        - include CAPMON
 -	Added option to rename an existing AQ project while retaining existing data
 -	Updated AQ observation files (see notes in [AMET_Release_Observation_Files_Readme.txt](https://github.com/USEPA/AMET/files/8655699/AMET_Release_Observation_Files_Readme.txt))
--	See [AMETv5.1 FAQ](docs/AMET_FAQ.md) for all MET bug fixes and updates. Key updates are listed below.
+       - AMETv1.5 requires the use of these updated observation files
+       - Similarly, the updated observation files require the use of AMETv1.5
+-	See [AMETv1.5 FAQ](docs/AMET_FAQ.md) for all MET bug fixes and updates. Key updates are listed below.
        - Added forecast and model initialization hours as database fields for the case of WRF or MPAS model forecast evaluations
        - NOAA SURface RADition (SURFRAD) Network option for real or near-real-time modeling (BSRN has a curation delay of months) + autoFTP of those data
        - QC settings of allowable observed variable range and maximum model-observation difference configurable via R input files
@@ -51,7 +53,7 @@ This AMET Git archive is organized with each official public release stored as a
 To clone code from the AMET Git archive, specify the branch (i.e. version number) and issue the following command from within
 a working directory on your server:
 ```
-git clone -b master https://github.com/USEPA/AMET.git AMET_v15
+git clone -b 1.5 https://github.com/USEPA/AMET.git AMET_v15
 ```
 
 Earlier release versions of AMET that are currently available on Git Hub include:
