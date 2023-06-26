@@ -116,7 +116,7 @@ community to increase AMET functionality.*
     be set by the user for a given evaluation.
 
 Before using AMET and this user’s guide, you must first install the AMET package on your
-system. For information on the installation process, please see the [Atmospheric Model Evaluation Tool (AMET) Installation Guide](https://github.com/USEPA/AMET/blob/1.4b/docs/AMET_Install_Guide_v14b.md).
+system. For information on the installation process, please see the [Atmospheric Model Evaluation Tool (AMET) Installation Guide](https://github.com/USEPA/AMET/blob/1.5/docs/AMET_Install_Guide_v15.md).
 
 <a id="Directory_Structure"></a>
 2. Directory Structure
@@ -566,7 +566,7 @@ MySQL administrator. Note that this is not necessarily the same as the “ametse
 password that will be created using the scripts discussed below.
 
 Note that the database is required for the meteorological side of AMET. 
-However, as of AMETv1.4b, the database is no longer a requirement to process and 
+However, as of AMETv1.4, the database is no longer a requirement to process and 
 analyze air quality data. An option has been added to read the csv output
 files from site compare directly, bypassing the need to use the database. This has 
 both advantages and disadvantages. The primary advantage is that an AMET user would 
@@ -772,7 +772,7 @@ after, the script runs very fast. This is a new option in AMETv1.4. AMETv1.5 add
 ```
 This C-shell is executed like the ones above. It will create a new table wrfExample_wrf_raob specifically
 for profile observations. Like the surface meteorology, this script will download MADIS rawinsonde observations
-and match with the model profiles. This is a new option in AMETv1.4 and allows users to evaluate the entire
+and match with the model profiles. This was a new option added in AMETv1.4 and allows users to evaluate the entire
 troposphere. 
 
 For the metExample_mcip, the `matching_raob.csh` needs to increment over the number of days.
@@ -924,7 +924,7 @@ also a more comprehensive script that performs both the pre analysis functions (
 and the post analysis functions (e.g. running site compare and AMET). That script is named 
 aqExample_pre_and_post.csh and can also found in the $AMETBASE/scripts_db/aqExample directory. 
 Instructions for using that script can be found in a separate guide here:
-[aqProject Pre and Post Analysis Script Guide](https://github.com/USEPA/AMET/tree/1.4b/docs/AMET_aqProject_Pre_and_Post_Analysis_Script_Guide_v14b.md). 
+[aqProject Pre and Post Analysis Script Guide](https://github.com/USEPA/AMET/tree/1.5/docs/AMET_aqProject_Pre_and_Post_Analysis_Script_Guide_v15.md). 
 
 *TIP: Name the directory of each new project the same name as the AMET_PROJECT
 variable in the database and analysis scripts.*
@@ -1244,7 +1244,7 @@ need to be changed for this example.
 Each script requires an input file, located in the subdirectory `input_files`.
 The input file contains all the options available for each script, and allows
 the user to customize scripts to their liking. Unlike previous version of AMET 
-where each script had its own individual input file, for AMETv1.4b and beyond, 
+where each script had its own individual input file, for AMETv1.4 and beyond, 
 all scripts by default will use the `all_scripts.input` file, which contains 
 all the options available for all the analysis scripts. This eliminates the need 
 to edit each individual input file. 
