@@ -42,6 +42,12 @@
 #           and country mapping in stations table for more flexible query & data analysis. Ignored 
 #           if file is not present and backward compatible. $AMETBASE/obs/MET/mastermeta.Rdata
 #
+#  V1.6, 2023Jun, Robert Gilliam: 
+#         - Added capability for Unified Forecast System (UFS) for NOAA.
+#         - Fixed forecast and init UTC for forecast output of single times
+#         - Updated surface obs text option with RH & SFC Pres. Also fixed site metadata for text obs. 
+#
+#
 #######################################################################################################
   options(warn=-1)
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded") }
@@ -73,6 +79,7 @@
   args              <- commandArgs(1)
   mysqlpass         <- args[1]
 
+  # FOR DEBUGGING IN R SESH  mysqlpass <- "config_file"
   ### Use MySQL login/password from config file if requested ###
   if (mysqlpass == 'config_file')  { mysqlpass  <- amet_pass  }
   ##############################################################
@@ -105,10 +112,11 @@
   userid         <- system("echo $USER",intern = TRUE)
   projectdate    <- as.POSIXlt(Sys.time(), "GMT")
 
-  mastermeta_file<- paste(amet_base,"/obs/MET/mastermeta.Rdata",sep="")
+  #  Mastermeta file & handling of Mesonet case
+  mastermeta_file   <- paste(amet_base,"/obs/MET/mastermeta.Rdata",sep="")
   # This logic is added so AMET skips the use of Mastermeta file in case of Mesonet sites
   if(madis_dset == "mesonet") {
-    mastermeta_file<- "JunkFileToForceSkipOfMastermeta"
+    mastermeta_file <- "JunkFileToForceSkipOfMastermeta"
   }
   # MySQL connection information and command to send temporary query file to database.
   # This method is dramatically quicker than sending single queries for each of the
@@ -143,6 +151,7 @@
   if (is.na(fcast) || !fcast) {
      fcast    <- F
      init_utc <- -99
+     fcast_hr <- -99
      dthr     <- 0
   }
 
@@ -170,6 +179,7 @@ for(f in 1:nf) {
    wrf.chk  <- ncatt_get(f1, varid=0, attname="TITLE" )$value
    mpas.chk <- ncatt_get(f1, varid=0, attname="model_name" )$value
    mcip.chk <- ncatt_get(f1, varid=0, attname="EXEC_ID" )$value
+   ufs.chk  <- ncatt_get(f1, varid=0, attname="source" )$value
   nc_close(f1)
   if(mpas.chk != 0) {
    metmodel<-"mpas"
@@ -180,8 +190,11 @@ for(f in 1:nf) {
   } else if(mcip.chk != 0) {
    metmodel<-"mcip"
    writeLines(paste("Matching MCIP METCRO2D file with surface observations:",file))
+  } else if(ufs.chk != 0) {
+   metmodel<-"ufs"
+   writeLines(paste("Matching NOAA UFS output with surface observations:",file))
   } else { 
-   writeLines("The model output is not standard WRF or MPAS output. Double check. 
+   writeLines("The model output is not standard WRF, MPAS, UFS output OR MCIP. Double check. 
                Terminating model-observation matching.")
    quit(save="no")
   }
@@ -201,7 +214,7 @@ for(f in 1:nf) {
     model<-mpas_surface(file)
   }
 
-  # WRF Grid and Sfc Met extraction
+  # WRF or MCIP or UFS Grid and Sfc Met extraction. The
   #list includes:
   #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
   #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
@@ -209,24 +222,29 @@ for(f in 1:nf) {
   if(metmodel == "wrf"){
     model<-wrf_surface(file)
   }
-
   # MCIP Grid and Sfc Met extraction
-  #list includes:
-  #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
-  #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
-  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr,psf=psf)
   if(metmodel == "mcip"){
     model<-mcip_surface(file)
   }
+  # UFS Grid Info & Sfc Met extraction
+  if(metmodel == "ufs"){
+    model  <-ufs_surface(file)
+    interp <-1
+  }
 
   # If forecast run, use date/time function to get init time and output interval
-  if (fcast) {
-    init_utc <- model_time_format(model$sfc_met$time[1])$hc
-     dthr    <- as.numeric(model_time_format(model$sfc_met$time[2])$hc) -
-                as.numeric(model_time_format(model$sfc_met$time[1])$hc)
-     if(is.na(dthr)){
-       dthr  <- 1.0
-     }
+  if (fcast & f==1) {
+    init_utc  <- model_time_format(model$sfc_met$time[1])$hc
+    dthr      <- as.numeric(model_time_format(model$sfc_met$time[2])$hc) -
+                 as.numeric(model_time_format(model$sfc_met$time[1])$hc)
+    fcast_hr0 <- as.numeric(model_time_format(model$sfc_met$time[1])$hc)
+    fcast_hr  <- 0
+    if(is.na(dthr)) {
+      dthr   <- 1
+    }
+  }
+  if (fcast & f==2) {
+    dthr      <- as.numeric(model_time_format(model$sfc_met$time[1])$hc) - fcast_hr0
   }
 
 ##########################################################################
@@ -246,7 +264,7 @@ for(t in skipind:nt){
       next 
     }
   }
-  if(metmodel == "wrf" || metmodel == "mcip"){
+  if(metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs"){
     if(sum( model$sfc_met$t2[,,t]) == 0){ 
       writeLines(paste("WRF time period skipped because initial model time"))
       next 
@@ -274,6 +292,9 @@ for(t in skipind:nt){
     if(is.na(obs[1])) { next }
   } else if(madis_dset == "text") {
     obs<- text_surface(madisbase, datetime, model$projection$standlon, model$projection$conef)
+    if(is.na(obs)) {
+      next
+    }
   }
 
   if(metmodel == "mpas" & total_loop_count <= total_loop_max){
@@ -282,18 +303,18 @@ for(t in skipind:nt){
                                  model$projection$lat, model$projection$lon, model$projection$latv, 
                                  model$projection$lonv, model$projection$cells_on_vertex,
                                  cind, cwgt,  mysql$dbase, sitecommand, sitemax, updateSiteTable,
-                                 tmpquery_file=query_file2, mastermeta_file=mastermeta_file)
+                                 tmpquery_file=query_file2, mastermeta_file=mastermeta_file, madis_dset=madis_dset)
     sitenum <-site_update$sitenum
     sitelist<-site_update$sitelist
     cind    <-site_update$cind
     cwgt    <-site_update$cwgt
   }
-  if((metmodel == "wrf" || metmodel == "mcip") & total_loop_count <= total_loop_max){
+  if((metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs") & total_loop_count <= total_loop_max){
     site_update <- wrf_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
                                 obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname, 
                                 model$projection, wrfind, interp, mysql$dbase, sitecommand, sitemax, 
                                 updateSiteTable, buffer=buffer, tmpquery_file=query_file2,
-                                mastermeta_file=mastermeta_file)
+                                mastermeta_file=mastermeta_file, madis_dset=madis_dset)
     sitenum <-site_update$sitenum
     sitelist<-site_update$sitelist
     wrfind  <-site_update$wrfind
@@ -332,7 +353,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     if(verbose) {
       writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
                        "Model time:",datetime$modeltime,"  Obs time:",actual_time,
-                       " forecast/init hr:",fcast_hr,"/",init_utc))
+                       " init/forecast hr:",init_utc,"/",fcast_hr))
     }
 
     if(is.na(obs$sfc_met$t2[sind]))  { obs$sfc_met$t2[sind]  <-"NULL" }
@@ -356,7 +377,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
                  cwgt[s,3]*model$sfc_met$psf[cind[s,3],t]
     }
 
-    if(metmodel == "wrf" || metmodel == "mcip"){
+    if(metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs"){
       # Compute model values from the site-mapped grid idicies. This is a bilinear interpolation
       # calculation using the four grid points surrounding observation site. It is written to
       # work with nearest neighbor where fractional grid index in x and y direction (wrfind[s,3,1:2])

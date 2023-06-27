@@ -25,6 +25,10 @@
 #         and country mapping in stations table for more flexible query & data analysis. Ignored 
 #         if file is not present and backward compatible. $AMETBASE/obs/MET/mastermeta.Rdata
 #
+#  V1.6, 2023JUN20, Robert Gilliam:
+#       - Updated site mapping for surface text obs where some metadata is not availiable and set to NA
+#       - Fixed messages for wrf site mapping function that also works for MCIP and UFS, not just WRF.
+#
 #######################################################################################################
 #######################################################################################################
 #     This script contains the following functions
@@ -47,6 +51,7 @@
 #                          not within the model domain. Buffer is the number of grid cells from domain
 #                          boundary (default =5) were sites are rejected, as to not include sites
 #                          in the model boundary zone. This is hard coded, but can be changed in main script. 
+#
 #
 #######################################################################################################
 #######################################################################################################
@@ -89,7 +94,7 @@
                           cind, cwgt, mysqldbase, sitecommand, 
                           sitemax=15000, updateSiteTable=F,
                           tmpquery_file="tmp.site.query",
-                          mastermeta_file="xxxyyyvv") {
+                          mastermeta_file="xxxyyyvv", madis_dset="metar") {
 
   # If update site table open temporary site query file
   if(updateSiteTable) {
@@ -97,7 +102,7 @@
     sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
     use.metafile  <-F
-    if(file.exists(mastermeta_file)) {
+    if(file.exists(mastermeta_file) & madis_dset!="text") {
       load(mastermeta_file)
       use.metafile<-T
     }
@@ -162,6 +167,12 @@
           site_locname[inds] <-sub("'", "",site_locname[inds])
         }
       }
+      if(madis_dset=="text"){
+          site_locname[inds] <-"99"
+          state              <-"99"
+          country            <-"99"
+          elevs              <--9999.99
+      }
       writeLines(paste("Inserting site into AMET stations table (meta):",s,sites_unique[s],elevs,site_locname[inds], state, country, site_locname[inds], sep=" ** ")) 
       query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev, country) VALUES ('",sitelist[sitenum],"','",
                    report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,",'",country,"')",sep="")
@@ -189,8 +200,9 @@
 
 ##########################################################################################################
 #####--------------------------     START OF FUNCTION: WRF_SITE_MAP     ------------------------------####
-# A Mapping of observations sites to the WRF grid. The sitelist and mapping/interpolation
+# A Mapping of observations sites to the WRF/MCIP/UFS grid. The sitelist and mapping/interpolation
 # values are only updated as new sites are found in order to make script as efficient as possible.
+# Note: this function orginally for WRF also works with MCIP and NOAA UFS, given proper projection.
 #
 # Input:
 #       site           -- An array of current hour observation site ids
@@ -202,7 +214,7 @@
 #       elev           -- Site elevation (m)
 #       report_type    -- Longitude of sites in hourly site array
 #       site_locname   -- String describing site location (i.e, for KRDU 'Raleigh-Durham, NC')
-#       proj           -- WRF projection. 1- Lambert, 2-Polar Sterographic (not implemented yet)
+#       proj           -- Model Domain projection. 1- Lambert, 2-Polar Stero, 3-Mercator, 4-Lat-Lon
 #       wrfind         -- Index mapping to site array with interpolation weights 
 #       interp         -- Interpolation option. 1-Nearest Neighbor, 2-Smart Bi-linear
 #       mysqldbase     -- mysql database connection list for site update query
@@ -221,7 +233,7 @@
                          elev, report_type, site_locname, proj, wrfind, 
                          interp, mysqldbase, sitecommand, sitemax=15000, 
                          updateSiteTable=F, buffer=5, mastermeta_file="xxxyyyvv",
-                         tmpquery_file="tmp.site.query") {
+                         tmpquery_file="tmp.site.query", madis_dset="metar") {
 
   # If update site table open temporary site query file
   if(updateSiteTable) {
@@ -229,7 +241,7 @@
     sfile<-file(tmpquery_file,"a")
     writeLines(paste("use",mysqldbase,";"),con=sfile) 
     use.metafile  <-F
-    if(file.exists(mastermeta_file)) {
+    if(file.exists(mastermeta_file) & madis_dset!="text") {
       load(mastermeta_file)
       use.metafile<-T
     }
@@ -239,7 +251,7 @@
   range_lat<-range(proj$lat)
   range_lon<-range(proj$lon)
   
-  writeLines("Mapping MADIS obs sites to WRF grid") 
+  writeLines("Mapping MADIS obs sites to WRF/MCIP/UFS grid") 
   nsr <- length(sites_unique)
   nsites_outside_domain<-0 
   for(s in 1:nsr) {
@@ -267,7 +279,7 @@
 
     if(grdind$i < buffer || grdind$i > (proj$nx-buffer) || grdind$j < buffer || grdind$j > (proj$ny-buffer) ) { 
       nsites_outside_domain<-nsites_outside_domain+1
-#      writeLines(paste(nsites_outside_domain,"Sites ****",sites_unique[s],"**** excluded because out of WRF domain"))
+      #writeLines(paste(nsites_outside_domain,"Sites ****",sites_unique[s],"**** excluded because out of model domain"))
       next 
     }
 
@@ -275,7 +287,11 @@
     sitelist[sitenum]<-sites_unique[s]
     try(if(sitenum>sitemax) stop("Error: sitenum > sitemax"))
 
-    # Using the closest WRF grid cell to each MADIS station, store the cell indices. For nearest neighbor interp
+    #difflat <- abs(proj$lat[grdind$i,grdind$j] - slat[inds])
+    #difflon <- abs(proj$lon[grdind$i,grdind$j] - slon[inds])
+    #writeLines(paste("Lat-lon COMPARE ",difflat, difflon, "--", proj$lat[grdind$i,grdind$j], proj$lon[grdind$i,grdind$j], "---", slat[inds], slon[inds]))
+
+    # Using the closest model grid cell to each MADIS station, store the cell indices. For nearest neighbor interp
     # option 1, the closest index is used and the deviation is set to 0.0 so one calculation can be used
     # for both interp methods. Interp = 2 (bi-linear) the fractional i,j (dx/dy) are stored for weighting
     # the four grid points surrounding the obs site. 
@@ -330,7 +346,7 @@
     }
 
     writeLines(paste("sitenum:",sitenum,"is",sitelist[sitenum],"at lat-lon: ",sprintf("%5.3f",slat[inds]),sprintf("%5.3f",slon[inds]),
-                     "     Closest WRF grid cell: ",sprintf("%5.3f",wrfind[sitenum,1,1]), sprintf("%5.3f",wrfind[sitenum,2,1]),
+                     "     Closest model grid cell: ",sprintf("%5.3f",wrfind[sitenum,1,1]), sprintf("%5.3f",wrfind[sitenum,2,1]),
                      sprintf("%5.3f",dx),sprintf("%5.3f",dy)))
 
     if(updateSiteTable){
@@ -349,6 +365,12 @@
           site_locname[inds] <-sub("'", "",site_locname[inds])
         }
       }
+      if(madis_dset=="text"){
+          site_locname[inds] <-"99"
+          state              <-"99"
+          country            <-"99"
+          elevs              <--9999.99
+      }
       writeLines(paste("Inserting site into AMET stations table (meta):",s,sites_unique[s],elevs,site_locname[inds], state, country, site_locname[inds], sep=" ** ")) 
       query<-paste("REPLACE into stations (stat_id, ob_network, common_name, state, lat, lon, elev, country) VALUES ('",sitelist[sitenum],"','",
                    report_type[inds],"','",site_locname[inds],"','",state,"',",slat[inds],",",slon[inds],",",elevs,",'",country,"')",sep="")
@@ -362,12 +384,12 @@
     system(paste("rm -f ",tmpquery_file))
   }
   writeLines(paste("Total sites in current observation dataset:",sitenum+nsites_outside_domain)) 
-  writeLines(paste("Num sites excluded because outside of WRF domain:",nsites_outside_domain))
-  writeLines(paste("Finished: Mapping observation sites to WRF grid. Number of sites mapped:",sitenum))
-
+  writeLines(paste("Num sites excluded because outside of model domain:",nsites_outside_domain))
+  writeLines(paste("Finished: Mapping observation sites to model grid. Number of sites mapped:",sitenum))
   supdate<-list(sitelist=sitelist, sitenum=sitenum, wrfind=wrfind)
   return(supdate)
  }
 #####--------------------------	    END OF FUNCTION: WRF_SITE_MAP      -------------------------------####
 ##########################################################################################################
+
 

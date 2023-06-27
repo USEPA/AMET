@@ -30,6 +30,10 @@
 #           more generalize to radiation datasets with use of "rad" instead of "bsrn". Script was also
 #           renamed MET_matching_rad.R and matching_rad.csh
 #
+#  V1.6, 2023Jun, Robert Gilliam: 
+#         - Added capability for Unified Forecast System (UFS) for NOAA.
+#         - Fixed forecast and init UTC for forecast output of single times
+#
 #######################################################################################################
 #######################################################################################################
   options(warn=-1)
@@ -128,7 +132,7 @@
   if (is.na(fcast) || !fcast) {
      fcast    <- F
      init_utc <- -99
-     fcast_hr <- 0
+     fcast_hr <- -99
      dthr     <- 0
   }
 
@@ -159,6 +163,7 @@ for(f in 1:nf) {
    wrf.chk  <- ncatt_get(f1, varid=0, attname="TITLE" )$value
    mpas.chk <- ncatt_get(f1, varid=0, attname="model_name" )$value
    mcip.chk <- ncatt_get(f1, varid=0, attname="EXEC_ID" )$value
+   ufs.chk  <- ncatt_get(f1, varid=0, attname="source" )$value
   nc_close(f1)
   if(mpas.chk != 0) {
    metmodel<-"mpas"
@@ -169,8 +174,11 @@ for(f in 1:nf) {
   } else if(mcip.chk != 0) {
    metmodel<-"mcip"
    writeLines(paste("Matching MCIP METCRO2D file with surface observations:",file))
+  } else if(ufs.chk != 0) {
+   metmodel<-"ufs"
+   writeLines(paste("Matching NOAA UFS output with surface observations:",file))
   } else { 
-   writeLines("The model output is not standard WRF or MPAS output. Double check. 
+   writeLines("The model output is not standard WRF, MPAS, UFS output OR MCIP. Double check. 
                Terminating model-observation matching.")
    quit(save="no")
   }
@@ -208,14 +216,31 @@ for(f in 1:nf) {
     model<-mcip_surface(file)
   }
 
-  # If forecast run, use date/time function to get init time and output interval
-  if (fcast) {
-    init_utc <- model_time_format(model$sfc_met$time[1])$hc
-     dthr    <- as.numeric(model_time_format(model$sfc_met$time[2])$hc) -
-                as.numeric(model_time_format(model$sfc_met$time[1])$hc)
-    fcast_hr <- 0
+  # UFS Grid Info & Sfc Met extraction
+  #list includes:
+  #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
+  #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
+  #sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,swr=swr,psf=psf)
+  # set interpolation to nearest neighbor for UFS because of simple slow site mapping
+  if(metmodel == "ufs"){
+    model  <-ufs_surface(file)
+    interp <-1
   }
 
+  # If forecast run, use date/time function to get init time and output interval
+  if (fcast & f==1) {
+    init_utc  <- model_time_format(model$sfc_met$time[1])$hc
+    dthr      <- as.numeric(model_time_format(model$sfc_met$time[2])$hc) -
+                 as.numeric(model_time_format(model$sfc_met$time[1])$hc)
+    fcast_hr0 <- as.numeric(model_time_format(model$sfc_met$time[1])$hc)
+    fcast_hr  <- 0
+    if(is.na(dthr)) {
+      dthr   <- 1
+    }
+  }
+  if (fcast & f==2) {
+    dthr      <- as.numeric(model_time_format(model$sfc_met$time[1])$hc) - fcast_hr0
+  }
 ##########################################################################
 # begin loop for hours in Model file (reads one RAD file)
 if(f == 1) { skipind <- skipind1 }
@@ -233,7 +258,7 @@ for(t in skipind:nt){
       next 
     }
   }
-  if(metmodel == "wrf" || metmodel == "mcip"){
+  if(metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs"){
     if(sum( model$sfc_met$swr[,,t]) == 0){ 
       writeLines(paste("WRF time period skipped because initial model time"))
       next 
@@ -246,8 +271,8 @@ for(t in skipind:nt){
   datetime<- model_time_format(model$sfc_met$time[t])
 
   # Compute forecast hour if applicable
-  if (fcast) {
-    fcast_hr <- (t-1) * dthr
+  if (fcast & total_loop_count > 1) {
+    fcast_hr <- fcast_hr + dthr
   }
 
   # Check for first time of the month to judge if new RAD file
@@ -296,7 +321,7 @@ for(t in skipind:nt){
     cind    <-site_update$cind
     cwgt    <-site_update$cwgt
   }
-  if((metmodel == "wrf" || metmodel == "mcip") & total_loop_count <= total_loop_max){
+  if((metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs") & total_loop_count <= total_loop_max){
     site_update <- wrf_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
                                 obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname, 
                                 model$projection, wrfind, interp, mysql$dbase, sitecommand, sitemax, 
@@ -320,7 +345,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
     mysqltimestr<-paste(datetime$yc,"-",datetime$mc,"-",datetime$dc," ",datetime$modeltime,sep="") 
     if(verbose) {
       writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
-                       "Model time:",datetime$modeltime," Forecast hr:",fcast_hr))
+                       "Model time:",datetime$modeltime," init/forecast hr:",init_utc,"/",fcast_hr))
     }
 
     # Set missing or bad obs values to MySQL NULL
@@ -333,7 +358,7 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
       swr_int   <-cwgt[s,1]*model$sfc_met$swr[cind[s,1],t]+cwgt[s,2]*model$sfc_met$swr[cind[s,2],t]+
                   cwgt[s,3]*model$sfc_met$swr[cind[s,3],t]
     }
-    if(metmodel == "wrf" || metmodel == "mcip"){
+    if(metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs"){
       # Compute model values from the site-mapped grid idicies. This is a bilinear interpolation
       # calculation using the four grid points surrounding observation site. It is written to
       # work with nearest neighbor where fractional grid index in x and y direction (wrfind[s,3,1:2])
