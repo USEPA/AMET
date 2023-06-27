@@ -24,6 +24,10 @@
 #         This real-time directory has obs files within the hour of observed, but only the last few days.
 #         Main archive has data several day old, so this update checks both now so AMET can get obs immediately.
 #
+#  V1.6, 2023JUN20, Robert Gilliam:
+#       - Updated surface text observation input function to read pressure and RH from text files for full
+#         compatibility with the analysis scripts, mainly the moisture time series script.
+#
 #######################################################################################################
 #######################################################################################################
 #     This script contains the following functions
@@ -226,7 +230,7 @@
     stationpres<-stationpres/10
     # QC of station pressure. No sites above ~ 6 km or 500 mb
     stationpres<-ifelse(stationpres < 50, NA, stationpres)
-    stationpres<-ifelse(stationpres > 1100, NA, stationpres)
+    stationpres<-ifelse(stationpres > 110, NA, stationpres)
     
     # 2-m Temperature
     stemp <- ncvar_get(f2, varid="temperature")
@@ -528,22 +532,42 @@
   }
   writeLines(paste("Opening Text Observation file",obsfile," for time:",
                     datetime$modeldate,datetime$modeltime))
-  obsarray    <-read.delim(obsfile,sep=",",header=T)
+  obsarray    <-read.delim(obsfile,sep=",",header=T, colClasses = c(HHMM = "character") )
   site        <-as.character(obsarray[,1])
   report_type <-as.character(obsarray[,2])
   slat        <-as.numeric(obsarray[,3])
   slon        <-as.numeric(obsarray[,4])
+  hhmm        <-obsarray[,6]
 
   stemp       <-as.numeric(obsarray[,7])
   smixr       <-as.numeric(obsarray[,8])
   su10        <-as.numeric(obsarray[,9])
   sv10        <-as.numeric(obsarray[,10])
+  srh         <-as.numeric(obsarray[,11])
+  spsf        <-as.numeric(obsarray[,12])/10
 
-  stime    <- as.numeric(datetime$yc)*1E6 + as.numeric(datetime$mc)*1E4 + 
-              as.numeric(datetime$dc)*1E2 + as.numeric(datetime$hc)
-  ihour    <-as.integer(datetime$hc)
-  imin     <-as.integer(00)
-  isec     <-as.integer(00)
+  stemp       <-ifelse(stemp > 400, NA, stemp)
+  stemp       <-ifelse(stemp < 200, NA, stemp)
+  spsf        <-ifelse(spsf <  50,  NA, spsf)
+  spsf        <-ifelse(spsf > 110,  NA, spsf)
+
+
+  stime       <- as.numeric(datetime$yc)*1E6 + as.numeric(datetime$mc)*1E4 + 
+                 as.numeric(datetime$dc)*1E2 + as.numeric(datetime$hc)
+  nsites      <- length(site)
+  ihour       <-as.integer(datetime$hc)
+  imin        <-as.integer(00)
+  isec        <-as.integer(00)
+
+  ihour       <- array(as.numeric(datetime$hc),c(length(site)))
+  imin        <- array(as.numeric(datetime$minc),c(length(site)))
+  isec        <- array(as.numeric(0),c(length(site)))
+
+  for(ss in 1:nsites) {
+    tmp       <- unlist(strsplit(hhmm[ss],split=""))
+    ihour[ss] <- as.numeric(paste(tmp[1],tmp[2],sep=""))
+    imin[ss]  <- as.numeric(paste(tmp[3],tmp[4],sep=""))
+  }
 
   # Adjustment of wind direction from magnetic north to the projection.
   # Note: conef is zero for MPAS, so no adjustment done.
@@ -553,7 +577,6 @@
   swdir2 <- swdir+adjust
   su10   <-(-1)*swspd*sin(swdir2*pi/180)
   sv10   <-(-1)*swspd*cos(swdir2*pi/180) 
-  
   
   site_locname <- array("NULL",c(length(site)))
   stime  <- array(stime,c(length(site)))
@@ -566,7 +589,7 @@
   site   <-list(ns=ns,nsr=nsr,site=site,sites_unique=sites_unique,slat=slat,slon=slon,site_locname=site_locname,
                 report_type=report_type,ihour=ihour,imin=imin,isec=isec,
                 stime=stime,stime2=stime2)
-  sfc_met<-list(t2=stemp,q2=smixr,u10=su10,v10=sv10)
+  sfc_met<-list(t2=stemp,q2=smixr,rh=srh,u10=su10,v10=sv10,psf=spsf)
 
   return(list(meta=site,sfc_met=sfc_met))
 

@@ -26,6 +26,11 @@
 #       - 2020Nov13: Added function for MCIP surface met compatibility (i.e., mcip_surface)
 #       - 2021Jan06: Added function for MCIP upper-air met compatibility (i.e., mcip_raob)
 #
+#  V1.6, 2023Jun, Robert Gilliam: 
+#         - Added capability for reading Unified Forecast System (UFS) NOAA outputs. 
+#         - Two new reader functions ufs_surface() and ufs_raob() for UFS output
+#
+#
 #######################################################################################################
 #     This script contains the following functions
 #
@@ -41,6 +46,10 @@
 #                            matched with MADIS surface observations. Also grabs grid 
 #                            structure information for matching obs to the grid.
 #
+#     ufs_surface        --> Open UFS output and read surface variables to be
+#                            matched with MADIS surface observations. Sets proj lat-lon
+#                            which uses the 2D domain lat-lon arrays to find obs. 
+#
 #     wrf_raob           --> Open WRF output and read 3D met variables to be
 #                            matched with MADIS raob observations. Also grabs the 
 #                            projection information for obs matching.
@@ -49,10 +58,14 @@
 #                            matched with MADIS raob observations. Also grabs grid 
 #                            structure information for matching obs to the grid.
 #
-#    mcip_raob           --> Open MCIP outputs and read 3D met variables to be
+#     mcip_raob          --> Open MCIP outputs and read 3D met variables to be
 #                            matched with MADIS raob observations. Also grabs the 
 #                            projection information for obs matching. A bit different
 #                            than WRF and MPAS, temp/rh and wind are in different files
+#
+#     ufs_raob           --> Open NOAA UFS output and read 3D met variables to be
+#                            matched with MADIS raob observations. Sets proj lat-lon
+#                            which uses the 2D domain lat-lon arrays to find obs. 
 #
 #     model_time_format  --> Takes either MPAS or WRF timestamp and reformats for various AMET
 #                            functions and MySQL.
@@ -82,7 +95,7 @@
 #
 #  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
 #                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
-#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10)
+#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,psf=psf)
 
  wrf_surface <-function(file) {
 
@@ -204,7 +217,7 @@
 #
 #  projection <-list(mproj=0, lat=lat, lon=lon, latv=latv, lonv=lonv, 
 #                    cells_on_vertex=cells_on_vertex, conef=0, standlon=0)
-#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10)
+#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,psf=psf)
 
  mpas_surface <-function(file) {
 
@@ -287,7 +300,7 @@
 #
 #  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
 #                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
-#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10)
+#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,psf=psf)
 
  mcip_surface <-function(file) {
 
@@ -450,6 +463,102 @@
 
  }
 #####--------------------------	  END OF FUNCTION: MCIP_SURFACE     -----------------------------------####
+##########################################################################################################
+
+##########################################################################################################
+#####--------------------------   START OF FUNCTION: UFS_SURFACE  ------------------------------------####
+#  Open UFS output and extract grid information and surface met data for comparision to MADIS obs
+#       UFS is the NOAA Unified Forecast System in NetCDF format.
+# Input:
+#       file   -- Model output file name. Full path and file name
+#
+# Output: Multi-level list of model projection data and surface meteorology.
+#
+#  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
+#                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
+#  sfc_met    <-list(time=time,t2=t2,q2=q2,u10=u10,v10=v10,psf=psf)
+
+ ufs_surface <-function(file) {
+
+  f1  <-nc_open(file)
+
+   timex <- ncvar_get(f1, varid="time_iso")
+
+   mproj<- 4
+   
+   truelat1  <- ncatt_get(f1, varid=0, attname="cen_lat" )$value
+   truelat2  <- ncatt_get(f1, varid=0, attname="cen_lat" )$value
+   standlon  <- ncatt_get(f1, varid=0, attname="cen_lon" )$value
+   lat       <- ncvar_get(f1, varid="lat")
+   lon       <- ncvar_get(f1, varid="lon")
+
+   nx        <- dim(lat)[1]
+   ny        <- dim(lat)[2]
+   dx        <- 1.0
+   lat1      <- lat[1,1]
+   lon1      <- lon[1,1]
+
+   conef     <- cone(truelat1,truelat2)
+
+   lon       <- ifelse(lon > 0, lon-360, lon)
+
+   # Required model vars for surface met evaluation
+   t2     <- ncvar_get(f1, varid="tmp2m")
+   q2     <- ncvar_get(f1, varid="spfh2m")
+   u10    <- ncvar_get(f1, varid="ugrd10m")
+   v10    <- ncvar_get(f1, varid="vgrd10m")
+
+   # Not required for sfc met eval. But is for radiation eval and moisture timeseries
+   if(ncdf_vars_exist(file,"dswrf_ave")) {
+     swr    <- ncvar_get(f1, varid="dswrf_ave")
+   } else {
+     writeLines("** QAWARNING ** Shortwave radiation variable dswrf_ave is not in output ")
+     writeLines("** QAWARNING ** Setting Shortwave radiation to 0. Do not evaluate!") 
+     swr   <- t2*0.0
+   }
+   if(ncdf_vars_exist(file,"pressfc")) {
+     psf    <- ncvar_get(f1, varid="pressfc")/1000
+   } else {
+     writeLines("** QAWARNING ** Station surface pressure variable pressfc is not in output ")
+     writeLines("** QAWARNING ** Setting surface pressure to approx sea level 1012 mb. Do not evaluate!") 
+     psf   <- t2*0.0 + 10.12
+   }
+
+  nc_close(f1)
+  
+  # Check dimensions of met variables to determine if file has only 
+  # one time. If so, add a time dimension to the array for interpolation
+  # compatability. 
+  nt    <-length(time)
+  if( nt == 1 ) {
+    t2  <-array(t2,c(nx,ny,1))
+    q2  <-array(q2,c(nx,ny,1))
+    u10 <-array(u10,c(nx,ny,1))
+    v10 <-array(v10,c(nx,ny,1))
+    swr <-array(swr,c(nx,ny,1))
+    psf <-array(psf,c(nx,ny,1))
+  }
+
+   time  <- array(NA,c(nt))
+   for(tt in 1:nt){
+     aa       <- unlist(strsplit(as.character(timex[tt]),"-"))
+     tmpy     <- as.numeric(aa[1])
+     tmpm     <- as.numeric(aa[2])
+     bb       <- unlist(strsplit(as.character(aa[3]),""))
+     tmpd    <-  as.numeric(paste(bb[1],bb[2],sep=""))
+     tmph    <-  as.numeric(paste(bb[4],bb[5],sep=""))
+     time[tt] <-paste(tmpy,"-",sprintf("%02.f",tmpm),"-",sprintf("%02.f",tmpd),
+                      "_",sprintf("%02.f",tmph),":00:00",sep="")
+   }
+
+   projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
+                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
+  sfc_met    <-list(time=time, t2=t2, q2=q2, u10=u10, v10=v10, swr=swr, psf=psf)
+  
+  return(list(projection=projection,sfc_met=sfc_met))
+
+ }
+#####--------------------------	  END OF FUNCTION: UFS_SURFACE     -----------------------------------####
 ##########################################################################################################
 
 ##########################################################################################################
@@ -857,6 +966,111 @@
 ##########################################################################################################
 
 ##########################################################################################################
+#####--------------------------   START OF FUNCTION: UFS_RAOB     ------------------------------------####
+#  Open NOAA UFS output and extract grid information and met data for matching to MADIS RAOB profiles
+# Input:
+#       file   -- Model output file name. Full path and file name
+#          t   -- Time index to get. Unlike surface met, this was added to
+#                 cut down on array size in memory instead of grabbing all times at once.
+#
+# Output: Multi-level list of model projection data and sounding meteorology.
+#
+#  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
+#                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
+#  raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+#                      qv=qv, rh=rh, pblh=pblh, psf=psf, p=p, levzf=levzf, levzh=levzh)
+
+ ufs_raob <-function(file,t=1) {
+
+  #file<-"/work/MOD3DEV/grc/analyses/noaa_ufs_srw/TESTUA/aqm.t12z.dyn.f000.nc"
+  f1  <-nc_open(file)
+
+   timex <- ncvar_get(f1, varid="time_iso")
+
+   mproj     <- 4
+   truelat1  <- ncatt_get(f1, varid=0, attname="cen_lat" )$value
+   truelat2  <- ncatt_get(f1, varid=0, attname="cen_lat" )$value
+   standlon  <- ncatt_get(f1, varid=0, attname="cen_lon" )$value
+   lat       <- ncvar_get(f1, varid="lat")
+   lon       <- ncvar_get(f1, varid="lon")
+
+   nx        <- dim(lat)[1]
+   ny        <- dim(lat)[2]
+   dx        <- 1.0
+   lat1      <- lat[1,1]
+   lon1      <- lon[1,1]
+   lon       <- ifelse(lon > 0, lon-360, lon)
+
+   p      <- ncvar_get(f1, varid="pfull")
+   phlf   <- ncvar_get(f1, varid="phalf")
+   dz     <- ncvar_get(f1, varid="delz", start=c(1,1,1,1), count=c(-1,-1,-1,t))
+   elev   <- ncvar_get(f1, varid="hgtsfc", start=c(1,1,1), count=c(-1,-1,t))
+   psf    <- ncvar_get(f1, varid="pressfc", start=c(1,1,1), count=c(-1,-1,t))
+   dp     <-ncvar_get(f1,  varid="dpres", start=c(1,1,1,1), count=c(-1,-1,-1,t))
+   u      <- ncvar_get(f1, varid="ugrd", start=c(1,1,1,1), count=c(-1,-1,-1,t))
+   v      <- ncvar_get(f1, varid="vgrd", start=c(1,1,1,1), count=c(-1,-1,-1,t))
+   qv     <- ncvar_get(f1, varid="spfh", start=c(1,1,1,1), count=c(-1,-1,-1,t))
+   tk     <- ncvar_get(f1, varid="tmp", start=c(1,1,1,1), count=c(-1,-1,-1,t))
+  nc_close(f1)
+
+  # Cacluated, but not used with NOAA UFS outputs
+  conef  <- cone(truelat1,truelat2)
+
+  # Some calcs to derive variables needed for other calcs and comp to obs profiles
+  # theta = baseP + pert; pressure = baseP + pert; temp, satmixr and RH
+  pblh   <- elev * NA
+  t2m    <- elev * NA
+  nzh    <- dim(phlf)[1]
+  nzf    <- dim(p)[1]
+  theta  <- tk*NA
+  mixrs  <- tk*NA
+  p3d    <- tk*NA
+  levzf  <- tk*0.0
+  levzh  <- tk*NA
+  e      <- 0.611 * exp ( (2.501E6/461.5) * ( (1/273.14) -(1/tk) ) )
+  pcalc  <- psf/100
+  levz   <- pcalc * 0.0
+  for(z in nzf:1) {
+    pcalc      <- pcalc - (dp[,,z]/100)
+    levz       <- levz + abs(dz[,,z])
+    levzf[,,z] <- levz 
+    p3d[,,z]   <- pcalc 
+    theta[,,z] <-  tk[,,z] * (1000/p3d[,,z]) ^ 0.2857143
+    mixrs[,,z] <-  0.62197 * (e[,,z]/(p3d[,,z]/10))
+  }
+
+  # RH based on model mixing ratio and saturation mixing ratio from model temperature
+  rh     <- 100*(qv/mixrs)
+  rh     <- ifelse(rh > 100,100,rh)
+  rh     <- ifelse(rh < 0.0,0.1,rh)
+
+  # Approx ETA levels, but not explicitly used.
+  sigm   <- (p-p[1])/(p[nzf]-p[1])
+  sigu   <- (phlf-phlf[1])/(phlf[nzh]-phlf[1])
+ 
+  # Date conversion from NOAA UFS format to AMET/MySQL date/time
+  aa      <- unlist(strsplit(as.character(timex[1]),"-"))
+  tmpy    <- as.numeric(aa[1])
+  tmpm    <- as.numeric(aa[2])
+  bb      <- unlist(strsplit(as.character(aa[3]),""))
+  tmpd    <- as.numeric(paste(bb[1],bb[2],sep=""))
+  tmph    <- as.numeric(paste(bb[4],bb[5],sep=""))
+  time    <- paste(tmpy,"-",sprintf("%02.f",tmpm),"-",sprintf("%02.f",tmpd),
+                     "_",sprintf("%02.f",tmph),":00:00",sep="")
+
+  # Create lists with data to return to main script
+  projection <-list(mproj=mproj, lat=lat, lon=lon, lat1=lat1, lon1=lon1, nx=nx, ny=ny, dx=dx,
+                    truelat1=truelat1, truelat2=truelat2, standlon=standlon, conef=conef)
+  raob_met    <-list(time=time, elev=elev, sigu=sigu, sigm=sigm, u=u, v=v, theta=theta, temp=tk,
+                      qv=qv, rh=rh, pblh=pblh, psf=psf, p=p3d, levzf=levzh, levzh=levzh)
+  
+  return(list(projection=projection, raob_met=raob_met))
+
+ }
+#####--------------------------	  END OF FUNCTION: UFS_RAOB        -----------------------------------####
+##########################################################################################################
+
+##########################################################################################################
 #####--------------------------   START OF FUNCTION: MODEL_TIME_FORMAT       -------------------------####
 #  This function take WRF or MPAS timestamp (same format) and reformats to the AMET standard 
 #  that is YYYYMMDD HH:00:00 as well as individual components year, month, day and hour.
@@ -1136,6 +1350,23 @@
 
  }
 #####--------------------------	  END OF FUNCTION: LATLON_LATLON_TO_IJ  --------------------------------####
+
+
+#####--------------------------        START OF FUNCTION: INTERP2D_QUICK  -----------------------------####
+# 
+# A developed, but now unused nearest neighbor or bi-linear interpolation option
+# This was preserved for possible use in new development, but not currently used because
+# a more efficient method was developed.
+
+ interp2d_quick <-function(lato,lono,latg,long) {
+
+   
+  return(list(i=grdi, j=grdj))
+
+ }
+#####--------------------------	   END OF FUNCTION INTERP2D_QUICK      -------------------------------####
+##########################################################################################################
+
 ##########################################################################################################
 
 

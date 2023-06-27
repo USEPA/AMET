@@ -37,6 +37,10 @@
 #           and country mapping in stations table for more flexible query & data analysis. Ignored 
 #           if file is not present and backward compatible. $AMETBASE/obs/MET/mastermeta.Rdata
 #
+#  V1.6, 2023Jun, Robert Gilliam: 
+#         - Added capability for Unified Forecast System (UFS) for NOAA.
+#         - Fixed forecast and init UTC for forecast output of single times
+#
 #######################################################################################################
 #######################################################################################################
   options(warn=-1)
@@ -70,6 +74,7 @@
   mysqlpass         <- args[1]
 
   ### Use MySQL login/password from config file if requested ###
+  # FOR DEBUGGING IN R SESH  mysqlpass <- "config_file"
   #if (mysqlpass == 'config_file')  { mysqlpass  <- amet_pass  }
   ##############################################################
   mysqlpass  <- amet_pass 
@@ -142,6 +147,7 @@
   if (is.na(fcast) || !fcast) {
      fcast    <- F
      init_utc <- -99
+     fcast_hr <- -99
      dthr     <- 0
   }
 
@@ -170,6 +176,7 @@ for(f in 1:nf) {
    wrf.chk  <- ncatt_get(f1, varid=0, attname="TITLE" )$value
    mpas.chk <- ncatt_get(f1, varid=0, attname="model_name" )$value
    mcip.chk <- ncatt_get(f1, varid=0, attname="EXEC_ID" )$value
+   ufs.chk  <- ncatt_get(f1, varid=0, attname="source" )$value
   nc_close(f1)
   if(mpas.chk != 0) {
    metmodel<-"mpas"
@@ -180,6 +187,9 @@ for(f in 1:nf) {
   } else if(mcip.chk != 0) {
    metmodel<-"mcip"
    writeLines(paste("Matching MCIP METCRO3D/METDOT3D file with raob sounding observations:",file))
+  } else if(ufs.chk != 0) {
+   metmodel<-"ufs"
+   writeLines(paste("Matching NOAA UFS output with raob sounding observations:",file))
   } else { 
    writeLines("The model output is not standard WRF or MPAS output. Double check. 
                Terminating model-observation matching.")
@@ -202,7 +212,7 @@ for(f in 1:nf) {
     model <-mpas_raob(file,t=1)
   }
 
-  # WRF Grid and Met extraction.  List specs below show what is returned by the model read
+  # WRF or MCIP or UFS Grid and Met extraction.  List specs below show what is returned by the model read
   #list includes:
   #projection <-list(mproj=mproj,lat=lat,lon=lon,lat1=lat1,lon1=lon1,nx=nx,ny=ny,
   #                  dx=dx,truelat1=truelat1,truelat2=truelat2,standlon=standlon,conef=cone)
@@ -211,19 +221,26 @@ for(f in 1:nf) {
   if(metmodel == "wrf"){
     model <-wrf_raob(file,t=1)
   }
-
   if(metmodel == "mcip"){
     model <-mcip_raob(file,t=1)
   }
+  if(metmodel == "ufs"){
+    model <-ufs_raob(file,t=1)
+  }
 
   # If forecast run, use date/time function to get init time and output interval
-  if (fcast) {
-    init_utc <- model_time_format(model$raob_met$time)$hc
-     dthr    <- as.numeric(model_time_format(model$raob_met$time[2])$hc) -
-                as.numeric(model_time_format(model$raob_met$time[1])$hc)
-     if(is.na(dthr)){
-       dthr  <- 1.0
-     }
+  if (fcast & f==1) {
+    init_utc  <- model_time_format(model$raob_met$time[1])$hc
+    dthr      <- as.numeric(model_time_format(model$raob_met$time[2])$hc) -
+                 as.numeric(model_time_format(model$raob_met$time[1])$hc)
+    fcast_hr0 <- as.numeric(model_time_format(model$raob_met$time[1])$hc)
+    fcast_hr  <- 0
+    if(is.na(dthr)) {
+      dthr   <- 1
+    }
+  }
+  if (fcast & f==2) {
+    dthr      <- as.numeric(model_time_format(model$raob_met$time[1])$hc) - fcast_hr0
   }
 
 ##########################################################################
@@ -285,7 +302,7 @@ for(t in skipind:nt){
     cind    <-site_update$cind
     cwgt    <-site_update$cwgt
   }
-  if((metmodel == "wrf" || metmodel == "mcip") & total_loop_count <= total_loop_max){
+  if((metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs") & total_loop_count <= total_loop_max){
     site_update <- wrf_site_map(obs$meta$site, obs$meta$sites_unique, sitelist, sitenum, obs$meta$slat, 
                                 obs$meta$slon, obs$meta$elev, obs$meta$report_type, obs$meta$site_locname, 
                                 model$projection, wrfind, interp, mysql$dbase, sitecommand, sitemax, 
@@ -345,9 +362,9 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
       zlev_mod  <- model$raob_met$levzh[,cind[s,1]]
       plev_mod  <- model$raob_met$p[,cind[s,1]]
     }
-    if(metmodel == "wrf" || metmodel == "mcip"){
-      x         <-wrfind[s,1,1]
-      y         <-wrfind[s,2,1]
+    if(metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs"){
+      x         <- wrfind[s,1,1]
+      y         <- wrfind[s,2,1]
       t_mod     <- model$raob_met$temp[x,y,]
       rh_mod    <- model$raob_met$rh[x,y,]
       u_mod     <- model$raob_met$u[x,y,]
