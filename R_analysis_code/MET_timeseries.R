@@ -214,8 +214,8 @@ for (sn in 1:length(statid)){
   #######################################################################################
   # If users specifies they want a R data file with timeseries data then write
   if (savefile){
-        writeLines(paste("R data file output:",savefile_name[sn]))
-  	save(tseries1,tseries2,data1, data2, file=savefile_name[sn])
+    writeLines(paste("R data file output:",savefile_name[sn]))
+    save(tseries1,tseries2,data1, data2, file=savefile_name[sn])
   }
   
   ##################################################################################################

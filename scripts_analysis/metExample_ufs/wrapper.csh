@@ -68,9 +68,9 @@
   # Daily (PR.DA), Monthly (PR.MN) & Annual (PR.AN) Precip Analysis
   # Annual for AMET_YEAR below. Monthly for AMET_YEAR below
   # Daily starts/ends on ms, me, ds & de definitions in input_files/run_info_MET.R config file.
-  setenv AMET_YEAR  2016
-  setenv WRAPPER_RUNID PR.MN
-  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
+  setenv AMET_YEAR  2021
+  setenv WRAPPER_RUNID PR.DA
+  R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Daily surface-base statistics
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 

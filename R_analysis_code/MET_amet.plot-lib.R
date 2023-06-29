@@ -31,6 +31,9 @@
 #  - Other minor streamline updates. 
 #  - AMETPLOT statistics change -- removed normalized for un/systematic error
 #
+# Version XX, Apr 12, 2023, Robert Gilliam
+#  - Added GoogleMaps/KML write function for MET and AQ site/obs location/metadata
+#  - Updated timeseries plots to include RMSE 
 #-----------------------------------------------------------------------##################
 ##########################################################################################
 ##########################################################################################
@@ -67,6 +70,8 @@
 #       plotProfTimeN    --> Time-Height curtain plots on native pressure levels. Model
 #                            is shaded background. Obs are symbols overlaid w/same color.
 #                            
+#       writeMetKML      --> Write Google KML file for interactive maps of weather obs metadata 
+#  
 ##########################################################################################
 ##########################################################################################
 
@@ -121,7 +126,7 @@
   ##############################
   ss       <-quickstats(val[,2],val[,1],digs=2)
   ss2      <-ss
-  ss2$mae  <-"";ss2$bias<-"";ss2$ioa<-"";
+  ss2$mae<-"";ss2$bias<-"";ss2$ioa<-"";ss2$rmserror<-"";
   seps     <-""
   if (comp){
     ss2    <-quickstats(val[,2],val[,3],digs=2);seps<-"/"
@@ -154,7 +159,7 @@
   legend(date.vec[1],maxy,leglab,col=tscols,lty=1,lwd=2,cex=0.90,xjust=.20)
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "AC  ",ss$ioa,seps,ss2$ioa)
+                  "AC  ",ss$ioa,seps,ss2$ioa,"          RMSE  ",ss$rmserror,seps,ss2$rmserror)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -175,7 +180,7 @@
   ##############################
   ss<-quickstats(val[,2],val[,1],digs=2)
   ss2<-ss
-  ss2$mae<-"";ss2$bias<-"";ss2$ioa<-"";
+  ss2$mae<-"";ss2$bias<-"";ss2$ioa<-"";ss2$rmserror<-"";
   seps<-""
   if (comp){
     ss2<-quickstats(val[,2],val[,3],digs=2);seps<-"/"
@@ -204,7 +209,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "AC  ",ss$ioa,seps,ss2$ioa)
+                  "AC  ",ss$ioa,seps,ss2$ioa,"          RMSE  ",ss$rmserror,seps,ss2$rmserror)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -224,7 +229,7 @@
   ##############################
   ss<-quickstats(val[,2],val[,1],digs=2)
   ss2<-ss
-  ss2$mae<-"";ss2$bias<-"";ss2$ioa<-"";
+  ss2$mae<-"";ss2$bias<-"";ss2$ioa<-"";ss2$rmserror<-"";
   seps<-""
   if (comp){
     ss2<-quickstats(val[,2],val[,3],digs=2);seps<-"/"
@@ -253,7 +258,7 @@
   rect(date.vec[1],miny-0.04*(maxy-miny),date.vec[length(date.vec)-2],miny+0.06*(maxy-miny),col="white",border="black")
   statsstr<-paste("Time Series Statistics -->     ","MAE ",ss$mae,seps,ss2$mae,"                 ",
                   "BIAS ",ss$bias,seps,ss2$bias,"                 ",
-                  "AC  ",ss$ioa,seps,ss2$ioa)
+                  "AC  ",ss$ioa,seps,ss2$ioa,"          RMSE  ",ss$rmserror,seps,ss2$rmserror)
   text(date.vec[1], miny,statsstr,col="black", pos=4,cex=plotopts$scex)
 #################################################################################################
 
@@ -2262,7 +2267,104 @@
 ###############################################################
 #-------------------  END OF FUNCTION  ----------------------##
 ###############################################################
+#############################################################
+###############################################################
+#- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
+###############################################################
+###  Function that creates a Google Earth KML file for MET sites
+###  based on basic query of a database, project ID and time period.
+#
+# Input: site_list with metadata (id, lat, lon, common name, state
+#        country & elevation)
+#        fileout - file path & name for new KML file
+#        
+# Output: fileout - creates and print the file name and directory
+#     
+###
 
+ ################################################################
+ writeMetSiteKML <-function(site_list, fileout="AMET.site.kml", ametmode="MET") {
+ ################################################################
+
+
+#  statget=list(id=uid, lat=lat, lon=lon, elev=elev, obnet=obnet, commn=commn,
+#               city=city, county=county, state=state, country=country,
+#               aqsnum=aqsnum, landuse=landuse, locdesc=locdesc, gmtoff=gmtoff)
+
+  ns <- length(site_list$id)
+  try(system(paste("rm ",fileout,sep="")), silent=T)
+  sfile   <-file(fileout,"a")
+
+  writeLines("<?xml version=\"1.0\" encoding=\"UTF-8\"?>",con=sfile)
+  writeLines("<kml xmlns=\"http://www.opengis.net/kml/2.2\">",con=sfile)
+  writeLines("<Document>",con=sfile)
+  writeLines("<Style id=\"AMETSiteMark\"> <IconStyle><scale>0.5</scale><color>ffff0000</color><Icon><href>circle-gr.png</href></Icon></IconStyle> <BalloonStyle id=\"ID\"><bgColor>ffffffff</bgColor><textColor>ff000000</textColor><text>$[description]</text><displayMode>default</displayMode></BalloonStyle></Style>",con =sfile)
+
+  for(s in 1:ns){
+   writeLines("<Placemark>",con=sfile)
+   writeLines(paste("  <name>",site_list$id[s],"</name>",sep=""), con=sfile)
+   writeLines("<description>",con=sfile)
+   writeLines("<![CDATA[ ", con=sfile)
+   writeLines(paste("<b>SITE ID:</b>",site_list$id[s]," <br>",sep=" "), con=sfile)
+   writeLines(paste("<b>SITE DESC:</b>",site_list$commn[s]," <br>",sep=" "), con=sfile)
+   writeLines(paste("<b>OB NETWORK:</b>",site_list$obnet[s]," <br>",sep=" "), con=sfile)
+   if(ametmode == "AQ") {
+     writeLines(paste("<b>CITY:</b>",site_list$city[s]," <br>",sep=" "), con=sfile)
+     writeLines(paste("<b>COUNTY:</b>",site_list$county[s]," <br>",sep=" "), con=sfile)
+   }
+   writeLines(paste("<b>STATE:</b>",site_list$state[s]," <br>",sep=" "), con=sfile)
+   writeLines(paste("<b>COUNTRY:</b>",site_list$country[s]," <br>",sep=" "), con=sfile)
+   writeLines(paste("<b>ELEVATION:</b>",site_list$elev[s]," <br>",sep=" "), con=sfile)
+   if(ametmode == "AQ") {
+     writeLines(paste("<b>SITE NUM:</b>",site_list$aqsnum[s]," <br>",sep=" "), con=sfile)
+     writeLines(paste("<b>LU DESC:</b>",site_list$landuse[s]," <br>",sep=" "), con=sfile)
+     writeLines(paste("<b>SITING DESC:</b>",site_list$locdesc[s]," <br>",sep=" "), con=sfile)
+     writeLines(paste("<b>GMT OFFSET:</b>",site_list$gmtoff[s]," <br>",sep=" "), con=sfile)
+   }
+   writeLines("]]>  ", con=sfile)
+   writeLines("</description>",con=sfile)
+
+
+   writeLines("  <styleUrl>#AMETSiteMark</styleUrl>",con=sfile)
+   writeLines("  <Point>",con=sfile)
+   writeLines(paste("    <coordinates>",site_list$lon[s],",",site_list$lat[s],",0</coordinates>",sep=""), con=sfile)
+   writeLines("  </Point>",con=sfile)
+   writeLines("</Placemark>",con=sfile)
+  }
+
+writeLines("</Document>",con=sfile)
+writeLines("</kml>",con=sfile)
+close(con=sfile)
+return(writeLines(paste("AMET MET site KML file:",fileout)))
+ }
+###############################################################
+#-------------------  END OF FUNCTION  ----------------------##
+###############################################################
+
+
+#############################################################
+###############################################################
+#- - - - - - - - -   START OF FUNCTION  -  - - - - - - - - - ##
+###############################################################
+###  
+###  
+#
+# Input: 
+#        
+#   
+# Output: 
+#     
+#       
+###
+
+ ################################################################
+ TEMPLATE <-function(dummy=F) {
+ ################################################################
+
+ }
+###############################################################
+#-------------------  END OF FUNCTION  ----------------------##
+###############################################################
 
 
 

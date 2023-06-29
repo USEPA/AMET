@@ -2,6 +2,7 @@
 ###  Combined for universal input to AMET GUI method of running analysis scripts ###
 ### daily_barplot, radiation, raob, spatial_surface, summary, timeseries, timeseries_rh ###
 
+
 # Main settings for timeseries #
 project    <- Sys.getenv("AMET_PROJECT")
 project2   <- ""
@@ -57,8 +58,8 @@ checksave   <- F
 t.test.flag <- F
 
 # Specific query for daily barplot #
-querystr   <-"AND ob_date BETWEEN 20180101 AND 20180106 ORDER BY ob_date"
-querystr   <-"AND d.ob_date >=  20180101 AND d.ob_date < 20180201 ORDER BY d.ob_date"
+querystr   <-"AND ob_date BETWEEN 20160701 AND 20160731 ORDER BY ob_date"
+querystr   <-"AND d.ob_date >=  20160701 AND d.ob_date < 20160801 ORDER BY d.ob_date"
 
 # Specific query for summary plots #
 #query_str  <-"AND ob_date BETWEEN 20160101 AND 20160106"
@@ -72,9 +73,9 @@ date <- c(as.numeric(paste(Sys.getenv("AMET_YEAR"),"0101",sep="")),as.numeric(pa
 hs   <- "00"
 he   <- "23"
 ds   <- "01"
-de   <- "31"
+de   <- "02"
 ms   <- "01"
-me   <- "12"
+me   <- "01"
 ys   <- Sys.getenv("AMET_YEAR")
 ye   <- Sys.getenv("AMET_YEAR")
 dates<-list(y=as.numeric(ys),m=as.numeric(ms),d=as.numeric(ds),h=as.numeric(hs))
@@ -160,6 +161,35 @@ levsBIAS    <- c(-300,-150,-100,-75,-40,-20,-10,0,10,20,40,75,100,150,300)
 levsRMSE    <- c(0,25,50,75,100,125,150,175,200,250,300,400,500)
 levsMAE     <- c(0,25,50,75,100,125,150,175,200,250,300)
 levsSDEV    <- c(-150,-100,-75,-40,-20,-10,0,10,20,40,75,100,150)
+
+# Inputs from PRISM Tab
+  # Used in other scripts
+amet_gui       <- T
+model_outdir   <- "/work/ROMO/met/2021_WRF"
+model_prefix   <- "wrfout_d01_"
+
+daily          <- F
+monthly        <- F
+annual         <- F
+
+start_tindex   <- 1
+end_tindex     <- 24
+
+donetcdf       <- T
+
+prismdir       <- "./prismdir_shared"
+
+use.default.precip.levs   <- T 
+use.range.precip.levs     <- F 
+
+bil            <- T
+prism_prefix   <- "noprefixneeded"
+leaf_dxdykm    <- -99
+
+pbins          <-c(0,25,50,75,100,125,150,175,200,250)
+pdbins         <-c(-250,-100,-50,-25,-15,-5,0,5,15,25,50,100,250)
+cols1          <-c("#ffffe5","#f7fcb9","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#006837","#004529","#2171b5","#6baed6","#bdd7e7","#eff3ff")
+dcols1         <-c("#543005","#8c510a","#bf812d","#dfc27d","#f6e8c3","#f5f5f5","#c7eae5","#80cdc1","#35978f","#01665e","#003c30")
 
 
 

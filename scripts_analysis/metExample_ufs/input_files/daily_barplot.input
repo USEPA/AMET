@@ -1,0 +1,64 @@
+#########################################################################
+#                   INPUT FILE for Main R Scripts                       #
+#-----------------------------------------------------------------------#
+#                                                                       #
+#                   Input to MET_daily_barplot.R                        #
+#                     Developed by US EPA                               #
+#                                                                       #
+#-----------------------------------------------------------------------#
+#########################################################################
+# Change LOG
+# Daily Barplot (Dec, 2007) 
+#  - Modified for use as Daily Barplot input file, Neil Davis(IE UNC)
+#       
+# Version 1.3, May 6, 2017, Robert Gilliam
+#  - better formatting and fix of header comments
+#  - Main MET_daily_barplot.R was fixed to skip days with no data
+#########################################################################
+
+##################
+#  Project Name  #
+##################
+ project  <-Sys.getenv("AMET_PROJECT") 
+ runid    <-Sys.getenv("AMET_RUNID")
+
+###############################
+#  Additional Query Criteria  #
+###############################
+ querystr <-Sys.getenv("AMET_CRITERIA")
+ 
+ # This is the maximum allowable number of data points
+ # allowed to be extracted from database. Used as check
+ # against unruly extraction such as via web interface.
+ # 10 million is about the number of data extracted for
+ # 2/3rds of a year.
+ maxrec   <- 5E6	
+
+#########################################################################
+# GROSS QC/QA limits for T (K), WS (m/s), and Q (g/kg): Min, Max
+#########################################################################
+ qcT   <-c(240,315)
+ qcQ   <-c(0,30)
+ qcWS  <-c(1.5,25)
+ qclims<-list(qcT=qcT,qcQ=qcQ,qcWS=qcWS)
+
+########################################################################
+# QC limits on max difference between Model and Obs as another filter
+# value assignment is T, WS, Q, RH  -- SI units
+# ######################################################################
+ qcerror <- c(15,20,10,50)
+
+###########################
+#  Directory Information  #
+###########################
+ figdir   <-Sys.getenv("AMET_OUT")
+
+########################
+#  Plot Output Format  #
+########################
+ plotfmt  <-Sys.getenv("AMET_PTYPE") # Plot format (png,pdf)
+
+###################################################
+#-----         END OF INPUT FILE              ----#
+###################################################
+

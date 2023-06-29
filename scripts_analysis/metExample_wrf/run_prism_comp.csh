@@ -27,11 +27,11 @@
 
   # Model output directory path
   setenv METOUT_DIR   $AMETBASE/model_data/MET/$AMET_PROJECT
-  
+
   # Prefix of model output file names with trailing _ or .
   # common examples below.
-  setenv METOUT_PRE   wrfout_d01_
   setenv METOUT_PRE   wrfout_subset_
+  setenv METOUT_PRE   wrfout_d01_
 
   # Period begin and end day. 
   # Daily:       Daily analysis done for each day of the period
@@ -39,7 +39,7 @@
   # Annual:      Start day needs to be first day of the year. Loop ends the year of the end date.
   # Single Anal: For single daily, monthly or annual analysis set begin = end day and anal period.
   set begday    =     20160701
-  set endday    =     20160701
+  set endday    =     20160731
 
  # Note that this script only works for continous simulations where rainc and rainnc are the accumulated
  # precip over the period not reset each day. Users have to match the model start and end day with time
@@ -183,31 +183,6 @@ while ( $date <= $endday )
  setenv LEAF_LEVELS   "$LEVELS[*]"
  setenv LEAF_DLEVELS  "$DLEVELS[*]"
 
- if($model == 'wrf') then
-   $ncks -O -v Times -d Time,0,0   $MODEL_START $OUTFILE
-   $ncks -A -v RAINC -d Time,0,0   $MODEL_START $OUTFILE
-   $ncks -A -v RAINNC -d Time,0,0  $MODEL_START $OUTFILE
-
-   $ncrename -v RAINC,PRISM_PRECIP_MM $OUTFILE
-   $ncrename -v RAINNC,MODEL_PRECIP_MM $OUTFILE
-   $ncatted  -a units,'PRISM_PRECIP_MM',m,c,'mm' $OUTFILE
-   $ncatted  -a units,'MODEL_PRECIP_MM',m,c,'mm' $OUTFILE
-   $ncatted  -a description,'PRISM_PRECIP_MM',m,c,'Total PRISM precipitation' $OUTFILE
-   $ncatted  -a description,'MODEL_PRECIP_MM',m,c,'Total WRF precipitation' $OUTFILE
- endif
-
- if($model == 'mpas') then
-   $ncks -O -v verticesOnCell,nEdgesOnCell,latVertex,lonVertex,indexToVertexID,indexToCellID,latCell,lonCell,zgrid \
-               $MODEL_START $OUTFILE
-   $ncks -A -v q2  -d Time,0,0   $MODEL_START $OUTFILE
-   $ncks -A -v t2m -d Time,0,0   $MODEL_START $OUTFILE
-   $ncrename -v q2,PRISM_PRECIP_MM  $OUTFILE
-   $ncrename -v t2m,MODEL_PRECIP_MM $OUTFILE
-   $ncatted  -a units,'PRISM_PRECIP_MM',m,c,'mm' $OUTFILE
-   $ncatted  -a units,'MODEL_PRECIP_MM',m,c,'mm' $OUTFILE
-   $ncatted  -a long_name,'PRISM_PRECIP_MM',m,c,'Total PRISM precipitation' $OUTFILE
-   $ncatted  -a long_name,'MODEL_PRECIP_MM',m,c,'Total MPAS precipitation' $OUTFILE
- endif
  #######################################################################################
 
  R --no-save --slave  < $AMETBASE/R_analysis_code/MET_prism_precip.R

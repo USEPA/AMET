@@ -8,9 +8,19 @@
 #########################################################################
 #                                                                       #
 #                                                                       #
-# Version 1.2, May 8, 2013, Robert Gilliam                              #
+# Version AMET1.5, Aug 4, 2022, Robert Gilliam                          #
 #                                                                       #            
+# 1.5: New code to "wrap" analyses for typical run periods or other     #
+#      configurations like regional analysis. These are ran with a      #
+#      two-mode wrapper RUNID that sets script ID and Analysis ID       #
+#      (see below).                                                     #
 #                                                                       #            
+#########################################################################
+# -  Wrapper RUNID has 2 two character IDs with period dividing (SP.MN) to control script and mode
+# -  Script ID SP= spatial surface  DB= daily bar stats   SM= summary stats
+#              SW= SW radiation     UA= upper-air/raob    PR= PRISM precip analysis
+# -  Anal ID   MN= montly           SE= seasonal          CR= climate regions      
+#              DA= daily            AN=annual
 #########################################################################
   options(warn=-1)
 #:::::::::::::::::::::::::::::::::::::::::::::
@@ -21,6 +31,7 @@
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
   if(!require(akima))  {stop("Required Package akima was not loaded")}
   if(!require(fields)) {stop("Required Package fields was not loaded")}
+
 #########################################################################
 #    Initialize AMET Diractory Structure Via Env. Vars
 #    AND Load required function and conf. files
@@ -44,11 +55,11 @@
  writeLines(paste("AMET R Static input file:",ametRstatic))
 
  ## source some configuration files, AMET libs, and input
- source (paste(ametR,"/MET_amet.misc-lib.R",sep=""))
- source (paste(ametR,"/MET_amet.plot-lib.R",sep=""))
- source (paste(ametR,"/MET_amet.stats-lib.R",sep=""))
- source (mysqlloginconfig)
- source (ametRinput)
+ source(paste(ametR,"/MET_amet.misc-lib.R",sep=""))
+ source(paste(ametR,"/MET_amet.plot-lib.R",sep=""))
+ source(paste(ametR,"/MET_amet.stats-lib.R",sep=""))
+ source(mysqlloginconfig)
+ source(ametRinput)
  try(source (ametRstatic),silent=T)
 
  ametdbase1   <- Sys.getenv("AMET_DATABASE")
@@ -56,11 +67,6 @@
  mysql1       <- list(server=mysqlserver,dbase=ametdbase1,login=amet_login,
                       passwd=amet_pass,maxrec=maxrec)
 ######################################################################### 
- # Temporary R input to change various settings before main script run
- # -  Wrapper RUNID has 2 two character IDs with period dividing (SP.MN) to control script and mode
- # -  Script ID SP=spatial surface  DB= daily bar stats  SM=summary stats
- #              SW=sw radiation     UA=upper-air/raob
- # -  Anal ID   MN= montly          SE=seasonal          CR=climate regions      
 
  # Capture orginal input configuration files (main config and static) before redefining for wrapper
  ametRinput1  <-ametRinput
@@ -79,8 +85,8 @@
  if(!exists("bounds"))           { bounds <- c(NA,NA,NA,NA)  }
  if(!exists("ys"))               { ys <- as.numeric(Sys.getenv("AMET_YEAR")) }
  if(is.na(ys))                   { ys <- as.numeric(Sys.getenv("AMET_YEAR")) }
- if(is.na(daily))                { daily <- F }
-
+ if(!exists("ms"))               { ms <- as.numeric(Sys.getenv("AMET_MONTH")) }
+ if(is.na(ms))                   { ms <- as.numeric(Sys.getenv("AMET_MONTH")) }
 
  # Define a window if lat-lon bounds are defined
  extra_window   <-paste(" AND (s.lat BETWEEN",bounds[1]," AND ",bounds[2],
@@ -115,16 +121,15 @@
  }
  if(wrapperrunid[2] != "RM" & wrapperrunid[2] != "RS") {    nregions <- 1 }
 
+ # Days per month for date stuff
+ mnendday <-c("31","28","31","30","31","30","31","31","30","31","30","31")
 
  # Check for valid run mode. If FALSE at the end of script warning message returned.
  if.good.mode       <-F
-
-     writeLines(paste("DEBUG",daily))
  ######################################################################### 
  #################################
- # MONTHLY LOOP
+ # MONTHLY LOOP for various analysis options
  if(wrapperrunid[2] == "MN" || wrapperrunid[2] == "RM")   {
-   mnendday <-c("31","28","31","30","31","30","31","31","30","31","30","31")
 
    for(ii in 1:12) {
 
@@ -168,7 +173,7 @@
      #######################################
 
      #######################################
-     # DAILY SURFACE STATS by MONTHLY wrapperrunid=DB.MN
+     # DAILY SURFACE STATS -- MONTHLY OR REGION wrapperrunid=DB.MN or DB.RM
      if(wrapperrunid[1] == "DB" )   {
        for(rr in 1:nregions){
          if(wrapperrunid[2] == "RM") {  
@@ -192,7 +197,7 @@
      #######################################
 
      #######################################
-     # SUMMARY STATS by MONTHLY AND REGION wrapperrunid=SM.MN
+     # SUMMARY STATS -- MONTHLY or REGION wrapperrunid=SM.MN or SM.RM
      if(wrapperrunid[1] == "SM" )   {
        for(rr in 1:nregions){
          if(wrapperrunid[2] == "RM") {  
@@ -222,7 +227,7 @@
      #######################################
      
      #######################################
-     # Upper-air STATS by MONTHLY wrapperrunid=UA.MN
+     # Upper-air STATS -- MONTHLY or REGIONAL wrapperrunid=UA.MN or UA.RM
      if(wrapperrunid[1] == "UA" )   {
        # Force Spatial, Timeseries and Profile Stats as wrapper protocol.
        # No site specific options so curtainM off & all Native level options.
@@ -273,18 +278,44 @@
        if.good.mode <-T
      }
      #######################################
+
+     #######################################
+     # PRISM ANAL by MONTHLY wrapperrunid=PR.MN
+     if(wrapperrunid[1] == "PR" )   {
+       daily   <- FALSE
+       annual  <- FALSE
+       ys<-as.character(year_start0000); ye <-as.character(year_end0000); 
+       ms<-as.character(month_start00);  me <-as.character(month_end00); 
+       ds<-as.character(day_start00);    de <-as.character(day_end00);
+       date<-c(yyyymmdd_start,yyyymmdd_end)
+       model_start <-paste(model_outdir,"/",model_prefix,ys,"-",ms,"-",ds,"_00:00:00",sep="")
+       model_end   <-paste(model_outdir,"/",model_prefix,ye,"-",me,"-",de,"_00:00:00",sep="")
+       writeLines(paste(model_start))
+       writeLines(paste(model_end))
+       if( file.exists(model_start) & file.exists(model_end) ) {
+         writeLines(paste("RUNNING PRISM ANAL by MONTH-->",yyyymmdd_start,
+                          " to ",yyyymmdd_end,sep=""))
+         writeLines(paste("R version:",getRversion()))
+         try(source (paste(ametR,"/MET_prism_precip.R",sep="")), silent=T)
+         if.good.mode <-T
+         #stop("DEBIG stop")
+       } else {
+         writeLines(paste("One of the model output files is wrong or missing... skipping to next month"))
+         writeLines(paste("Check for file1:",model_start))
+         writeLines(paste("Check for file2:",model_end))
+       } 
+     }
+     #######################################
+
    }
   }
  #################################
  ######################################################################### 
 
- ############################################################################################ 
- ############################################################################################ 
- ############################################################################################ 
 
  ######################################################################### 
  #################################
- # SEASONAL LOOP
+ # SEASONAL LOOP for applicable analyses
  if(wrapperrunid[2] == "SE" || wrapperrunid[2] == "RS" )   {
    seas <-c("0101","0401","0701","1001")
    seae <-c("0401","0701","1001","1231")
@@ -320,7 +351,7 @@
      #######################################
 
      #######################################
-     # DAILY SURFACE STATS by SEASON wrapperrunid=DB.SE
+     # DAILY SURFACE STATS -- SEASON or Regional wrapperrunid=DB.SE or DB.RS
      if(wrapperrunid[1] == "DB")   {
        for(rr in 1:nregions){
          if(wrapperrunid[2] == "RS") {  
@@ -348,7 +379,7 @@
      #######################################
 
      #######################################
-     # SUMMARY STATS by SEASON wrapperrunid=SM.SE
+     # SUMMARY STATS -- SEASON or Regional wrapperrunid=SM.SE or SM.RS
      if(wrapperrunid[1] == "SM" )   {
        for(rr in 1:nregions){
          if(wrapperrunid[2] == "RS") {  
@@ -380,7 +411,7 @@
      #######################################
 
      #######################################
-     # Upper-air STATS by SEASON wrapperrunid=UA.SE
+     # Upper-air STATS -- SEASON or Regional wrapperrunid=UA.SE or UA.RS
      if(wrapperrunid[1] == "UA" )   {
        # Force Spatial, Timeseries and Profile Stats as wrapper protocol.
        # No site specific options so curtainM off & all Native level options.
@@ -444,9 +475,113 @@
      #######################################
 
    }
-  }
+ }
  #################################
  ######################################################################### 
+
+ ######################################################################### 
+ #################################
+ # Annual LOOP for applicable analyses
+ if(wrapperrunid[2] == "AN" )   {
+
+     # RAOB pushes year variables ys and ye as character. 
+     # These need to be numeric in universal wrapper.
+     if(is.character(ys)){
+       ys<-as.numeric(ys)
+       ye<-as.numeric(ye)
+     }
+     #######################################
+     # Set up all year, month and day start and 
+     # end variables to create date strings
+     year_start0000  <- sprintf("%03d", ys)
+     year_end0000    <- sprintf("%03d", ys)
+     #######################################
+     # PRISM ANAL for the defined AMET_YEAR wrapperrunid=PR.AN
+     if(wrapperrunid[1] == "PR" )   {
+       daily   <- FALSE
+       annual  <- TRUE
+       ys<-as.character(year_start0000); ye <-as.character(year_end0000); 
+       ms<-"01";  me <-"12" 
+       ds<-"01";  de <-"31"
+       start_tindex   <-1
+       end_tindex     <-24
+       model_start <-paste(model_outdir,"/",model_prefix,ys,"-",ms,"-",ds,"_00:00:00",sep="")
+       model_end   <-paste(model_outdir,"/",model_prefix,ye,"-",me,"-",de,"_00:00:00",sep="")
+       if( file.exists(model_start) & file.exists(model_end) ) {
+         writeLines(paste("RUNNING PRISM ANAL For Year/Month -->",ys,ms,
+                          " to ",ye,me,sep=""))
+         try(source (paste(ametR,"/MET_prism_precip.R",sep="")), silent=T)
+         if.good.mode <-T
+       } else {
+         writeLines(paste("One of the model output files is wrong or missing."))
+         writeLines(paste("Check for file1:",model_start))
+         writeLines(paste("Check for file2:",model_end))
+       } 
+     }
+     #######################################
+
+ }
+ #################################
+ ######################################################################### 
+
+ ######################################################################### 
+ #################################
+ # Daily LOOP for applicable analyses
+ if(wrapperrunid[2] == "DA" )   {
+
+   for(ii in 1:mnendday[as.numeric(ms)]) {
+
+     # RAOB pushes year variables ys and ye as character. 
+     # These need to be numeric in universal wrapper.
+     ys<-as.numeric(ys)
+     ms<-as.numeric(ms)
+     #######################################
+     # Set up all year, month and day start and 
+     # end variables to create date strings
+     year_start0000  <- sprintf("%03d", ys)
+     month_start00   <- sprintf("%02d", ms)
+     day_start00     <- sprintf("%02d", ii)
+
+     year_end0000    <- sprintf("%03d", ys)
+     month_end00     <- sprintf("%02d", ms)
+     day_end00       <- sprintf("%02d", ii+1)
+     if( (ii+1) > as.numeric(mnendday[as.numeric(ms)]) ){   
+       month_end00     <- sprintf("%02d", ms+1)
+       day_end00       <- "01"
+     }
+     if(month_end00 == "13"){   
+       month_end00   <- "01"
+       year_end0000  <- sprintf("%03d", ys+1)
+     }
+     yyyymmdd_start  <- paste(year_start0000,month_start00,day_start00,sep="")
+     yyyymmdd_end    <- paste(year_end0000,month_end00,day_end00,sep="")
+     #######################################
+     if(wrapperrunid[1] == "PR" )   {
+       daily   <- TRUE
+       annual  <- FALSE
+       start_tindex   <-1
+       end_tindex     <-1
+       model_start <-paste(model_outdir,"/",model_prefix,year_start0000,"-",
+                           month_start00,"-",day_start00,"_00:00:00",sep="")
+       model_end   <-paste(model_outdir,"/",model_prefix,year_end0000,"-",
+                           month_end00,"-",day_end00,"_00:00:00",sep="")
+       if( file.exists(model_start) & file.exists(model_end) ) {
+         writeLines(paste("RUNNING PRISM ANAL For Day -->",yyyymmdd_start,
+                          " to ",yyyymmdd_end,sep=""))
+         try(source (paste(ametR,"/MET_prism_precip.R",sep="")), silent=T)
+         if.good.mode <-T
+       } else {
+         writeLines(paste("One of the model output files is wrong or missing."))
+         writeLines(paste("Check for file1:",model_start))
+         writeLines(paste("Check for file2:",model_end))
+       } 
+     }
+     #######################################
+  }
+ }
+ #################################
+ ######################################################################### 
+
  ######################################################################### 
  #################################
  # PROFILE NATIVE LEVEL LOOP
@@ -505,5 +640,11 @@
 
    writeLines(paste("                                       "))
    writeLines(paste("Vertical Model-ROAB Profiles UA.NP"))
+
+   writeLines(paste("                                       "))
+   writeLines(paste("PRISM WRF/MPAS Analysis Daily   PR.DA"))
+   writeLines(paste("PRISM WRF/MPAS Analysis Monthly PR.MN"))
+   writeLines(paste("PRISM WRF/MPAS Analysis Annual  PR.AN"))
+
  }
 

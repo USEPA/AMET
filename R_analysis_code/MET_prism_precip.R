@@ -34,7 +34,6 @@
 #-----------------------------------------------------------------------#
 #########################################################################
   options(warn=-1)
-
 #############################################################################################################
   if(!require(ncdf4))      {stop("Required Package NCDF4 was not loaded")}
   if(!require(prism))      {stop("Required Package prism was not loaded")}
@@ -46,32 +45,59 @@
   ametR          <- paste(ametbase,"/R_analysis_code",sep="")
   source (paste(ametR,"/MET_amet.prism-lib.R",sep=""))
 
+  # Hardcoded GUI on/off switch for testing
+  # amet_gui       <- FALSE 
+  if(!exists("amet_gui"))                  { amet_gui   <- FALSE  }
 
-  project        <-Sys.getenv("AMET_PROJECT")
-  model          <-Sys.getenv("MODEL")
-  model_start    <-Sys.getenv("MODEL_START")
-  model_end      <-Sys.getenv("MODEL_END")
-  start_tindex   <-as.integer(Sys.getenv("START_TINDEX"))
-  end_tindex     <-as.integer(Sys.getenv("END_TINDEX"))
-  precip_outfile <-Sys.getenv("OUTFILE")
+  # New logic to bypass ENV inputs if in GUI mode where these are passed via run_info_MET.R config
+  if(!amet_gui) {
+   project        <-Sys.getenv("AMET_PROJECT")
+   model_start    <-Sys.getenv("MODEL_START")
+   model_end      <-Sys.getenv("MODEL_END")
+   start_tindex   <-as.integer(Sys.getenv("START_TINDEX"))
+   end_tindex     <-as.integer(Sys.getenv("END_TINDEX"))
+   precip_outfile <-Sys.getenv("OUTFILE")
 
-  daily          <-as.logical(Sys.getenv("DAILY"))
-  annual         <-as.logical(Sys.getenv("ANNUAL"))
+   daily          <-as.logical(Sys.getenv("DAILY"))
+   annual         <-as.logical(Sys.getenv("ANNUAL"))
 
-  prismdir       <-Sys.getenv("PRISM_DIR") 
-  prism_prefix   <-Sys.getenv("PRISM_PREFIX") 
-  bil            <-as.logical(Sys.getenv("PRISM_BIL")) 
+   prismdir       <-Sys.getenv("PRISM_DIR") 
+   prism_prefix   <-Sys.getenv("PRISM_PREFIX") 
+   bil            <-as.logical(Sys.getenv("PRISM_BIL")) 
 
-  leaf_dxdykm    <-as.numeric(Sys.getenv("LEAF_DXDYKM"))
-  pbins          <-as.numeric(unlist(strsplit(Sys.getenv("LEAF_LEVELS")," ")))
-  pdbins         <-as.numeric(unlist(strsplit(Sys.getenv("LEAF_DLEVELS")," ")))
-  cols1          <-unlist(strsplit(Sys.getenv("LEAF_COLOR")," "))
-  dcols1         <-unlist(strsplit(Sys.getenv("LEAF_DCOLOR")," "))
+   leaf_dxdykm    <-as.numeric(Sys.getenv("LEAF_DXDYKM"))
+   pbins          <-as.numeric(unlist(strsplit(Sys.getenv("LEAF_LEVELS")," ")))
+   pdbins         <-as.numeric(unlist(strsplit(Sys.getenv("LEAF_DLEVELS")," ")))
+   cols1          <-unlist(strsplit(Sys.getenv("LEAF_COLOR")," "))
+   dcols1         <-unlist(strsplit(Sys.getenv("LEAF_DCOLOR")," "))
+   donetcdf       <-TRUE 
+   use.default.precip.levs <-FALSE 
+   use.range.precip.levs   <-FALSE
+  }
+
+  if(model_start == ""  || is.na(model_start) )  { 
+   stop(paste("Model start date output does not exist. Adjust script and retry."))
+  }
+ 
+  # GUI INPUTS
+  if(amet_gui) {
+    savedir        <-Sys.getenv("AMET_OUT")
+  }
 
   # Backward compatability for old wrapper before BIL data option
-  if(bil == ""         || is.na(bil) )          { bil    <- FALSE  }
-  if(annual == ""      || is.na(annual) )       { annual <- FALSE  }
-  if(leaf_dxdykm == "" || is.na(leaf_dxdykm) )  { leaf_dxdykm <- -99  }
+  if(!exists("bil"))     {    bil    <- TRUE     }
+  if(!exists("annual"))  {    annual <- FALSE    }
+  if(!exists("daily"))   {    daily  <- FALSE    }
+
+  if(!exists("use.default.precip.levs")) {  use.default.precip.levs <-FALSE;  }  
+  if(!exists("use.range.precip.levs"))   {  use.range.precip.levs   <-FALSE;  }  
+
+
+  if(!exists("savedir") ) {
+    parts    <-unlist(strsplit(precip_outfile,split="/"))
+    nparts   <-length(parts)
+    savedir  <-paste(parts[2:nparts-1],sep="/",collapse="/")
+  }
 
  ###############################################################################################
  ###############################################################################################
@@ -82,6 +108,7 @@
  writeLines(paste("     Reading PRISM and Model Output & Regrid For Comparison       "))
  writeLines(paste("     ------------------------------------------------------       "))
  writeLines(paste("            "))
+  writeLines(paste(model_start))
   f1  <-nc_open(model_start)
    head    <- ncatt_get(f1, varid=0, attname="TITLE" )$value
    model   <- ncatt_get(f1, varid=0, attname="model_name" )$value
@@ -109,7 +136,8 @@
   if(bil) {
     prism <- prism_read_bil(model_start_date, prismdir, daily=daily, annual=annual)
   } else {
-    prism <- prism_read(model_start_date, prismdir, prism_prefix, daily=F)
+    #prism <- prism_read(model_start_date, prismdir, prism_prefix, daily=daily)
+    prism <- prism_read_bil(model_start_date, prismdir, daily=daily, annual=annual)
   }
 
  if(model == "mpas") {
@@ -132,30 +160,21 @@
   modelp2 <-wrf_precip(model_end, tindex=end_tindex)   
   model_precip_mm   <- modelp1$grid$lm.na*(modelp2$precip - modelp1$precip)
   model_precip_mm   <- (modelp2$precip - modelp1$precip)
+  model_rainc_mm   <- modelp1$grid$lm.na*(modelp2$rainc - modelp1$rainc)
+  model_rainc_mm   <- (modelp2$rainc - modelp1$rainc)
+  model_rainnc_mm   <- modelp1$grid$lm.na*(modelp2$rainnc - modelp1$rainnc)
+  model_rainnc_mm   <- (modelp2$rainnc - modelp1$rainnc)
   prism_precip_mm   <- prism_to_wrf_grid(model_precip_mm, prism$precip, modelp1$grid$lat, modelp1$grid$lon, prism$grid$lat,  
                                          prism$grid$lon, prism$grid$dxdykm)
   prism.na.mask     <- ifelse(is.na(prism_precip_mm), 0, 1)
   model_precip_mm   <- model_precip_mm * prism.na.mask
+  model_rainc_mm   <- model_rainc_mm * prism.na.mask
+  model_rainnc_mm   <- model_rainnc_mm * prism.na.mask
   prism_precip_mm   <- ifelse(is.na(prism_precip_mm), 0, prism_precip_mm)
   dxdykm            <- ifelse(leaf_dxdykm == -99, modelp1$grid$dx/1000, leaf_dxdykm)
  }
  ###################################################################################
   
- ###################################################################################
- # Write Model and PRISM grids on model domain to NetCDF output
- writeLines(paste("            "))
- writeLines(paste("     -------------------------------------------------------       "))
- writeLines(paste("     Creating NetCDF Output For External Plotting & Analysis       "))
- writeLines(paste("     -------------------------------------------------------       "))
- writeLines(paste("            "))
- f1  <-nc_open(precip_outfile,write=T)
-   writeLines(paste("See model output:",precip_outfile))
-   ncvar_put(f1,varid="PRISM_PRECIP_MM",prism_precip_mm)
-   ncvar_put(f1,varid="MODEL_PRECIP_MM",model_precip_mm)
- nc_close(f1)
- writeLines(paste("            "))
- ###################################################################################
-
  ###################################################################################
  # Compute grid statisitcs for land cells in full WRF/MPAS domain (CONUS only)
  # Print to std output & write text file.
@@ -177,9 +196,7 @@
  # Chop up full path and name of NetCDF file to get directory for text stats file & write stats to text
  parts    <-unlist(strsplit(model_start_date,split="_"))
  start_day<-parts[1]
- parts    <-unlist(strsplit(precip_outfile,split="/"))
- nparts   <-length(parts)
- outdir   <-paste(parts[2:nparts-1],sep="/",collapse="/")
+
  period   <-"monthly"
  if(daily)  { period  <-"daily"  }
  if(annual) { period  <-"annual" }
@@ -195,8 +212,8 @@
  writeLines(paste("Grid Correlation:",cor.grid))
  writeLines(paste("Note that model and obs gridpoint are set to missing for all no-precip obs cells."))
 
- txtstatf <- paste("/",outdir,"/",project,".prism.",period,".",start_day,".txt",sep="")
- writeLines(paste("Text stats are preserved in this text output:",txtstatf))
+ txtstatf <- paste(savedir,"/",project,".prism.",period,".",start_day,".txt",sep="")
+ writeLines(paste("Grid statistics are preserved in this text file:",txtstatf))
  sfile    <-file(txtstatf,"w")
  writeLines(paste("Period and start day:",period," ",start_day), con=sfile)
  writeLines(paste("Grid Mean Error -- Bias (mm):",bias.grid), con =sfile)  
@@ -208,15 +225,27 @@
  ###################################################################################
 
  ###################################################################################
+ # Write Model and PRISM grids on model domain to NetCDF output
+ if(donetcdf) {
+   precip_outfile <- paste(savedir,"/",project,".prism-",model,".",period,".",start_day,".nc",sep="")
+   netcdf_precip(model_start, precip_outfile, prism_precip_mm, model_precip_mm,model_rainc_mm, model_rainnc_mm, 
+                 model=model, ncks="ncks", ncrename="ncrename", ncatted="ncatted")
+   writeLines(paste("            ",precip_outfile))
+ }
+ ###################################################################################
+
+
+ ###################################################################################
  # Leaflet HTML Output option
  if(bil) {
   writeLines(paste("     -----------------------------------------------       "))
   writeLines(paste("     Creating Leaflet HTML Outputs for Visualization       "))
   writeLines(paste("     -----------------------------------------------       "))
   writeLines(paste("            "))
-  leaffile <- paste("/",outdir,"/",project,".prism.leaf.",period,".",start_day,".html",sep="")
+  leaffile <- paste(savedir,"/",project,".prism.leaf.",period,".",start_day,".html",sep="")
   regrid_ll<-regrid2d_to_latlon(model_precip_mm, modelp1$grid$lat, modelp1$grid$lon,
                                grid_data2=prism_precip_mm, dxdykm=dxdykm, model=model)
+  writeLines(paste(leaffile,"            "))
 
   rlon     <- range(regrid_ll$grid$lon)
   rlat     <- range(regrid_ll$grid$lat)
@@ -233,16 +262,20 @@
   values(r3) <- as.vector(regrid_ll$varout-regrid_ll$varout2)
   values(r4) <- as.vector( 100* (regrid_ll$varout-regrid_ll$varout2)/regrid_ll$varout2)
 
-  # Precip range and calcs stuff for good legend
-  if(sum(pbins) == 0 ) {
-    pbins <-c(0,25,50,75,100,125,150,175,200,250)
-    pdbins<-c(-100,-75,-50,-25,0,25,50,75,100)
+  # Default precip and difference range if not specified or use.default.precip.levs
+  writeLines(paste("AUTO PRECIP RANGE", use.default.precip.levs))
+  if(sum(pbins) == 0 || use.default.precip.levs) {
+    pbins          <-c(0,25,50,75,100,125,150,175,200,250)
+    if(daily) { pbins          <-c(0,1,5,10,15,20,25,50,75,100,150,300) }
+    if(annual) { pbins         <-c(0,50,100,200,300,400,500,750,1000,2000,3000,5000) }
+  writeLines(paste("AUTO PRECIP RANGE", use.default.precip.levs,annual,daily))
+    pdbins         <-c(-250,-100,-50,-25,-15,-5,0,5,15,25,50,100,250)
   }
-  if(length(cols1) == 0 || length(dcols1) == 0) {
+  if(length(cols1) == 0 || length(dcols1) == 0 || use.default.precip.levs) {
     cols1 <-c('#ffffe5','#f7fcb9','#d9f0a3','#addd8e','#78c679','#41ab5d','#238443','#006837','#004529')
     cols1 <-c('#ffffe5','#f7fcb9','#d9f0a3','#addd8e','#78c679','#41ab5d','#238443','#006837','#004529','#e7e1ef','#c994c7','#dd1c77')
-    cols1 <-c('#ffffe5','#f7fcb9','#d9f0a3','#addd8e','#78c679','#41ab5d','#238443','#006837','#004529','#2171b5','#6baed6','#bdd7e7','#eff3ff')
-    dcols1<-c('#543005','#8c510a','#bf812d','#dfc27d','#f6e8c3','#f5f5f5','#c7eae5','#80cdc1','#35978f','#01665e','#003c30')
+    cols1 <-c("#ffffe5","#f7fcb9","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#006837","#004529","#2171b5","#6baed6","#bdd7e7","#eff3ff")
+   dcols1 <-c("#543005","#8c510a","#bf812d","#dfc27d","#f6e8c3","#f5f5f5","#c7eae5","#80cdc1","#35978f","#01665e","#003c30")
   }
  
   pmax  <- max(regrid_ll$varout, regrid_ll$varout2, na.rm=T)
@@ -265,6 +298,9 @@
   pal2 <- colorBin(cols1, values(r2), na.color = "transparent",pretty=T,bins=pbins)
   pal3 <- colorBin(dcols1, values(r3), na.color = "transparent",pretty=T,bins=pdbins)
   pal4 <- colorBin(dcols1, values(r4), na.color = "transparent",pretty=T,bins=c(-250,seq(-100,100,by=25),250))
+
+  my.leaf<-leaflet() %>% addTiles() 
+  saveWidget(my.leaf, file=leaffile, selfcontained=T)
 
   my.leaf<-leaflet() %>% addTiles() %>%
   addRasterImage(flip(r1,"y"), colors = pal1, opacity = transp, group=modgroup) %>%
