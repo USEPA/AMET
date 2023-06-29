@@ -1,0 +1,119 @@
+#########################################################################
+#                 INPUT FILE for Main R Scripts                         #
+#-----------------------------------------------------------------------#
+#                                                                       #
+#                     Input to MET_raob.R                               #
+#                     Developed by US EPA                               #
+#                                                                       #
+#-----------------------------------------------------------------------#
+#########################################################################
+# Change LOG
+#	Initial development
+# Version 1.4, Sep 30, 2018, Robert Gilliam
+#
+#########################################################################
+#########################################################################
+# PLOT controls spatial, profiles, timeseries & curtains
+#########################################################################
+ SPATIALM  <-as.logical(Sys.getenv("RAOB_SPATIAL"))
+ TSERIESM  <-as.logical(Sys.getenv("RAOB_TSERIES"))
+ PROFM     <-as.logical(Sys.getenv("RAOB_PROFILEM"))
+ CURTAINM  <-as.logical(Sys.getenv("RAOB_CURTAINM"))
+ PROFN     <-as.logical(Sys.getenv("RAOB_PROFILEN"))
+ CURTAINN  <-as.logical(Sys.getenv("RAOB_CURTAINN"))
+
+###################
+# Extra plot label 
+ runid     <-"RAOBANAL"
+###################
+
+#########################################################################
+# Sample size thresholds for statistics
+#########################################################################
+ # Sample size threshold of 5 samples for spatial layer avg. statistics
+ spatial.thresh <- 3 
+
+ # Sample size threshold for pressure level statistics
+ level.thresh   <- 2
+
+ # Sample size threshold for number of sounding
+ sounding.thresh<- 2
+ 
+ # Sample size threshold for minimum levels needed for native profile plot
+ profilen.thresh<- 2
+
+ # QC limits on max difference between Model and Obs as another filter
+ # value assignment is ordered T, WS, Q, RH  -- SI units
+ qcerror <- c(15,20,10,50)
+
+ # Configurable range for difference *PLOT* range (Native Curtain plots)
+ # Note diff.t 5 is -5 to +5 diff range.
+ use.user.range <- TRUE
+ diff.t         <- 5
+ diff.rh        <- 50
+
+ user.custom.plot.settings <- list(use.user.range=use.user.range, diff.t=diff.t,
+                                   diff.rh=diff.rh)
+
+#########################################################################
+# Configurable DATE Definitions
+#########################################################################
+ hs         <-unlist(strsplit(Sys.getenv("AMET_HH")," "))[1]
+ he         <-unlist(strsplit(Sys.getenv("AMET_HH")," "))[2]
+ ds         <-unlist(strsplit(Sys.getenv("AMET_DD")," "))[1]
+ de         <-unlist(strsplit(Sys.getenv("AMET_DD")," "))[2]
+ ms         <-unlist(strsplit(Sys.getenv("AMET_MM")," "))[1]
+ me         <-unlist(strsplit(Sys.getenv("AMET_MM")," "))[2]
+ ys         <-unlist(strsplit(Sys.getenv("AMET_YY")," "))[1]
+ ye         <-unlist(strsplit(Sys.getenv("AMET_YY")," "))[2]
+ dates      <-list(y=ys,m=ms,d=ds,h=hs)
+ datee      <-list(y=ye,m=me,d=de,h=he)
+
+#########################################################################
+#-- Manual plot bounds, Note: comment out bounds below for automatic setting
+#########################################################################
+ lats    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LAT")," ")))[1]
+ latn    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LAT")," ")))[2]
+ lonw    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LON")," ")))[1]
+ lone    <-as.numeric(unlist(strsplit(Sys.getenv("AMET_BOUNDS_LON")," ")))[2]
+ bounds  <-c(lats,latn,lonw,lone)
+ extrall <-paste("AND (s.lat BETWEEN",lats," AND ",latn, 
+                 "AND s.lon BETWEEN",lonw," AND ",lone,")")
+#########################################################################
+ 
+#########################################################################
+# Database/Tables/Query Specifications
+#########################################################################
+ project    <-Sys.getenv("AMET_PROJECT")
+ statid     <-unlist(strsplit(Sys.getenv("AMET_SITEID")," "))
+ groupstat  <-as.logical(Sys.getenv("AMET_GROUPSITES"))
+ textstats  <-as.logical(Sys.getenv("AMET_TEXTSTATS"))
+ figdir     <-Sys.getenv("AMET_OUT")
+ proflim    <-c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[1],
+                as.numeric(unlist(strsplit(Sys.getenv("AMET_PLIM")," ")))[2])
+ layer      <- c(as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[1],
+                 as.numeric(unlist(strsplit(Sys.getenv("AMET_PLAYER")," ")))[2])
+
+ # Note Extra is for custom extra specs added to query. Must know MySQL. Below are
+ # examples of using US States and Countries (ref: $AMETBASE/obs/MET/metar_codes_country.txt)
+ # usage of LIKE searches country names in database for string enclosed %Country%
+ # WARNING: IF State or Country Criteria are set PROFILE Stats Site should be set to ALL
+ extra      <-Sys.getenv("AMET_EXTRA")
+#########################################################################
+
+#########################################################################
+#       Plot Ouput Format
+#########################################################################
+ plotfmt    <-Sys.getenv("AMET_PTYPE")
+ plotsize   <-1.4
+ pwidth     <-1000
+ pheight    <-754
+ symb       <-19
+ symbo      <-21
+ symbsiz    <-1.5*plotsize
+ plotopts   <-list(figdir=figdir,plotsize=plotsize, plotfmt=plotfmt,symb=symb,symbo=symbo,
+                   symbsiz=symbsiz,pheight=pheight,pwidth=pwidth, bounds=bounds, project=project)
+######################################################################### 
+#########################################################################
+#----- 			END OF INPUT FILE	------------------------#
+#########################################################################

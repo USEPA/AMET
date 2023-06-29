@@ -44,6 +44,8 @@
 #
 #  regrid2d_to_latlon--> Regridding of model and PRISM to Lat-Lon grid for Leaflet plot output
 #
+#  netcdf_precip     --> Creates NetCDF file with PRISM and Model precip on model grid
+#
 #######################################################################################################
 #######################################################################################################
 
@@ -165,36 +167,37 @@ prism_read_bil <-function(model_start_date, prismdir,
    bil   <-get_prism_monthlys("ppt", year=yyyy, mon=mm, keepZip = FALSE)
    pd    <- prism_archive_subset("ppt", "monthly", years=yyyy, mon=mm)
  }
+  writeLines("PRECIP downloaded")
 
- rast<-raster(pd_to_file(pd))
- precip<-values(rast)
- prism_precip<-ifelse(precip<0,NA,precip)
+ rast         <-raster(pd_to_file(pd))
+ precip       <-values(rast)
+ prism_precip <-ifelse(precip<0,NA,precip)
 
- ny<-dim(rast)[1]
- nx<-dim(rast)[2]
- ncell<-nx*ny
- bounds<-extent(rast)[1:4]
- bounds<-c(bounds[3],bounds[4],bounds[2],bounds[1])
- dx<-xres(rast)
- dy<-yres(rast)
+ ny           <-dim(rast)[1]
+ nx           <-dim(rast)[2]
+ ncell        <-nx*ny
+ bounds       <-extent(rast)[1:4]
+ bounds       <-c(bounds[3],bounds[4],bounds[2],bounds[1])
+ dx           <-xres(rast)
+ dy           <-yres(rast)
 
- ddeg<-dx
- lllon       <-bounds[4]
- lllat       <-bounds[1]
- dxdykm      <-dx*111.111
+ ddeg         <-dx
+ lllon        <-bounds[4]
+ lllat        <-bounds[1]
+ dxdykm       <-dx*111.111
 
- lat_1d      <-rev(seq(lllat,lllat+((ny-1)*ddeg),by=ddeg))
- lon_1d      <-seq(lllon,lllon+((nx-1)*ddeg),by=ddeg)
+ lat_1d       <-rev(seq(lllat,lllat+((ny-1)*ddeg),by=ddeg))
+ lon_1d       <-seq(lllon,lllon+((nx-1)*ddeg),by=ddeg)
 
- lat         <-array(NA,c(ny,nx))
- lon         <-array(NA,c(ny,nx))
+ lat          <-array(NA,c(ny,nx))
+ lon          <-array(NA,c(ny,nx))
  for(x in 1:nx){
-   lat[,x]   <-lat_1d
+   lat[,x]    <-lat_1d
  }
  for(y in 1:ny) {
-   lon[y,]   <-lon_1d
+   lon[y,]    <-lon_1d
  }
- lon         <-ifelse(lon < 0, 360+lon,lon)
+ lon          <-ifelse(lon < 0, 360+lon,lon)
 
  ###############################################################################################
  # grid metadata list to return
@@ -231,9 +234,8 @@ mpas_precip <-function(model_output,tindex=1,rainc_var="rainc",rainnc_var="rainn
     lon_mpas<- lon_mpas * (180/pi)
     carea   <-sqrt(ncvar_get(m1,varid="areaCell"))/1000
     rain    <-ncvar_get(m1,varid=rainc_var,c(1,tindex),c(-1,1)) + ncvar_get(m1,varid=rainnc_var,c(1,tindex),c(-1,1))
-    landmask<-ncvar_get(m1,varid="xland", start=c(1,1), count=c(-1,1))
-    #landmask<-ncvar_get(m1,varid="xland")
-    #landmask<-landmask[,1]
+    landmask<-ncvar_get(m1,varid="xland")
+    landmask<-landmask[,1]
     lm.na   <-ifelse(landmask == 0, 1, 1)
     lm.na   <-ifelse(landmask == 2, NA, 1)
     ncells  <-dim(lat_mpas)
@@ -274,6 +276,8 @@ wrf_precip <-function(model_output,tindex=1,rainc_var="RAINC",rainnc_var="RAINNC
      lm.na   <-ifelse(landmask == 0, 1, 1)
      lm.na   <-ifelse(landmask == 0, NA, 1)
      dv      <-dim(lat_wrf)
+     rainc <- ncvar_get(m1,varid=rainc_var,c(1,1,tindex),c(-1,-1,1))
+     rainnc <- ncvar_get(m1,varid=rainnc_var,c(1,1,tindex),c(-1,-1,1))
      rain    <-ncvar_get(m1,varid=rainc_var,c(1,1,tindex),c(-1,-1,1)) + 
                ncvar_get(m1,varid=rainnc_var,c(1,1,tindex),c(-1,-1,1))
   nc_close(m1)
@@ -281,7 +285,7 @@ wrf_precip <-function(model_output,tindex=1,rainc_var="RAINC",rainnc_var="RAINNC
  grid       <-list(lat=lat_wrf, lon=lon_wrf, landmask=landmask, 
                    lm.na=lm.na, nx=dv[1], ny=dv[2], dx=dx)
 
- return(list(grid=grid, precip=rain))
+ return(list(grid=grid, precip=rain, rainc=rainc, rainnc= rainnc))
 
 }
 #####--------------------------	  END OF FUNCTION: WRF_PRECIP       ---------------------------------####
@@ -586,6 +590,98 @@ wrf_precip <-function(model_output,tindex=1,rainc_var="RAINC",rainnc_var="RAINNC
 
 }
 #####-----------------  END OF FUNCTION: REGRID2D_TO_LATLON   --------------------------####
+##########################################################################################################
+
+##########################################################################################################
+#####--------------------------   START OF FUNCTION: NETCDF_PRECIP   ------------------------####
+#  Purpose: A function to create NetCDF file with model and prism precip grids that is based on
+#           the model grid and file structure so users can visualize using same software as
+#           used for model analysis. This replaces the C Shell method used in pre-AMETv1.5 versions.
+#
+# Input:
+#        model_start        -->  model output file used as NetCDF template for model-prism precip file
+#        precip_outfile     -->  model-prism precip output file
+#        prism_precip_mm    -->  prism precipitation array on model grid
+#        model_precip_mm    -->  model precip for period on model grid
+#        model              -->  model (wrf or mpas)
+#        ncks               -->  NCO executable NetCDF kitchen sink utility
+#        ncrename           -->  NCO executable rename variables in NetCDF file
+#        ncatted            -->  NCO executable to modify attributes of NetCDF file
+#
+# Output: 
+#        Print to standard output the name and location of precip_outfile
+#
+#
+
+ netcdf_precip <-function(model_start, precip_outfile, prism_precip_mm, model_precip_mm, model_rainc_mm, model_rainnc_mm, 
+                          model="wrf", ncks="ncks", ncrename="ncrename", ncatted="ncatted") {
+
+ writeLines(paste("Checking for NCO executables to create NetCDF output"))
+ aa      <-try(system(paste("which",ncks)))
+ bb      <-try(system(paste("which",ncrename)))
+ cc      <-try(system(paste("which",ncatted)))
+ sumtest <-sum(c(aa,bb,cc))
+ if(sumtest > 0) {
+   return(writeLines(paste("NCO operators ncks, ncrename and/or ncaatted not found in users environment. Fix and rerun to get NetCDF file.")))
+ } else {
+   writeLines(paste("NCO executables pass check. NetCDF file will be produced"))
+ }
+
+ if(model == "wrf") { 
+  sysexe <-paste(ncks,"-O -v Times -d Time,0,0",  model_start, precip_outfile); system(sysexe);
+  sysexe <-paste(ncks,"-A -v RAINC -d Time,0,0",  model_start, precip_outfile); system(sysexe);
+  sysexe <-paste(ncks,"-A -v RAINNC -d Time,0,0", model_start, precip_outfile); system(sysexe);
+  sysexe <-paste(ncks,"-A -v Q2 -d Time,0,0",  model_start, precip_outfile); system(sysexe);
+  sysexe <-paste(ncks,"-A -v T2 -d Time,0,0", model_start, precip_outfile); system(sysexe);
+ 
+  sysexe <-paste(ncrename,"-v Q2,PRISM_PRECIP_MM",  precip_outfile); system(sysexe);
+  sysexe <-paste(ncrename,"-v T2,MODEL_PRECIP_MM", precip_outfile); system(sysexe);
+  sysexe <-paste(ncrename,"-v RAINC,MODEL_RAINC_MM",  precip_outfile); system(sysexe);
+  sysexe <-paste(ncrename,"-v RAINNC,MODEL_RAINNC_MM", precip_outfile); system(sysexe);
+
+  sysexe <-paste(ncatted,"-a units,'PRISM_PRECIP_MM',m,c,'mm'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a units,'MODEL_PRECIP_MM',m,c,'mm'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a units,'MODEL_RAINC_MM',m,c,'mm'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a units,'MODEL_RAINNC_MM',m,c,'mm'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a description,'PRISM_PRECIP_MM',m,c,'Total PRISM precipitation'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a description,'MODEL_PRECIP_MM',m,c,'Total WRF precipitation'",   precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a description,'MODEL_RAINC_MM',m,c,'WRF non-convective precipitation'",   precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a description,'MODEL_RAINNC_MM',m,c,'WRF convective precipitation'",   precip_outfile); system(sysexe);
+ }
+
+ if(model == "mpas") { 
+  sysexe <-paste(ncks,"-O -v verticesOnCell,nEdgesOnCell,latVertex,lonVertex,indexToVertexID,indexToCellID,latCell,lonCell,zgrid",
+                 model_start, precip_outfile); system(sysexe);
+  sysexe <-paste(ncks,"-A -v q2  -d Time,0,0", model_start, precip_outfile); system(sysexe);
+  sysexe <-paste(ncks,"-A -v t2m -d Time,0,0", model_start, precip_outfile); system(sysexe);
+ 
+  sysexe <-paste(ncrename,"-v q2,PRISM_PRECIP_MM",  precip_outfile); system(sysexe);
+  sysexe <-paste(ncrename,"-v t2m,MODEL_PRECIP_MM", precip_outfile); system(sysexe);
+
+  sysexe <-paste(ncatted,"-a units,'PRISM_PRECIP_MM',m,c,'mm'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a units,'MODEL_PRECIP_MM',m,c,'mm'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a description,'PRISM_PRECIP_MM',m,c,'Total PRISM precipitation'", precip_outfile); system(sysexe);
+  sysexe <-paste(ncatted,"-a description,'MODEL_PRECIP_MM',m,c,'Total MPAS precipitation'",  precip_outfile); system(sysexe);
+ }
+  ####### Create NetCDF "shell" file for PRISM-Model precip arrays using NCO executables
+
+  ####### Put precip data in the new NetCDF file
+  writeLines(paste("            "))
+  writeLines(paste("     -------------------------------------------------------       "))
+  writeLines(paste("     Creating NetCDF Output For External Plotting & Analysis       "))
+  writeLines(paste("     -------------------------------------------------------       "))
+  writeLines(paste("            "))
+  f1  <-nc_open(precip_outfile,write=T)
+    ncvar_put(f1,varid="PRISM_PRECIP_MM",prism_precip_mm)
+    ncvar_put(f1,varid="MODEL_PRECIP_MM",model_precip_mm)
+    ncvar_put(f1,varid="MODEL_RAINC_MM",model_rainc_mm)
+    ncvar_put(f1,varid="MODEL_RAINNC_MM",model_rainnc_mm)
+  nc_close(f1)
+
+ return(writeLines(paste(model,"PRISM output file:",precip_outfile)))
+
+}
+#####--------------------------	  END OF FUNCTION: NETCDF_PRECIP     ---------------------------------####
 ##########################################################################################################
 
 ##########################################################################################################

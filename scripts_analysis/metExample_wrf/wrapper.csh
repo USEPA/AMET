@@ -6,10 +6,11 @@
   #    the analysis script (e.g., spatial surface) and a predefined mode of that script (e.g., monthly).
 
   # -  Analysis Script IDs:   SP=spatial surface  DB= daily bar stats  SM=summary stats
-  #                           SW=sw radiation     UA=upper-air/raob
+  #                           SW=sw radiation     UA=upper-air/raob    PR=PRISM analysis
 
   # -  MODE ID:               MN= montly                     SE=seasonal          
   #                           RM=climate regions monthly     RS= climate regions seasonal      
+  #                           DA=daily                       AN=annual
 
   # -  These are highly flexible evaluation methods that users can build full analysis 
   #    packages for model simulations by using this as an example. Some notes:
@@ -33,8 +34,8 @@
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET database
-  setenv AMET_DATABASE  amet
-  setenv MYSQL_SERVER   localhost
+  setenv AMET_DATABASE  amad_nrt
+  setenv MYSQL_SERVER   amet.ib
 
   #  AMET project id or simulation id
   setenv AMET_PROJECT   metExample_wrf 
@@ -46,6 +47,9 @@
   # Summary stats and RAOB Spatial/TimesSeries/Profile stats
   setenv AMET_BOUNDS_LAT "23 55"
   setenv AMET_BOUNDS_LON "-125 -65"
+  
+  # PRISM VARS
+  setenv AMET_GUI   FALSE
   
   #  Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/wrapper
@@ -61,19 +65,26 @@
   # If set correctly, this master run config file can be used for all scripts.
   setenv AMETRINPUT  $AMETBASE/scripts_analysis/$AMET_PROJECT/input_files/run_info_MET.R
 
+  # Daily (PR.DA), Monthly (PR.MN) & Annual (PR.AN) Precip Analysis
+  # Annual for AMET_YEAR below. Monthly for AMET_YEAR below
+  # Daily starts/ends on ms, me, ds & de definitions in input_files/run_info_MET.R config file.
+  setenv AMET_YEAR  2016
+  setenv WRAPPER_RUNID PR.MN
+  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
+
   # Daily surface-base statistics
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
   # DB.MN, DB.SE, DB.RM or DB.RS
   setenv AMET_YEAR 2016
   setenv THRESHOLD 120
-  setenv WRAPPER_RUNID DB.RM
-  R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
+  setenv WRAPPER_RUNID DB.AN
+  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Summary (all & diurnal) of surface-base statistics
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
   # SM.MN, SM.SE, SM.RM or SM.RS
   setenv WRAPPER_RUNID SM.RM
-  R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
+  #R --no-save --slave < ${AMETBASE}/R_analysis_code/MET_wrapper.R 
 
   # Site-specific statistic provided in spatial maps of domain & text output
   # WRAPPER_RUNID as coded in $AMETBASE/R_analysis_code/MET_wrapper.R can be: 
