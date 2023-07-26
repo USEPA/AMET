@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.10.8
+Created-By: 11.0.16+8-LTS (Red Hat, Inc.)
+Class-Path: lib/LGoodDatePicker-11.1.0.jar lib/mariadb-java-client-2.7
+ .3.jar
+X-COMMENT: Main-Class will be added automatically by build
+Main-Class: ametjavagui.AMETJavaGUI
+
