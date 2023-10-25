@@ -142,7 +142,11 @@
   }
 
   if(anyNA(bounds)){
-    bounds          <-c(range(slatlon[,1]),range(slatlon[,2]))
+    latavg          <-mean(slatlon[,1], na.rm=T)
+    lonavg          <-mean(slatlon[,2], na.rm=T)
+    latna           <-ifelse(is.na(slatlon[,1]),latavg,slatlon[,1])
+    lonna           <-ifelse(is.na(slatlon[,2]),lonavg,slatlon[,2])
+    bounds          <-c(range(latna),range(lonna))
     plotopts$bounds <-bounds
     writeLines(paste("** WARNING ** bounds for spatial analysis were not found. Setting to RAOB site range."))
     writeLines(paste("** BOUNDS  ** LAT/LON SOUTH, NORTH, WEST, EAST:",bounds[1],bounds[2],bounds[3],bounds[4]))
