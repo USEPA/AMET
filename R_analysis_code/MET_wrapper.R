@@ -20,7 +20,7 @@
 # -  Script ID SP= spatial surface  DB= daily bar stats   SM= summary stats
 #              SW= SW radiation     UA= upper-air/raob    PR= PRISM precip analysis
 # -  Anal ID   MN= montly           SE= seasonal          CR= climate regions      
-#              DA= daily            AN=annual
+#              DA= daily            AN=annual             NP= Native Profile
 #########################################################################
   options(warn=-1)
 #:::::::::::::::::::::::::::::::::::::::::::::
@@ -529,7 +529,8 @@
  # Daily LOOP for applicable analyses
  if(wrapperrunid[2] == "DA" )   {
 
-   for(ii in 1:mnendday[as.numeric(ms)]) {
+   istart <-as.numeric(ds)
+   for(ii in istart:mnendday[as.numeric(ms)]) {
 
      # RAOB pushes year variables ys and ye as character. 
      # These need to be numeric in universal wrapper.
@@ -647,4 +648,3 @@
    writeLines(paste("PRISM WRF/MPAS Analysis Annual  PR.AN"))
 
  }
-
