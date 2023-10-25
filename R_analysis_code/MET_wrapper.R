@@ -19,8 +19,9 @@
 # -  Wrapper RUNID has 2 two character IDs with period dividing (SP.MN) to control script and mode
 # -  Script ID SP= spatial surface  DB= daily bar stats   SM= summary stats
 #              SW= SW radiation     UA= upper-air/raob    PR= PRISM precip analysis
-# -  Anal ID   MN= montly           SE= seasonal          CR= climate regions      
-#              DA= daily            AN=annual             NP= Native Profile
+# -  Anal ID   MN= montly           SE= seasonal          AN=annual 
+#              RS= Regional Season  RM= Regional Monthly    
+#              DA= daily            NP= Native Profile
 #########################################################################
   options(warn=-1)
 #:::::::::::::::::::::::::::::::::::::::::::::

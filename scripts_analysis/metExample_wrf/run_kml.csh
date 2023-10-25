@@ -1,16 +1,13 @@
 #!/bin/csh -f
 # -----------------------------------------------------------------------
-# Spatial Surface statistics
+# Google Earth KML file for Observation sites
 # -----------------------------------------------------------------------
 # Purpose:
 # This is an example c-shell script to run the R-script that generates
-# spatial statistical plots of model performance for a specified day
-# or range of days. Plots include RMSE, MAE, Bias and Cor for T, Q, WS, WD.
-# Note: see spatial_surface.input for additional options including the 
-#       ability to provide extra query specs. Some key settings are
-#       checksave (will not redo statistics, only plot), symb (symbol type),
-#       symbsize (size of symbol), and daily (will do stats for each day
-#       instead of whole period).
+# spatial KML files for Google Earth or other interactive GIS programs.
+# Built using the spatial surface script, the output KML file is put in
+# that output directory. The KML is produced to facilitate analysis by providing 
+# a method to explore sites used to evaluate the model.
 # -----------------------------------------------------------------------
 ####################################################################################
 ####################################################################################
@@ -21,18 +18,17 @@
   # These are the only required for meteorological analysis. AQ requires more.
   # mysqllogin   <- yourlogin
   # mysqlpasswrd <- yourpassword
-  setenv AMETBASE /home/grc/AMET_v13
   setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
   # MySQL database server connection and AMET databases. AMET_DATABASE1 is for
   # AMET_PROJECT1 below and the same for DATABASE2 and PROJECT2. This allows
   # comparison of runs that may reside in different databases
-  setenv AMET_DATABASE  amad_wrfop
-  setenv MYSQL_SERVER   amet.ib
+  setenv AMET_DATABASE  amet
+  setenv MYSQL_SERVER   localhost
   setenv AMET_MODE      MET 
   #  AMET project id or simulation id. Note: Project2 allows comparsions of two model
   #  runs with obs including statistics. Project2 should be left blank for single project.
-  setenv AMET_PROJECT wrfv433_12us1_ltng 
+  setenv AMET_PROJECT metExample_wrf
  
   # Directory where figures and text output will be directed
   setenv AMET_OUT  $AMETBASE/output/$AMET_PROJECT/spatial_surface
@@ -40,15 +36,9 @@
   # Do you want a CVS files with spatial statistics?
   setenv AMET_TEXTSTATS T
   
-  #  Date range of Spatial statistics YYYYMMDD. Note that newer MySQL versions may see
-  #  an ending date of 20130731 as ending at 00 UTC that day. Users should test this
-  #  by doing spatial plots for one day (20110701 to 20110701) and set threshold to 1
-  #  then look at the text output to see the number of samples. If 1, then you'd have
-  #  to account for this in specifying the end date (i.e.; set to 20110702 for Jul 1 eval).
-  #  One method is to specify the day after your desired end day, but if data is present,
-  #  the statistics will include the first hour of that next day.
-  setenv AMET_DATES "20180701"
-  setenv AMET_DATEE "20180801"
+  #  Date range of data for KML file observations.
+  setenv AMET_DATES "20160701"
+  setenv AMET_DATEE "20160801"
 
   #  And threshold of number of data points at a 
   #  single obs site, below which a sites statistics are NA.
@@ -81,10 +71,6 @@
   mkdir -p $AMET_OUT
   
   R --no-save --slave < $AMETBASE/R_analysis_code/MET_kml.R 
-
-  if(-e $AMET_OUT/$AMET_PROJECT.rmse.T.$AMET_DATES-$AMET_DATEE.$AMET_PTYPE) then
-  else
-  endif
 
 exit(1)  
   
