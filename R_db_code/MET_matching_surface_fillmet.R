@@ -46,7 +46,7 @@
 #         - Added capability for Unified Forecast System (UFS) for NOAA.
 #         - Fixed forecast and init UTC for forecast output of single times
 #         - Updated surface obs text option with RH & SFC Pres. Also fixed site metadata for text obs. 
-#
+#         - Parallel version of surface MET matching that pushes MET model values in cases where obs are missing.
 #
 #######################################################################################################
   options(warn=-1)
@@ -330,37 +330,59 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
   for(s in 1:sitenum){   
 
     # Find all obs for a site and determine the closest to model output time
+    # New fill meteorology parallel version sets OBS NULL when missing and
+    # continues to fill WRF/MPAS/MCIP/UFS values in the database mostly for
+    # complete model timeseries in plotting.
     all.sind  <-which(sitelist[s] == obs$meta$site)
-    if(sum(all.sind,na.rm=T) == 0 ) { next }
+    if(sum(all.sind,na.rm=T) == 0 ) { 
+      writeLines(paste("Site",s,"of",sitenum,"unique sites -",sitelist[s]))
+      actual_time <-paste(datetime$hc,":00:00",sep="")
+      obst2 <-"NULL" 
+      obsq2 <-"NULL" 
+      obsu10<-"NULL" 
+      obsv10<-"NULL" 
+      obspsf<-"NULL" 
+      tdiff <-c(0)
+      ndiff <-1
+    } else {
+      time        <-as.numeric(datetime$hc)
+      tdiff       <-abs(obs$meta$stime[all.sind]-obs$meta$stime2[all.sind])/60
+      ndiff       <-which(tdiff==min(tdiff,na.rm=T))[1]
+      sind        <-all.sind[ndiff]
+      nhour       <-sprintf("%02d",obs$meta$ihour[sind])
+      nmin        <-sprintf("%02d",obs$meta$imin[sind])
+      nsec        <-sprintf("%02d",obs$meta$isec[sind])
+      actual_time <-paste(nhour,":",nmin,":",nsec,sep="")
+      obst2 <-obs$sfc_met$t2[sind]
+      obsq2 <-obs$sfc_met$q2[sind]
+      obsu10<-obs$sfc_met$u10[sind]
+      obsv10<-obs$sfc_met$v10[sind] 
+      obspsf<-obs$sfc_met$psf[sind] 
 
-    time        <-as.numeric(datetime$hc)
-    tdiff       <-abs(obs$meta$stime[all.sind]-obs$meta$stime2[all.sind])/60
-    ndiff       <-which(tdiff==min(tdiff,na.rm=T))[1]
-    sind        <-all.sind[ndiff]
-    nhour       <-sprintf("%02d",obs$meta$ihour[sind])
-    nmin        <-sprintf("%02d",obs$meta$imin[sind])
-    nsec        <-sprintf("%02d",obs$meta$isec[sind])
-    actual_time <-paste(nhour,":",nmin,":",nsec,sep="")
+      if(is.na(obst2))  { obst2 <-"NULL" }
+      if(is.na(obsq2))  { obsq2 <-"NULL" }
+      if(is.na(obsu10)) { obsu10<-"NULL" }
+      if(is.na(obsv10)) { obsv10<-"NULL" }
+      if(is.na(obspsf)) { obspsf<-"NULL" }
+      
+    }
+
     mysqltimestr<-paste(datetime$yc,"-",datetime$mc,"-",datetime$dc," ",datetime$modeltime,sep="") 
+
     # If time of site ob is outside user defined window, skip
     if(tdiff[ndiff]>maxdtmin) {
       if(verbose) {
-        writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
+        writeLines(paste("Site",s,"of",sitenum,"unique sites -",sitelist[s],datetime$modeldate,
                           datetime$modeltime,actual_time,"(obs time) MAXDTMIN Violation - skipped - tdiff (min):",tdiff))
       }
       next
     }
     if(verbose) {
-      writeLines(paste("Site",s,"of",sitenum,"unique sites -",obs$meta$site[sind],datetime$modeldate,
+      writeLines(paste("Site",s,"of",sitenum,"unique sites -",sitelist[s],datetime$modeldate,
                        "Model time:",datetime$modeltime,"  Obs time:",actual_time,
                        " init/forecast hr:",init_utc,"/",fcast_hr))
     }
 
-    if(is.na(obs$sfc_met$t2[sind]))  { obs$sfc_met$t2[sind]  <-"NULL" }
-    if(is.na(obs$sfc_met$q2[sind]))  { obs$sfc_met$q2[sind]  <-"NULL" }
-    if(is.na(obs$sfc_met$u10[sind])) { obs$sfc_met$u10[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$v10[sind])) { obs$sfc_met$v10[sind] <-"NULL" }
-    if(is.na(obs$sfc_met$psf[sind])) { obs$sfc_met$psf[sind] <-"NULL" }
 
     # Calculate model values base on barycentric interpolation if MPAS
     if(metmodel == "mpas"){
@@ -416,11 +438,11 @@ writeLines(paste("use",mysql$dbase,";"),con=sfile)
 
     q1    <-paste("REPLACE INTO ",ametproject,"_surface (proj_code, stat_id, ob_date, ob_time,fcast_hr, init_utc,T_ob,  T_mod,
                    U_ob,  U_mod,  V_ob,  V_mod,  WVMR_ob, Q_ob, Q_mod, PSFC_ob, PSFC_mod)",sep="")
-    q2    <-paste("('",ametproject,"','",obs$meta$site[sind],"','",mysqltimestr,"','",
-                  datetime$modeltime,"',",fcast_hr,",",init_utc,",",obs$sfc_met$t2[sind],",",t2_int,",",
-                  obs$sfc_met$u10[sind],",",u10_int,",",obs$sfc_met$v10[sind],",",v10_int,",",
-                  obs$sfc_met$q2[sind],",",obs$sfc_met$q2[sind],",",q2_int,",",
-                  obs$sfc_met$psf[sind],",",psf_int,")",sep="")
+    q2    <-paste("('",ametproject,"','",sitelist[s],"','",mysqltimestr,"','",
+                  datetime$modeltime,"',",fcast_hr,",",init_utc,",",obst2,",",t2_int,",",
+                  obsu10,",",u10_int,",",obsv10,",",v10_int,",",
+                  obsq2,",",obsq2,",",q2_int,",",
+                  obspsf,",",psf_int,")",sep="")
 
     query <-paste(q1,"VALUES",q2)
     writeLines(paste(query,";"),con=sfile)
