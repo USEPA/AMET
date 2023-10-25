@@ -3,18 +3,14 @@
 #                                                                       #
 #                AMET (Atmospheric Model Evaluation Tool)               #
 #                                                                       #
-#                    Spatial Surface Statistics                         #
-#                      MET_spatial_surface.R                            #
+#                Google Earth KML Generation for MET Obs                #
+#                            MET_kml.R                                  #
 #                                                                       #
 #         Developed by the US Environmental Protection Agency           #
 #-----------------------------------------------------------------------#
 #########################################################################
 # Change LOG
-#  Version 1.5, Apr 19, 2022, Robert Gilliam                            
-#  Updates: - New split config input file where "more" static settings  
-#             are split into a timeseries.static.input and key configs  
-#             remain in the timeseries.input. Backward compatible.
-#           - More robust threshold setting control for GUI and backward compat.
+#  Initial Version, Apr 19, 2023, Robert Gilliam                            
 #
 #############################################################################################################
   options(warn=-1)
@@ -23,7 +19,7 @@
   if(!require(date))   {stop("Required Package date was not loaded")}
   if(!require(RMySQL)) {stop("Required Package RMySQL was not loaded")}
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-#    Initialize AMET Diractory Structure Via Env. Vars
+#    Initialize AMET Directory Structure Via Env. Vars
 #    AND Load required function and conf. files
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## get some environmental variables and setup some directories
@@ -56,6 +52,9 @@
  source (ametRinput)
  try(source (ametRstatic),silent=T)
 
+ if(!exists("project") )                         { project <- Sys.getenv("AMET_PROJECT")	}
+
+
  ametdbase      <- Sys.getenv("AMET_DATABASE")
  mysqlserver    <- Sys.getenv("MYSQL_SERVER")
  mysql          <-list(server=mysqlserver,dbase=ametdbase,login=amet_login,
@@ -80,7 +79,8 @@
   datex    <-datee       
 
 
-  ametmode<-"AQ"
+  ametmode<-"MET"
+  sfctable       <-paste(project,"_surface",sep="")
 
   datestrmet <-paste(">= '",d1q,"' AND d.ob_date < '",d2q,"'",sep="")
   qstat      <-paste("SELECT  DISTINCT s.stat_id, s.lat, s.lon, s.elev, s.ob_network, ",
@@ -88,18 +88,6 @@
                      "s.landuse, s.landuse, s.landuse, s.landuse FROM ", 
                      sfctable," d, stations s WHERE", 
                      "d.stat_id=s.stat_id AND d.ob_date ",datestrmet," ORDER BY s.stat_id ")
-
-  if(ametmode == "AQ") {
-    sfctable   <-"CMAQv54_12US1_2018_Base_M3DRY"
-    model      <-sfctable
-    mysql$dbase<-"amad_CMAQ_v54_Dev"
-    datestraq  <-paste(">= '",d1q,"' AND d.ob_dates < '",d2q,"'",sep="")
-    qstat      <-paste("SELECT  DISTINCT s.stat_id, s.lat, s.lon, s.elevation, s.network,s.stat_name, s.city, s.county, s.state, s.country,",
-                       "s.num_stat_id, s.landuse, s.loc_setting, s.GMT_Offset",
-                       " FROM ", sfctable," d, site_metadata s WHERE",
-                       "d.stat_id=s.stat_id AND d.ob_dates ",datestraq," ORDER BY s.stat_id ")
-   }
-
 
   statdat<-ametQuery(qstat,mysql)
   uid    <-unique(statdat[,1])
@@ -166,4 +154,3 @@
 ############################################################################
 ############################################################################
 #quit(save='no')
-
