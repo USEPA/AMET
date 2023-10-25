@@ -44,7 +44,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
         UsernameLabel = new javax.swing.JLabel();
         UsernameTextField = new javax.swing.JTextField();
         PasswordLabel = new javax.swing.JLabel();
-        PasswordTextField = new javax.swing.JTextField();
+        PasswordTextField = new javax.swing.JPasswordField();
         WelcomeInfoLabel = new javax.swing.JLabel();
         ButtonsPanel = new javax.swing.JPanel();
         AirQualityButton = new javax.swing.JButton();
@@ -59,6 +59,9 @@ public class WelcomeScreen extends javax.swing.JFrame {
         setResizable(false);
 
         Header.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Pictures/top_2022.png"))); // NOI18N
+        Header.setMaximumSize(new java.awt.Dimension(400, 94));
+        Header.setMinimumSize(new java.awt.Dimension(400, 94));
+        Header.setPreferredSize(new java.awt.Dimension(400, 94));
 
         WelcomePanel.setBackground(new java.awt.Color(255, 255, 255));
         WelcomePanel.setForeground(new java.awt.Color(255, 255, 255));
@@ -96,8 +99,6 @@ public class WelcomeScreen extends javax.swing.JFrame {
         PasswordLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         PasswordTextField.setBackground(new java.awt.Color(191, 182, 172));
-        PasswordTextField.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        PasswordTextField.setForeground(new java.awt.Color(0, 63, 105));
 
         WelcomeInfoLabel.setBackground(new java.awt.Color(255, 255, 255));
         WelcomeInfoLabel.setFont(new java.awt.Font("Serif", 1, 28)); // NOI18N
@@ -150,7 +151,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
             .addGroup(ButtonsPanelLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(AirQualityButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                .addGap(53, 53, 53)
                 .addComponent(MeteorologyButton)
                 .addContainerGap())
         );
@@ -166,7 +167,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
         );
         LeftLayout.setVerticalGroup(
             LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 529, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         Hyperlink.setBackground(new java.awt.Color(255, 255, 255));
@@ -195,19 +196,6 @@ public class WelcomeScreen extends javax.swing.JFrame {
         WelcomePanelLayout.setHorizontalGroup(
             WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(WelcomePanelLayout.createSequentialGroup()
-                .addGroup(WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(WelcomePanelLayout.createSequentialGroup()
-                        .addGap(385, 385, 385)
-                        .addComponent(AMETLoginLabel))
-                    .addGroup(WelcomePanelLayout.createSequentialGroup()
-                        .addGap(338, 338, 338)
-                        .addComponent(WelcomeInfoLabel))
-                    .addGroup(WelcomePanelLayout.createSequentialGroup()
-                        .addGap(367, 367, 367)
-                        .addComponent(ButtonsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(WelcomePanelLayout.createSequentialGroup()
                 .addComponent(Left, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(WelcomePanelLayout.createSequentialGroup()
@@ -222,13 +210,25 @@ public class WelcomeScreen extends javax.swing.JFrame {
                             .addGroup(WelcomePanelLayout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(PasswordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
-                                    .addComponent(UsernameTextField))))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(PasswordTextField)
+                                    .addComponent(UsernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)))))
                     .addGroup(WelcomePanelLayout.createSequentialGroup()
-                        .addGap(392, 392, 392)
-                        .addComponent(Hyperlink)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(408, 408, 408)
+                        .addComponent(Hyperlink)))
+                .addGap(0, 6, Short.MAX_VALUE))
+            .addGroup(WelcomePanelLayout.createSequentialGroup()
+                .addGroup(WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(WelcomePanelLayout.createSequentialGroup()
+                        .addGap(385, 385, 385)
+                        .addComponent(AMETLoginLabel))
+                    .addGroup(WelcomePanelLayout.createSequentialGroup()
+                        .addGap(338, 338, 338)
+                        .addComponent(WelcomeInfoLabel))
+                    .addGroup(WelcomePanelLayout.createSequentialGroup()
+                        .addGap(367, 367, 367)
+                        .addComponent(ButtonsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(295, Short.MAX_VALUE))
+            .addComponent(Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         WelcomePanelLayout.setVerticalGroup(
             WelcomePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,11 +251,13 @@ public class WelcomeScreen extends javax.swing.JFrame {
                         .addComponent(WelcomeInfoLabel)
                         .addGap(18, 18, 18)
                         .addComponent(ButtonsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
-                        .addComponent(Hyperlink))
-                    .addComponent(Left, javax.swing.GroupLayout.PREFERRED_SIZE, 529, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(53, 53, 53)
+                        .addComponent(Hyperlink)
+                        .addGap(53, 53, 53))
+                    .addComponent(Left, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE))
                 .addGap(0, 0, 0)
-                .addComponent(Footer))
+                .addComponent(Footer)
+                .addGap(19, 19, 19))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -263,28 +265,27 @@ public class WelcomeScreen extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Header, javax.swing.GroupLayout.PREFERRED_SIZE, 2061, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(WelcomePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(WelcomePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(Header, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Header)
+                .addComponent(Header, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(WelcomePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(79, 79, 79))
+                .addComponent(WelcomePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 668, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
         );
 
-        setSize(new java.awt.Dimension(999, 702));
+        setSize(new java.awt.Dimension(999, 762));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void AirQualityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AirQualityButtonActionPerformed
         username = UsernameTextField.getText();
-        password = PasswordTextField.getText();
-        System.out.println(username);
+        password = String.valueOf(PasswordTextField.getPassword());
 
         new AirQualityForm().setVisible(true);
         setVisible(false);
@@ -293,7 +294,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
 
     private void MeteorologyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MeteorologyButtonActionPerformed
         username = UsernameTextField.getText();
-        password = PasswordTextField.getText();
+        password = String.valueOf(PasswordTextField.getPassword());
         new MeteorologyForm().setVisible(true);
         setVisible(false);
         dispose();
@@ -340,7 +341,7 @@ public class WelcomeScreen extends javax.swing.JFrame {
     private javax.swing.JPanel Left;
     private javax.swing.JButton MeteorologyButton;
     private javax.swing.JLabel PasswordLabel;
-    private javax.swing.JTextField PasswordTextField;
+    private javax.swing.JPasswordField PasswordTextField;
     private javax.swing.JLabel UsernameLabel;
     private javax.swing.JTextField UsernameTextField;
     private javax.swing.JLabel WelcomeInfoLabel;

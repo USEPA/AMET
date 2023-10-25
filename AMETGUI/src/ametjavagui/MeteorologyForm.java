@@ -1027,17 +1027,17 @@ public class MeteorologyForm extends javax.swing.JFrame {
         if ("Time Series: 2-m Temp, 2-m Moisture and 10-m Wind".equals(ProgramComboBox.getSelectedItem().toString())) {
             query = "SELECT DATE_FORMAT(ob_date,'%Y%m%d'), HOUR(ob_date), stat_id, fcast_hr, T_mod, T_ob, Q_mod, WVMR_ob, U_mod, U_ob, V_mod, V_ob, HOUR(ob_time)\n"
                     + "FROM " + project_id + "_surface" + "\n" + "WHERE stat_id = '" + site + "' and ob_date BETWEEN \n" + "'" + year_start + "-" + month_start + "-" + day_start 
-                    + " " + hs +":00:00' and '" + year_end + "-" + month_end + "-" + day_end + " " + he + ":00:00'\n" + "ORDER BY ob_date,ob_time" + " " + extra;
+                    + " " + hs +":00:00' and '" + year_end + "-" + month_end + "-" + day_end + " " + he + ":00:00'\n" + extra + " ORDER BY ob_date,ob_time";
         }
         else if ("Time Series: 2-m Temp, 2-m Moisture, 2-m RH and Sfc Pressure".equals(ProgramComboBox.getSelectedItem().toString())){
             query = "SELECT DATE_FORMAT(ob_date,'%Y%m%d'), HOUR(ob_date), stat_id, fcast_hr, T_mod, T_ob, Q_mod, WVMR_ob, PSFC_mod, PSFC_ob\n"
                     + "FROM " + project_id + "_surface" + "\n" + "WHERE stat_id = '" + site + "' and ob_date BETWEEN " + year_start + month_start + day_start 
-                    + " and " + year_end + month_end + day_end + "\n" + "ORDER BY ob_date,ob_time" + " " + extra;
+                    + " and " + year_end + month_end + day_end + "\n" + extra + " ORDER BY ob_date,ob_time";
         }
         else if ("Daily Statistics: 2-m Temp, 2-m Moisture and 10-m Wind".equals(ProgramComboBox.getSelectedItem().toString())){
             query = "SELECT DATE_FORMAT(ob_date,'%Y%m%d'), HOUR(ob_date), d.stat_id, s.ob_network, d.T_mod, d.T_ob, d.Q_mod, d.WVMR_ob, d.U_mod, d.U_ob, d.V_mod, d.V_ob\n"
                     + "FROM " + project_id + "_surface d, stations s" + "\n" + "WHERE  s.stat_id=d.stat_id AND ob_date BETWEEN " + year_start + month_start + day_start 
-                    + " AND " + year_end + month_end + day_end  + "\n" + "ORDER BY ob_date" + query_string;
+                    + " AND " + year_end + month_end + day_end  + "\n" + query_string + " ORDER BY ob_date";
         }
         else if ("Summary Statistics: 2-m Temp, 2-m Moisture and 10-m Wind".equals(ProgramComboBox.getSelectedItem().toString())){
             query = "SELECT DATE_FORMAT(ob_date,'%Y%m%d'), HOUR(ob_date), d.stat_id, s.ob_network, d.T_mod, d.T_ob, d.Q_mod, d.WVMR_ob, d.U_mod,d.U_ob, d.V_mod, d.V_ob, HOUR(ob_time)\n"
@@ -1048,7 +1048,7 @@ public class MeteorologyForm extends javax.swing.JFrame {
             query = "SELECT DATE_FORMAT(ob_date,'%Y%m%d'), HOUR(ob_date), d.stat_id, s.lat, s.lon, d.SRAD_mod, d.SRAD_ob "
                     + "FROM " + project_id + "_surface d, stations s" + "\n" + "WHERE  s.stat_id=d.stat_id AND (s.ob_network='SRAD' || s.ob_network='BSRN') " 
                     + "AND d.SRAD_ob > 0 AND d.ob_date BETWEEN " + year_start + month_start + day_start 
-                    + " AND " + year_end + month_end + day_end + "\n" + "ORDER BY ob_date" + " " + query_string;
+                    + " AND " + year_end + month_end + day_end + "\n" + extra + " ORDER BY ob_date";
         }
         else if ("Spatial Statistics: 2-m Temp, 2-m Moisture and 10-m Wind".equals(ProgramComboBox.getSelectedItem().toString())){
             query = "SELECT d.stat_id, d.T_mod, d.T_ob, d.Q_mod, d.WVMR_ob, d.U_mod, d.U_ob, d.V_mod, d.V_ob, HOUR(d.ob_time) "
@@ -1056,7 +1056,7 @@ public class MeteorologyForm extends javax.swing.JFrame {
                     + "' AND d.ob_date < '" + year_end + "-" + month_end + "-" + day_end + "'\n" + extra + "ORDER BY d.stat_id\n\n"
                     + "SELECT DISTINCT s.stat_id, s.lat, s.lon, s.elev  FROM " + project_id + "_surface d, stations s\n"
                     + "WHERE s.stat_id=d.stat_id and d.ob_date  >= '" + year_start + "-" + month_start + "-" + day_start
-                    + "' AND d.ob_date < '" + year_end + "-" + month_end + "-" + day_end + "'\n" + "ORDER BY d.stat_id" + " " + extra;
+                    + "' AND d.ob_date < '" + year_end + "-" + month_end + "-" + day_end + "'\n"+ extra + " ORDER BY ob_stat_id";
         }
         else if ("Upper-Air: Spatial, Profile and Time Series".equals(ProgramComboBox.getSelectedItem().toString())){
             if("T".equals(spatial_m)){
@@ -1389,7 +1389,7 @@ public class MeteorologyForm extends javax.swing.JFrame {
                 + "thresh       <- " + thresh + "\n"
                 + "\n"
                 + "# Specific query for daily barplot #\n"
-                + "querystr    <- \" AND ob_date BETWEEN " + year_start + month_start + day_start + " AND " + year_end + month_end + day_end  + " ORDER BY ob_date" + query_string + "\"\n"
+                + "querystr    <- \" AND ob_date BETWEEN " + year_start + month_start + day_start + " AND " + year_end + month_end + day_end + query_string  + " ORDER BY ob_date" + "\"\n"
                 + "# Specific query for summary plots #\n"
                 + "query_str   <- \" AND ob_date BETWEEN " + year_start + month_start + day_start + " AND " + year_end + month_end + day_end + query_string + "\"\n"
                 + "\n"
@@ -1507,7 +1507,7 @@ public class MeteorologyForm extends javax.swing.JFrame {
                 + "\n"
                 + "donetcdf       <- " + netCDF + "\n"
                 + "\n"
-                + "prismdir       <- " + "\"/work/MOD3DEV/AMET/AMETJavaGUI/cache/prismdir_shared\"" + "\n"
+                + "prismdir       <- " + "\"" + config.cache_amet + "/prismdir_shared\"" + "\n"
                 + "\n"
                 + "use.default.precip.levs   <- T \n"
                 + "use.range.precip.levs     <- F \n"
@@ -2607,6 +2607,7 @@ public class MeteorologyForm extends javax.swing.JFrame {
         }
 
         query_string = str;
+       
     }
 
     /**
@@ -5042,7 +5043,7 @@ public class MeteorologyForm extends javax.swing.JFrame {
     }//GEN-LAST:event_ClearFilesTextFieldFocusLost
 
     private void WRFFilesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_WRFFilesButtonActionPerformed
-        JFileChooser chooser = new JFileChooser("/work/ROMO/met/");
+        JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         
         if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
