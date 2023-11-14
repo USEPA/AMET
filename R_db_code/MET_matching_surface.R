@@ -6,16 +6,18 @@
 #       Meteorological Models:
 #            Model for Prediction Across Scales (MPAS)
 #            Weather Research and Forecasting Model (WRF) 
+#            Meteorology-Chemistry Interface Processor (MCIP)
+#            NOAA Unified Forecast System (UFS) 
 #                                                  
 #       This "R" script provides an interface to match MADIS
-#       observations with either WRF or MPAS model output and
+#       observations with either WRF, MPAS, MCIP or UFS model output and
 #       insert into AMET configured MySQL database. This specific
 #       script is the master that calls R functions that read
 #       model output, MADIS observations, interpolate, 
 #       and construct the database queries.
 #
 #       This wrapper matches surface observations (WS, WS, T, Q and PSFC)
-#       with either WRF or MPAS surface meteorology fields.   
+#       with either WRF, MPAS, MCIP or UFS surface meteorology fields.   
 #                                                            
 #       Developed by the US EPA           
 #                                                                 ################################

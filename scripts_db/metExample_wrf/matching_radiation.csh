@@ -11,9 +11,9 @@ setenv AMET_DATABASE amet
 setenv MYSQL_SERVER  localhost
 setenv MYSQL_CONFIG  $AMETBASE/configure/amet-config.R
 
-# Root directory of BSRN/SURFRAD obs (same as MADIS). Note that this directory should
+# Root directory of BSRN/SURFRAD/SOLRAD obs (same as MADIS). Note that this directory should
 # contain a subdirectory "bsrn" where this radiation obs dataset (unzipped)
-# BSRN/SURFRAD directory configuration: $MADISBASE/bsrn 
+# BSRN/SURFRAD/SOLRAD directory configuration: $MADISBASE/bsrn 
 setenv MADISBASE $AMETBASE/obs/MET
 
 # A unique AMETPROJECT name for the simulation to evaluated. 
@@ -31,11 +31,12 @@ setenv FORECAST F
 # location below. A wildcard (*) is added in the script to get list of outputs.
 setenv METOUTPUT $AMETBASE/model_data/MET/$AMET_PROJECT/wrfout_subset
 
-# Radiation dataset to match with MPAS, WRF or MCIP -- Only shortwave radiation enabled
-# Options: "bsrn" or "srad"
+# Radiation dataset to match with MPAS, WRF, UFS or MCIP -- Only shortwave radiation enabled
+# Options: "bsrn", "srad" or "solrad"
 # BSRN is a global dataset with a lantency of months
-# SURFRAD is the US-based only SURFRAD Network that is real-time
-# Note: both datasets are downloaded into the $MADISBASE/bsrn directory (different naming)
+# SURFRAD is the US-based only network that is real-time
+# SOLRAD  is the US-based only network that is real-time
+# Note: All datasets are downloaded into the $MADISBASE/bsrn directory (different naming)
 setenv RADIATION_DSET bsrn 
 
 # Interpolation Method for WRF Model: 1 - Nearest Neighbor, 2 - Bi-Linear
@@ -67,12 +68,12 @@ setenv UPDATE_SITES T
 # it is the most time consuming part of AMET and that step is bypassed.
 setenv MAX_TIMES_SITE_CHECK 1
 
-# Automatic BSRN and SURFRAD Obs FTP Option. BSRN requires log/pass to access the FTP server.
-# SURFRAD is anonymous with user's work email for their tracking statistics.
+# Automatic BSRN, SOLRAD and SURFRAD Obs FTP Option. BSRN requires log/pass to access the FTP server.
+# SURFRAD/SOLRAD are anonymous with user's work email for their tracking statistics.
 # Also, users must have MADIS directory structure in place and MADISBASE pointing to that directory.
 # Current BSRN server is defined below. Note: only observation within the domain are downloaded.
-# Current NOAA SurfRad server defined in the case of srad option.
-# Both observation dataset are downloaded into MADISBASE/bsrn directory for consolidation.
+# Current NOAA SurfRad and SOLRAD server defined in the case of srad or solrad option.
+# All observation dataset are downloaded into MADISBASE/bsrn directory for consolidation.
 setenv AUTOFTP T
 
 if (${RADIATION_DSET} == "bsrn")  then
@@ -85,6 +86,12 @@ if (${RADIATION_DSET} == "srad")  then
   setenv RAD_SERVER https://gml.noaa.gov/aftp/data/radiation/surfrad
   setenv RAD_LOGIN  anonymous
   setenv RAD_PASS   lizadams@email.unc.edu 
+endif
+
+if (${RADIATION_DSET} == "solrad")  then
+  setenv RAD_SERVER https://gml.noaa.gov/aftp/data/radiation/solrad
+  setenv RAD_LOGIN  anonymous
+  setenv RAD_PASS   lizadams@email.unc.edu
 endif
 
 # Write hourly site insert statements and redirect statement to screen or logfile
