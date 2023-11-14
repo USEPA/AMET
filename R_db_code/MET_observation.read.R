@@ -27,6 +27,7 @@
 #  V1.6, 2023JUN20, Robert Gilliam:
 #       - Updated surface text observation input function to read pressure and RH from text files for full
 #         compatibility with the analysis scripts, mainly the moisture time series script.
+#       - Added NOAA SOLRAD network that has ~9 sites in the CONUS. This fits in the SurfRAD obs read functions. 
 #
 #######################################################################################################
 #######################################################################################################
@@ -693,6 +694,10 @@
        site_ind[ns_in_domain]<-s       
     }
   }
+  if(ns_in_domain == 0) {    
+    stop("No BSRN sites are located in the model domain. Terminating the matching radiation script. \
+          Explore SURFRAD and/or SOLRAD for other potential radiation measurements that may lie in the model domain.")
+  }
   stat_id_domain   <-stat_id[site_ind[1:ns_in_domain]]
   slat_in_domain   <-slat[site_ind[1:ns_in_domain]]
   slon_in_domain   <-slon[site_ind[1:ns_in_domain]]
@@ -848,8 +853,8 @@
 ##########################################################################################################
 #####-----------------------      START OF FUNCTION: SURFRAD_OBSERVATIONS     ------------------------####
 #
-# Main function that controls the model-obs matching of SURFRAD radiation data. This the wrapper of sorts
-# Two other functions support this including one to parse SURFRAD obs file and another to do time window
+# Main function that controls the model-obs matching of SURF/SOL/RAD radiation data. This the wrapper of sorts
+# Two other functions support this including one to parse SURF/SOL/RAD obs file and another to do time window
 # averaging of the high temporal obs data.
 #
 # Input:
@@ -871,7 +876,7 @@
 
  surfrad_observations <-function(madisbase, datetime, model_lat, model_lon, ametdbase, sitecommand,  
                                  srad_server, srad_login, srad_pass, autoftp=F, updateSiteTable=F,
-                                 tmpquery_file="tmp.site.query") {
+                                 solrad=F, tmpquery_file="tmp.site.query") {
 ####
 # For development purposes
 #model_lat<-model$projection$lat
@@ -885,8 +890,13 @@
 
 ####
   rows.in.a.file <- 60*24
-
-  sradsitefile    <-paste(madisbase,"/bsrn/surfrad_sites.csv",sep="")
+  if(solrad) {
+    sradsitefile    <-paste(madisbase,"/bsrn/solrad_sites.csv",sep="")
+    netabrv         <-"SOLRAD"
+  } else {
+    sradsitefile    <-paste(madisbase,"/bsrn/surfrad_sites.csv",sep="")
+    netabrv         <-"SRAD"
+  }
   latr            <-range(model_lat)
   lonr            <-range(model_lon)
   lonr360          <-ifelse(lonr < 0, lonr + 360,lonr)
@@ -900,19 +910,17 @@
   datefile<- paste(datetime$mc,yy,sep="")
   
   # Read SURFRAD stations metadata file for site information
-  writeLines(paste("Opening SURFRAD site metadata file",sradsitefile," and updating stations table."))
+  writeLines(paste("Opening SURF/SOLRAD site metadata file",sradsitefile," and updating stations table."))
   srad.site.data<-read.delim(sradsitefile,sep=",",header=T)
   ns            <- dim(srad.site.data)[1]
-  common_name   <-as.character(srad.site.data[,1])
-  stat_id       <-tolower(as.character(srad.site.data[,2]))
-  country       <-as.character(srad.site.data[,3])
+  common_name   <-trimws(as.character(srad.site.data[,1]))
+  stat_id       <-trimws(tolower(as.character(srad.site.data[,2])))
+  country       <-trimws(as.character(srad.site.data[,3]))
   slat          <-as.numeric(srad.site.data[,4])
   slon          <-as.numeric(srad.site.data[,5])
   selev         <-as.numeric(srad.site.data[,6])
   slon360       <-ifelse(slon < 0, slon + 360,slon)
-  ob_network    <-array("SRAD",c(ns))
-  site_avail    <-array(8,c(ns))
-
+  ob_network    <-array(netabrv,c(ns))
   ##########################################################
   # Update Site information in the AMET stations table
   if(updateSiteTable) {
@@ -940,16 +948,26 @@
     
     if( (slat[s] < latr[1] | slat[s] > latr[2]) | 
         (slon[s] < lonr[1] | slon[s] > lonr[2]) ) {
-       writeLines(paste("SURFRAD Site *NOT IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],latr[1],latr[2])) 
+       writeLines(paste("SURF/SOLRAD Site *NOT IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],latr[1],latr[2])) 
        next 
     }
     else {
-       writeLines(paste("SURFRAD Site *IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],slon[s]))
+       writeLines(paste("SURF/SOLRAD Site *IN* MODEL DOMAIN id, lat, lon:",stat_id[s],slat[s],slon[s]))
        ns_in_domain <- ns_in_domain + 1 
        site_ind[ns_in_domain]<-s       
     }
+
   }
-  stat_id_domain   <-stat_id[site_ind[1:ns_in_domain]]
+  if(ns_in_domain == 0) {    
+   if(solrad) {
+    stop("No SOLRAD sites are located in the model domain. Terminating the matching radiation script. \
+          Explore BSRN and/or SURFRAD for other potential radiation measurements that may lie in the model domain.")
+   } else {
+    stop("No SURFRAD sites are located in the model domain. Terminating the matching radiation script. \
+          Explore BSRN and/or SOLRAD for other potential radiation measurements that may lie in the model domain.")
+   }
+  }
+  stat_id_domain   <-trimws(stat_id[site_ind[1:ns_in_domain]])
   slat_in_domain   <-slat[site_ind[1:ns_in_domain]]
   slon_in_domain   <-slon[site_ind[1:ns_in_domain]]
   sname_in_domain  <-common_name[site_ind[1:ns_in_domain]]
@@ -967,22 +985,22 @@
     if( (autoftp & !file.exists(sradobsfile)) || file.empty(sradobsfile) ) { 
       nogzname     <-paste(stat_id_domain[s],yy,jday,".dat",sep="")
       remote_file  <- paste(srad_server,"/",stat_id_domain[s],"/",datetime$yc,"/",stat_id_domain[s],yy,jday,".dat",sep="")
-      writeLines(paste("Getting remote file and moving to the SURFRAD/BSRN archive:",remote_file,sradobsfile))
+      writeLines(paste("Getting remote file and moving to the SURF/SOLRAD/BSRN archive:",remote_file,sradobsfile))
 
       try(download.file(remote_file,sradobsfile,"wget",extra=paste("--user",srad_login,
                         "--password",srad_pass,"--max-redirect=0")), silent=T)
     }
     if(!file.exists(sradobsfile) || file.empty(sradobsfile)) { 
       site_avail[s]<-0
-      writeLines(paste("SURFRAD Site FILE *NOT* found remotely or locally: ",sradobsfile))
+      writeLines(paste("SURF/SOLRAD Site FILE *NOT* found remotely or locally: ",sradobsfile))
       writeLines("Will skip and set obs data for this site to missing.")
       next
     }
 
     if(file.exists(sradobsfile)) { 
-      writeLines(paste("SURFRAD monthly Site FILE is in the archive: ",sradobsfile))
-      writeLines(paste("PARSING SURFRAD data.... "))
-      obs <-surfrad_parse(sradobsfile)
+      writeLines(paste("SURF/SOLRAD daily site FILE is in the archive: ",sradobsfile))
+      writeLines(paste("PARSING SURF/SOLRAD data.... "))
+      obs <-surfrad_parse(sradobsfile, solrad=solrad)
       if(is.list(obs)){
         site_avail[s]           <-1
         tmpl                    <-length(obs$daytime$day)
@@ -1007,16 +1025,16 @@
 #####--------------------------   START OF FUNCTION: SURFRAD_PARSE               ---------------------####
 #
 # Input:
-#   sradobsfile    -- name and location of SURFRAD obs file to parse
+#   sradobsfile    -- name and location of SURFRAD or SOLRAD obs file to parse
 #
 # Output: 
 #   daytime  <-list(day=day,hour=hour.of.day)
 #   sfc_met  <-list(swr_global=swr_global)  
 #   list(daytime=daytime,sfc_met=sfc_met)
 
- surfrad_parse <-function(sradobsfile) {
+ surfrad_parse <-function(sradobsfile, solrad=F) {
 
-  # Daily SURFRAD data file read.
+  # Daily SURFRAD/SOLRAD data file read.
   srad.data <-read.delim(sradobsfile,header=F,blank.lines.skip = FALSE, skip=2, sep='')
   nl        <-dim(srad.data)[1]
 
@@ -1033,8 +1051,13 @@
   lwr_down     <-srad.data[,13]
 
   # Met data. Note T in Celcius so converted to Kelvin
-  temp         <-srad.data[,39]+273.14
-  relhum       <-srad.data[,41]
+  if(!solrad) {
+    temp         <-srad.data[,39]+273.14
+    relhum       <-srad.data[,41]
+  } else {   # No temp/rh
+    temp         <-srad.data[,9]*NA
+    relhum       <-srad.data[,9]*NA
+  }
 
   swr_global  <-ifelse(swr_global == -999, NA, swr_global)
   swr_direct  <-ifelse(swr_direct == -999, NA, swr_direct)
@@ -1046,9 +1069,9 @@
 
   daytime  <-list(day=day,hour=hour.of.day)
 
-# Full list of met for future.  
-#  sfc_met  <-list(swr_global=swr_global, swr_direct=swr_direct, swr_diffuse=swr_diffuse, 
-#                  lwr_down=lwr_down, temp=temp, relhum=relhum)  
+  # Full list of met for future.  
+  #  sfc_met  <-list(swr_global=swr_global, swr_direct=swr_direct, swr_diffuse=swr_diffuse, 
+  #                  lwr_down=lwr_down, temp=temp, relhum=relhum)  
   sfc_met  <-list(swr_global=swr_global)  
   return(list(daytime=daytime,sfc_met=sfc_met))
 
@@ -1160,12 +1183,12 @@
   }
 
   # Underlying assumption that SurfRad is daily
-  if( as.numeric(datetime$hc) == 0 & rad_dset=="srad") {
+  if( as.numeric(datetime$hc) == 0 & (rad_dset=="srad" || rad_dset=="solrad")) {
     read_new_rad_file <- TRUE
   }
 
-  # Underlying assumption that SurfRad is daily
-  if( skipind == t & rad_dset=="srad") {
+  # Underlying assumption that SurfRad is daily 
+  if( skipind == t & (rad_dset=="srad" || rad_dset=="solrad")) {
     read_new_rad_file <- TRUE
   }
 

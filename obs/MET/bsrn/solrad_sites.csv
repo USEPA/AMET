@@ -1,0 +1,10 @@
+"Event, optional label",Event label,Location name,Latitude,Longitude,Elevation,Date/Time,Date/Time end,Comment
+Albuquerque, ABQ, New Mexico USA, 35.03796, -106.62211, 1617,1/1/1995,NA,"SOLRAD USA"
+Bismarck, BIS, North Dakota USA, 46.77179, -100.75955, 503, 1/1/1995, NA, "SOLRAD USA"
+Hanford, HNX, California USA, 36.31357, -119.63164, 73, 1/1/1995, NA, "SOLRAD USA"
+Madison, MSN, Wisconsin USA, 43.07250, -89.41133, 271, 1/1/1995, NA, "SOLRAD USA"
+Oak Ridge, ORT, Tennessee USA, 35.96101, -84.28838, 334, 1/1/1995, NA, "SOLRAD USA"
+Salt Lake City, SLC, Utah USA, 40.77220, -111.95495, 1288, 1/1/1995, NA, "SOLRAD USA"
+Seattle, SEA, Washington USA, 47.68685, -122.25667, 20, 1/1/1995, NA, "SOLRAD USA"
+Sterling, STE, Virginia USA, 38.97203, -77.48690, 85, 1/1/1995, NA, "SOLRAD USA"
+Tallahassee, TLH, Florida USA,	30.39675, -84.32955, 18, 1/1/1995, NA, "SOLRAD USA"

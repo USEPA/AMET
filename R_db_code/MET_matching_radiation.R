@@ -6,9 +6,11 @@
 #       Meteorological Models:
 #            Model for Prediction Across Scales (MPAS)
 #            Weather Research and Forecasting Model (WRF) 
+#            Meteorology-Chemistry Interface Processor (MCIP)
+#            NOAA Unified Forecast System (UFS) 
 #                                                  
-#       This "R" script provides an interface to match BSRN or SURFRAD 
-#       Radiation observations with either WRF or MPAS model output and
+#       This "R" script provides an interface to match BSRN, SOLRAD or SURFRAD 
+#       Radiation observations with either WRF, MPAS, MCIP or UFS model output and
 #       insert into AMET configured MySQL database. This is the control
 #       script that calls R functions that read model output, observations,
 #       interpolate and construct the database queries that are sent to MySQL. 
@@ -33,6 +35,8 @@
 #  V1.6, 2023Jun, Robert Gilliam: 
 #         - Added capability for Unified Forecast System (UFS) for NOAA.
 #         - Fixed forecast and init UTC for forecast output of single times
+#  V1.6, 2023Nov, Robert Gilliam: 
+#         - Added NOAA SOLRAD network that has ~9 sites in the CONUS
 #
 #######################################################################################################
 #######################################################################################################
@@ -79,7 +83,6 @@
   source(paste(amet_base,"/R_db_code/MET_misc.R",sep=""))
 
   # Users can pass login and password via environmental variables if not concerned about security.
-
   madisbase      <- Sys.getenv("MADISBASE")  
   mysqlserver    <- Sys.getenv("MYSQL_SERVER")
   met_output     <- Sys.getenv("METOUTPUT") 
@@ -96,7 +99,6 @@
   rad_login      <- Sys.getenv("RAD_LOGIN")
   rad_pass       <- Sys.getenv("RAD_PASS")
   verbose        <- as.logical(Sys.getenv("VERBOSE"))
-
   userid         <-system("echo $USER",intern = TRUE)
   projectdate    <-as.POSIXlt(Sys.time(), "GMT")
 
@@ -118,9 +120,8 @@
   files <-system(paste("ls -Llh ",met_output,"*",sep=''),intern=T)
   nf    <-length(files)
 
-  # Hard coded settings now
+  # Hard coded settings now for model buffer area on the edge of domains
   buffer           <- 5
-  total_loop_count <- 1 
  
   # Skip index setting for first file (1) and all after (2)
   a<-strsplit(skipind,split=" ")
@@ -136,7 +137,7 @@
      dthr     <- 0
   }
 
-  # Site mapping to model grid arrays for MPAS or WRF. Note CIND and CWGT are MPAS index
+  # Site mapping to model grid arrays for WRF, MPAS, MCIP and UFS. Note CIND and CWGT are MPAS index
   # arrays and interp weighting values. WRFIND is the eqivalent for WRF. Values [site,1:3,1:2]
   # are indicies of the four grid point surrounding the obs site. [site,1,1:2] is the first and
   # second I index. [site,2,1:2] is the first and second J index. The third [site,3,1:2] is
@@ -149,10 +150,10 @@
   cwgt    <-array(NA,c(sitemax,3))
   wrfind  <-array(NA,c(sitemax,3,2))
 
+  total_loop_count <- 1 
 ##########################################################################
 # Begin loop over Model Output files
 for(f in 1:nf) {
-
   # Initialize radiation file read to T
   read_new_rad_file <- TRUE
 
@@ -178,9 +179,8 @@ for(f in 1:nf) {
    metmodel<-"ufs"
    writeLines(paste("Matching NOAA UFS output with surface observations:",file))
   } else { 
-   writeLines("The model output is not standard WRF, MPAS, UFS output OR MCIP. Double check. 
+    stop("The model output is not standard WRF, MPAS, UFS output OR MCIP. Double check. 
                Terminating model-observation matching.")
-   quit(save="no")
   }
 
   # Check to see if Database exist. If not generate and add stations and project_log tables
@@ -260,7 +260,7 @@ for(t in skipind:nt){
   }
   if(metmodel == "wrf" || metmodel == "mcip" || metmodel == "ufs"){
     if(sum( model$sfc_met$swr[,,t]) == 0){ 
-      writeLines(paste("WRF time period skipped because initial model time"))
+      writeLines(paste("WRF/MCIP/UFS time period skipped because initial model time"))
       next 
     }
   }
@@ -277,32 +277,38 @@ for(t in skipind:nt){
 
   # Check for first time of the month to judge if new RAD file
   # needs to be ingested. BSRN = first of month, 
-  # SRAD= first hour of the day read_new_rad_file
+  # SRAD/SOLRAD= first hour of the day read_new_rad_file
   if(total_loop_count > 1 ) {
     read_new_rad_file <-check_for_rad_read(datetime, t, skipind, rad_dset)
   }
 
-  # Extract obs from BSRN or SURFRAD obs files along with site metadata
-  # return variable contains two lists: site and sfc_met
-  # site:    ns, nsr, site, site_unique, slat ,slon, site_locname, report_type, 
-  #          ihour, imin, isec, stime, stime2
-  # sfc_met: t2, q2, u10, v10 
+  # Extract obs from BSRN, SOLRAD or SURFRAD obs files along with site metadata
   if(rad_dset == "bsrn" & read_new_rad_file) {
     obs<- bsrn_observations(madisbase, datetime, model$projection$lat, model$projection$lon,  
                             ametdbase, sitecommand, rad_server,                            
                             rad_login, rad_pass, autoftp, updateSiteTable, tmpquery_file=query_file2)
     read_new_rad_file <- FALSE
     if(is.na(obs[1])) { next }
-  } 
-  if(rad_dset == "srad" & read_new_rad_file) {
+  } else if(rad_dset == "srad" & read_new_rad_file) {
     obs<- surfrad_observations(madisbase, datetime, model$projection$lat, model$projection$lon,  
                                ametdbase, sitecommand, rad_server,                            
                                rad_login, rad_pass, autoftp, updateSiteTable, tmpquery_file=query_file2)
     read_new_rad_file <- FALSE
-  } else if(rad_dset == "text") {
-    writeLines("Text radiation option is not functional yet. Only options that work are bsrn and srad")
-    writeLines("Change setenv RADIATION_DSET srad or bsrn in matching_bsrn.csh")
-    quit(save="no")
+    if(is.na(obs[1])) { next }
+  } else if(rad_dset == "solrad" & read_new_rad_file) {
+    obs<- surfrad_observations(madisbase, datetime, model$projection$lat, model$projection$lon,  
+                               ametdbase, sitecommand, rad_server,                            
+                               rad_login, rad_pass, autoftp, updateSiteTable, solrad=T, tmpquery_file=query_file2)
+    read_new_rad_file <- FALSE
+    if(is.na(obs[1])) { next }
+  }
+  if(rad_dset == "text") {
+    writeLines("Text radiation option is not functional yet. Only options that work are bsrn, srad and solrad")
+    stop("Change setenv RADIATION_DSET srad or bsrn in matching_bsrn.csh")
+  }
+  if(rad_dset != "text" & rad_dset != "bsrn" & rad_dset != "srad" & rad_dset != "solrad") {
+    writeLines("Only dataset options that exist in AMET currently are bsrn, srad and solrad")
+    stop("Change setenv RADIATION_DSET srad, solrad or bsrn in matching_bsrn.csh")
   }
 
   swr_obs_avg <- get_rad_avg(datetime, obs$meta, obs$ob_time, obs$sfc_met, window)

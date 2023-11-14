@@ -44,6 +44,8 @@
 #             are split into a plot_radiation.static.input & key configs#  
 #             remain in the plot_radiation.input. Backward compatible.  #
 #           - Added auto lat-lon bounds to range of obs sites if missed #
+# Version 1.6, Nov, 2023, Robert Gilliam                                #
+#  Updates: - Added SOLRAD network to the query of data and networks    # 
 #                                                                       #
 #########################################################################
   options(warn=-1)
@@ -101,11 +103,11 @@
 
  query1 <- paste("SELECT  DATE_FORMAT(d.ob_date,'%Y%m%d'),HOUR(d.ob_date), d.stat_id,s.lat, s.lon,",
                  "d.SRAD_mod, d.SRAD_ob FROM ",project1,"_surface d, stations s  WHERE d.stat_id=s.stat_id ", 
-                 "AND (s.ob_network='SRAD' || s.ob_network='BSRN') AND d.SRAD_ob > 0 AND d.ob_date BETWEEN ",
+                 "AND (s.ob_network='SOLRAD' || s.ob_network='SRAD' || s.ob_network='BSRN') AND d.SRAD_ob > 0 AND d.ob_date BETWEEN ",
                  d1," AND ",d2," ",extra," ORDER by d.ob_date", sep="")
  query2 <- paste("SELECT  DATE_FORMAT(d.ob_date,'%Y%m%d'),HOUR(d.ob_date), d.stat_id,s.lat, s.lon,",
                  "d.SRAD_mod, d.SRAD_ob FROM ",project2,"_surface d, stations s  WHERE d.stat_id=s.stat_id ", 
-                 "AND (s.ob_network='SRAD' || s.ob_network='BSRN') AND d.SRAD_ob > 0 AND d.ob_date BETWEEN ",
+                 "AND (s.ob_network='SOLRAD' || s.ob_network='SRAD' || s.ob_network='BSRN') AND d.SRAD_ob > 0 AND d.ob_date BETWEEN ",
                  d1," AND ",d2," ",extra," ORDER by d.ob_date", sep="")
 
  writeLines(paste(query1))

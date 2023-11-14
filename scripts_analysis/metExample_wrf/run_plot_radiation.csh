@@ -1,16 +1,15 @@
 #!/bin/csh -f
 # -----------------------------------------------------------------------
-# Shortwave Radiation Evaluation using Baseline Surface Radiation Network
-# or US-Based SURFRAD
+# Shortwave Radiation Evaluation using Baseline Surface Radiation Network BSRN,
+# US-Based SURFRAD or SOLRAD
 # -----------------------------------------------------------------------
 # Purpose:
-# Evaluation of MPAS/WRF shortwave radiation using the global BSRN or  
-# SURFRAD observations. Spatial, diurnal, timeseries and histogram plots
+# Evaluation of MPAS/WRF/MCIP/UFS shortwave radiation using the global BSRN,  
+# SURFRAD and/or SOLRAD observations. Spatial, diurnal, timeseries and histogram plots
 # are options along with text outputs.
 # -----------------------------------------------------------------------
 ####################################################################################
 #                          USER CONFIGURATION OPTIONS
-  
 
   # MySQL Server and AMET database configuration file.
   # For security make file only readable by you. With the following variables
