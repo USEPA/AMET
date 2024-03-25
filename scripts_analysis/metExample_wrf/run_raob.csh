@@ -139,11 +139,11 @@
     echo "Single time native profile plots of RAOB and model soundings = .True."
 
     set envstr="${AMET_YY}"
-    set split_y = ($envstr:as/ / /)
+    set split_y = ($envstr:as/,/ /)
     set envstr="${AMET_MM}"
-    set split_m = ($envstr:as/ / /)
+    set split_m = ($envstr:as/,/ /)
     set envstr="${AMET_DD}"
-    set split_d = ($envstr:as/ / /)
+    set split_d = ($envstr:as/,/ /)
     set begday=${split_y[1]}${split_m[1]}${split_d[1]}
     set endday=${split_y[2]}${split_m[2]}${split_d[2]}
 

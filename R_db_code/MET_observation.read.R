@@ -389,10 +389,15 @@
     #       Native levels will be put in database for plotting.
     #       Mandantory levels will be matched with model for statistics.
     prest <- ncvar_get(f2, varid="prSigT")
-    presw <- ncvar_get(f2, varid="prSigW")
     presm <- ncvar_get(f2, varid="prMan")
     ghgtm <- ncvar_get(f2, varid="htMan")
     ghgts <- ncvar_get(f2, varid="htSigW")
+    if(ncdf_vars_exist(madis_file,"prSigW")) {
+      presw <- ncvar_get(f2, varid="prSigW")
+    } else {
+      writeLines("** QAWARNING ** Significant level wrt W-by-P not available. Not used. Disregard.")
+      presw <- 1
+    }
 
     mlevs <- dim(presm)[1]
     tlevs <- dim(prest)[1]
