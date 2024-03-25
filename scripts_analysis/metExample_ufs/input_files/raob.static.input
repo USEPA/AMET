@@ -48,7 +48,7 @@
 #########################################################################
  if(!exists("extra") )  { extra <- ""  }
  extra <- trimws(extra)
- if(extra!="" & (statid=="ALL" || TSERIESM)) {
+ if(extra!="" & (statid[1]=="ALL" || TSERIESM)) {
   extrall  <-paste(extrall,extra)
  }
 #########################################################################
