@@ -120,7 +120,10 @@
    extra_region[rr] <-paste(tmpstr,"s.state='",regional_states[rr,nstates],"') ",sep="")
    rm(tmpstr)
  }
- if(wrapperrunid[2] != "RM" & wrapperrunid[2] != "RS") {    nregions <- 1 }
+
+ # Some logic checks that address issues
+ if(wrapperrunid[1] == "UA" & is.na(wrapperrunid[2]) ) {    wrapperrunid[2] <- "NP" }
+ if(wrapperrunid[2] != "RM" & wrapperrunid[2] != "RS") {    nregions <- 1           }
 
  # Days per month for date stuff
  mnendday <-c("31","28","31","30","31","30","31","31","30","31","30","31")
