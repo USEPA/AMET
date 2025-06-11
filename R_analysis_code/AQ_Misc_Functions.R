@@ -895,47 +895,33 @@ rmse_unsys    <- NULL   # Unsystematic RMSE
 ## Compute hour specific statistics 
 temp <- split(datain_all.df,datain_all.df$Date_Hour)
 for (i in 1:length(temp)) {
-   ls_regress <- NULL
-   intercept  <- NULL
-   X          <- NULL
-   sub.df <- temp[[i]]
-   num_good_obs <- length(sub.df$Date_Hour)                       # First assume all queried obs are valid
-#   if ((valid_only == "y") && (remove_negatives == "y")) {      # Check that we assuming all records are valid and we are removing negative values
-#   if (valid_only == "y") {
-#      indic.missing <- sub.df$ob_val < 0                        # Check for observations that are less than 0
-#      sub.df$ob_val[indic.missing] <- 0                         # Replace those observations with 0 (we assume a valid observation, just not negative)
-#      indic.missing <- sub.df$mod_val >= 0                      # Find all the good model values
-#      sub.df <- sub.df[indic.missing,]                          # Remove any records with a missing modeled value
-#      num_good_obs <- length(sub.df$Date_Hour)                    # Count the remaining records
-#   }
-#   else {
-#      if (remove_negatives == "y") {    # If removing negative observations and valid_only (which applies only to NADP) is not checked
-         indic.missing <- sub.df$ob_val >= 0
-         sub.df <- sub.df[indic.missing,]
-         indic.missing <- sub.df$mod_val >= 0
-         sub.df <- sub.df[indic.missing,]
-         num_good_obs <- length(sub.df$Date_Hour)
-#      }
-#   }
-   coverage <- round((num_good_obs/total_obs[i])*100)
+   ls_regress 		<- NULL
+   intercept  		<- NULL
+   X          		<- NULL
+   sub.df 		<- temp[[i]]
+   num_good_obs 	<- length(sub.df$Date_Hour)                       # First assume all queried obs are valid
+   indic.missing 	<- sub.df$ob_val >= 0
+   sub.df 		<- sub.df[indic.missing,]
+   indic.missing 	<- sub.df$mod_val >= 0
+   sub.df 		<- sub.df[indic.missing,]
+   num_good_obs 	<- length(sub.df$Date_Hour)
+   coverage 		<- round((num_good_obs/total_obs[i])*100)
    if (rm_negs_query == "y") {  # if removing negatives at the query level, calculate coverage based on time range (assumes hourly data)
       coverage  <- round((num_good_obs/(as.numeric(num_hours)+24))*100)
    }
    if ((length(sub.df$Date_Hour) > 0) && (coverage >= coverage_limit) && (num_good_obs >= num_obs_limit)) {       # number of observations necessary for evaluation(completeness criteria)
       hour_coverage	<- c(hour_coverage, coverage)
       date_hour		<- c(date_hour, as.character(unique(sub.df$Date_Hour)))           # Set site ID
-#      lats          <- c(lats, sub.df$lat[1])           # Set lat to first lat record in sub.df
-#      lons          <- c(lons, sub.df$lon[1])           # Set lon to first lon record in sub.df
-      num_obs       <- c(num_obs,length(sub.df$Date_Hour))
-      mean_obs      <- c(mean_obs, round(mean(sub.df$ob_val),3))
-      mean_model    <- c(mean_model, round(mean(sub.df$mod_val),3))
-      median_obs    <- c(median_obs, median(sub.df$ob_val))
-      median_mod    <- c(median_mod, median(sub.df$mod_val))
-      median_diff   <- c(median_diff, median(sub.df$mod_val-sub.df$ob_val))
-      skew_obs      <- c(skew_obs, round((median(sub.df$ob_val)/mean(sub.df$ob_val)),2))
-      skew_mod      <- c(skew_mod, round((median(sub.df$mod_val)/mean(sub.df$mod_val)),2))
-      hour_mb       <- c(hour_mb, round(mean(sub.df$mod_val-sub.df$ob_val),4))
-      hour_me       <- c(hour_me, round(abs(mean(sub.df$mod_val-sub.df$ob_val)),4))
+      num_obs       	<- c(num_obs,length(sub.df$Date_Hour))
+      mean_obs      	<- c(mean_obs, round(mean(sub.df$ob_val),3))
+      mean_model    	<- c(mean_model, round(mean(sub.df$mod_val),3))
+      median_obs    	<- c(median_obs, median(sub.df$ob_val))
+      median_mod    	<- c(median_mod, median(sub.df$mod_val))
+      median_diff   	<- c(median_diff, median(sub.df$mod_val-sub.df$ob_val))
+      skew_obs      	<- c(skew_obs, round((median(sub.df$ob_val)/mean(sub.df$ob_val)),2))
+      skew_mod      	<- c(skew_mod, round((median(sub.df$mod_val)/mean(sub.df$mod_val)),2))
+      hour_mb       	<- c(hour_mb, round(mean(sub.df$mod_val-sub.df$ob_val),4))
+      hour_me       	<- c(hour_me, round(abs(mean(sub.df$mod_val-sub.df$ob_val)),4))
       if (mean(sub.df$ob_val) > 0) {
          hour_nmb      <- c(hour_nmb, round(((sum(sub.df$mod_val-sub.df$ob_val))/sum(sub.df$ob_val))*100,2))
          hour_nme      <- c(hour_nme, round((sum((abs(sub.df$mod_val-sub.df$ob_val)))/sum(sub.df$ob_val))*100,2))
@@ -1001,9 +987,6 @@ Average<-function(datain.df,avg_func="mean") {
    obs_sum		<- NULL
    category		<- NULL
    Networks		<- NULL
-#   print(datain.df)
-#   names(datain.df)
-#   datain.df$Stat_ID <- paste(datain.df$Stat_ID,datain.df$POCode,sep="")
    if ((!"state" %in% colnames(datain.df)) && (!"State" %in% colnames(datain.df))) {
       datain.df$State <- "NA"
    }
@@ -1011,22 +994,11 @@ Average<-function(datain.df,avg_func="mean") {
    datain.df$Year <- substr(datain.df$Start_Date,1,4)
    indic.nonzero  <- datain.df$Mod_Value >= 0
    datain.df      <- datain.df[indic.nonzero,]
-#   indic.na <- datain.df$Obs_Value < 0
-#   datain.df$Obs_Value[indic.na] <- NA
    indic.nonzero  <- datain.df$Obs_Value >= 0
    datain.df	  <- datain.df[indic.nonzero,]
-   {
-#   if ((network == "NADP") || (network == "MDN")) {				# Do things differently for deposition networks
-#      indic.na <- datain.df$precip_ob <= 0.127
-#      datain.df$good_ob[indic.na] <- 1
-#      indic.na <- is.na(datain.df$Obs_Value)
-#      datain.df$good_ob[!indic.na] <- 1
-#   }
-#   else {
-      indic.na <- is.na(datain.df$Obs_Value)
-      datain.df$good_ob[!indic.na] <- 1
-#   }
-   }
+   indic.na 	  <- is.na(datain.df$Obs_Value)
+
+   datain.df$good_ob[!indic.na] <- 1
    if (units == "mg/l") {
       datain.df$VWA_ob 	<- datain.df$Obs_Value*datain.df$precip_ob
       datain.df$VWA_mod	<- datain.df$Mod_Value*datain.df$precip_mod

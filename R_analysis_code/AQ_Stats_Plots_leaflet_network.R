@@ -489,6 +489,6 @@ for (i in 1:8) {
      webshot("Rplot.html", file = filename_png[i],cliprect = "viewport",zoom=2,vwidth=max(lon_diff*24.5,1600),vheight=max(lat_diff*36.5,800))
   }
 }
-zip_files <- paste(run_name1,species,pid,"*",sep="_")
+zip_files <- paste(run_name1,species,pid,"*.html",sep="_")
 zip_command<-paste("zip",filename_zip,zip_files,sep=" ")
 system(zip_command)

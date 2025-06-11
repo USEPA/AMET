@@ -471,6 +471,7 @@ for (i in 1:8) {
 }
 ###############################################
 
-zip_files <- paste(run_name1,species,pid,"*",sep="_")
+zip_files <- paste(run_name1,species,pid,"*.png ",run_name1,species,pid,"*.pdf",sep="_")
 zip_command<-paste("zip",filename_zip,zip_files,sep=" ")
+print(zip_command)
 system(zip_command)

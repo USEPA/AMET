@@ -19,11 +19,11 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required Libraries 
-if(!require(maps))		{ stop("Required Package maps was not loaded") }
-if(!require(mapdata))		{ stop("Required Package mapdata was not loaded") }
-if(!require(webshot))		{ stop("Required Package webshot was not loaded") }
-if(!require(lattice))		{ stop("Required Package lattice was not loaded") }
-if(!require(leafpop))      	{ stop("Required Package leafpop was not loaded") }
+if(!require(maps))		{ stop("Required Package maps was not loaded") 		 }
+if(!require(mapdata))		{ stop("Required Package mapdata was not loaded") 	 }
+if(!require(webshot))		{ stop("Required Package webshot was not loaded") 	 }
+if(!require(lattice))		{ stop("Required Package lattice was not loaded") 	 }
+if(!require(leafpop))      	{ stop("Required Package leafpop was not loaded") 	 }
 if(!require(leaflet.extras))    { stop("Required Package leaflet.extras was not loaded") }
 
 ### The current release of leaflet.extras does not contain the groupedLayerControlOptions function.

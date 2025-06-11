@@ -22,11 +22,11 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required Libraries 
-if(!require(maps))	{ stop("Required Package maps was not loaded") }
-if(!require(mapdata))	{ stop("Required Package mapdata was not loaded") }
-if(!require(ggplot2))	{ stop("Required Package ggplot2 was not loaded") }
-if(!require(plotly))   	{ stop("Required Package plotly was not loaded") }
-if(!require(sf))   	{ stop("Required Package sf was not loaded") }
+if(!require(maps))	{ stop("Required Package maps was not loaded") 		}
+if(!require(mapdata))	{ stop("Required Package mapdata was not loaded") 	}
+if(!require(ggplot2))	{ stop("Required Package ggplot2 was not loaded") 	}
+if(!require(plotly))   	{ stop("Required Package plotly was not loaded") 	}
+if(!require(sf))   	{ stop("Required Package sf was not loaded") 		}
 
 ## Set some defaults  
 network		<- network_names[1] # When using mutiple networks, units from network 1 will be used

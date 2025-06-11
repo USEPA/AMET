@@ -162,7 +162,7 @@ if (aerosol_analysis == 'y') {
          species <- species_list
          figdir                 <- paste(out_dir,"multiple_species",sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
          }
          mkdir_command          <- paste("mkdir -p",figdir)
          system(mkdir_command)
@@ -174,7 +174,7 @@ if (aerosol_analysis == 'y') {
             species <- species_list[i]
             figdir                 <- paste(out_dir,species,sep="/")
             if (batch_names[m] != "None") {
-               figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+               figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
             }
             mkdir_command          <- paste("mkdir -p",figdir)
             if (bugle_plot == 'y') {
@@ -203,7 +203,7 @@ if (dep_analysis == 'y') {
          species <- species_list
          figdir                 <- paste(out_dir,"multiple_species",sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
          }
          mkdir_command          <- paste("mkdir -p",figdir)
          system(mkdir_command)
@@ -242,7 +242,7 @@ if (gas_analysis == 'y') {
          species <- species_list
          figdir                 <- paste(out_dir,"multiple_species",sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
          }
          mkdir_command          <- paste("mkdir -p",figdir)
          system(mkdir_command)
@@ -282,7 +282,7 @@ if (AE6_analysis == 'y') {
          species <- species_list
          figdir                 <- paste(out_dir,"multiple_species",sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
          }
          mkdir_command          <- paste("mkdir -p",figdir)
          system(mkdir_command)
@@ -361,7 +361,7 @@ if (PAMS_analysis == 'y') {
          species <- species_list
          figdir                 <- paste(out_dir,"multiple_species",sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
          }
          mkdir_command          <- paste("mkdir -p",figdir)
          system(mkdir_command)
@@ -399,7 +399,7 @@ if (PAMS_analysis == 'y') {
          species <- species_list
          figdir                 <- paste(out_dir,"multiple_species",sep="/")
          if (batch_names[m] != "None") {
-            figdir                 <- paste(out_dir,batch_names[m],species,sep="/")
+            figdir                 <- paste(out_dir,batch_names[m],"multiple_species",sep="/")
          }
          mkdir_command          <- paste("mkdir -p",figdir)
          system(mkdir_command)

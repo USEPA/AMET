@@ -26,10 +26,10 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required R Libraries
-if(!require(reshape))           { stop("Required Package reshape was not loaded") }
-if(!require(data.table))        { stop("Required Package data.table was not loaded")
-if(!require(ggplot2))           { stop("Required Package ggplot2 was not loaded") }
-if(!require(RColorBrewer))      { stop("Required Package RColorBrewer was not loaded") }
+if(!require(reshape))           { stop("Required Package reshape was not loaded") 	}
+if(!require(data.table))        { stop("Required Package data.table was not loaded")	}
+if(!require(ggplot2))           { stop("Required Package ggplot2 was not loaded") 	}
+if(!require(RColorBrewer))      { stop("Required Package RColorBrewer was not loaded") 	}
 
 ## Set some defaults
 network 	<- network_names[1]
