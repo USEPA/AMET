@@ -321,7 +321,6 @@ for (i in 1:6) {
       plt <- plt %>% add_annotations(font=list(color=text.col,size=20),text=~round_value, x=~season, y=~simulation, showarrow=FALSE)
    }
    saveWidget(plt, file=paste(filename[i],".html",sep=""),selfcontained=T)
-}
 data.tmp <- data_melted.df[data_melted.df$variable == "NUM_OBS",]
 write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
 ####################################
