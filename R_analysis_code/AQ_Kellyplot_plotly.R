@@ -320,4 +320,4 @@ for (i in 1:6) {
 data.tmp <- data_melted.df[data_melted.df$variable == "NUM_OBS",]
 write.table(data.tmp,file=filename_txt,row.names=F,col.names=F,append=T,sep=",")
 ####################################
-
+}
