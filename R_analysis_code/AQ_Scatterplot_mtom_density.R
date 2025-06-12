@@ -20,8 +20,8 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required R Libraries
-if(!require(ggplot2))             { stop("Required Package ggplot2 was not loaded") }
-if(!require(plotly))              { stop("Required Package plotly was not loaded") }
+if(!require(ggplot2))             { stop("Required Package ggplot2 was not loaded") 	}
+if(!require(plotly))              { stop("Required Package plotly was not loaded")	}
 if(!require(htmlwidgets))         { stop("Required Package htmlwidgets was not loaded") }
 
 ## Set some defaults

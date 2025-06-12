@@ -27,8 +27,8 @@ filename_txt  		<- paste(figdir,filename_txt,sep="/")      # Set output file nam
 #################################
 
 ## Load Required R Libraries
-if(!require(plotly))            { stop("Required Package plotly was not loaded") }
-if(!require(htmlwidgets))       { stop("Required Package htmlwidgets was not loaded") } 
+if(!require(plotly))            { stop("Required Package plotly was not loaded") 	}
+if(!require(htmlwidgets))       { stop("Required Package htmlwidgets was not loaded") 	} 
 
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 main.title <- get_title(run_names,species,network_label,dates,custom_title,site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)

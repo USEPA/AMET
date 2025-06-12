@@ -8,7 +8,7 @@ header <- "
 ### These four plots are then combined into a single html plot using
 ### the plotly subplot function. 
 ###
-### Created by Wyat Appel: Apr 2025
+### Created by Wyat Appel: June 2025
 ################################################################
 "
 
@@ -18,23 +18,27 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
-require(ggplot2)
-library(plotly)
-library(htmlwidgets)
-library(gridExtra)
 
+## Load required R libraries
+if(!require(ggplot2))           { stop("Required Package ggplot2 was not loaded")	}
+if(!require(plotly))           	{ stop("Required Package plotly was not loaded")       	}
+if(!require(htmlwidgets))	{ stop("Required Package htmlwidgets was not loaded")	}
+if(!require(gridExtra))		{ stop("Required Package gridExtra was not loaded")     }
+
+## Set output file names
 filename_html <- paste(run_name1,species,pid,"summary_panel_plot.html",sep="_")     # Set output file name
 filename_html <- paste(figdir,filename_html,sep="/")     # Set output file name
 
+## Set some defaults
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-main.title <- get_title(run_names,species,network_label,dates,custom_title,site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)
-
-run_name <- run_names[1]
-ob_col_name <- paste(species,"_ob",sep="")
-mod_col_name <- paste(species,"_mod",sep="")
-averaging <- 'e'
-multi_run <- 0
+main.title 	<- get_title(run_names,species,network_label,dates,custom_title,site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)
+run_name 	<- run_names[1]
+ob_col_name 	<- paste(species,"_ob",sep="")
+mod_col_name 	<- paste(species,"_mod",sep="")
+averaging 	<- 'e'
+multi_run 	<- 0
 if (run_name2 != "") { multi_run <- 1 }
+
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_names[1],species)
@@ -226,10 +230,10 @@ world     <- st_as_sf(world_map,coords=c("long","lat"))
 p4     	<- plot_ly(data=data_in,lat = ~lat, lon=~lon, marker = list(color = 'black',showscale=FALSE,size=22),mode='markers',type='scattermapbox',name=paste0('BG'))
 {
    if(multi_run) {
-      p4 <- p4 %>% add_trace(data=data_in,lat = ~lat, lon=~lon, marker = list(color = ~plotval,colorbar=list(title=paste0(colorbar_name,"<br>",species,"<br>",units),len=1,lenmode="fraction",x=.92),colorscale=color_palette,cmin=plot_range_min,cmax=plot_range_max,showscale=TRUE,size=20),mode='markers',type='scattermapbox',text=~paste("Stat_ID: ",stat_id,"<br>Network: ",Network,"<br>Lat: ",lat,"<br>Lon: ",lon,"<br>",Network,": ",signif(Obs_Value,4),"<br>",run_name,": ",signif(Mod_Value,4),"<br>",run_name2,": ",signif(Mod_Value2,4),"<br>Metric: ",hovertext,"<br>Value: ",signif(plotval,4),sep=""),hoverinfo='text',name=("Sites (Diff)"))
+      p4 <- p4 %>% add_trace(data=data_in,lat = ~lat, lon=~lon, marker = list(color = ~plotval,colorbar=list(title=paste0(colorbar_name,"<br>",species,"<br>",units),len=1,lenmode="fraction",x=.92),colorscale=color_palette,cmin=plot_range_min,cmax=plot_range_max,showscale=TRUE,size=20),mode='markers',type='scattermapbox',text=~paste("Stat_ID: ",stat_id,"<br>Network: ",Network,"<br>Lat: ",lat,"<br>Lon: ",lon,"<br>",Network,": ",signif(Obs_Value,4)," ",units,"<br>",run_name,": ",signif(Mod_Value,4)," ",units,"<br>",run_name2,": ",signif(Mod_Value2,4),"<br>Metric: ",hovertext,"<br>Value: ",signif(plotval,4)," ",units,sep=""),hoverinfo='text',name=("Sites (Diff)"))
    }
    else {
-      p4 <- p4 %>% add_trace(data=data_in,lat = ~lat, lon=~lon, marker = list(color = ~plotval,colorbar=list(title=paste0(colorbar_name,"<br>",species,"<br>",units),len=1,lenmode="fraction",x=.92),colorscale=color_palette,cmin=plot_range_min,cmax=plot_range_max,showscale=TRUE,size=20),mode='markers',type='scattermapbox',text=~paste("Stat_ID: ",stat_id,"<br>Network: ",Network,"<br>Lat: ",lat,"<br>Lon: ",lon,"<br>",Network,": ",signif(Obs_Value,4),"<br>",run_name,": ",signif(Mod_Value,4),"<br>Metric: ",hovertext,"<br>Value: ",signif(plotval,4),sep=""),hoverinfo='text',name=("Sites (Diff)"))
+      p4 <- p4 %>% add_trace(data=data_in,lat = ~lat, lon=~lon, marker = list(color = ~plotval,colorbar=list(title=paste0(colorbar_name,"<br>",species,"<br>",units),len=1,lenmode="fraction",x=.92),colorscale=color_palette,cmin=plot_range_min,cmax=plot_range_max,showscale=TRUE,size=20),mode='markers',type='scattermapbox',text=~paste("Stat_ID: ",stat_id,"<br>Network: ",Network,"<br>Lat: ",lat,"<br>Lon: ",lon,"<br>",Network,": ",signif(Obs_Value,4)," ",units,"<br>",run_name,": ",signif(Mod_Value,4)," ",units,"<br>Metric: ",hovertext,"<br>Value: ",signif(plotval,4)," ",units,sep=""),hoverinfo='text',name=("Sites (Diff)"))
    }
 }
 p4 <- p4 %>% layout(mapbox = list(style='open-street-map', zoom=3, domain=list(x = c(0, 1), y = c(0, 1)),center=list(lon=lon_mid,lat=lat_mid)),showlegend=TRUE)

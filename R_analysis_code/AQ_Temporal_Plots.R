@@ -19,8 +19,8 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required Libraries 
-if(!require(stats))	{ stop("Required Package stats was not loaded") }
-if(!require(plotrix))	{ stop("Required Package plotrix was not loaded") }
+if(!require(stats))	{ stop("Required Package stats was not loaded") 	}
+if(!require(plotrix))	{ stop("Required Package plotrix was not loaded") 	}
 
 ## Set some defaults
 network 	<- network_names[1]
