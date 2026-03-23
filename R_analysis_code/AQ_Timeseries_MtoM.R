@@ -129,7 +129,8 @@ Mod_Period_Mean2	<- mean(aqdat.df$Mod_Value2)
 Mod_Mean1		<- tapply(aqdat.df$Mod_Value1,Date_Hour_Factor,FUN=avg_func)
 Mod_Mean2		<- tapply(aqdat.df$Mod_Value2,Date_Hour_Factor,FUN=avg_func)
 
-if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
+#if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
+if (any(units == "kg/ha" | units == "mm")) { # Code to run if any unit matches }
    Mod_Period_Mean1 <- median(aqdat.df$Mod_Value1)
    Mod_Period_Mean2 <- median(aqdat.df$Mod_Value2)
 }

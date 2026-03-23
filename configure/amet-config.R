@@ -18,12 +18,15 @@ amet_base         <- Sys.getenv('AMETBASE')                             ## The A
 ## Otherwise, if just used for the analysis side of AMET, database read permission only is sufficient
 mysql_server	<- "localhost"	## Name of MYSQL server
 amet_login	<- "ametsecure"		## AMET Root login for MYSQL serve
-amet_pass	<- "xxxxxxxxxx"		## AMET Root password for MYSQL server
+amet_pass	<- "ametpwd"		## AMET Root password for MYSQL server
 maxrec		<- -1			## Set MySQL maximum records for queries (-1 for no maximum)
 
 ##::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ## Misc Executables 
-Bldoverlay_exe_config  	 <- paste(amet_base,"/bin/bldoverlay.exe",sep="")	## Full path to build overlay executable
+Bldoverlay_exe_config  	 <- paste(amet_base,"bldoverlay_v55.exe",sep="")	## Full path to build overlay executable
+EXEC_sitex_daily_config  <- paste(amet_base,"sitecmp_dailyo3_v55.exe",sep="") ## Full path to site compare daily executable
+EXEC_sitex_config        <- paste(amet_base,"sitecmp_v55.exe",sep="")          ## Full path to site compare executable
+
 
 ## Plotly API credentials (free account); Needed for plotly_IMAGE() ##
 #Sys.setenv("plotly_username"="")

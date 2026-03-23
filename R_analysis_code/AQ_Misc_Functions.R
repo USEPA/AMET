@@ -1028,7 +1028,8 @@ Average<-function(datain.df,avg_func="mean") {
       datain.df$good_ob[!indic.na] <- 1
 #   }
    }
-   if (units == "mg/l") {
+   #if (units == "mg/l") {
+   if (any(units == "m/l")) { # Code to run if any unit matches }
       datain.df$VWA_ob 	<- datain.df$Obs_Value*datain.df$precip_ob
       datain.df$VWA_mod	<- datain.df$Mod_Value*datain.df$precip_mod
    }

@@ -136,7 +136,8 @@ for (j in 1:length(network_names)) {	# For each simulation being plotted
          Mod_Mean[[j]]		<- tapply(aqdat.df$Mod_Value,Date_Hour_Factor,FUN=avg_func)
          Num_Obs[[j]]         	<- length(aqdat.df$Obs_Value)
 
-         if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
+        # if ((units == "kg/ha") || (units == "mm")){	# Accumulate values if using precip/dep species
+	 if (any(units == "kg/ha" | units == "mm")) { # Code to run if any unit matches }
             Obs_Period_Mean[[j]] <- median(aqdat.df$Obs_Value)
             Mod_Period_Mean[[j]] <- median(aqdat.df$Mod_Value)
          }
