@@ -242,6 +242,7 @@ After you have installed the basic R software, AMET also requires the following 
 * lubridate
 * maps
 * mapdata
+* prism
 * plotly
 * plotrix
 * processx
@@ -260,7 +261,7 @@ The easiest way to install R packages, is through the R package manager.  Once R
 ```
 > sudo R
 
-> install.packages(c("akima","data.table","date","dplyr","dygraphs","fields","ggplot2","grid","gridExtra","hexbin","htmltools","htmlwidgets","lattice","latticeExtra","leaflet","leaflet.extras","leafpop","lubridate","maps","mapdata","plotly","plotrix","processx","reshape2","RColorBrewer","RMySQL","RMariaDB","stats","webshot","xts","pandoc"),repos="http://cran.r-project.org")
+> install.packages(c("akima","data.table","date","dplyr","dygraphs","fields","ggplot2","grid","gridExtra","hexbin","htmltools","htmlwidgets","lattice","latticeExtra","leaflet","leaflet.extras","leafpop","lubridate","maps","mapdata","prism","plotly","plotrix","processx","reshape2","RColorBrewer","RMySQL","RMariaDB","stats","webshot","xts","pandoc"),repos="http://cran.r-project.org")
 
 ```
 
@@ -407,17 +408,17 @@ edit the sitecmp_dailyo3 Makefile
 > make |& tee make.log
 ```
 
-Note, the combine script directory contains a script called linkem that needs to be edited to point to your CMAQv5.5+ REPO directory to obtain the species definition files.
+Note, the combine script directory contains a script called linkem that needs to be edited to point to your CMAQ REPO directory to obtain the species definition files.
 
 ```
 cd $AMETBASE/tools_src/combine/scripts/spec_def_files
 vi linkem.csh
 ```
 
-Modify the set src = line to point to the CMAQv5.5+ Repository.
+Modify the set src = line to point to the CMAQv6.0 Repository.
 
 ```
-set src = /path_to/CMAQ/CMAQv5.5+/build/CMAQ_REPO_v5.5+/CCTM/src/MECHS
+set src = /path_to/CMAQ/CMAQv6.0/build/CMAQ_REPO_v6.0/CCTM/src/MECHS
 
 modify to the path for your CMAQ installation directory
 

@@ -122,16 +122,16 @@ To compile these programs, edit the Makefile file that is located in the **src**
 > cd $AMETBASE/tools_src
 cd combine/src
 edit the combine Makefile
-> Make
+> make
 > cd bldoverlay/src
 edit the bldoverlay Makefile
-> Make
+> make
 > cd ../sitecmp/scr
 edit the sitecmp Makefile
-> Make
+> make
 > cd ../sitecmp_dailyo3/scr
 edit the sitecmp_dailyo3 Makefile
-> Make
+> make
 ```
 
 *Note: AMETBASE is the root AMET installation directory on your system*
@@ -209,6 +209,12 @@ Go to the output directory to view the plots:
 cd $AMETBASE/output/metExample_wrf/spatial_surface
 ```
 
+View the rmse of Temperature
+
+```
+okular metExample_wrf.rmse.T.20160701-20160801.pdf
+```
+
 Use the following command to navigate to the air quality analysis example project directory:
 
 ```
@@ -217,12 +223,18 @@ cd $AMETBASE/scripts_analysis/aqExample
 Edit the AMETBASE and AMET\_DATABASE variables to be consistent with the AMET installation on your system. Save and run the script:
 
 ```
-./run_scatterplot.csh |& tee scatterplot.log
+./run_scatterplot_density_ggplot.csh |& tee run_scatterplot_density_ggplot.log
 ```
 
 Go to the output directory and view the
 plots:
 
 ```
-cd $AMETBASE/output/aqExample/scatterplot
+cd $AMETBASE/output/aqExample/scatterplot_density_ggplot
+```
+
+View a density scatterplot of Temperature
+
+```
+okular metExample_wrf_T_1_scatterplot_density_ggplot.pdf
 ```
