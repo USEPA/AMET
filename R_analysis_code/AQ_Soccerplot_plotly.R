@@ -10,7 +10,7 @@ header <- "
 ### the plotted points will fall within the goal lines. This type of plot is used by EPA
 ### and other planning organizations as part of their assessment of model performance.
 ###
-### Last updated by Wyat Appel: Mar 2025
+### Last updated by Wyat Appel: Jul 2026
 #########################################################################################
 "
 
@@ -19,7 +19,7 @@ ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
 ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
 ## Load Required R Libraries
-if(!require(plotly))              { stop("Required Package plotly was not loaded") 	}
+if(!require(plotly))              { stop("Required Package plotly was not loaded") }
 if(!require(htmlwidgets))         { stop("Required Package htmlwidgets was not loaded") }
 
 ## source miscellaneous R input file 
@@ -27,7 +27,10 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 
 ## Set some defaults
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-main.title <- get_title()
+{
+   if (custom_title == "") { title <- paste("Soccergoal plot for ",run_name1," for ",dates,"; State=",state,"; Site=",site,sep="") }   
+   else { title <- custom_title }
+}
 
 ## Set output file names
 filename_html_norm <- paste(run_name1,pid,"soccerplot_norm.html",sep="_")             # Set PDF filename
@@ -74,6 +77,7 @@ for (j in 1:length(network_names)) {	# Loop through each network
    }
    #############################################
    l <- 11 
+   if(Met_query) { l <- 8 }
    for (i in 1:length(species)) { 								# For each species, calculate several statistics
      data_all.df <- data.frame(network=I(aqdat_query.df$network),stat_id=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,ob_val=aqdat_query.df[,l],mod_val=aqdat_query.df[,(l+1)])	# Create properly formatted dataframe to use with DomainStats function
       good_count <- sum(!is.na(data_all.df$ob_val))		# Count the number of non-missing values
@@ -98,7 +102,7 @@ plot_chars <- c(15,19,23,24,25,seq(from=0,to=14,by=1))
 #############################################
 
 p <- plot_ly(data = stats_all.df, x=~Percent_Norm_Mean_Bias,y=~Percent_Norm_Mean_Err,height=img_height,width=img_width,type='scatter',mode='markers',marker=list(size=20),symbol=~species,symbols=plot_chars,color=~Network,colors=plot_colors,marker=list(size=12),legend=list(title="species"),legendshowlegend=TRUE,text= ~paste("NMB:",Percent_Norm_Mean_Bias,"<br>NME:",Percent_Norm_Mean_Err,"<br>Network:",Network,"<br>species:",species),hoverinfo='text') %>%
-	layout(title=list(text=main.title,y=0.97),font=list(size=15),xaxis=list(title="Normalized Mean Bias (%)",dtick=10,range=c(-100,100)),yaxis=list(title="Normalized Mean Error (%)",dtick=10,range=c(0,125))) 
+	layout(title=list(text=title,y=0.97),font=list(size=15),xaxis=list(title="Normalized Mean Bias (%)",dtick=10,range=c(-100,100)),yaxis=list(title="Normalized Mean Error (%)",dtick=10,range=c(0,125))) 
 p <- p %>%  add_segments(x=-15,xend=-15,y=0,yend=35,line=list(dash="dash",color='red'),inherit=F,showlegend=TRUE,name="Goal") %>%
    add_segments(x=15,xend=15,y=0,yend=35,line=list(dash="dash",color='red'),inherit=F,showlegend=FALSE) %>%
    add_segments(x=-15,xend=15,y=35,yend=35,line=list(dash="dash",color='red'),inherit=F,showlegend=FALSE) %>%
@@ -112,7 +116,7 @@ p <- p %>%  add_segments(x=-15,xend=-15,y=0,yend=35,line=list(dash="dash",color=
 saveWidget(p, file=filename_html_norm,selfcontained=T)
 
 p <- plot_ly(data = stats_all.df, x=~Frac_Bias,y=~Frac_Err,height=img_height,width=img_width,type='scatter',mode='markers',marker=list(size=20),symbol=~species,symbols=plot_chars,color=~Network,colors=plot_colors,marker=list(size=12),legend=list(title="species"),legendshowlegend=TRUE,text= ~paste("FB:",Frac_Bias,"<br>FE:",Frac_Err,"<br>Network:",Network,"<br>species:",species),hoverinfo='text') %>%
-	layout(title=list(text=main.title,y=0.97),xaxis=list(title="Fractional Bias (%)",dtick=10,range=c(-100,100)),yaxis=list(title="Fractional Error (%)",dtick=10,range=c(0,125)))
+	layout(title=list(text=title,y=0.97),xaxis=list(title="Fractional Bias (%)",dtick=10,range=c(-100,100)),yaxis=list(title="Fractional Error (%)",dtick=10,range=c(0,125)))
 p <- p %>%  add_segments(x=-15,xend=-15,y=0,yend=35,line=list(dash="dash",color='red'),inherit=F,showlegend=TRUE,name="Goal") %>%
    add_segments(x=15,xend=15,y=0,yend=35,line=list(dash="dash",color='red'),inherit=F,showlegend=FALSE) %>%
    add_segments(x=-15,xend=15,y=35,yend=35,line=list(dash="dash",color='red'),inherit=F,showlegend=FALSE) %>%
