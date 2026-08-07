@@ -7,10 +7,9 @@ header <- "
 ### species from a single network but for multiple simulations. Output format
 ### in png, pdf or both.
 ###
-### Last Updated by Wyat Appel: June 2025 
+### Last Updated by Wyat Appel: Mar 2021
 ###########################################################################
 "
-
 ## get some environmental variables and setup some directories
 ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
 ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
@@ -19,10 +18,7 @@ ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Set some defaults 
-network		<- network_names[1]
-pca     	<- NULL
-pca_names 	<- c("Northeast","Great Lakes","Atlantic","South")
-run_names    	<- run_name1               # Set default to just one run being plotted
+network <- network_names[1]
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
 
 ## Create output file names
@@ -34,27 +30,7 @@ filename_txt <- paste(run_name1,species,pid,"scatterplot_bins.csv",sep="_")     
 filename_pdf <- paste(figdir,filename_pdf,sep="/")                          # Set PDF filename
 filename_png <- paste(figdir,filename_png,sep="/")                          # Set PNG filenam
 filename_txt <- paste(figdir,filename_txt,sep="/")     # Set output file name
-#####################################
 
-## Query string for Northeast PCA region
-pca[1] <-" and (s.state='ME' or s.state='NH' or s.state='VT' or s.state='MA' or s.state='NY' or s.state='NJ' or s.state='MD' or s.state='DE' or s.state='CT' or s.state='RI' or s.state='PA' or s.state='DC') "
-############################################
-
-## Query for Aerosol/Ozone Great Lakes PCA region 
-pca[2] <-" and (s.state='OH' or s.state='MI' or s.state='IN' or s.state='IL' or s.state='WI') "
-############################################
-
-## Query for Ozone Atlantic PCA region 
-pca[3] <-" and (s.state='WV' or s.state='KY' or s.state='TN' or s.state='VA' or s.state='NC' or s.state='SC' or s.state='GA' or s.state='AL') "
-############################################
-
-## Query for Ozone Southwest PCA region 
-pca[4] <-" and (s.state='LA' or s.state='MS' or s.state='MO' or s.state='TX' or s.state='OK') "
-############################################
-
-###################################
-### Set variable initial values ###
-###################################
 axis.max     <- NULL
 num_obs      <- NULL
 sinfo        <- NULL
@@ -62,18 +38,15 @@ avg_text     <- ""
 legend_names <- NULL
 point_char   <- NULL
 point_color  <- NULL
-legend_names <- NULL
-####################################
 
-if (pca_flag == 'y') {
-   run_names <- c(run_name1,run_name1,run_name1,run_name1)
-   legend_names <- pca_names
-}
+################################################
+
+run_names    <- run_name1		# Set default to just one run being plotted
+legend_names <- NULL			# Set default for legend
 
 {
 if ((exists("run_name2")) && (nchar(run_name2) > 0)) {
       run_names <- c(run_names,run_name2)
-      pca_flag <- "n"
    }
    if ((exists("run_name3")) && (nchar(run_name3) > 0)) {
       run_names <- c(run_names,run_name3)
@@ -95,26 +68,19 @@ mb_min	     <- NULL
 rmse_max     <- NULL
 num_runs     <- length(run_names)
 for (j in 1:num_runs) {
-	### Deal with multiple networks and species ###
-criteria_in <- "Default"
-if (length(network_names) > 1) {
-  network_query <- paste("(d.network='",network_names[1],"'",sep="")
-  for (i in 2:length(network_names)) {
-     network_query <- paste(network_query," or d.network='",network_names[i],"'",sep="")
-  }
-  network_query  <- paste(network_query,")",sep="")
-  criteria_in    <- paste(" WHERE",network_query,query,sep=" ")
-}
-###############################################
-
+   legend_names <- c(legend_names,run_names[j])
    {
-      if (pca_flag == "y") {
-         criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",pca[j],query,sep="") # Set part of the MYSQL query
+   criteria_in <- "Default"
+   if (length(network_names) > 1) {
+      network_query <- paste("(d.network='",network_names[1],"'",sep="")
+      for (i in 2:length(network_names)) {
+         network_query <- paste(network_query," or d.network='",network_names[i],"'",sep="")
       }
-      else {
-         criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="") # Set part of the MYSQL query
-      }
+      network_query  <- paste(network_query,")",sep="")
+      criteria_in    <- paste(" WHERE",network_query,query,sep=" ")
    }
+   }
+#   criteria <- "Default"
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_names[j],species)
@@ -123,7 +89,7 @@ if (length(network_names) > 1) {
          if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
-         query_result   <- query_dbase(run_names[j],network,species,criteria=criteria)
+         query_result   <- query_dbase(run_names[j],network,species,criteria=criteria_in)
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
          if (data_exists == "y") { units <- query_result[[3]] }
@@ -138,7 +104,6 @@ if (length(network_names) > 1) {
          if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
       }
       else {
-         if (pca_flag != "y") { legend_names <- c(legend_names,run_names[j]) }
          if (averaging != "n") {
             aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
             {
@@ -187,7 +152,8 @@ if (length(network_names) > 1) {
             aqdat.df <- aqdat.df[indic.value,]
          }
          if (j == 1) {						# Only do this for first query
-            bin_range_all <- pretty(c(0,aqdat.df$Bin_Value),n=10)	# Determine a nice range to fit the obs
+#            bin_range_all <- pretty(c(0,aqdat.df$Bin_Value),n=10)	# Determine a nice range to fit the obs
+            bin_range_all <- pretty(c(quantile(aqdat.df$Bin_Value,probs=quantile_min),quantile(aqdat.df$Bin_Value,probs=quantile_max)),n=10)  # Determine a nice range to fit the obs
             interval <- bin_range_all[2]-bin_range_all[1]		# Determine the interval based on the range
             bin_range <- bin_range_all		
             if (length(bin_range_all) > 11) {
@@ -203,10 +169,11 @@ if (length(network_names) > 1) {
             rmse      <- NULL
             indic.bin <- aqdat.df$Bin_Value > bin_range[n]
             bin.df <- aqdat.df[indic.bin,]
-	    indic.bin <- bin.df$Bin_Value <= bin_range[(n+1)]
+#	    indic.bin <- bin.df$Bin_Value <= bin_range[(n+1)]
+	    indic.bin <- bin.df$Bin_Value <= bin_range[n]+interval
             bin.df <- as.data.frame(bin.df)[indic.bin,]
 	    if (length(bin.df$Stat_ID) >= 5) {	# IMPORTANT: This sets the miniumum number of pairs to 5 
-               bias 		<- bin.df$Mod_Value-bin.df$Obs_Value
+    	       bias 		<- bin.df$Mod_Value-bin.df$Obs_Value
                rmse 		<- sqrt((bin.df$Mod_Value-bin.df$Obs_Value)^2)
                mod.stats1 	<- boxplot(bias, plot=F)
                mb_q1_mod[n] 	<- mod.stats1$stats[2,]
@@ -248,11 +215,11 @@ if (length(network_names) > 1) {
       write.table(sinfo[[j]],file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
    }
    ###############################
-}	# End num_runs/pca loop
+} #End runs loop	
 
 count <- sum(is.na(aqdat.df$Obs_Value))	# count number of NAs in column
 len   <- length(aqdat.df$Obs_Value)
-if (count != len) {	# test to see if data is available, if so, compute axis.max
+if (count != len) {	# test to see if data are available, if so, compute axis.max
    y.axis.rmse.max <- rmse_max*1.1
    y.axis.rmse.min <- y.axis.rmse.max * .033
    y.axis.rmse.min <- y.axis.rmse.min - 0.1*y.axis.rmse.max*num_runs/2
@@ -260,7 +227,7 @@ if (count != len) {	# test to see if data is available, if so, compute axis.max
    
    y.axis.mb.max <- mb_max+((mb_max-mb_min)*0.20)
    y.axis.mb.min <- mb_min-((mb_max-mb_min)*0.10)*num_runs/2
-   x.axis.max <- 1.07*max(bin_range)
+   x.axis.max <- max(bin_range)+interval
 }
 if (length(y_axis_max) > 0) {
    y.axis.mb.max <- y_axis_max
@@ -306,8 +273,9 @@ axis(2,cex.axis=0.8)								# add y-axis text back, since it was changed to whit
 ###################################################
 abline(v=bin_range,col="grey40",lty=3)
 legend("topright", legend_names, pch=plot_chars, col=plot_cols, merge=F, cex=0.9, bty="n",pt.bg=plot_cols)
-title_all <- get_title(custom_text=",Binned Bias")
-title(main=title_all,cex.main=0.8)
+#title_all <- paste(species," Site Mean Bias for ",dates,sep="")	# Set plot title
+title_bias <- get_title(run_names="",species,network_names,dates,custom_text="Mean Bias",site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)
+title(main=title_bias,cex.main=0.7)
 font_size <- 0.8
 if (num_runs > 4) {
    font_size <- 0.6
@@ -315,7 +283,8 @@ if (num_runs > 4) {
 for (k in 1:num_runs) {
    offset <- seq(0,interval,by=(interval/(num_runs+1)))
    font_size <- 0.6
-   x <- 0+offset[k+1]
+#   x <- 0+offset[k+1]
+   x <- min(bin_range)+offset[k+1]
    for (n in 1:num_intervals) {
       points(x,sinfo[[k]]$plotval_mb_median[n],col=plot_cols[k],cex=font_size,pch=plot_chars[k],bg=plot_cols[k])
       points(x,sinfo[[k]]$plotval_mb_mean[n],col=plot_cols[k],cex=font_size,pch=8,bg=plot_cols[k])
@@ -343,15 +312,17 @@ axis(side=1,labels=x.axis_labels,at=bin_range,cex.axis=0.8)		# add x axis tick m
 axis(2,cex.axis=0.8)                                                    # add y-axis text back, since it was changed to white in plot command
 abline(v=bin_range,col="grey40",lty=3)
 legend("topleft", legend_names, pch=plot_chars, col=plot_cols, merge=F, cex=0.9, bty="n",pt.bg=plot_cols)
-title <- get_title(custom_text=",Binned RMSE")
-title(main=title_all,cex.main=0.8)
+#title_all <- paste(species," Site RMSE for ",dates,sep="")	# Set plot title
+title_rmse <- get_title(run_names="",species,network_names,dates,custom_text="RMSE",site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)
+title(main=title_rmse,cex.main=0.7)
 font_size <- 0.8
 if (num_runs > 4) {
    font_size <- 0.6
 }
 for (k in 1:num_runs) {
    offset <- seq(0,interval,by=(interval/(num_runs+1)))
-   x <- 0+offset[k+1]
+#   x <- 0+offset[k+1]
+   x <- min(bin_range)+offset[k+1]
    for (n in 1:num_intervals) {
       points(x,sinfo[[k]]$plotval_rmse_median[n],col=plot_cols[k],cex=font_size,pch=plot_chars[k],bg=plot_cols[k])
       points(x,sinfo[[k]]$plotval_rmse_mean[n],col=plot_cols[k],cex=font_size,pch=8,bg=plot_cols[k])

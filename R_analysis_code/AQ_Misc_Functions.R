@@ -1951,14 +1951,15 @@ query_dbase <- function(project_id,network,species,criteria="Default",orderby=c(
 ### Function to create title ###
 ################################
 if (!exists("custom_title_text")) { custom_title_text <- "" }
-get_title <- function(run_names_title=run_names,species_title=species,networks_title=network_label,dates_title=dates,custom_title="",site="All",state="All",pca="None",rpo="None",clim_reg="None",custom_text=custom_title_text,bias=F,html_break=F,newline_break=F) {
+get_title <- function(run_names_title=run_names,species_title=species,networks_title=network_label,dates_title=dates,custom_title="",site_title=site,state_title=state,pca_title=pca,rpo_title=rpo,clim_reg_title=clim_reg,custom_text=custom_title_text,bias=F,html_break=F,newline_break=F) {
       {
       my_title <- custom_title
       {
-         network_in <- paste(networks_title,collapse=", ")
-         species_in <- paste(species_title,collapse=", ")
+         network_in <- paste(networks_title,collapse=" & ")
+         species_in <- paste(species_title,collapse=" & ")
          if ((custom_title == "") && (length(run_names_title) == 1)) {
-            my_title <- paste(run_names_title,network_in,species_in,sep=", ")
+            my_title <- paste(network_in," ",species_in,sep="")
+            if((length(run_names_title) > 1)) { my_title <- paste(run_names_title,", ",network_in," ",species_in,sep="") }
             if (bias == "T") { my_title <- paste(run_name1,species_in,"Bias",sep=", ") }
             date_title_sep <- ", "
             if (html_break) {
@@ -1981,13 +1982,13 @@ get_title <- function(run_names_title=run_names,species_title=species,networks_t
             my_title <- paste(my_title,"for",dates_title,sep=" ")       # add dates regardless of custom title or not
          }
       }
-      if ((site != "All") || (state != "All") || (clim_reg != "None") || (rpo != "None") || (pca != "None")) { my_title <- paste(my_title,"\n") }
-      if (site != "All") {      my_title <- paste(my_title," Site=",site,sep="") }
-      if (state != "All") {     my_title <- paste(my_title," State=",state,sep="") }
-      if (clim_reg != "None") { my_title <- paste(my_title," Clim_Reg=",clim_reg,sep="") }
-      if (rpo != "None") {      my_title <- paste(my_title," RPO=",rpo,sep="") }
-      if (pca != "None") {      my_title <- paste(my_title," PCA=",pca,sep="") }
-      if (custom_title != "") { my_title <- custom_title }
+      if ((site_title != "All") || (state_title != "All") || (clim_reg_title != "None") || (rpo_title != "None") || (pca_title != "None")) { my_title <- paste(my_title,"\n") }
+      if (site_title != "All")          {       my_title <- paste(my_title," Site=",site,sep="")                }
+      if (state_title != "All")         {       my_title <- paste(my_title," State=",state,sep="")              }
+      if (clim_reg_title != "None")     {       my_title <- paste(my_title," Clim_Reg=",clim_reg,sep="")        }
+      if (rpo_title != "None")          {       my_title <- paste(my_title," RPO=",rpo,sep="")                  }
+      if (pca_title != "None")          {       my_title <- paste(my_title," PCA=",pca,sep="")                  }
+      if (custom_title != "")           {       my_title <- custom_title                                        }
    }
    return(my_title)
 }

@@ -16,8 +16,8 @@ ametbase        <- Sys.getenv("AMETBASE")			# base directory of AMET
 ametR           <- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 
 ## Load Required R Libraries
-if(!require(plotly))		{ stop("Required Package plotly was not loaded") 	}
-if(!require(htmlwidgets))       { stop("Required Package htmlwidgets was not loaded") 	}
+if(!require(plotly))		{ stop("Required Package plotly was not loaded") }
+if(!require(htmlwidgets))       { stop("Required Package htmlwidgets was not loaded") }
 
 ## source miscellaneous R input file 
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
@@ -25,7 +25,7 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ## Set some defaults 
 network 	<- network_names[1]
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-main.title 	<- get_title()
+main.title 	<- get_title(run_names,species,network_names,dates,custom_title,site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)
 run_names    	<- run_name1               # Set default to just one run being plotted
 
 ## Create output file names
@@ -54,7 +54,6 @@ filename_txt 	<- paste(figdir,filename_txt,sep="/")     # Set output file name
    if ((exists("run_name6")) && (nchar(run_name6) > 0)) {
       run_names <- c(run_names,run_name6)
    }
-   num_runs     <- length(run_names)
 }
 
 #################################
@@ -70,13 +69,27 @@ point_color  <- NULL
 data_count   <- NULL
 bin_names    <- NULL
 num_obs      <- NULL
+num_runs     <- length(run_names)
+aqdat_out.df <- data.frame()
+ymin	     <- NULL
+ymax	     <- NULL
 #################################
 
 if ((network ==  "NADP_dep") || (network == "NADP_conc")) {
    species <- c(species,"precip")
 }
 for (j in 1:num_runs) {
-   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="") # Set part of the MYSQL query
+#   criteria <- paste(" WHERE d.",species,"_ob is not NULL and d.network='",network,"' ",query,sep="") # Set part of the MYSQL query
+#   criteria <- "Default"
+   criteria_in <- "Default"
+   if (length(network_names) > 1) {
+      network_query <- paste("(d.network='",network_names[1],"'",sep="")
+      for (i in 2:length(network_names)) {
+         network_query <- paste(network_query," or d.network='",network_names[i],"'",sep="")
+      }
+      network_query  <- paste(network_query,")",sep="")
+      criteria_in    <- paste(" WHERE",network_query,query,sep=" ")
+   }
    {
       if (Sys.getenv("AMET_DB") == 'F') {
          sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_names[j],species)
@@ -85,7 +98,7 @@ for (j in 1:num_runs) {
          if (data_exists == "y") { units <- as.character(sitex_info$units[[1]]) }
       }
       else {
-         query_result   <- query_dbase(run_names[j],network,species,criteria=criteria)
+         query_result   <- query_dbase(run_names[j],network,species,criteria=criteria_in)
          aqdat_query.df <- query_result[[1]]
          data_exists    <- query_result[[2]]
          if (data_exists == "y") { units <- query_result[[3]] }
@@ -100,6 +113,7 @@ for (j in 1:num_runs) {
          if (num_runs == 0) { stop("Stopping because num_runs is zero. Likely no data found for query.") }
       }
       else {
+	 sinfo[[j]] <- "Data"
          if (averaging != "n") {
             aqdat.df <- data.frame(Network=I(aqdat_query.df$network),Stat_ID=I(aqdat_query.df$stat_id),lat=aqdat_query.df$lat,lon=aqdat_query.df$lon,Obs_Value=round(aqdat_query.df[[ob_col_name]],5),Mod_Value=round(aqdat_query.df[[mod_col_name]],5),Hour=aqdat_query.df$ob_hour,Start_Date=aqdat_query.df$ob_dates,Month=aqdat_query.df$month)
             {
@@ -137,7 +151,7 @@ for (j in 1:num_runs) {
             aqdat_temp.df <- aqdat.df[indic.value,]
          }
          if (j == 1) {						# Only do this for first query
-            bin_range_all <- pretty(c(0,quantile(aqdat_temp.df$Bin_Value,probs=0.999)),n=10)	# Determine a nice range to fit the obs
+            bin_range_all <- pretty(c(quantile(aqdat_temp.df$Bin_Value,probs=quantile_min),quantile(aqdat_temp.df$Bin_Value,probs=quantile_max)),n=10)	# Determine a nice range to fit the obs
             interval <- bin_range_all[2]-bin_range_all[1]		# Determine the interval based on the range
             bin_range <- bin_range_all		
             if (length(bin_range_all) > 11) {
@@ -166,38 +180,70 @@ for (j in 1:num_runs) {
    ##############################
    ### Write Data to CSV File ###
    ##############################
-   if (j == 1) {
-      aqdat_out.df     <- data.frame(Value=aqdat.df$Bias,bin=aqdat.df$bin)
-      aqdat_out.df$Sim <- paste(run_names[j],"(Bias)")
+   if (sinfo[[j]] == "No Data") {
+      # create a dummy row just for legend; y is NA so nothing is drawn
+      aqdat_temp.df <- data.frame(
+        Value = min(aqdat_out.df$Value, na.rm = TRUE) - 1e6,  # or any value off‑scale
+        bin   = factor(bin_names[1], levels = bin_names),     # pick any valid bin
+        Sim   = paste(run_names[j], "No Data")
+      )
+      aqdat_out.df <- rbind(aqdat_temp.df,aqdat_out.df)
+      if (j == 1) {
+         write.table(run_names[j],file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
+         write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+         write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+         write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+         write.table(sinfo[[j]],file=filename_txt,append=T,col.names=T,row.names=F,sep=",")	     
+      }
+      else {
+         write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+         write.table(run_names[j],file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
+         write.table(sinfo[[j]],file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+      }
+   }
+   else if (j == 1) {
+      aqdat_temp.df     <- data.frame(Value=aqdat.df$Bias,bin=aqdat.df$bin)
+      aqdat_temp.df$Sim	<- paste(run_names[j],"(Bias)")
+      aqdat_out.df <- rbind(aqdat_temp.df,aqdat_out.df)
+      ymin <- min(c(ymin,aqdat.df$Bias),na.rm=T)
+      ymax <- max(c(ymax,aqdat.df$Bias),na.rm=T)
       if (inc_error == "y") {
-         aqdat_temp     <- data.frame(Value=aqdat.df$Err,bin=aqdat.df$bin)
-         aqdat_temp$Sim <- paste(run_names[j],"(Error)")
-         aqdat_out.df <- rbind(aqdat_temp,aqdat_out.df)
+         aqdat_temp.df     	<- data.frame(Value=aqdat.df$Err,bin=aqdat.df$bin)
+         aqdat_temp.df$Sim 	<- paste(run_names[j],"(Error)")
+         aqdat_out.df 		<- rbind(aqdat_temp.df,aqdat_out.df)
+	 ymin 			<- min(c(ymin,aqdat.df$Err),na.rm=T)
+	 ymax                   <- max(c(ymax,aqdat.df$Err),na.rm=T)
       }
       write.table(run_names[j],file=filename_txt,append=F,col.names=F,row.names=F,sep=",")
       write.table(dates,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table(network,file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(sinfo[[j]],file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+      write.table(aqdat_out.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
    }
    else {
-      aqdat_temp     <- data.frame(Value=aqdat.df$Bias,bin=aqdat.df$bin)
-      aqdat_temp$Sim <- paste(run_names[j],"(Bias)")
-      aqdat_out.df <- rbind(aqdat_temp,aqdat_out.df)
+      aqdat_temp.df	<- data.frame(Value=aqdat.df$Bias,bin=aqdat.df$bin)
+      aqdat_temp.df$Sim <- paste(run_names[j],"(Bias)")
+      aqdat_out.df 	<- rbind(aqdat_temp.df,aqdat_out.df)
+      ymin <- min(c(ymin,aqdat.df$Bias),na.rm=T)
+      ymax <- max(c(ymax,aqdat.df$Bias),na.rm=T)
       if (inc_error == "y") {
-         aqdat_temp     <- data.frame(Value=aqdat.df$Err,bin=aqdat.df$bin)
-         aqdat_temp$Sim <- paste(run_names[j],"(Error)")
-         aqdat_out.df <- rbind(aqdat_temp,aqdat_out.df)
+         aqdat_temp.df     	<- data.frame(Value=aqdat.df$Err,bin=aqdat.df$bin)
+         aqdat_temp.df$Sim 	<- paste(run_names[j],"(Error)")
+         aqdat_out.df 		<- rbind(aqdat_temp.df,aqdat_out.df)
+	 ymin                   <- min(c(ymin,aqdat.df$Err),na.rm=T)
+	 ymax                   <- max(c(ymax,aqdat.df$Err),na.rm=T)
       }
       write.table("",file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
       write.table(run_names[j],file=filename_txt,append=T,col.names=F,row.names=F,sep=",")
-      write.table(sinfo[[j]],file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
+      write.table(aqdat_out.df,file=filename_txt,append=T,col.names=T,row.names=F,sep=",")
    }
+   
    ###############################
 }	# End num_runs loop
 
 xform <- list(title=paste("Bin Range (",units,") ",Mod_Obs_label,sep=""), categoryorder = "array", categoryarray = bin_names)
 
 p <- plot_ly(aqdat_out.df, x=~bin, y = ~Value, height=img_height, width=img_width, color=~Sim, type = "box", colors=c("yellow3","green4","blue","darkorchid4")) %>%
-     layout(boxmode = "group", title=main.title, yaxis=list(title=paste(species,"(",units,")")),xaxis=xform, showlegend=TRUE, annotations=list(x=0:(length(bin_range)-1),y=min(aqdat_out.df$Value), text=data_count[[1]], yshift=-15, align="center", valign="bottom", showarrow=FALSE))
+     layout(boxmode = "group", title=main.title, yaxis=list(range=c(1.05*ymin,ymax),title=paste(species,"(",units,")")),xaxis=xform, showlegend=TRUE, annotations=list(x=0:(length(bin_range)-1),y=ymin, text=data_count[[1]], yshift=-15, align="center", valign="bottom", showarrow=FALSE))
 saveWidget(p, file=filename_html,selfcontained=T)
+if (png_from_html == "y") { plotly_IMAGE(p, out_file=filename_png, width = 2400, height = 1600, format="png") }

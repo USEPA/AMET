@@ -22,27 +22,25 @@ ametR		<- paste(ametbase,"/R_analysis_code",sep="")    # R directory
 source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-functions file
 
 ## Load Required R Libraries
-if(!require(plotly))            { stop("Required Package plotly was not loaded") 	}
-if(!require(htmlwidgets))       { stop("Required Package htmlwidgets was not loaded") 	}
+if(!require(plotly))            { stop("Required Package plotly was not loaded") }
+if(!require(htmlwidgets))       { stop("Required Package htmlwidgets was not loaded") }
 
 ## Set some defaults
 network		<- network_names[1]
-network_name	<- network_label[1]
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-main.title <- get_title()
+main.title <- get_title(run_names,species,network_names,dates,custom_title,site=site,state=state,rpo=rpo,pca=pca,clim_reg=clim_reg)
 
-## Set output file names 
+################################################
+## Set output names and remove existing files ##
+################################################
 filename_stats	<- paste(run_name1,species,pid,"stats.csv",sep="_")
 filename_html	<- paste(run_name1,species,pid,"stats_plot.html",sep="_")
 
-## Create full path to output files
+## Create a full path to file
 filename_stats	<- paste(figdir,filename_stats,sep="/")
 filename_html   <- paste(figdir,filename_html,sep="/")
 ################################################
 
-###################################
-### Set variable initial values ###
-###################################
 query_in		<- query
 monthly_OBS		<- NULL
 monthly_Mean_OBS	<- NULL
@@ -69,7 +67,9 @@ y.axis.min		<- NULL
 y.axis.max		<- NULL
 right.axis.max		<- NULL
 month_labels		<- NULL
-###################################
+
+network<-network_names[[1]]                                               # Set network name
+network_name<-network_label[[1]]
 
 #######################################
 ### Compute total number of  months ###
@@ -125,7 +125,14 @@ for (y in 1:num_years) {
       stats_all.df$Median_Error			<- NA
       stats_all.df$RMSE				<- NA
       ###########################################
-      query	      <- paste(query_in," and month = ",m,sep="")
+      {
+         if(Met_query) {
+            query               <- paste(query_in,"and Month(ob_date) = ",m,sep="")
+         }
+         else {
+            query             <- paste(query_in," and month = ",m,sep="")
+         }
+      }
       query_result    <- query_dbase(run_name1,network,species)
       aqdat_query.df  <- query_result[[1]]
       data_exists     <- query_result[[2]]

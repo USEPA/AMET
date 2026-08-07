@@ -21,9 +21,13 @@ source(paste(ametR,"/AQ_Misc_Functions.R",sep=""))     # Miscellanous AMET R-fun
 ## Set some defaults
 network 	<- network_names[1]
 sub.title       <- ""
+main.title   	<- custom_title
+main.title.bias <- custom_title
 if(!exists("dates")) { dates <- paste(start_date,"-",end_date) }
-main.title 	<- get_title()
-main.title.bias <- get_title(bias="T")
+if (custom_title == "") {
+      main.title      <- paste(run_name1,species,"for",network,"for",dates,sep=" ")
+      main.title.bias <- paste("Bias for",run_name1,species,"for",network,"for",dates,sep=" ")
+}
 
 ## Set output file names
 filename_pdf <- paste(run_name1,species,pid,"timeseries_mtom.pdf",sep="_")              # Set output file name
@@ -34,7 +38,6 @@ filename_txt <- paste(run_name1,species,pid,"timeseries_mtom.csv",sep="_")
 filename_pdf    <- paste(figdir,filename_pdf,sep="/")           # Filename for diff spatial plot
 filename_png    <- paste(figdir,filename_png,sep="/")           # Filename for diff spatial plot
 filename_txt    <- paste(figdir,filename_txt,sep="/")           # Filename for diff spatial plot
-#####################################
 
 ###################################
 ### Set variable initial values ###
@@ -58,7 +61,7 @@ remove_negatives <- "n"
 #############################################
 ### Read sitex file or query the database ###
 #############################################
-criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",network,"'",query,sep="")
+#criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",network,"'",query,sep="")
 {
    if (Sys.getenv("AMET_DB") == 'F') {
       sitex_info       <- read_sitex(Sys.getenv("OUTDIR"),network,run_name1,species)
@@ -70,9 +73,9 @@ criteria <- paste(" WHERE d.",species[1],"_mod is not NULL and d.network='",netw
       data_exists2     <- sitex_info2$data_exists
    }
    else {
-      query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour"),criteria=criteria)
+      query_result    <- query_dbase(run_name1,network,species,orderby=c("ob_dates","ob_hour"),criteria="Default")
       aqdat_query.df  <- query_result[[1]]
-      query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"),criteria=criteria)
+      query_result2   <- query_dbase(run_name2,network,species,orderby=c("ob_dates","ob_hour"),criteria="Default")
       aqdat_query2.df <- query_result2[[1]]
       data_exists     <- query_result[[2]]
       if (data_exists == "y") { units <- query_result[[3]] }
