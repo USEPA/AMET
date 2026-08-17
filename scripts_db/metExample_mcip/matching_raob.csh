@@ -45,7 +45,7 @@ setenv METCRO    $AMETBASE/model_data/MET/$AMET_PROJECT/METCRO3D_160701.nc
 setenv METDOT    $AMETBASE/model_data/MET/$AMET_PROJECT/METDOT3D_160701.nc
 
 # Logic to check for case where MCIP files are being passed by loop_over_day.csh wrapper
-if ( ! $?METCRO3DX || ! $?METDOT3DX || ! $?GRIDCRO) then
+if ( ! $?METCRO3DX || ! $?METDOT3DX || ! $?GRIDCROX) then
    echo "Script not set in daily run mode. Will run matching for a single day. "
 else
    echo "METCRO3D and METDOT3D files are being passed into script via loop_over_days.csh"
