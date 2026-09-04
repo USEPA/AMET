@@ -7,7 +7,7 @@ header <- "
 ### species from a single network but for multiple simulations. Output format
 ### in png, pdf or both.
 ###
-### Last Updated by Wyat Appel: Mar 2021
+### Last Updated by Wyat Appel: September 2026
 ###########################################################################
 "
 ## get some environmental variables and setup some directories
@@ -293,7 +293,7 @@ for (k in 1:num_runs) {
       x <- x+interval
    }
 }
-x4 <- .5*interval
+x4 <- min(bin_range)+0.5*interval
 y_range <- y.axis.mb.max-y.axis.mb.min
 for (n in 1:num_intervals) {
    for (j in 1:num_runs) {
@@ -331,7 +331,7 @@ for (k in 1:num_runs) {
       x <- x+interval
    }
 }
-x4 <- 0.5*interval
+x4 <- min(bin_range)+0.5*interval
 y_range <- y.axis.rmse.max-y.axis.rmse.min
 for (n in 1:num_intervals) {
    for (j in 1:num_runs) {
