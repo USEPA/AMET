@@ -25,9 +25,9 @@
 #	vline								#
 #	addLegend_decreasing						#
 #									#
-#	Last UpDate:	April 2025					#
+#	Last UpDate:	August 2026					#
 #	Contributors:	Wyat Appel, Robert Gilliam, Kristen Foley,	#
-#                       James Kelly (USEPA/ORD)				#
+#                       James Kelly (USEPA/ORD; USEPA/OASES; USEPA/OAR) #
 #						 			#
 #   Orginally developed by and for EPA		  			#
 #-----------------------------------------------------------------------#
@@ -547,7 +547,7 @@ DomainStats<-function(data_all.df,rm_negs=T)
 {
 
 ## Determine total numbers of observations per sites ##
-data.df <- data_all.df
+data.df <- na.omit(data_all.df)
 #split_sites <- split(data.df,data.df$stat_id)
 #for (h in 1:(length(split_sites))) {
 #   sub.df <- split_sites[[h]]

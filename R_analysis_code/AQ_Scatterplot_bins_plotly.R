@@ -1,13 +1,13 @@
 header <- "
 ################## MODEL TO OBS BINNED SCATTERPLOT #################### 
-### AMET CODE: R_Scatterplot_bins.r 
+### AMET CODE: R_Scatterplot_bins_plotly.r 
 ###
 ### This script is part of the AMET-AQ system.  This script creates
-### a binned bias/RMSE plot. This script will create a binned bias/RMSE
-### plot for a single species from a single network but for multiple   
-### model runs. 
+### an interactive binned bias/RMSE plot utilizing the R plotly library.
+### This script will create a binned bias/RMSE plot for a single species
+### from a single network but for multiple model runs.
 ###
-### Last Updated by Wyat Appel: June 2025 
+### Last Updated by Wyat Appel: July 2026
 ########################################################################
 "
 
