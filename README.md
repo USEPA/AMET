@@ -13,7 +13,7 @@ The Atmospheric Model Evaluation Tool (AMET) is a suite of software designed to 
 
 - General Updates for v1.6
     - Moved from using RMySQL to RMariaDB, as R is moving away from RMySQL
-    - Provided beta code of an AMET website interface for producing analysis plots. AMET Website documentation and how to create a virtual machine from an AWS AMI is described in the following documentation. https://pcluster-cmaq.readthedocs.io/en/latest/user_guide_pcluster/amet/ami_website.html#learn-how-to-use-amet-on-aws
+    - Provided beta code of an AMET website interface for producing analysis plots. AMET Website documentation and how to create a virtual machine from an AWS AMI is described in the following documentation: https://pcluster-cmaq.readthedocs.io/en/latest/user_guide_pcluster/amet/ami_website.html#learn-how-to-use-amet-on-aws
 
 - AQ Updates v1.6
     - Support added for AirNow ozone and PM2.5 data 
